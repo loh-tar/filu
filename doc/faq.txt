@@ -1,0 +1,101 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+Here you find answers about questions you may never would like to know, answers
+why something is done as it is done and some known issues.
+
+
+Usability
+===========
+Q: How can I export data from Filu?
+A: Exporting data from Filu is currently not as much supported. Till now I
+   didn't have a need for e.g exporting indicator data, but my considerations
+about that tend to an AgentF command which print out a table to stdout or into a
+file. Technically should it not to be as hard. What nicely works is exporting
+static data out of the database. For details see doc/export-data.txt.
+
+Q: Which other platforms than Ubuntu Linux are supported?
+A: I'm only use Ubuntu so I can't say it for sure, but it should run on all Unix
+   like systems with some make-/.pro file modifications. If you are an
+experienced BSD or OSX user and got it running let me know how we can put all
+under one hood. If you are a Suse/RedHat/what-ever-Linux user and got it
+running, let me know too. If you are a Windows... um, nope incredibly.
+
+
+Miscellaneous
+===============
+Q: What does Filu mean?
+A: In short: I don't know.
+   In long: Filu was born around April 2007 as FiMi and was inspired by
+Christian Kindler. FiMi stands for Financial Instrument management Interface.
+After the break with Christian, someone in 2007, I developed apart from the
+public and was looking for a new name. Most of my ideas was already taken by
+other projects. In March 2010, I was intended to go back to the daylight, I
+found while searching for a new name Filou. Filou is described in a German
+dictionary as a fellow like a chiseler/crook but also as a
+scapegrace/good-for-nothing. Perfect! I discard the o because its still sounds
+the same (the i sounds like the e in "me") and have something like the original
+name with Fi for finance/finance-instrument and lu could be stand for Linux
+utilities.
+
+Q: Why are you using Postgres?
+A: Postgres was a suggestion by database professional Christian. An option was
+   Oracle but that was to special and to less OSS driven to me. MySQL has not as
+that features which Christian has planed to use. I don't know if the current
+Filu status would be portable to MySQL or not, nor if all planed features would
+be possible with MySQL. Anyway, I like Postgres and believe its the better DB
+than the most popular MySQL.
+
+Q: Why are you using muParser and not QtScript as math parser?
+A: I understood too late that it could be a possibility for my purposes. And
+   maybe it could be used as whole indicator concept. But I'm not unlucky with
+the current status.
+
+Q: Why do you not using KDE libraries?
+A: Sometimes I ask me if I should use it. But it would make the project less
+   portable and the benefit is questionable.
+
+Q: I'm an expert of <foo>. Did you know that your source code lacks of some
+   essential rules and you do some things more complicate as needed?
+A: I'm not an expert and struggle me each day again with many things. I would me
+   pleased to learn from your advice.
+
+Q: I read somewhere in the docs about Qtstalker, and performerf looks
+   similar to that. Why do you not contribute Qtstalker but start a new project?
+A: In 2006/7 I was impressed by Steve's Qtstalker and after a while I began to
+   make suggestions. Steve implement some of these. A little time later I start
+to send patches with modifications. Because I was not as happy with the evolved
+source code my patches going bigger. But this drive Steve not as happy and
+rejected at somehow point my patches. Also my suggestion to switch from Qt3 to
+Qt4. At this time come Christian to me with his own ideas about FiMi and a
+Qtstalker interface to that. After some experiments and my experiences not to be
+the boss I start from scratch with Qt4.
+
+Q: You break with Steve, you break with Christian. Are you not a team player?
+A: A team has one goal where each player is fighting for. Christian was not as
+   much interested to became a substitute for Qtstalker than to became an
+universal library preferably usable with Perl, which was not my primary goal and
+ask too much of my C++ skills. Furthermore he changed many times the database
+structure to became some of his ideas working, but that makes me unlucky. I hope
+these kind of truble can be avoid by using git at Gitorious.org where everybody
+is his own boss.
+
+
+Known Issues
+==============
+Mouse moves in the upper left corner of the plotsheet are not recognised. It
+could be a Qt Bug or a Ubuntu issue or something with the self compiled QT
+Library. What ever, there will no QEvent received.
+
+
+Technical Details
+===================
+Q: Why the quality column in some data tables?
+A: To avoid unwanted changes by a script. Only to decide by e.g. the date if a
+   eodBar is final is not enough. If you have repaired some wrong data by hand
+will these fixes be lost when you run an data update again.
+
+Q: Why is it not possible to store two FIs with the same name but a differnt
+   type?
+A: Um....It makes DB-insert functions much less complicate and an small suffix
+   in the name to make them differend is also for the user not as bad.

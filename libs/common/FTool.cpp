@@ -1,0 +1,123 @@
+//
+//   This file is part of Filu.
+//
+//   Copyright (C) 2007, 2010  loh.tar@googlemail.com
+//
+//   Filu is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   Filu is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with Filu. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "FTool.h"
+
+//
+// Here is a collection of more or less stupid functions
+// which are to simple to create an own class FIXME:or should?
+//
+
+QString FTool::lineToTxt(const QString& line)
+{
+  QString txt = line;
+
+  // We have to restore newline and simicolon
+  // The RegExp says: Search for '/,' but may not be leaded by '/' => ([^/])
+  // If found replace with ';' and keep the leading char => \\1
+  txt.replace(QRegExp("([^/])\\/,"), "\\1;");
+
+  // Newline char works as same.
+  txt.replace(QRegExp("([^/])\\/n"), "\\1\n");
+
+  // Finaly replace all double "//"
+  txt.replace("//", "/");
+
+  return txt;
+}
+
+QString FTool::txtToLine(const QString& txt)
+{
+  QString line = txt;
+
+  // We have to replace all newline and semicolon.
+  // We do it by replacing them with a string sequence of a escape char
+  // and a substitude char. => '/'
+
+  // But because the substitude char may also include in the text,
+  // we have to escape them too.
+  line.replace("/", "//");
+
+  // semicolon
+  line.replace(";", "/,");
+
+  // new line char
+  line.replace(QString('\n'), "/n");
+
+  return line;
+}
+
+
+int FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringList& parm)
+{
+  // place the parameter to the command switch "-foo" into parm
+
+  int pos = cmdLine.indexOf(cmd);
+
+  if(-1 == pos) return -1; // command not found. was not given on command line
+
+    parm.clear();          // be on the save side
+
+    for(int i = pos + 1; i <= cmdLine.size() - 1; ++i)
+    {
+      if(cmdLine.at(i).startsWith('-')) break;
+
+      parm.append(cmdLine.at(i));
+    }
+
+    return parm.size();
+}
+
+
+void FTool::copyDir(const QString& src, const QString& dest)
+{
+  // Found at http://agnit.blogspot.com/2009/03/directory-copy-code.html
+  // Thanks to Agnit Sarkar
+
+  //Check whether the dir directory exists
+  if(QDir(src).exists())
+  {
+    if(!QDir(dest).exists())
+    {
+      QDir().mkpath(dest);
+    }
+
+    //Construct an iterator to get the entries in the directory
+    QDirIterator dirIterator(src);
+
+    while (dirIterator.hasNext())
+    {
+      QString   item = dirIterator.next();
+      QString   fileName = dirIterator.fileName();
+      QFileInfo fileInfo = dirIterator.fileInfo();
+
+      if(fileName != "." && fileName != "..")
+      {
+        //If entry is a file copy it
+        if(fileInfo.isFile())
+        {
+          QFile::copy(item, dest + "/" + fileName);
+        }
+        //If entry is a directory, call the deltree function over it again to traverse it
+        else  copyDir(item, dest+ "/"+ fileName);
+      }
+    }
+  }
+  else return;
+}

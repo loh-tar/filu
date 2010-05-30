@@ -1,0 +1,11 @@
+[Settings]
+  UseIndicator          = XsmaTrader
+  CommissionFix         = 10
+  InitialCash           = 5000
+  WorkOnFiGroup         = Foo
+
+[Rules]
+  ENTERLONG & OffMarket : BUY (Long, 100%);
+  EXITLONG & Long       : SELL(Long, 100%);
+  Gain > 20             : SELL(Long, 100%);
+

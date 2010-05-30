@@ -1,0 +1,10 @@
+* AddToGroup: Examples
+* AddToGroup: Indicators
+
+INCLUDE(Main)
+
+burglar = WATCHDOGS(Main, Volume)
+SCAN4 = TALIB(MAX, burglar, TimePeriod=10)
+
+PLOT(HISTOGRAMBAR, SCAN4)
+PRIMARY(SCAN4)

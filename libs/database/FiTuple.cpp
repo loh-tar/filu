@@ -1,0 +1,259 @@
+//
+//   This file is part of Filu.
+//
+//   Copyright (C) 2007, 2010  loh.tar@googlemail.com
+//
+//   Filu is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   Filu is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with Filu. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "FiTuple.h"
+#include "SymbolTuple.h"
+
+FiTuple::FiTuple(int size) : Tuple(size)
+{
+  Id     = new int[size];
+  TypeId = new int[size];
+  Type   = new QString[size];
+  Name   = new QString[size];
+  Symbol = new SymbolTuple*[size];
+  //IssueDate = new QString[size];
+  //MaturityDate = new QString[size];
+}
+
+FiTuple::~FiTuple()
+{
+  delete []Id;
+  delete []TypeId;
+  delete []Type;
+  delete []Name;
+  // clean up Symbols
+  for (int i = 0; i < MaxIndex ; i++) delete []Symbol[i] ;
+  delete [] Symbol;
+  //delete []Symbol;
+  //delete []IssueDate;
+  //delete []MaturityDate;
+}
+
+int FiTuple::id()
+{
+  return Id[Index];
+}
+
+int FiTuple::typeId()
+{
+  return TypeId[Index];
+}
+
+QString FiTuple::type()
+{
+  return Type[Index];
+}
+
+QString FiTuple::name()
+{
+  return Name[Index];
+}
+
+SymbolTuple* FiTuple::symbol()
+{
+  return Symbol[Index];
+}
+
+/*
+QString FiTuple::issueDate()
+{
+  return IssueDate[Index];
+}
+
+QString FiTuple::maturityDate()
+{
+  return MaturityDate[Index];
+}
+*/
+
+void FiTuple::setId(int id)
+{
+  Id[Index] = id;
+}
+
+void FiTuple::setTypeId(int type)
+{
+  TypeId[Index] = type;
+}
+
+void FiTuple::setType(const QString& type)
+{
+  Type[Index] = type;
+}
+
+void FiTuple::setName(const QString& name)
+{
+  Name[Index] = name;
+}
+
+void FiTuple::setSymbol(SymbolTuple* symbol)
+{
+  Symbol[Index] = symbol;
+}
+
+
+/******************************************************************
+*
+*               FiTableModel::
+*
+*******************************************************************/
+
+FiTableModel::FiTableModel(FiTuple* fi, QObject* parent)
+            : QAbstractTableModel(parent)
+            , mFi(fi)
+{}
+
+int FiTableModel::rowCount(const QModelIndex& parent) const
+{
+  if(!mFi) return 0;
+
+  return mFi->count();
+}
+
+int FiTableModel::columnCount(const QModelIndex& parent) const
+{
+  return 4;
+}
+
+QVariant FiTableModel::data(const QModelIndex& index, int role) const
+{
+
+  if (!index.isValid())
+    return QVariant();
+
+  if (index.column() >= 4 or index.row() >= mFi->count())
+      return QVariant();
+
+  if (role == Qt::DisplayRole)
+  {
+    switch(index.column())
+    {
+      case 0:
+        return mFi->Id[index.row()];
+      case 1:
+        return mFi->TypeId[index.row()];
+      case 2:
+        return mFi->Name[index.row()];
+      case 3:
+        return mFi->Type[index.row()];
+    }
+   }
+  return QVariant();
+
+}
+
+QVariant FiTableModel::headerData(
+                            int section,
+                            Qt::Orientation orientation,
+                            int role) const
+{
+
+  if(orientation == Qt::Horizontal)
+  {
+
+    if(role == Qt::DisplayRole)
+    {
+      switch(section)
+      {
+        case 0:
+          return "FI-ID";
+        case 1:
+          return "Type-ID";
+        case 2:
+          return "Name";
+        case 3:
+          return "Type";
+        // case 4:
+        //   return "Owner";
+      }
+    }
+  }
+
+ /* if(role == Qt::SizeHintRole and orientation == Qt::Horizontal)
+  {
+    switch(section)
+    {
+      case 0:
+        return QSize(50,0);
+      case 1:
+        return QSize(50,0);
+      case 2:
+        {
+          QFont font = ((QTableView*)((QObject*)this)->parent())->font();
+          QFontMetrics fm(font);
+          qDebug() << "fm" << fm.size(0, QString(30,'X'));
+          return fm.size(0,QString(30,'X'));
+        }
+      case 3:
+        {
+          QFont font = ((QTableView*)((QObject*)this)->parent())->font();
+          QFontMetrics fm(font);
+          qDebug() << "fm" << fm.size(0, QString(10,'X'));
+          return fm.size(0,QString(10,'X'));
+        }
+      // case 4:
+      //   return "Owner";
+    }
+  }*/
+  else
+  {
+    if (role == Qt::DisplayRole) return QString("%1").arg(section);
+  }
+
+  return QVariant();
+
+}
+
+/******************************************************************
+*
+*                         FiTableView::
+*
+*******************************************************************/
+FiTableView::FiTableView(FiTuple* fi, QWidget* parent)
+               : QTableView(parent)
+               , mFiModel(0)
+{
+  setContent(fi);
+}
+
+FiTableView::~FiTableView()
+{
+  if(mFiModel) delete mFiModel;
+}
+
+void FiTableView::setContent(FiTuple* fi)
+{
+  if(mFiModel) delete mFiModel;
+  mFiModel = new FiTableModel(fi, this);
+  setModel(mFiModel);
+  setColumnHidden(0, true);
+  setColumnHidden(1, true);
+  //resizeColumnsToContents();
+  setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+  setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+  setColumnWidth(0,200);
+  setColumnWidth(1,300);
+  setColumnWidth(2,250);
+  setColumnWidth(3,80);
+}
+
+QSize FiTableView::sizeHint() const
+{
+  return QSize(380,200);
+}

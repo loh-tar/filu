@@ -1,0 +1,7 @@
+* AddToGroup: Examples
+* AddToGroup: Trader
+
+SIMTRADE(SimpleRule)
+
+PLOT(CANDLE, FI())
+

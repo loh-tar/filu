@@ -1,0 +1,211 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+A trading rule file is a plain text file located in ~/Filu/TradingRules by
+default. It include a list of settings and rules grouped in blocks and is used
+by Trader.cpp.
+
+Trader.cpp calculates some variables noted below which could used at the [Rules]
+block. Some of them are exported to the indicator data set. But this means not
+that you can use them to do some useful things in an indicator except that you
+can plot them.
+
+
+Blocks
+========
+[<block type>]
+  <block type> are Settings and Rules
+
+Lines in the [Settings] block have the format
+  <variable> = <value>
+
+Lines in the [Rules] block have the format
+  <condition> : <action>[;<action>...]
+
+
+Remarks
+=========
+*
+  Lines begin with an asterisk "*" are ignored
+
+
+Settings Needed To Do A Real Job
+==================================
+UseIndicator  = <my indicator>
+  The filename, no surprise
+
+GainRefLong   = <indicator variable>
+  Default is CLOSE
+
+GainRefShort  = <indicator variable>
+  Default is CLOSE
+
+PeakRefLong = <indicator variable>
+  Default is HIGH
+
+MinPositionSize = <fix value> FIXME: or <variable> ?
+  In money, default is set to 20% of InitialCash
+
+WorkWithPortfolio = HighRisk
+  If you have a portfolio "HighRisk" created
+  NOTE: Portfolio management is not implemented and therefore is this setting
+        not yet needed/used
+
+
+Settings Needed To Simulate
+=============================
+CommissionFix = <fix value>
+  Default is 0
+
+CommissionPercentage = <fix value>
+  Default is 0
+
+InitialCash = <fix value>
+  Default is 5000
+
+WorkOnFiGroup = MyWatchlist
+  You may have created "MyWatchlist" as one of PerformerF groups
+  NOTE: This setting is only needed by InspectorF
+
+
+Available Variables Related To The Current FI
+==============================================
+OOLongBuy, OOLongSell
+  0..n, not the ordered pieces. It's the count of open orders
+  NOTE: used by CalcTrade.cpp
+
+OOShortBuy, OOShortSell
+  0..n, not the ordered pieces. It's the count of open orders
+  NOTE: used by CalcTrade.cpp
+
+OpenLongBuy, OpenLongSell
+  0..n, that's the ordered pieces
+
+OpenShortBuy, OpenShortSell FIXME: not implemented
+  0..n, that's the ordered pieces
+
+OpenVolume
+  Holds the needed cash for open orders. It could vary from exact amound of
+  money if there was multiply orders placed and some of them executed.
+
+Long
+  0..n, number of pieces in depot
+
+Short
+  0..n, number of pieces in depot
+
+OffMarket
+  0/1
+
+AvgLong, AvgShort
+  It's the fake averaged entry price of open long/short positions.
+  "Fake" because they will set to execution price after a position was sold
+
+RAvgLong, RAvgShort
+  The real averaged entry price of open long/short positions
+
+GainLong
+  = 100 * (GainRefLong / AvgLong - 1)
+  Actual gain of long position in percent
+
+GainShort
+  = -100 * (GainRefShort / AvgShort - 1)
+  Actual gain of short position in percent
+
+Gain
+  = (GainLong + GainShort) / 2
+  Actual total gain of open positions in percent
+
+PeakGainLong
+  = 100 * (<peak of>PeakRefLong - AvgLong) / AvgLong
+  Maximum gain of open long position in percent since buy
+
+WonL, LostL, WonS, LostS
+  Counts won/lost long/short trades
+
+WonMoney, LostMoney
+  Sum the gain/lost of each trade
+
+AvgGainL
+  = (AvgGain + 100 * (executedPrice - RAvgLong) / RAvgLong) / 2
+  Its the avarage gain in percent per won long trade
+
+AvgLostL
+  = (AvgLost + 100 * (RAvgLong - executedPrice) / RAvgLong) / 2
+  Its the avarage lost in percent per lost long trade
+
+TotalCommission
+  Sum the payed comission over the trading period
+
+
+Available Variables Related To The Global Scope
+=================================================
+Cash
+  Actual cash
+
+TotalBalance
+  Actual total balance
+
+
+To The Indicator Exported Variables
+=====================================
+Cash, Gain, GainLong, Long, LostMoney, OffMarket, OOLongBuy, OOLongSell,
+TotalBalance, WonMoney
+
+If you need some of the other variables you can modify at Trader.cpp the
+function appendMData()
+
+
+Actions
+=========
+BUY(<type>, <size>[, <limit>, <validity>])
+  <type>        Long or Short
+  <size>        In percent from TotalBalance. If not enough cash left, size
+                will reduced down to MinPositionSize or droped
+  <limit>       Any indicator variable
+  <condition>   FIXME: not implemented, so forget it ;-)
+                Because my bank don't support those things I will ignore
+                these nice features
+                http://en.wikipedia.org/wiki/Order_(exchange)#Time_in_force
+  <validity>    In days (FIXME: well, if we use intraday quotes...)
+
+  BUY(Long, 100)
+    Buy on next open for all money left the actual FI
+
+  BUY(Short, 5%, myLimit, 10)
+
+
+SELL(<type>, <size>[, <limit>, <validity>])
+  <type>        Long or Short
+  <size>        In percent from holded Long/Short position. If the rest
+                position is smaler than MinPositionSize, size will set to 100
+  <limit>       Any indicator variable
+  <validity>    In days
+
+
+Examples
+==========
+Let us assume we use an indicator MyIndicator witch calculates the variables
+ENTERLONG, EXITLONG and LIMITLONG. Than is this a very simple trading rule
+
+  [Settings]
+    UseIndicator          = MyIndicator
+    CommissionFix         = 10
+    InitialCash           = 5000
+
+  [Rules]
+    ENTERLONG & OffMarket : BUY (Long, 100%, LIMITLONG);
+    EXITLONG & Long       : SELL(Long, 100%);
+
+
+The same with "take profit"
+
+  [Settings]
+    UseIndicator          = MyIndicator
+    CommissionFix         = 10
+    InitialCash           = 5000
+
+  [Rules]
+    ENTERLONG & OffMarket : BUY (Long, 100%);
+    EXITLONG & Long       : SELL(Long, 100%);
+    Gain > 20             : SELL(Long, 100%);

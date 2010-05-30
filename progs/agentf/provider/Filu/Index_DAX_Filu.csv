@@ -1,0 +1,37 @@
+* DAX_index_FiMi.csv;
+
+*IndexName=Deutscher Aktienindex, DAX30;DAX
+*IndexName=Deutscher Aktienindex, DAX30;DAX/Yahoo/xetra
+
+* FiMi-Symbol;Weight
+
+ADS;1
+ALV;1
+ALT;1
+BAS;1
+BAY;1
+BMW;1
+CBK;1
+CON;1
+DCX;1
+DBK;1
+DB1;1
+DPW;1
+DPB;1
+DTE;1
+EOA;1
+FME;1
+HEN3;1
+HRX;1
+IFX;1
+LIN;1
+LHA;1
+MAN;1
+MEO;1
+MUV2;1
+RWE;1
+SAP;1
+SIE;1
+TKA;1
+TUI1;1
+VOW;1

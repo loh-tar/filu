@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "This is the configure script of the Filu program collection"
+echo "Deleting old moc_ files"
+find -regex ".+/\(moc_\).+\.cpp" -type f -exec rm -f {} \;
+echo "Deleting old Makefiles..."
+find -name Makefile -type f -exec rm -f {} \;
+echo "Building new Makefiles..."
+qmake
+echo "Done"
+echo "You may now 'make && make install'"

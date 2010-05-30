@@ -1,0 +1,9 @@
+[General]
+CLOSE=true
+Date=true
+HIGH=true
+LOW=true
+OPEN=true
+OPINT=true
+VOLUME=true
+winday=true

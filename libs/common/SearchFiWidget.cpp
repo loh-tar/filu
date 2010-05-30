@@ -1,0 +1,187 @@
+//
+//   This file is part of Filu.
+//
+//   Copyright (C) 2007, 2010  loh.tar@googlemail.com
+//
+//   Filu is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   Filu is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with Filu. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "SearchFiWidget.h"
+
+#include "SearchField.h"
+#include "SqlTableView.h"
+
+/***********************************************************************
+*
+*
+*
+************************************************************************/
+SearchFiWidget::SearchFiWidget(FWidget* parent) : FWidget(parent)
+{
+  init();
+}
+
+SearchFiWidget::SearchFiWidget(FMainWindow* parent) : FWidget(parent)
+{
+  init();
+}
+
+SearchFiWidget::~SearchFiWidget()
+{}
+
+void SearchFiWidget::init()
+{
+  mSearchField = new SearchField(this);
+  connect(mSearchField, SIGNAL(textChanged()), this, SLOT(search()));
+
+  mTypeSelBtn = new FiTypeSelBtn(this);
+  connect(mTypeSelBtn, SIGNAL(selectionChanged()), this, SLOT(search()));
+
+  mView = new SqlTableView(this);
+  mView->setDragEnabled(true);
+  mView->setDropIndicatorShown(true);
+  //mView->setAcceptDrops(true);
+  //mView->setSelectionMode(QAbstractItemView::SingleSelection);
+  mModel = new QSqlQueryModel(this);
+  mView->setModel(mModel);
+  mView->horizontalHeader()->hide();
+  mView->verticalHeader()->hide();
+  //mView->setSelectionBehavior(QAbstractItemView::SelectRows);
+  connect(mView, SIGNAL(newSelection(const QModelIndex &))
+          , this, SLOT(clicked(const QModelIndex &)));
+
+  QGridLayout* layout = new QGridLayout;
+  layout->installEventFilter(this);
+  layout->setMargin(0);
+  layout->addWidget(mSearchField, 0, 0);
+  layout->addWidget(mTypeSelBtn, 0, 1);
+  layout->addWidget(mView, 1, 0, 1, 2);
+
+  setLayout(layout);
+}
+void SearchFiWidget::search()
+{
+  QSqlQuery* query = mFilu->searchFi(mSearchField->text(),  mTypeSelBtn->selected());
+
+  if(!query) return;
+  mModel->setQuery(*query);
+
+  mView->resizeColumnsToContents();
+  mView->hideColumn(0);
+  mView->hideColumn(1);
+  //resize(mView->columnWidth(2) + mView->columnWidth(3) + mView->columnWidth(4) + mView->columnWidth(5) + 10, height());
+  show();
+}
+
+void SearchFiWidget::clicked(const QModelIndex& index)
+{
+  int row = index.row();
+
+  if(row == mCurrentRow) return;
+  mCurrentRow = row;
+
+  // Symbol, Market
+  emit selected(mModel->index(row, 4).data().toString()
+              , mModel->index(row, 5).data().toString());
+
+  // FiId, MarketId
+  emit selected(mModel->index(row, 0).data().toInt()
+              , mModel->index(row, 1).data().toInt());
+}
+
+/*
+void SearchFiWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+        mDragStartPosition = event->pos();
+}
+
+void SearchFiWidget::mouseMoveEvent(QMouseEvent* event)
+{qDebug() << "mouseMoveEvent1";
+    if (!(event->buttons() & Qt::LeftButton)) return;
+
+    if ((event->pos() - mDragStartPosition).manhattanLength()
+          < QApplication::startDragDistance())
+        return;
+
+qDebug() << "mouseMoveEvent2";
+    QDrag* drag = new QDrag(this);
+    QMimeData* mimeData = new QMimeData;
+
+    mimeData->setText("drag test");
+    drag->setMimeData(mimeData);
+
+    Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
+
+}
+
+bool SearchFiWidget::eventFilter(QObject* pFilterObj, QEvent* event)
+{
+  if((pFilterObj == mView))// && (event->type() == QEvent::MouseButtonPress))
+  {
+    //mousePressEvent(event);
+
+  }
+  qDebug() << "event" << pFilterObj << event->type();
+  return QWidget::eventFilter(pFilterObj, event);
+}
+*/
+/***********************************************************************
+*
+*
+*
+************************************************************************/
+FiTypeSelBtn::FiTypeSelBtn(FWidget* parent)
+             : QToolButton(parent)
+             , FClass(parent)
+             , mType("")
+{
+  QStringList types;
+  mFilu->getFiType(types);
+
+  QMenu* menu = new QMenu(this);
+
+  QActionGroup* actGroup = new QActionGroup(this);
+  QAction* action = actGroup->addAction("All");
+  action->setCheckable(true);
+  action->setChecked(true);
+  for(int i = 0; i < types.size(); ++i)
+  {
+    action = actGroup->addAction(types.at(i));
+    action->setCheckable(true);
+  }
+  menu->addActions(actGroup->actions());
+
+  connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(selected(QAction *)));
+
+  setPopupMode(QToolButton::InstantPopup);
+  setMenu(menu);
+  setAutoRaise(true);
+  setArrowType(Qt::DownArrow);
+}
+
+FiTypeSelBtn::~FiTypeSelBtn()
+{}
+
+void FiTypeSelBtn::selected(QAction* action)
+{
+  mType = action->text();
+  if(mType == "All") mType = "";
+  emit selectionChanged();
+}
+
+QString FiTypeSelBtn::selected()
+{
+  return mType;
+}

@@ -1,0 +1,6 @@
+* AddToGroup: Examples
+* AddToGroup: Chart
+
+INCLTALIB(BBANDS, CLOSE)
+
+PLOT(CANDLE, FI())

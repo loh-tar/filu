@@ -1,0 +1,272 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+Here you find information about the indicator file format and which functions
+are be supported. When here in front of a line, or in the description, a minus
+sign appears is these function, or part, probably not implemented. It's more a
+draft, an idea. Maybe not the best idea or meanwhile obsolete.
+
+Indicator, or short indicators, are located by default in
+~/Filu/Indicators.
+
+Indicator files, or short Indicators, are plain text files and be the linchpin
+to got any desired result, if only to paint a line or to do pretty complicated
+trading ideas. Well, the latter need one more file, see
+doc/trading-rule-file-format.txt. Indicators are located by default in
+~/Filu/Indicators and could created using ManagerFs Indicator Page or with your
+favourite text editor.
+
+
+Remarks
+=========
+*
+  Lines begin with an asterisk "*" are ignored
+
+
+Reseved Names, Special Variables And Defines
+==============================================
+[<fi-alias>.]OPEN, HIGH, LOW, CLOSE, VOLUME, OPINT, BID, ASK, BIDVOL, ASKVOL
+  If no <fi-alias> is given, the currend FI is used.
+    OPEN
+    foo.CLOSE
+  NOTE: "THIS" is the <fi-alias> of the currend FI.
+
+SCAN4
+  Scanners look for them to force an action
+
+    SCAN4 = CROSS(CLOSE, sma200)
+    SCAN4 = MUP(foo < bar)
+
+FI([<fi-alias>])
+  Useable as parameter in some cases, represent the full eodBar data set.
+  If no <fi-alias> is given, the currend FI is used.
+
+DAY, WEEK, MONTH, YEAR
+  Keep the number of...
+  1 = Monday, January
+  The week number is in accordance to ISO 8601.
+
+  exit = MUP(DAY == 4)
+
+MON, TUE, WED, THU, FRI, SAT, SUN
+JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+  These are constants and will replaced by the number of...
+  1 = MON, JAN
+
+  exit = MUP(DAY == THU)
+
+WATCHDOGn, WATCHDOGRESULTn
+  Whereas n is a number. These variables are calculated by WATCHDOGS().
+  WATCHDOGn holds the calculated line data and WATCHDOGRESULTn if the line was
+  crossed. But you should never (need to) use these variables. They only exist
+  if a dog is on patrol.
+
+
+Commands
+==========
+INCLUDE(<indicator-name>[, IGNOREPLOT])
+  Include the given indicator file and ignore any plot stuff located in that
+  file when IGNOREPLOT is given.
+
+INCLTALIB(<type>, <parameter>[, <parameter>...])
+  <type> is any type provided by ta-lib.
+  Generates variables, plus the SETCOLOR() and PLOT() statements.
+
+    INCLTALIB(BBANDS, CLOSE)
+    INCLTALIB(SMA, 200, CLOSE)
+
+-LOADFI(<symbol>, <market>, <as-fi-alias>)
+  Produce the variables <fi-alias>.OPEN <fi-alias>.HIGH ...
+
+    LOADFI(AAPL, NYSE, apple)
+
+-LOADCOS(<fi-alias>)
+  Load the Chart Objects of the given FI.
+  The COs of the currend FI are automatic loaded.
+
+-LOADQUOTES(<fi-alias>)
+  Load the Quotes to the given FI. If no <fi-alias> is given the currend FI
+  is used. Produce the variables <fi-alias>.BID, <fi-alias>.ASK,
+  <fi-alias>.BIDVOL, <fi-alias>.ASKVOL
+
+PRIMARY(<variable>)
+  The primary variable is used to place the cursor on the x-scale. When no
+  primary variable is set, CLOSE, VOLUME or the first plottet variable is used.
+
+SIMTRADE(<trading-rule-name>)
+  This includes all variables produced by the indicator used by the trading
+  rule and some status variables calculated while the trading simulation. For
+  a list of variables see doc/trading-rule-file-format.txt
+
+    SIMTRADE(SimpleRule)
+
+VIEWNAME(<name>)
+  This give the indicator an alias name. Chart Objects are assigned to this
+  view name. If no "VIEWNAME()" is included in the indicator file, the name of
+  the indicator file is used instead.
+  NOTE: VIEWNAME() will currently ignored when located in an included file by
+        INCLUDE() command. I'm unsure if that should be changed.
+
+    VIEWNAME(Main)
+
+
+Plot Commands
+===============
+The command for plot something look like:
+
+  PLOT(<type>, <parameter>[, <parameter>...])
+
+<type> can be: -BAR, -BOOLBOARD, CANDLE, -CO, -DOT, HISTOGRAM, HISTOGRAMBAR,
+               -LABELS, LINE
+
+-PLOT(BOOLBOARD, <variable>[, <variable2>...][, LABELS])
+  Plots a kind of table with dots which indicates if <variableN> is true.
+  When the last parameter is LABELS will at the left side the labels of each
+  variable plotted.
+
+PLOT(CANDLE, FI())
+PLOT(CANDLE, FI(<alias>))
+PLOT(CANDLE, <open>, <high>, <low>, <close>, <volume>)
+  Yes, plots candels. The color of the candles can be changed by setting the
+  colors of the variables.
+  <high> -color is line color if close > prevClose, default green
+  <low>  -color is line color if close < prevClose, default red
+  <open> -color is body fill color if close > open, default black, but
+  <close>-color is body fill color if close < open, only when <close color>
+  was set.
+
+-PLOT(CO, <view-name>[, <co-type>[, <fi-alias>]])
+  Plots the Chart Objects assigned to <view-name>.
+  If no <co-type> is given, all Chart Objects are plotted.
+  <co-type> are: ALL, ARROW, LINE
+  The Chart Objects of the currend FI/VIEWNAME will automatic plotted.
+
+-PLOT(LABELS[, <direction>[, <position>]])
+  Plots the labels with values
+  <direction> are: V, H
+  <position> are: TL, TB, TM, T, B, M
+  Default is H,TL and can be changed in RcFile
+
+    PLOT(LABELS, V, M)
+
+PLOT(LINE, <foo>)
+
+  PLOT(LINE, CLOSE)
+
+
+Set Commands
+==============
+FIXME: None of these are implemented, but they should replace the existing
+       functions with the same name, because it looks more logical.
+
+SETCOLOR(<variable>, <color>)
+  <color> could be one of these names:
+  http://www.w3.org/TR/SVG/types.html#ColorKeywords
+  ...or given as RGB in hex with a leading #.
+  NOTE: Color names are not case sensitive.
+
+    SETCOLOR(foo, BluE)
+    SETCOLOR(foo, #0000Ff) // the same blue
+
+SETCOLOR(<variable1>, <variable2>, <true-color>, <false-color>)
+  <variable2> is interpretet as TRUE if value is greater null
+
+    SETCOLOR(VOLUME, winDay, green, red)
+
+SETLABEL(<variable>[, <label>])
+  Change the default/automatic generated label.
+  If no <label> is given, the label is ereased. Than will the line be plotted
+  but no label with value
+
+    SETLABEL(closeSma200, sma200)
+
+
+Functions
+===========
+-ALIAS(<variable>)
+  Generate an alias for the variable, this cost no more memory or calculation
+  time. This could be useful if you like to use an automatic generated variable
+  by an INCLTALIB() command.
+
+    foo2 = ALIAS(foo)
+
+-COUNTER(<start-trig>, <stop-trig>, <reset-trig>)
+
+CROSS(<variable>, <threshold>[, <type>])
+  <type> are: UP, DOWN, BOTH
+  If <type> is not set, BOTH is used
+
+    foo = CROSS(foo1, foo2)
+
+FILU(<function>[, <parameter>...])
+  This calls the "Filu Power Indicators".
+  <function> is any function provided by Filu. <parameter> and parameter count
+  depends on <function>. Currently exist only one indicator. Feel free to create
+  new stuff as described in doc/hacking-filu-power-indicators.txt.
+
+    ccp = FILU(CCP, FI())
+
+  Calls the Component Counter Percentage, which look at all underlyings from a
+  FI and add up if they have a winday(+1) or a lostday(-1) and returns the
+  result as percentage value.
+
+MUP(<expression>)
+  <expression> could be a full complex math or bool expression. For details
+  of supported operators and functions see:
+  http://muparser.sourceforge.net/mup_features.html#idDef2
+
+    midPrice = MUP((HIGH + LOW ) / 2)
+    signal = MUP((foo1 < foo2) and (foo3 xor (foo4 > foo5)))
+
+-PERF(<ent-trig>, <ent-val>, <ent-delay>, <exit-trig>, <exit-val>, <exit-delay>)
+  Calculate the performance
+
+REF(<variable>, <ref-val>)
+  Delivers the value from <variable> <ref-val>-days back if <ref-val> is
+  negative, or ahead if <ref-val> positive.
+  Well, it's of course your job that you only forecast values that makes sense.
+  The CLOSE should not fit these condition but lunar phases, hollidays,
+  dividend pay days, splits or what ever.
+
+    foo = REF(sma20, -4) FIXME: only back ref is supported
+
+SETCOLOR(<color>)
+  <color> could be one of these names...
+  http://www.w3.org/TR/SVG/types.html#ColorKeywords
+  ...or given as RGB in hex with a leading #.
+  NOTE: Color names are not case sensitive.
+
+    foo = SETCOLOR(BluE)
+    foo = SETCOLOR(#0000Ff) // the same blue
+
+SETCOLOR(<variable>, <true-color>, <false-color>)
+  <variable> is interpretet as TRUE if its value is greater null.
+
+    foo = SETCOLOR(foo2, RED, GREEN)
+    foo = SETCOLOR(foo2, #35ef20, GREEN)
+
+-SETLABEL([<label>])
+  Change the default/automatic generated label.
+  If no <label> is given, the label is ereased. Than will the line be plotted
+  but no label with value.
+
+    CLOSE.SMA200 = SETLABEL(sma200)
+
+TALIB(<function>[, <parameter>...])
+  <function> is any function provided by TA-Lib. <parameter> and parameter
+  count depends on <function>. For a list of all TA-Lib functions see:
+  http://ta-lib.org/function.html
+  Forthermore shows ManagerFs indicator page all details and provide handy
+  buttons to use them. If something is cloudy with the TA-Lib descriptions
+  showing at ManagerF, don't ask me! All these infos are read out of the
+  library. So consult the TA-Lib documentation.
+
+    fooSma200 = TALIB(SMA, foo, TimePeriod=200)
+
+WATCHDOGS(<view name>[, <view name>...])
+  Call the watch dogs assigned to the current FI and the listet views. Watch
+  Dogs are special marked CO lines. If the reference variable listed in the CO
+  cross the CO line in any direction comes the result TRUE.
+  NOTE: Only one watchdog call is supported per indicator.
+
+    burglar = WATCHDOGS(Main)

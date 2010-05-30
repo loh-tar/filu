@@ -1,0 +1,256 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+Import files are plain text files containing lines with Tags and Data. A Data
+line has a comma separated format using the semicolon as separator. Quotes ' and
+double quotes " are ignored, so doesn't matter if the data are capsulated or not
+in quotes. Lines beginning with an asterisk * are complete ignored.
+
+There are two kind of Tags where both looking the same, assignment Tags and
+controlling Tags. Tags are capsulated in square brackets [].
+
+Assignment Tags declare a variable, a Key, which will filled with data, whereas
+a controling Tag force an action, declare a list of variabes or capsulate a
+special data block.
+
+NOTE: Exporter.cpp generate such an import file, see doc/export-data.txt, and
+      doc/Master-of-imp-files.ods could used to got one.
+
+
+Controlling Tags
+==================
+[CompList]<MotherSymbol>
+  Set the Key "Mother" to <MotherSymbol>, you can you call it "index symbol".
+  All SymbolKeys listed in the following represent the full set of underlyings
+  to this  FI. Not listed FIs will remove from the underlying list.
+
+[CompListEnd]
+  Terminates the [CompList]
+
+[Data] FIXME: not implemented, not shure if usefull
+  It mußt be placed directly before the data follows.
+
+[Header]<foo>;<bar>...
+  Comma separated files have typicaly a header, here we have headers too. It
+  declare a list of variables, the Header Keys, separated by a semicolon. The
+  following data are ordered in the same wise as the here listed Keys. Depend on
+  which Keys are set will the Importer determine what data are able to store in
+  the database. All previous declared Keys by [Header] are deleted, but *only*
+  these! Other Keys stay valid.
+
+[Ignore]foo=bar FIXME: not implemented
+  Will ignore all data where key 'foo' has value 'bar'
+
+[Include] FIXME: not implemented
+  Includes an other import file at this point.
+
+[Skip] FIXME: not implemented
+  Follow data will ignored until [Piks] is read
+
+[Piks] FIXME: not implemented
+
+[Reset]
+  Clears all declared Keys and controling Tags. After this Tag the Importer
+  behaves like reading the very first line of the import file.
+
+[Stop]
+  Terminate the import at this point
+
+
+Assignment Tags
+=================
+[<Foo>]bar
+  This declares the variable (aka Key) "Foo" and set the value to "bar". This
+  mean nothing else as that you can assign each data normally listed in columns
+  with a Tag. This is useful when the same value appears in each data row.
+
+
+Known Header Keys
+===================
+As mentioned above determine the Importer by the set of Keys which data can be
+stored to the database. In the following you will find what keys has to be set
+to got an data insert/update.
+
+Keys which are optional and not a must have are market behind its name with
+"(optional)".
+
+Keys which are a must have but could substituted by an other Key are marked
+with "(either or...)".
+
+<SymbolKey> is a must have but could be Symbol, RefSymbol or <KnownSymbolType>.
+
+<KnownSymbolType> depend on your database entrys. Typically known types are
+Reuters and Yahoo.
+
+
+Markets
+=========
+Market
+  The (short) name of the market. We have no long names in Filu for markets.
+
+OpenTime (optional) FIXME: not implemented
+CloseTime (optional) FIXME: not implemented
+Currency
+  The name of the currency FI, e.g. "US Dollar"
+
+CurrencySymbol
+  Must be a Reuters symbol, or rather is as such interpreted.
+
+
+Symbol Types / Provider
+=========================
+SymbolType
+  The name of the new symbol type, e.g. "Yahoo", "Reuters"
+
+SEQ
+  The sequence, how lovely the symbol type is.
+
+IsProvider
+  "1"/"0" or "true"/"false"
+
+
+FI Master Data
+================
+Name
+  The FI name, e.g "Apple Computer"
+
+Type
+  The FI type, e.g "Stock", "Curency", "Index"
+
+DDate (optional) FIXME: not implemented
+  Delete date, of the FI
+
+Provider
+Symbol
+Market
+  These three keys are bind together to build the symbol dataset. Internally
+  will the key append with 0 (Provider0, Symbol0, Market0). So if you have more
+  than one symbols in a row, you have to append them with a number 1..n
+  (Provider1, Symbol1, Market1, Provider2, ...) to be sure that the assignments
+  are all correct. If you think its clear enough listed and you trust Importer
+  then will he do the numbering for you.
+  NOTE: "Provider" is not as exactly named. It must not be a real data
+  provider usable with "agentf this ..." command. A more fitting name would
+  be "SymbolType". In such a case set "Market" to "NoMarket" but it should
+  make more sense to use <KnownSymbolType>, see below.
+  Therefore are these three Keys qualifies as (either or <KnownSymbolType>)
+
+RefSymbol (optional)
+  Symbols listed here will only used for identify the FI. They will not
+  installed if you list more than one "RefSymbol" and some of them are not
+  found in the DB.
+
+<KnownSymbolType> (either or Provider/Symbol/Market)
+  Furthermore, any provider symbol type already known by Filu could listed in
+  the Header. If it is *not* a provider symbol will it installed, otherwise
+  only used as RefSymbol.
+
+
+Symbols
+=========
+Adding more symbols to existing FIs
+
+<SymbolKey>
+Provider
+Symbol
+Market
+
+IDate (optional) FIXME: not implemented
+  Issue date, of the symbol
+
+MDate (optional) FIXME: not implemented
+ Maritury date, of the symbol
+
+
+Underlying
+============
+Mother
+  Similar to [CompList], but no total summary update, simply added. So use it
+  with care.
+
+<SymbolKey>
+
+Weight
+
+
+Split Data
+============
+Quality (optional)
+  see doc/hacking-provider-scripts.txt
+
+<SymbolKey>
+SplitDate
+  The data format like: "yyyy-mm-dd"
+
+SplitPre:Post (either or SplitPost:Pre or SplitRatio)
+  Format must like: "1:2", it's a normal split 2-for-1
+
+SplitPost:Pre (either or SplitPre:Post or SplitRatio)
+  Format must like: "2:1", it's a reverse split 1-for-2
+
+SplitRatio (either or SplitPre:Post or SplitPost:Pre)
+  Format is a number, e.g. "0.5"
+
+SplitComment (optional)
+
+EODBar Data
+=============
+Market
+<SymbolKey>
+Date
+Open (optional)
+High (optional)
+Low (optional)
+Close
+VolumeVolume (optional)
+OpenInterest (optional)
+Quality (optional)
+  see doc/hacking-provider-scripts.txt
+
+
+Groups, And Content Of Groups At Performerf
+============================================
+Creating a group, if not already exist,  in the navi panel of performerf and add
+a FI to that group.
+
+RefSymbol
+GroupPath
+  Format looks like: /ScanResults/WatchDog
+
+
+Chart Object Data
+===================
+To create an import file by hand for chart objects are almost impossible. So
+these infos here are only for completeness.
+
+RefSymbol
+Market
+CODate
+Plot
+  The VIEWNAME(), see doc/indicator-file-format.txt
+
+Type
+ArgV (optional)
+  The variable argument list
+
+Here a full data set as example:
+
+AAPL;NYSE;2010-01-19;Main;Line;ExtendLeft=true/nAnchorValue=199.011771653543/nWatchDog=true/nHorizontal=true/nLeftValue=199.011771653543/nLeftDate=2009-12-28/nColor=#ffffff/nRightDate=2010-02-09/nRightValue=199.011771653543/nWatchRef=CLOSE/nExtendRight=true
+
+
+Example 1
+===========
+Take a look at doc/example-apple.imp
+
+Example 2
+===========
+Add a symbol to an existing FI interactiv in a console.
+
+  lot@N110:~/FiluSource$ agentf imp
+  [Header]RefSymbol;ISIN
+  AAPL;US0378331005
+
+  Importer::prepare: import symbols...
+  agentf: Done
+
+Ctrl-D was pressed to finish. This is not as comfortable but a possibility.

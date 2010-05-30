@@ -1,0 +1,6 @@
+* AddToGroup: Examples
+* AddToGroup: Indicators
+
+ccp = FILU(CCP, FI())
+
+PLOT(HISTOGRAMBAR, ccp)

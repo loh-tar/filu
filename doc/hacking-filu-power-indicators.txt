@@ -1,0 +1,153 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+If you are *not* intended to write new indicators powered by Filu than can you
+skip this file. But if you have an idea for a new Filu Power Indicator and you
+want implement that, then find you here the needed information how you can do
+this.
+
+Filu Power Indicators are Postgres SQL functions located in database/indicators
+and begin with "fpi_". Once you have create such a file you could run in your
+database directory:
+
+  ./configure -UDST
+  sudo make install
+
+This replaced some stuff but does not delete any of your data, or should be. If
+you use other than the default database settingss then you have to be care of
+that by setting one of (or all) -d foo1 -u foo2 -s foo3.
+
+The concept how FPI are be implemented is orientated on TA-Lib but is not as
+well thought out. So if you think something should done differed, let me know.
+
+Most of the information about the indicator is written as remarks above the
+BEGIN statement. And there begin also the problems...Postgres supports not only
+PL/pgSQL functions. So if you want to write a function in any other language
+Postgres supports we have to see how we can solve this, if possible. One thought
+was to place all descriptions in an extra table but this makes extra overhead
+to maintain the indicators. Now we have only one file, more exactly one logical
+unit, where all information is placed. Only one file could of cause handle both,
+insert info to an extra table and the function itself.
+
+Enough the many words, lets make facts.
+
+
+Naming Conventions And Restrictions
+=====================================
+The function output names should not be any of the reserved names listed in
+doc/indicator-file-format.txt.
+
+Variable names used intern by the function should begin with m followed by an
+uppercase letter and should not contain underscores.
+
+Use $$ quoting for larger strings and not single quotes '. Use $BODY$ to quote
+the entire function.
+
+
+Function Name
+===============
+Must begin with "fpi_" followed by the name which we have later to use as
+parameter in our normal indicator function FILU(...).
+
+
+Function Input Parameter
+==========================
+Each function should always take fiId, marketId, fdate and tdate. But this is
+not a must. But if you need one of these parameter it *must* have exact this
+name. These group of four parameters is called "FiRef". The name does not change
+anyway if you use all or only one parameter, its always FiRef. The both IDs are
+BIGINTs and the both dates...DATEs as type.
+If you need more parameter, add them in any order and name as you like.
+
+
+Function Return Values
+========================
+Each function *must* return at least three columns in defined order:
+date, time and data. Date in DATE format, time in TIME format and data as FLOAT.
+The name of the columns are not used. Everything is accessed by its position.
+The time column is currently not used but maybe in the future. So fill these
+with "23:59:59" if you don't use it.
+Any data you want to return has to be FLOAT, anyway if you calculate int or
+bool results. Return as much data columns as you like after the above noted data
+column. In database/misc/data_types.sql find you some handy return types you can
+use.
+
+
+Function Error Codes
+======================
+When you detect a problem while processing, return *one* row of data with the
+date "1000-01-01" as marker and the error number in the first data column. The
+error code must be a integer like value greater than null.
+
+
+Indicator Description
+=======================
+As noticed are the description done by remarks above the BEGIN statement. The
+remark *must* begin with -- followed by a tag name, the attribute, and a colon.
+After the colon follow the value(s) the attribute has.
+
+  --LongName:Component Counter Percentage
+  --Output1:ccp,HistogramBar,The Beef
+
+The leading -- is in the following omitted for convenience.
+
+
+Needed Attributes
+===================
+When in the following the attribute is followed by a digit mean this that these
+attribute could appear as many times as needed with a fitting number. But there
+must not gabs in the numbering and the first number has to be "1". Anyway it is
+not a must that attributes which appears more than one time has to be numbered.
+
+Input1:<parmName>[, <description>]
+  <parmName> must fit with the name of the function input variable. The only
+  exception is the name "FiRef". In that case is the <description> ignored. In
+  any other case is the <description> not a must but desirable.
+  NOTE: The order of listed variables doesn't have to fit with the order used
+  in the real function implementation, but define the order how we have to use
+  the function later by FILU(...).
+  NOTE2: Currently is only one FiRef supported. If you think that's a big lack
+  then we have to see how we can fix this. I thought there is no need for that.
+
+OptInput:<parmName>, <default>[, <description>] FIXME: Not implemented
+  This describes an optional input value. The function can also be called
+  without them. In that case the function will *use* the default value. Its your
+  job to detect if the parameter was set or not.
+
+Output1:<name>[, <best-plot-suggestion>[, <description>]]
+  <name> is the name of the first data row. Date and time are not counting. The
+  name is free to choose but should not contain underscores _ .
+  <best-plot-suggestion> has to fit one of the available plot type described in
+  doc/indicator-file-format.txt with the exception that you should wrote the
+  type name in CamelCase.
+
+    --Output1:ccp, HistogramBar, The Beef
+
+BarsNeeded:<formula> FIXME: Not used, unsure if needed
+  A fix value or a formula with input parameter names. This is a hint how many
+  bars must be at least loaded to got a result. In most cases is this only 1.
+
+Error1:<message>
+  The error message correspond to the error code.
+
+
+Optional Attributes
+=====================
+These are not needed to work properly but handy when we have a picker at
+ManagerFs indicator editor as for TA-Lib functions.
+
+Author:<name>
+  Your name/nick of cause, or your email address.
+
+LongName:<name>
+  The full name of the new function.
+
+Group:<name>
+  A short classification.
+
+Desc:<text>
+  The full description of the indicator. The text may as long as you like. And
+  because only one tag is not as handy for a long text you can add as many
+  Desc-Tags as needed. The text will concatenated. But because a long text
+  without any paragraph reads not as best you can include <b> as line break
+  marker.

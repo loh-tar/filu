@@ -1,0 +1,140 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+Priority
+==========
+The priority of things todo are quite arbitrary chosen and may not guaranty
+that things are done in this order not even that they ever be done.
+
+H: high
+M: medium
+L: low
+
+
+All Parts
+===========
+H: add dbus support to the progs. Send messages whats going on and react on such
+   message, e.g. agentf."FI updated" -> performerf "ah, reload chart"
+M: review code and use for error messages/handling from FClass addErrorText(),
+   errorText() and check4FiluError()
+L: replace all text what the user could read with tr(...) so that localised
+   versions are possible
+L: create and use fancy Icons in the user interfaces. But do it conform with
+   rules from freedesktop.org, see:
+   http://standards.freedesktop.org/icon-theme-spec/latest/ar01s05.html
+
+
+Filu/Database
+===============
+H: add a divident table and adjust the eodBar data on the fly as is done with
+   splits
+H: add "quality" row to any other table, like split and eodbar has
+H: consult an expert to decide if its really better to switch from trigger
+   functions to avoid duplicate entries to insert functions. last have the
+   advantage to return an entry ID and avoid waste of sequence numbers...yes, of
+   cause, its not really a problem but ugly anyway
+M: change market_insert function, return an ID/Error and take market_id. Maybe
+   is a 2nd function appropriate
+M: write new GetSymbols.sql, now is too complicate an delivers not ever what
+   expected.
+M: add automatic new added FIs to the users FI group "New FIs". But that need a
+   merge of filu and FiluU.
+L: figure out optimum postgres parameters.
+L: list all markets a specific provider provides (?)
+L: change in the creation *.sqls all function variables from absolute type
+   declaration to <schema>.<table>.<field>%TYPE
+
+
+AgentF
+========
+M: use the existing printError() function for error messages. Check in the
+   function if filu had trouble and print the message too or not.
+M: print more precise info when something goes wrong.
+
+
+PerformerF
+============
+H: add possibility to change, add and remove the used indicator set
+M: add spin boxes to set the to be loaded date range
+M: add buttons to change the density quickly
+M: improve drag&drop. when drop an index to the group list of the navi, create
+   a group and insert all underlyings (hm, maybe it's the best *not* to insert
+   the underlyings but include them on the fly when group is selected)
+
+
+ManagerF
+==========
+M: make data at FI page editable.
+M: add a split browse table to FI page, editable of course.
+M: add the possibility to define action(scripts) which will executed after an
+   event. e.g. a new FI was added: download quotes. Or search for more info
+   about the FI on the inet like full name, more symbols etc...
+L: redesign Managerf.cpp from QDialog to QApplicaton
+L: add syntax highlightning to indicator editor
+L: add picker menu for available functions/commands like for TA-LIB. This means
+   PLOTFOO, SETFOO, CROSS etc. and, more important, also FiluPower-Indicators
+   usable with CalcFilu. But that needs concept work...
+
+
+DiggerF
+=========
+H: change switches from - to --
+H: add --timeFrame foo, foo= day,week, month or n for any count of days. Then
+   expand the signal from SCAN4 so that is no need to hardcode in the indicator.
+   No idea how complicate that will be.
+
+
+Libf
+======
+H: One ugly pitfall is a dependency between calc and graphics and vice versa,
+   witch cause a build error. Solved with the "all in one" library. May be a
+   library design bug or only a make file problem. COType::strToAttributes()
+   is the bad guy
+H: merge Filu.cpp and FiluU.cpp to Filu.cpp
+M: new class CmdOptions, see FTool.h
+M: redesign FiGroupWidget signals/slots. use QModelIndex for slots and
+   QHash<QString, QString> for signals. (hmm...)
+M: clean up Filu.cpp. redesign, remove almost all setXXX() functions. Of course
+   needs then the progs to fit the new lib. (unsure if a good idea)
+L: short selling in Trader.cpp.
+L: LaunchPad.cpp, add a small GUI to add/edit/remove buttons. Add tool tip and
+   icons. Make icon/text optional showing. Make buttons turns 90° when tool bar
+   is placed left or right, as option of course.
+
+
+Indicator
+===========
+M: change the parsing, split it just after the reading from file into parts
+   with the algorithm used at function parsing. Include the original line number
+   of the indicator file as first parameter given to CalcFoo to improve error
+   messages.
+M  change SETFOO as noted in indivator-file-format.txt
+M: auto detect math expressions, that is no need to write every time "MUP"
+M: change PLOT(CANDLE,FI()) to PLOT(CANDLE) (auto detect FI())
+M: fix LOADFI(...)
+L: REF(...) fix to the possibility with forecasts.
+
+
+IndicatorPicker
+=================
+H: possibility to reload all indicators
+M: auto-detect if an indicator was edited, reload then (emit signal to..)
+
+
+COType/COLine
+===============
+H: setting the anchor value in the edit window don't work properly
+
+
+Exporter
+==========
+H: When export, don't print NoMarket at -markets, market_insert.sql expect
+   Reuters as symbol
+
+
+Importer
+==========
+H: add [Include]
+M: add [Skip], follow data will ignored until [UnSkip] or [Piks] ?
+M: add [Ignore]foo=bar, will ignore all data where key 'foo' has value 'bar'
+

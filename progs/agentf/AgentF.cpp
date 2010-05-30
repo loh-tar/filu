@@ -1,0 +1,640 @@
+//
+//   This file is part of Filu.
+//
+//   Copyright (C) 2007, 2010  loh.tar@googlemail.com
+//
+//   Filu is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   Filu is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with Filu. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "AgentF.h"
+
+#include "Script.h"
+#include "Importer.h"
+#include "Exporter.h"
+
+AgentF::AgentF(QCoreApplication* app)
+      : FObject ("agentf", app)
+      , mConsole(stdout)
+      , mErrConsole(stderr)
+{
+  mScript       = 0;
+  mImporter     = 0;
+  mExporter     = 0;
+  mIamEvil      = false;
+  mQuit         = true;
+
+  readSettings();
+
+  QStringList parm = app->arguments();
+
+  execCmd(parm);
+
+  QTimer::singleShot(500, this, SLOT(run()));
+}
+
+AgentF::~AgentF()
+{
+  if(mImporter) delete mImporter;
+  if(mExporter) delete mExporter;
+}
+
+void AgentF::run()
+{
+  if(mQuit)
+  {
+    quit();
+    return;
+  }
+}
+
+void AgentF::quit()
+{
+  mConsole << "agentf: Done\n";
+  QCoreApplication::exit(0);
+}
+
+void AgentF::check4FiluError(const QString message)
+{
+  if(mFilu->hadTrouble())
+  {
+    printError(message);
+    printError(mFilu->errorText());
+  }
+}
+
+void AgentF::printError(const QString message)
+{
+  QStringList errLines = message.split("\n");
+  for(int i = 0; i < errLines.size(); ++i)
+    mErrConsole << "agentf: " << errLines.at(i) << endl;
+}
+
+void AgentF::readSettings()
+{
+  mMaxClones   = mRcFile->getIT("MaxClones");
+  mLogFile     = mRcFile->getST("LogFile");
+
+  QString home = QDir::homePath();
+
+  mLogFile.replace("~", home);
+
+  if(mRcFile->getIT("DebugLevel")) printSettings();
+}
+
+bool AgentF::dateIsNotValid(QString& date)
+{
+  if(date == "auto") return false;  // we accept "auto" as valid
+  if(QDate::fromString(date, Qt::ISODate).isValid()) return false;
+
+  printError("Wrong date: " + date);
+  return true;
+}
+
+QStringList* AgentF::fetchBarsFromProvider(const QString& provider,
+                                   const QStringList& parameters)
+{
+  // Call a script which download bar data from a provider.
+  // Returns the data as it is delivered by the script as QStringList.
+  // Each line in the list mußt have the format:
+  // "Date, Open, High, Low, Close, Volume, OpenInterest, Quality"
+
+  if(!mScript) mScript = new Script(this);
+
+  QStringList* data = mScript->askProvider(provider, "fetchBar", parameters);
+
+  return data;
+}
+
+void AgentF::addEODBarData(const QStringList& parm)
+{
+  //
+  // this function update the bars of one defined FI.
+  // parm list looks like:
+  // <caller> -this <symbol> <market> <provider> [<fromDate> [<toDate>]]
+
+  //qDebug() << "AgentF::addEODBarData()" << parm;
+  //return;
+
+  QString fromDate("auto");
+  QString toDate("auto");
+  if(parm.count() > 5) fromDate = parm[5];
+  if(dateIsNotValid(fromDate)) return;
+
+  if(parm.count() > 6) toDate = parm[6];
+  if(dateIsNotValid(toDate)) return;
+
+  // because the IDs are don't set, we have to set they now
+  // parm[2]=<symbol>, parm[3]=<market>, parm[4]=<provider>
+  if(!mFilu->searchSymbol(parm[2], parm[3], parm[4]))
+  {
+    printError(QString("Symbol not found: %1, %2, %3").arg(parm[2]).arg(parm[3]).arg(parm[4]));
+    return;
+  }
+
+  DateRange dateRange;
+
+  // build the parameter list needed by the script
+  QStringList parameters;
+  if(fromDate == "auto")
+  {
+    mFilu->getEODBarDateRange(dateRange, Filu::eBronze);
+    // FIXME: To find out if anything is todo we have to check more smarter.
+    //        We have to use the 'offday' table, but its not implemented yet.
+    QDate date = dateRange.value("last").addDays(1);
+    if(date.dayOfWeek() == Qt::Saturday) date.addDays(2);
+    if(date.dayOfWeek() == Qt::Sunday) date.addDays(1);
+
+    if(date > QDate::currentDate())
+    {
+      printError("Nothing todo, last bar is up to date: " + date.toString(Qt::ISODate));
+      return;
+    }
+
+    parameters.append(date.toString(Qt::ISODate));
+  }
+  else
+  {
+    // 26.2.'10 mFilu->getEODBarDateRange(dateRange, Filu::Approved);
+    mFilu->getEODBarDateRange(dateRange, Filu::eBronze);
+    // avoid 'holes' in the data table
+    QDate date = QDate::fromString(fromDate, Qt::ISODate);
+    if(date > dateRange.value("last")) date = dateRange.value("last").addDays(1);
+    parameters.append(date.toString(Qt::ISODate));
+  }
+
+  if(toDate == "auto")
+  {
+    parameters.append(QDate::currentDate().toString(Qt::ISODate));
+  }
+  else
+  {
+    // once more, avoid 'holes' in the data table
+    QDate date = QDate::fromString(toDate, Qt::ISODate);
+    if(date < dateRange.value("first")) date = dateRange.value("first").addDays(-1);
+    parameters.append(date.toString(Qt::ISODate));
+  }
+
+  parameters.append(parm[2]);// parm[2]=<symbol>
+  parameters.append(parm[3]);// parm[3]=<market>
+
+  //qDebug() << parameters;
+  // parameters should now looks like "<fromDate> <toDate> <symbol> <market>"
+  // puh...we can call the script
+  QStringList* data = fetchBarsFromProvider(parm[4], parameters); // parm[4]=<provider>
+
+  if(!data)
+  {
+    printError("No data from script");
+    return;
+  }
+
+  mFilu->addEODBarData(data);
+
+  delete data; // no longer needed
+}
+
+void AgentF::updateAllBars(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf full [<fromDate>] [<toDate>]
+
+  QString fromDate("auto");
+  if(parm.count() > 2) fromDate = parm[2];
+  if(dateIsNotValid(fromDate)) return;
+
+  QString toDate(QDate::currentDate().toString(Qt::ISODate));
+  if(parm.count() > 3) toDate = parm[3];
+  if(dateIsNotValid(toDate)) return;
+
+  // get all available provider symbols
+  mFilu->setMarketName("");
+  mFilu->setSymbolCaption("");
+  mFilu->setProviderName("");
+  mFilu->setFiId(0);
+  mFilu->setFiType("");
+  mFilu->setOnlyProviderSymbols(true);
+  SymbolTuple* symbols = mFilu->getSymbols();
+  if(!symbols)
+  {
+    printError("No provider symbols found");
+    QCoreApplication::exit(1);
+    return;
+  }
+
+  // build the parameter list needed by addEODBarData()
+  // <caller> -this <symbol> <market> <provider> [<fromDate> [<toDate>]]
+  QStringList parameters;
+  // no parameters.append("<caller>"); done later by beEvil()
+  parameters.append("this");
+  parameters.append(""); // placeholders, will fill below
+  parameters.append("");
+  parameters.append("");
+  parameters.append(fromDate);
+  parameters.append(toDate);
+
+  printError("Processing...");
+
+  while (symbols->next())
+  {
+    parameters[1] = symbols->caption();
+    parameters[2] = symbols->market();
+    parameters[3] = symbols->owner();
+
+    // save the now completed parameter list needed by addEODBarData()
+    mCommands.append(parameters);
+  }
+
+  startClones();
+  mQuit = false; // don't quit after all, enter main event loop
+}
+
+void AgentF::addFi(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf addFi <longName> <fiType> <symbol> <market> <symbolType> [<symbol> <market> <symbolType> ...]
+
+  if(((parm.count() - 4) % 3 > 0) or parm.count() < 7)
+  {
+    printError("addFi: Wrong parameter count");
+    return;
+  }
+
+  int symbolCount = (parm.count() - 4) / 3;
+
+  FiTuple fi(1);
+  SymbolTuple* symbol = new SymbolTuple(symbolCount);
+
+  fi.next(); // set on first position
+
+  fi.setSymbol(symbol);
+  fi.setName(parm[2]);
+  fi.setType(parm[3]);
+
+
+  int i = 4;
+  while(symbol->next())
+  {
+    symbol->setCaption(parm[i]);    // 4, 7, 10...
+    symbol->setMarket(parm[i + 1]); // 5, 8, 11...
+    symbol->setOwner(parm[i + 2]);  // 6, 9, 12...
+    i += 3;
+  }
+
+  // here is the beef
+  mFilu->addFiCareful(fi);
+
+  check4FiluError("FAIL! FI not added.");
+
+}
+
+bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
+{
+  if(line.startsWith("*")) return false; // ignore remarks
+  if(line.isEmpty()) return false;
+
+  cmd = line.split(" ", QString::SkipEmptyParts);
+
+  // concat splitted parts if there was quotation marks
+  int size = cmd.size();
+  for(int i = 0; i < size; ++i)
+  {
+    if(cmd.at(i).startsWith('"'))
+    {
+      QString help = cmd.at(i);
+      for(int j = i; j < size; )
+      {
+        help.append(" " + cmd.at(j));
+        cmd.removeAt(j);
+        --size;
+        if(help.endsWith('"')) break;
+      }
+      help.remove('"');
+      cmd[i] = help;
+    }
+  }
+
+  return true;
+}
+
+void AgentF::readCommandFile(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf rcf mycommands.txt
+
+  if(parm.count() != 3)
+  {
+    printError("rcf: Wrong parameter count");
+    return;
+  }
+
+  QFile file(parm[2]);
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    printError("rcf: Can't open file: " + parm[2]);
+    return;
+  }
+
+  // read the commands from file
+  QTextStream in(&file);
+  while (!in.atEnd())
+  {
+    QString line = in.readLine();
+    QStringList cmd;
+
+    if(!lineToCommand(line, cmd)) continue;
+
+    cmd.prepend("RCF"); // add the "caller", normaly is here "agentf" placed
+    execCmd(cmd);
+  }
+
+  file.close();
+}
+
+void AgentF::beEvil(const QStringList &/*parm*/) //FIXME: improvemts possible to use parm?
+{
+  if(mIamEvil) return; // don't do stupid things
+
+  mIamEvil = true;
+
+  QTextStream in(stdin);
+  while (!in.atEnd())
+  {
+    mConsole << "[READY] (Ctrl+D or \"quit\" for quit)\n";
+    mConsole.flush();
+    QString line = in.readLine();
+    QStringList cmd;
+    if(!lineToCommand(line, cmd)) continue;
+    if(cmd.at(0) == "quit") break;
+
+    cmd.prepend("DAEMON"); // add the "caller", normaly is here "agentf" placed
+    execCmd(cmd);
+  }
+
+  mQuit = true;
+}
+
+void AgentF::import(const QStringList& parm)
+{
+  QTextStream* in;
+  QFile* file = 0;
+
+  if(parm.count() > 2)
+  {
+    file = new QFile(parm[2]);
+    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+      printError("imp: Can't open file:" + parm[2]);
+      return;
+    }
+
+    in = new QTextStream(file);
+  }
+  else
+  {
+    in = new QTextStream(stdin);
+  }
+
+  if(!mImporter) mImporter = new Importer(this);
+
+  while (!in->atEnd())
+  {
+    QString line = in->readLine();
+    if(!mImporter->import(line)) break;
+  }
+
+  if(file)
+  {
+    file->close();
+    delete file;
+  }
+
+  delete in;
+}
+
+void AgentF::exxport(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf exp -useGroup favorites -fiNames -symbols -eodRaw -split
+
+  // remove "agentf" and "exp"
+  QStringList parm2(parm);
+  parm2.removeAt(0);
+  parm2.removeAt(0);
+
+  if(!mExporter) mExporter = new Exporter(this);
+
+  mExporter->exxport(parm2);
+}
+
+void AgentF::addSplit(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf addSplit AAPL 2005-02-28 1:2
+  // agentf addSplit AAPL 2005-02-28 1:2 1
+
+  // remove "agentf" and "addSplit"
+  QStringList parm2(parm);
+  parm2.removeAt(0);
+  parm2.removeAt(0);
+
+  QString header = "[Header]RefSymbol;SplitDate;SplitPre:Post";
+
+  if(parm2.size() == 4)
+  {
+    header.append(";Quality");
+  }
+
+  QString data = parm2.join(";");
+
+  if(!mImporter) mImporter = new Importer(this);
+
+  if(!mImporter->import(header)) return;
+  if(!mImporter->import(data)) return;
+
+}
+
+void AgentF::execCmd(const QStringList& parm)
+{
+  if(parm.size() == 1)
+  {
+    printUsage();
+    return;
+  }
+
+  const QString cmd(parm.at(1));
+
+  // look for each known command and call the related function
+  if(cmd == "this")          addEODBarData(parm);
+  else if(cmd == "full")     updateAllBars(parm);
+  else if(cmd == "addFi")    addFi(parm);
+  else if(cmd == "rcf")      readCommandFile(parm);
+  else if(cmd == "imp")      import(parm);
+  else if(cmd == "exp")      exxport(parm);
+  else if(cmd == "addSplit") addSplit(parm);
+  else if(cmd == "daemon")   beEvil(parm);
+  else if(cmd == "printSettings")
+  {
+    if(mRcFile->getIT("DebugLevel")) return; // already printed, don't print twice
+    else printSettings();
+  }
+  else
+  {
+    printError("Unknown command: " + cmd);
+    printError("Call me without any command for help.");
+  }
+}
+
+void AgentF::printUsage()
+{
+  qDebug() << "agentf: Hello! I'm part of Filu. Please call me this way:";
+  qDebug();
+  qDebug() << "  agentf <command> [<parameter list>]";
+  qDebug();
+  qDebug() << "  agentf this <symbol> <market> <provider> [<fromDate> [<toDate>]]";
+  qDebug() << "    agentf this AAPL NYSE Yahoo";
+  qDebug() << "    agentf this AAPL NYSE Yahoo 2007-04-01";
+  qDebug();
+  qDebug() << "  agentf full [<fromDate>] [<toDate>]";
+  qDebug() << "    agentf full 2001-01-01";
+  qDebug();
+  qDebug() << "  agentf addFi <longName> <fiType> <symbol> <market> <symbolType>[<symbol> <market> <symbolType> ...]";
+  qDebug() << "    agentf addFi \"Apple Computer\" Stock AAPL NYSE Yahoo ";
+  qDebug();
+  qDebug() << "  agentf rcf <fileName>";
+  qDebug() << "  agentf imp [<fileName>] (if no fileName is given then will read from stdin)";
+  qDebug() << "  agentf exp <parameter list> (see doc/export-data.txt)";
+  qDebug() << "  agentf addSplit <symbol> <date> <splitPre:Post>";
+  qDebug() << "    agentf addSplit AAPL 2005-02-28 1:2";
+  qDebug();
+  qDebug() << "  agentf daemon";
+  qDebug() << "  agentf printSettings";
+  qDebug();
+}
+
+void AgentF::printSettings()
+{
+  mConsole << "AgentF::printSettings: ..."  << endl;
+  mConsole << "Settings file\t= "       << mRcFile->fileName() << endl;
+  mConsole << "Fallback file\t= /etc/xdg/Filu.conf" << endl; //FIXME: how to make system independent?
+  mConsole << "ProviderPath\t= "        << mRcFile->getST("ProviderPath") << endl;
+  mConsole << "MaxClones\t= "           << mMaxClones /*mRcFile->getIT("MaxClones")*/ << endl;
+  mConsole << "DebugLevel\t= "          << mRcFile->getIT("DebugLevel") << endl;
+  mConsole << "LogFile  \t= "           << mLogFile /*mRcFile->getST("LogFile")*/ << endl;
+
+  mFilu->printSettings();
+}
+
+void AgentF::startClones()
+{
+  if(mCommands.size() < mMaxClones)
+  {
+    // don't create more clones as useful
+    mMaxClones = mCommands.size();
+  }
+
+  for(int i = 0; i < mMaxClones; ++i)
+  {
+    QProcess* clone = new QProcess;
+    clone->setReadChannel(QProcess::StandardOutput);
+    clone->setStandardErrorFile(mLogFile, QIODevice::Append);
+    //clone->setProcessChannelMode(QProcess::MergedChannels);
+    connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
+    connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
+    clone->start("agentf daemon");
+    if(!clone->waitForStarted())
+    {
+      printError("startClones: Error! Clone not started");
+      clone->kill();
+      delete clone;
+      QCoreApplication::exit(1);
+      return;
+    }
+
+    mClones.append(clone);
+    printError(QString("Clone %1 started").arg(i + 1));
+    //qDebug() << QCoreApplication::hasPendingEvents (); always true, I give up :-(
+    //QCoreApplication::flush();// do not take effect
+    //QCoreApplication::sendPostedEvents();// do not take effect
+    //QCoreApplication::processEvents(); // do not take effect
+    //cloneIsReady(); // do not work
+  }
+}
+
+void AgentF::cloneIsReady() // it's a SLOT
+{
+  // search the clone waiting for a job
+  QProcess* clone = 0;
+  int cloneNumber = 0;
+  for(; cloneNumber < mClones.size(); ++cloneNumber)
+  {
+    if(mClones.at(cloneNumber)->bytesAvailable() == 0) continue;
+
+    clone = mClones.at(cloneNumber);
+    break;
+  }
+
+  if(!clone)
+  {
+      printError("cloneIsReady: Curious, no clone found");
+      return; // no more todo
+  }
+
+  QString text(clone->readAllStandardOutput());
+  //qDebug() << "AgentF::cloneIsReady: text :" << text;
+
+  if(text.contains("agentf: Done"))
+  {
+    return;
+  }
+
+  if(!text.contains("[READY]")) return;
+
+  QString feedTxt = QString("agentf: Feed clone %1: ").arg(cloneNumber + 1);
+
+  // feed the clone
+  if(mCommands.size() > 0)
+  {
+    QString cmd = mCommands.at(0).join(" ");
+    printError(feedTxt + cmd.toUtf8());
+    cmd.append("\n");
+    clone->write(cmd.toUtf8());
+
+    mCommands.removeAt(0);
+  }
+  else
+  {
+    // clean up and exit
+    printError(feedTxt + "quit");
+    clone->write("quit\n");
+  }
+}
+
+void AgentF::cloneHasFinished() // it's a SLOT
+{
+  // search the/a finished clone
+  for(int i = 0; i < mClones.size(); ++i)
+  {
+    if(mClones.at(i)->state() != QProcess::NotRunning) continue;
+
+    //qDebug() << "AgentF::cloneHasFinished: found" << i;
+    delete mClones.at(i);
+    mClones.removeAt(i);
+    break;
+  }
+
+  if(mClones.size() == 0)
+  {
+    quit();
+  }
+}

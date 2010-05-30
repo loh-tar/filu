@@ -1,0 +1,15 @@
+[General]
+Density=5.13158082962036
+GroupSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x2\0\0\x1h\0\0\0\x9a\x1\0\0\0\x4\x1\0\0\0\x2)
+IndicatorCount=2
+IndicatorSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\0U\0\0\x2<\0\0\0O\x1\0\0\0\x4\x1\0\0\0\x1)
+
+[1]
+Indicator=Main
+ScaleToScreen=10
+ShowXScale=false
+
+[2]
+Indicator=Volume
+ScaleToScreen=10
+ShowXScale=true

@@ -1,0 +1,324 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+The infos included here[1] belongs firstly to all C++ coding parts but should
+analogous used by other source files, like database sql files.
+
+
+The Short Story
+=================
+Two space for tabs, no tab sign. Braces on their own lines, 80 character lines.
+Code should look something like this:
+
+  QString NewClass::doSomething()
+  {
+    QString newThing;
+    int i = 0;
+    bool unique = false;
+
+    while(!unique)
+    {
+      ++i;
+      newId  = idBase.arg(i);
+      unique = true;
+      ExtensionList::iterator itEnd = containers.end();
+
+      for(ExtensionList::iterator it = containers.begin()
+        ; it != itEnd
+        ; ++it)
+      {
+        if((*it)->extensionId() == newId)
+        {
+          unique = false;
+          break;
+        }
+      }
+    }
+
+    return newId;
+  }
+
+
+Full Explanation
+==================
+All new development should follow the coding style as described below. Also feel
+free to clean up exsting code around code you work on. For example, if you
+change a number of lines in a method, reindent the whole method while you are in
+there. Wholescale reformatting of code is desirable but make an extra commit for
+such a task *before* you change something at the code itself.
+
+
+Naming Conventions
+====================
+Class names start with a capital letter, member variables begin with "m", and
+enums begin with "e".
+
+Don't use the underline sign "_", not in variables nor in function names. To
+separate name parts write a upper case letter to keep it more readable.
+
+Methods, functions and variables start with a lower case letter.
+
+Names should be descriptive. If you can't tell what a variable or a method does
+by its name, the name is wrong. Saving a dozen keystrokes today by using cryptic
+variable names will only lead to maintenance headaches tomorrow. Names longer
+than 20 characters is probably going overboard, however. Just use your best
+judgement.
+
+Use 'true' and 'false' not 'TRUE' and 'FALSE'.
+
+
+NULL vs 0
+===========
+The use of 0 to express a null pointer is preferred over the use of NULL. 0 is
+not a magic value, it's the defined value of the null pointer in C++. NULL, on
+the other hand, is a preprocessor directive (#define) and not only is it more
+typing than '0' but I find preprocessor directives less elegant.
+
+  SomeClass* instance = 0;
+
+
+Comments
+==========
+Code should be written with enough clarity that comments are not needed above
+each line. However, if the code does something in a particular way for a
+specific reason that may not be obvious to the next person who has to work on it
+do provide a short comment describing what it does and why.
+
+Excessive commenting should be avoided since if there are too many comments they
+tend to get ignored and won't be maintained, causing the comments and the actual
+code to drift apart. Innacurate comments are worse than accurate comments!
+
+While using the /* style */ of comments is ok, comments should use // wherever
+possible.
+
+Comments can also provide notes for future work:
+
+  // FIXME: this is a todo item or a bug hint and should explain whats wrong
+  // here or could be improved.
+  // It is preferred that they are fixed, but if you don't fix it, at least
+  // document it to save the next person some time in tracking down the
+  // problem.
+
+
+Indenting
+===========
+Tabstop is 2 spaces. No tabs, only spaces.
+
+Try to keep lines under 80 characters in width. When wrapping a single logical
+line of code across multiple lines, new lines should be indented at least once
+and should preferably line up with parentheses, if any, on the line above. e.g.:
+
+  someMethod(parameterOne, parameterTwo
+           , parameterThree, parameterFour);
+
+or
+
+  someMethod( parameterOne, parameterTwo
+            , parameterThree, parameterFour);
+
+If a boolean expression is spread out over several lines, the boolean operator
+is always the first item on the line, e.g.:
+
+  if(    (condition1 || condition2)
+      &&  condition3
+      && (condition4 || condition5) )
+  {
+
+Switch statements should have the case line indented and the case block itself
+further indented, e.g.:
+
+  switch(condition)
+  {
+    case 1:
+      ...
+      break;
+    case 2:
+      ...
+      break;
+    default:
+      ...;
+  }
+
+Line up similar looking and close following commands nicely:
+
+  CalcType *CalcType::createNew(const QString &type)
+  {
+    if(!type.compare("SETCOLOR"))  return new CalcSetColor(mIndicator);
+    if(!type.compare("TALIB"))     return new CalcTALib(mIndicator);
+    if(!type.compare("CROSS"))     return new CalcCross(mIndicator);
+
+
+Spaces
+========
+No spaces appear between keywords/functions/methods and parentheses:
+
+  if(
+  while(
+  for(
+  function(
+  someObject->method(
+
+No spaces appear between opening or closing parentheses and the arguments:
+
+  for(int i = 0; i < count; ++i)
+
+But in case of double parentheses or complicated expressions it is sometimes
+better to break these dogma as done above or here again:
+
+  if( (a < b) and ((a > c) or d) )
+
+Spaces appear between operators, e.g.:
+
+  int i = i + 3;
+  someObject.setValue(someObject.currentValue() + 1)
+
+
+Empty Lines
+=============
+Use empty lines to seperate code parts in nice looking logical units but don't
+include more than one at once.
+
+
+Braces
+========
+...always appear on a line by themself, indented to align with the above
+keyword:
+
+  if(foo)
+  {
+    ...
+  }
+  else
+  {
+    ...
+  }
+
+Use braces even for one-liner conditionals is ok but not needed.
+
+  if(foo)
+  {
+    return 1;
+  }
+
+  if(foo2) return 2;
+
+Always use braces if the conditional or the expression wraps across multiple
+physical lines. When one of if/else has braces, the other must have too.
+
+Braces around case blocks in switch statements are optional.
+
+
+Declaring Variables and Pointers
+==================================
+Declare each variable on his own line and not multiple variables of the same
+type on the same line. Prefer = before () as initialization.
+
+  int x;
+  int y = 3;
+
+When declaring a pointer variable or argument, place the asterisk adjacent to
+the type and not to the variable name.
+
+  SymbolTuple* st;
+
+
+Constructors
+==============
+...are written as...
+
+  MyClass::MyClass(...)
+         : SuperClass(...)
+         , mMember1(...)
+         , mMember2(...)
+         , ...
+  {
+
+As you can see there are the colon and comma are aligned to the first of the
+twin colons followed by a space.
+
+Or if the class is not as complex:
+
+  MyOtherClass::MyOtherClass(...) : SuperClass(...)
+  {
+
+
+Class Definitions
+===================
+...will follow this order:
+
+  class <name> : <scope> <superclass>
+  {
+    <macros[2]>
+    <typedefs>
+
+    public:
+      <ctors>
+      <dtors>
+      <operators>
+
+      <methods>
+
+    public slots:
+      <methods>
+
+    signals:
+      <methods>
+
+    public;
+      <members>
+
+    protected:
+      <ctors>
+      <dtors>
+      <operators>
+
+      <methods>
+
+    protected slots:
+      <methods>
+
+    protected:
+      <members>
+
+    private:
+      <ctors>
+      <dtors>
+      <operators>
+
+      <methods>
+
+    private slots:
+      <methods>
+
+    private:
+      <members>
+  };
+
+
+Error Messages
+================
+Include the class and function name into the error message like this.
+
+  void Trader::readRules()
+  {
+    ...
+    if(!mLine.contains(":"))
+    {
+      addErrorText("Trader::readRules: Missing colon at line: " + QString::number(mLineNumber));
+      continue;
+    }
+    ...
+  }
+
+As you see there are no parentheses after "readRules" but a colon. And the
+FClass function addErrorText() is used as preferred. After the function name.
+
+
+Footnotes
+===========
+[1] The content is almost robbed from KDE-Kicker project, thanks guys :-)
+    But it deviating often from there rules.
+
+[2] Macros include things like Q_OBJECT should only appear in files where they
+    are actually necessary and not just randomly thrown in there for fun.
+

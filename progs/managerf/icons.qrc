@@ -1,0 +1,9 @@
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+    <file>icons/configure.xpm</file>
+    <file>icons/chart.xpm</file>
+    <file>icons/disable.xpm</file>
+    <file>icons/disable_gray.xpm</file>
+    <file>icons/ok.xpm</file>
+ </qresource>
+ </RCC>

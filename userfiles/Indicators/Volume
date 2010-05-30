@@ -1,0 +1,6 @@
+* AddToGroup: Examples
+* AddToGroup: Indicators
+
+winday = MUP(OPEN < CLOSE)
+VOLUME = SETCOLOR(winday, Green, Red)
+PLOT(HISTOGRAMBAR, VOLUME)

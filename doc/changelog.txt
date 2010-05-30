@@ -1,0 +1,318 @@
+2010-05-25
+  doc:        add hacking-filu-power-indicators.txt
+  calc:       add FILU(...)
+
+2010-05-23
+  Filu:       add/change handling of Filu Power Indictors.
+
+2010-05-22
+  database:   review indicator stuff. Change orig Component Counter to return
+              only one row with beef. Returns now percent values, rename to
+              ccp.
+
+2010-05-18
+  Filu:       review what could be removed, change return value of most
+              function from bool to int, add error code enums.
+
+2010-05-17
+  database:   review content and rename something, add new functions.
+  all parts:  change FiMi to Filu, remove unused stuff, update copyright notice.
+
+2010-05-16
+  doc:        review Master-of-imp-files.ods, now with nice auto fillings.
+
+2010-05-12
+  calc:       add PRIMARY(...), change WATCHDOGS(...) and INCLUDE(...).
+
+2010-05-10
+  CalcType:   add some functions which simplified the code of each CalcFoo.cpp
+              a little bit.
+
+2010-05-08
+  FClass:     add hasError(), removeErrorText(), clearErrors().
+  all parts:  use new error handling stuff.
+  Indicator:  on error behavior optimized, also IndicatorPainter.
+
+2010-05-07
+  calc:       remove BOOL and MATH, both is supported by MUP, but much better.
+  Indicator:  add constants for days and month names, add WEEK.
+
+2010-05-06
+  Trader:     some fixes.
+  doc:        review trading-rule-file-format.txt, indicator-file-format.txt,
+              hacking-c++.txt.
+
+2010-05-03
+  AgentF:     change the daemon stuff code, think its now easier to understand.
+              Change the command switches from single - to nothing, it's more
+              common.
+
+2010-04-24
+  Qt bug:     I have fixed this in the Qt git master source and placed a merge
+              request. I'm eager what Nokia will say about this.
+
+2010-04-21
+  Gitorius:   I opened an accound there and be hopefully soon online with Filu.
+
+2010-04-14
+  faq.txt:    added to doc directory.
+
+2010-04-13
+  RcFile:     rename the key FiMiHome to FiluHome and capitalized the subfolders
+              of FiluHome. Change the default home from hidden ~/.Filu to ~/Filu
+  LaunchPad:  the called program could now take [Market], [MarketId], [FiId],
+              [Provider] and of course still [Symbol] (now capitalized) as
+              parameter. The launch pad config file has a new settings entry
+              AllMarkets=true/false and is now located at ~/Filu/LaunchPads/
+              with an .ini suffix. Added doc/launchpad-file-format.txt.
+
+2010-04-11
+  All parts:  as 2010-04-07 homework: redundant RcFile stuff removed and code
+              reviewed to clear up #include in header files. Try always only to
+              use class in the header and place #include in *.cpp.
+  FObject:    renamed to FClass. Add a new FObject inherited by QObject similar
+              to FWidget by QWidget. Both inherited by FClass. I hope this
+              is commonly acceptable and not a design nightmare. FClass has FiMi
+              and RcFile as members and both will only used once in a program to
+              save resources.
+
+2010-04-08
+  RcFile:     changed from good style of coding to use enum as key to bad one
+              with string, just because I'm lazy :-/ The benefit is that it is
+              more ease to use, more flexible. See entry at 2010-04-07.
+  AgentF:     replace QSettings stuff with mRcFile.
+  FiMi:       according to 2010-03-20 to drop the independency, it is
+              consequently to use here also mRcFile.
+
+2010-04-07
+              changed *.pro files. The compiled files will now placed in own
+              directories below FiluSource/tmp to avoid pulluting the source
+              tree.
+  FObject:    Add mRcFile, hope is useful.
+              TODO: remove redundant RcFile stuff in all parts.
+
+2010-04-01
+  common:     Exporter/Importer handle now most of all data. Now we have a
+              backup and restore solution. The speed is not like turbo powered
+              when handle 30.000 eod bars but how cares, it works.
+              TODO: backtest data stuff.
+
+2010-04-01
+  common:     add FObject::check4FiluError(), I hope is useful.
+              TODO: review all project code parts to use it.
+
+2010-03-28
+  FiMi:       add setSqlParm(). Allows a most flexible way to call any new SQL
+              without the need to write a special FiMi function. Works together
+              with execSql() which was introduced with InspectorF.cpp. The harm
+              is of cause that you must know how the sql looks like, the FiMi
+              include file doesn't tell you. And in case of a sql modification
+              you don't know which other program parts may affected.
+
+2010-03-27
+              clean up Filu/database. Remove old stuff from Christian which I
+              never will use. Review the configure script and the *.sql files,
+              but they still needs more attention.
+
+2010-03-20
+              change the project name from FiMi to Filu. Drop the Idea with a
+              universal library without dependencies to the FiMi, sorry, Filu
+              programs. Now are all libraries located in sub directories below
+              Filu/libs and will build only one library libFilu. Therefore the
+              *.pro files was changed, but I'm not quite happy. Needs work.
+
+2010-03-15
+  common:     add Exporter.cpp, the counterpart to Importer.cpp.
+  agentf:     add "-exp" command, witch use the new Exporter class. Details
+              about the command switches are located in doc/export-data.txt.
+
+2010-02-20
+  performerf: added a second group navi. Now we can quit simple copy entries
+              between groups.
+
+2009-09-07
+  calc:       add VIEWNAME(...) and WATCHDOGS(...)
+
+2009-09-05
+  graphics:   add the basis for chart objects. To add a chart object chose one
+              from the menu in performerf and place it somewhere on the chart.
+              Changing and moving are almost as usual apart from that don't hold
+              down the left button while moving. Play around and you will see.
+              Pressing Del removes an selected CO.
+              Available chart objects are right now only "Line".
+
+2009-08-19
+  performerf: add a launch pad to the main tool bar which could start any
+              application with any parameter list. The tag [symbol] in the
+              command line is substituted with a symbol of the current viewing
+              FI. To add/change the default button look into ~/.FiMi/LaunchPad.
+              I think it's self explained.
+
+2009-08-06
+  graphics:   added a data view to IndicatorWidget.cpp. Like the indicator
+              picker at the left is this view accessible at the right edge of
+              the plotsheet. Just simple move the splitter.
+
+2009-08-03
+  graphics:   polished plot code and x-scale plotting.
+              Holding down the Ctrl-Key accelerate the scrolling of the chart.
+
+2009-07-28
+  calc:       add MUP(<expression>) This calls the muParser library.
+              <expression> could be a full complex math expression. For details
+              of supported operators and functions see:
+              http://muparser.sourceforge.net/mup_features.html#idDef2
+
+2009-07-22
+  agentf:     code polished and added some new commands.
+              "-daemon" where he read from stdin and execute each command line
+              he read until Ctrl+D is pressed. similar to "-rcf".
+              "-ps", prints the settings.
+              "-imp" takes now also a file name.
+              Furthermore he starts now multiple instances to do a big job. e.g.
+              at "-full" to download quotes parallel. The amount of instances is
+              configurable in the settings file.
+
+2009-07-19
+  agentf:     add new command "-addSplit"
+
+2009-07-17
+  inspectorf: ...added to progs. It's the backtester with automated rule and
+              indicator parameter substitute. Each constant is changeable.
+              Edit the constants in the Strategy-Tab encapsulated in braces {}
+              in two ways:
+              {10;12;14} each of the value is used. No limit of values.
+              {10-20 i 2} from 10 to 20 in steps of 2 is used.
+
+2009-07-10
+  agentf:     change commands to "-imp" and "-rcf"
+  libf:       Importer.cpp now imports split data
+
+2009-07-05
+  graphics:   add a second color paint mode to PLOT(CANDLE,...)
+              <high>-color is line color if close > prevClose, default green
+              <low>-color  is line color if close < prevClose, default red
+              <open>-color is body fill color if close > open, default black
+              So far no change, but when <close>-color is set then:
+              <close>-color is body fill color if close < open
+
+2009-07-04
+  calc:       add SIMTRADE(<trading-rule-file-name>), it runs a trading
+              simulation and add a lot of variables to the indicator.
+              e.g. TotalBalance. Furthermore will the color of OPEN, HIGH, LOW
+              CLOSE changed. So PLOT(CANDLE, FI()) visualise the trading.
+              For details look doc/trading-rule-file-format.txt
+
+2009-06-18
+  calc:       add <bool> = BETWEEN(<lowBorder>, <highBorder>, <foo1>[, <foon>])
+              <bool> comes true when each value of foo1-n is in a range of
+              lowBorder and highBorder
+
+2009-06-13
+  calc:       add SETCOLOR(<variable>, <true-color>, <false-color>)
+
+2009-06-10
+  agentf:     change the file format of "-impFi". Details now in
+              doc/import-file-format.txt
+
+2009-06-03
+              long time is nothing happens with this project because of private
+              things. But the world was still turning. Trolltech was bought by
+              Nokia. Qt 4.5 was released, and comes with a new "feature". For
+              detail look at Qt's Task Tracker ID 237876. So I was forced to
+              download the sources of Qt 4.3.5 :-(
+              Furthermore don't work fetchFi_yahoo.pl. After googling it seems
+              related on changes by yahoo. The perl finance quote have a new
+              version 1.16 to fix the problem, but...I didn't got it running :-(
+
+2007-08-01
+  diggerf:    uploaded. It's the scanner tool. If the variable "SCAN4" in an
+              indicator is greater null the FI will added to the group
+              "ScanResults/<indicatorName>"
+
+2007-07-29
+  calc:       add <var2> = REF(<var1>, <back-ref-value>)
+
+2007-07-27
+  graphics:   add PLOT(DASHLINE, <var>), well...could be improved :-/
+
+2007-07-26
+  calc:       add <var> = CROSS(<foo1>, <foo2>, <type>)
+              <type> can be: UP, DOWN, BOTH
+  performerf: 1st draft uploaded. Use drag&drop to add FIs to groups. Drag FIs
+              or groups out to remove them.
+
+2007-07-14
+  agentf:     new command "-impFi", reads from stdin
+              infos to the expected file format look into
+              progs/libf/common/Importer.h
+
+2007-07-12
+  calc &      add new indicator key "*AddToGroup=<foo>". When the indicator file
+  graphics:   contains somewhere a line with above key, the indicator appears
+              in that group in the new indicator picker window lefthand of the
+              chart window. Include so much "*AddToGroup=" as you like
+
+2007-07-02
+  calc:       add TA-Lib support
+
+2007-06-28
+  agentf:     interchange parameter order of "-addFi", <market> and <symbolType>
+
+2007-06-27
+  agentf:     add new command "-RCF <fileName>" (Read Command File)
+              the file can contain each command supported by agentf
+
+2007-06-24
+  graphics:   add y-scale, adjust chart painting - no more fidget at the right
+              hand side while density changes, no half painted last candle
+
+2007-06-23
+  graphics:   add PLOT(HISTOGRAM, <var>) and PLOT(HISTOGRAMBAR, <var>)
+  calc:       add <var> = BOOL(<var1> <operator> <var2>)
+                operators are <, >, =, <=, >=, <>, &, |
+                as TRUE is all bigger than 0.0 interpreted
+                if <boolExp> is TRUE variable is set to 1.0
+
+2007-06-22
+  graphics:   add PLOT(CANDLE, FI())
+                  PLOT(CANDLE, <open>, <high>, <low>, <close>, <volume>)
+                  <volume> is not used currently
+              <high>-color is line color if close > prevClose, default green
+              <low>-color  is line color if close < prevClose, default red
+              <open>-color is body fill color if win-day, default black
+                           if it's a lost-day, line color is used as fill color
+
+2007-06-21
+  db:         new table msymbol, holds provider specific symbols to markets
+  libFiMiQt4:
+  & agentf:   use new table msymbol. provider scripts are now supplied with his
+              own market symbols...if some are defined
+
+2007-06-20
+  Qtstalker:  development discontinued
+  libf:       added to CVS tree. replace lib and contains the libs used by the
+              existing and coming progs
+  managerf:   added to CVS tree. actual doesn't do any job, but includes a chart
+              window which is later used by performerf which will be the
+              Qtstalker substitute
+
+2007-06-06
+  db:         on duplicate key violation do update instead of insert
+
+2007-05-22
+  db:         enabled a database debug level(RAISE WARNING, NOTICE, INFO)
+              in ./configure
+  libfimi:    changed GetBarsLtd.sql due to limit 1 on holly days issue
+
+2007-05-21
+  Qtstalker:  fix step above basePath in navigator panel
+
+2007-05-20
+  libFiMiQt4: new function addFiCareful, check all info to avoid duplicates.
+              It checks each symbol and the FI long name to find a double
+  agentf:     improve -addFi, use new function addFiCareful. It can be used now
+              to add new symbols to an existing FI
+
+2007-05-04
+  Qtstalker:  navigator use 'auto filter', no need any longer to enter a *

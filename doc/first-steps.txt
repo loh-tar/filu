@@ -1,0 +1,226 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+OK, if you has follow all installation instructions, you have done so many steps
+but didn't see any chart. Don't give up, you are so close to success.
+
+Let's short ask what's should work: The database is up and running, the programs
+compiled, installed and short started in a terminal without an error message?
+Good!
+
+To understand what still is missing and we will do shortly, you should take a
+look into fimi_digest_EN.odp or FiMi_0.1.6_DE.doc. There is described how the
+data are organised by Filu. But because Filu has dropped some goals from the
+original FiMi project there be some things outdated.
+
+Per default there are nearly absolutely no data in the database. Therefore you
+have to import all that stuff *YOU* need. Markets, currencies, stocks and so on.
+A long time ago in a galaxy far, far away... there was all imagine default data
+pre installed. But I don't like that bloating and removed all.
+
+The goal is that you could use ManagerF to import all stuff easily live from
+somewhere of the Internet. But that need more work, especially at the provider
+scripts. One nice script stops working someone in 2009. So if you are a Perl
+hacker it would be great you start contributing Filu. Fortunately works the most
+important fetchBar_Yahoo.pl script perfectly.
+
+Till ManagerF works as desired, we have to import data with 'agentf imp <file>'
+command. What we need is a *.imp file with the data we are interested in. Take a
+look into Master-of-imp-files.ods and you see a way how to create that.
+Furthermore read import-file-format.txt to became an overview of the
+possibilities.
+
+So many words but no beef? OK, let us do some less commands to bring up the
+chart of Apple Inc.
+
+lot@N110:~/FiluSource$ agentf imp doc/example-apple.imp
+lot@N110:~/FiluSource$ agentf full
+lot@N110:~/FiluSource$ performerf
+
+Go to the "Search FI" widget, type in "a" and click "Apple Inc." Nice?
+
+What have we done? 'cat doc/example-apple.imp' shows the content of the import
+file. As you can see there are only two Header and two data lines included, the
+rest is comment which explain what kind of data we have imported. The second
+command 'agentf full' forces an update of all eodBars of all FIs stored in the
+database. We have three FIs in the database. "Three?" Yes! Of cause 'Apple Inc.'
+as stock but also 'US Dollar' as currency and one more dummy currency 'No
+Currency'.
+
+But because we have only one provider symbol installed there will only be
+eodBars for one FI downloaded. This point is important to understand.
+
+The dummy currency and the dummy market 'NoMarket' that you can see in the
+search widget are needed. The reason is a little complicated. Symbols are used
+to download price (or other) data by a market with a provider script. Therefore
+a symbol *must* always have a market. But a market *must* always have a
+currency. However what is with symbols you want to store to a FI as extra
+reference but not to download data? Such universal symbols with no special
+purpose need anyway a market and these market a currency.
+
+This concept of symbols with fixed bundled market and provider as the key to
+select anything to force a download with a provider script was the result of a
+time-consuming consideration between me and Christian.
+
+A symbol has a type, or owner. Well known types are ISIN or Reuters which is
+often seen in TV broadcastings or old-school newspaper tables. When a symbol
+here at Filu is used to download data by a script it is called 'provider
+symbol'. So, when you read somewhere here 'Provider' in context with 'Symbol' it
+does mean 'symbol type'. There is no coercion that this symbol is really used to
+download anything.
+
+As consequence of that naming convention is 'Reuters' a symbol type but not a
+provider because we have no Reuters-Script to download anything from Reuters.
+Currently we have less than a handful provider usable at Filu. Yahoo, oander
+and Filu. "Filu?". Um...yes, there are some simple shell scripts they are
+usable at ManagerF AddFi-Page.
+
+Choose 'Filu' in the upper left list box, 'Search FI' right of that, type 'app'
+in the middle edit field and hit 'Search' at the right or simple press Enter.
+Now you should see 'Apple Inc.' and some others in the center. These data come
+not out of the database but rather out of some *.csv files located at
+/usr/local/lib/Filu/provider/Filu, and was read by fetchFi_Filu.sh. When you now
+hit one of the down arrows in the shown list will these FI with that provider
+symbol added to the data base.
+
+NOTE: ManagerFs AddFi page is something outdated and need a review, so don't
+      wonder why the result you got after the search has strange column names.
+
+For more information about provider and how to write your own provider script
+read doc/hacking-provider-scripts.txt
+
+The most important things do you know now. In the doc directory you find more
+information about the Filu parts but not a typical user manual. Because of that
+I want make some notes at this place.
+
+I hope that all Filu programs are self-explanatory. But some things may hidden
+or be known to be improved.
+
+
+AgentF
+========
+He is like the Swiss knife of Filu. He starts multiple instances to do a big job
+e.g. at "full" to download quotes in parallel. The amount of instances is
+configurable in the settings file, ~/.config/Filu.conf by setting MaxClones=X.
+
+rcf
+=====
+Read Command File. The file can contain each command supported by AgentF. Lines
+begin with an asterisk are ignored as usual.
+
+daemon
+=======
+Is not a daemon as typical known. It is very similar to rcf. He read from stdin
+and execute each command line he read until Carl+D is pressed or "quit" is read.
+
+
+ManagerF
+==========
+Is one of the oldest part of Filu and is far away from his projected features.
+
+FI Details Page
+=================
+IS the oldest part of Filu and is nearly useless.
+
+Add FI Page
+=============
+Needs improvements under the hood and a fixed fetchFi_Yahoo.pl script.
+Therefore currently also not very useful. But you can enter by hand the FI data
+at the bottom input fields and click "Add to DB".
+
+Indicator Page
+================
+The editor needs many improvements but is usable. To save a file click the down
+arrow left from the listbox.
+
+On the right you have the TA-Lib picker. I can't remember what I want do with
+the Include button, ignore him :-)
+
+Select one of the TA-Lib functions and click below one of the lines begin with
+CallX: or IncludeX:. Hit then the Add button to copy that kind of use into
+the editor. See also doc/indicator-file-format.txt.
+
+
+PerformerF
+============
+Not only the chart painting tool of Filu.
+
+Scroll the Chart
+==================
+Is possible by drag them with the mouse. Hold down the Carl-Key to scroll in
+"turbo mode".
+
+Change the Density
+====================
+Is possible by mouse wheel.
+
+Groups
+========
+Create new groups with the green button. Double click a group to step in, click
+the up-arrow to leave the group. Use drag&drop from the search widget or from
+other groups to add FIs to groups. Drag FIs or groups out to remove them.
+
+Chart Objects
+===============
+Clicking one button from the menu right of the X-Button activates the chart
+object add mode. Click somewhere on the chart to add the chosen chart object.
+Changing and moving are almost as usual apart from that, that you do not have to
+hold down the left button while moving. Play around and you will see. Right
+click brings up the property editor. Pressing Del removes an selected CO. To
+leave the add mode click the X-Button.
+Available chart object types are currently only "Line".
+
+Plot Sheet Count
+==================
+You can add more or less plot sheets by editing the file
+~/Filu/IndicatorSets/DefaultSet and change the setting of IndicatorCount.
+Someone in the future will this be possible by clicking somewhere in the GUI.
+But I'm unsure what the best way could be. A listbox in a toolbar or by right
+click on the chart. There is also a add/change/remove possibility needed.
+
+Launch Pad Configuration
+===========================
+See doc/launchpad-file-format.txt.
+
+
+DiggerF
+=========
+The scanner tool. If the variable "SCAN4" in an indicator is greater null the
+FI will added to the PerformerF group "ScanResults/<indicatorName>".
+
+
+InspectorF
+============
+Is the young and sketchy back tester of Filu with automated substitute of rule
+and indicator parameters. Each constant is changeable. Edit the constants in the
+Strategy-Tab encapsulated in braces {} in two ways:
+
+  {10;12;14}  each of the value is used. No limit of values.
+  {10-20 i 2} from 10 to 20 in steps of 2 is used.
+
+Click on the Testing-Tab and you see only the edited constants still in braces
+and the progress bar on the bottom shows how many calculations will done when
+you click the "Run Serial Test"-Button.
+
+While the test is running you could change the tabs to look at the results.
+Select one result at any tab and click the detail tab to see what exactly was
+done.
+
+The results will never deleted. There will be a hash number calculated for each
+rule/indicator combination and the high score views take care of that.
+
+The column names means:
+  wltp, Won Long Trade Percentage
+  lltp, Lost Long Trade Percentage
+  agwlp, Average Gain of Won Long Trade Percentage
+  alltp, Average Lost of Long Trade Percentage
+  tpp, Total Performance Percentage
+  score, Score
+
+Score is actual calculated as:
+  ln(exp(won long trades * agwlp)/exp(lost long trades * alltp)) / total count of trades
+
+All these trading analyses are very experimental. Suggestions for improvements
+are welcome.
+
+See also doc/trading-rule-file-format.txt.

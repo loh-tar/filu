@@ -1,0 +1,90 @@
+//
+//   This file is part of Filu.
+//
+//   Copyright (C) 2007, 2010  loh.tar@googlemail.com
+//
+//   Filu is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   Filu is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with Filu. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "ManagerF.h"
+//#include "ConfigPage.h"
+#include "FiPage.h"
+#include "IndicatorPage.h"
+#include "AddFiPage.h"
+
+ManagerF::ManagerF(const QString connectionName)
+         : QDialog(), FClass(connectionName)
+{
+  mPageIcons = new QListWidget;
+  mPageIcons->setViewMode(QListView::IconMode);
+  mPageIcons->setIconSize(QSize(96, 84));
+  mPageIcons->setMovement(QListView::Static);
+  mPageIcons->setMaximumWidth(128);
+  mPageIcons->setSpacing(12);
+
+
+  mPageStack = new QStackedWidget;
+  mPageStack->addWidget(new FiPage(this));
+  mPageStack->addWidget(new AddFiPage(this));
+  //mPageStack->addWidget(new ConfigPage(this));
+  mPageStack->addWidget(new IndicatorPage(this));
+// mPageStack->addWidget(new ...);
+
+  QPushButton* closeButton = new QPushButton(tr("Close"));
+
+  createIcons();
+  mPageIcons->setCurrentRow(0);
+
+  connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+
+  QHBoxLayout* horizontalLayout = new QHBoxLayout;
+  horizontalLayout->addWidget(mPageIcons);
+  horizontalLayout->addWidget(mPageStack, 1);
+
+  QHBoxLayout* buttonsLayout = new QHBoxLayout;
+  buttonsLayout->addStretch(1);
+  buttonsLayout->addWidget(closeButton);
+
+  QVBoxLayout* mainLayout = new QVBoxLayout;
+  mainLayout->addLayout(horizontalLayout);
+  mainLayout->addLayout(buttonsLayout);
+  setLayout(mainLayout);
+
+  setWindowTitle(tr("managerf - The Filu Manager"));
+ }
+
+ManagerF::~ManagerF()
+{}
+
+void ManagerF::createIcons()
+{
+
+  for(int i = 0; i < mPageStack->count(); i++)
+  {
+    QListWidgetItem* icon = new QListWidgetItem(mPageIcons);
+    ManagerPage* helpMe = (ManagerPage*)mPageStack->widget(i);
+    helpMe->setPageIcon(icon);
+  }
+
+  connect(mPageIcons,
+    SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+    this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
+}
+
+void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
+{
+  if (!current) current = previous;
+
+  mPageStack->setCurrentIndex(mPageIcons->row(current));
+}

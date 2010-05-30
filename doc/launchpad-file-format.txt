@@ -1,0 +1,58 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+The launch pad configuration files are typical config files in *.ini format
+and be located by default in ~/Filu/LaunchPad. There are only numbered top
+level groups [0..n] where ach of them define one button.
+
+NOTE: Currently is only one LaunchPad supported, therefore is only one file
+      used: LaunchPad.ini
+
+
+Button Settings
+=================
+AllMarkets
+  When true, the command will executed with each market available to given
+  symbol type. Default is false.
+
+Command
+  Is the program call which will executed. The command line could, or better
+  should, contain Tags listed below which will replaced by the appropriate
+  values before the command is executed.
+
+Name
+  The caption of the button.
+
+SymbolType
+  The symbol type which must fit to call the program with correct parameters.
+  When here is no value set it could be any symbol type.
+
+
+Command Tags
+==============
+[Provider]
+[Symbol]
+[Market]
+[FiId]
+[MarketId]
+
+
+Example File
+==============
+
+  [0]
+  AllMarkets=true
+  Command="echo Symbol=[Symbol] FiId=[FiId] MarketId=[MarketId]"
+  Name=Echo
+
+  [1]
+  AllMarkets=false
+  Command="firefox http://de.finance.yahoo.com/q?s=[Symbol]"
+  Name=Yahoo
+  SymbolType=Yahoo
+
+  [2]
+  AllMarkets=false
+  Command="firefox http://www.onvista.de/suche.html?SEARCH_VALUE=[Symbol]&SELECTED_TOOL=ALL_TOOLS"
+  Name=Onvista
+  SymbolType=Reuters

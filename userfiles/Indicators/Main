@@ -1,0 +1,14 @@
+* AddToGroup: Examples
+* AddToGroup: Chart
+
+sma50 = TALIB(SMA, CLOSE, TimePeriod=50)
+sma200 = TALIB(SMA, CLOSE, TimePeriod=200)
+
+PLOT(CANDLE,FI())
+
+sma50 = SETCOLOR(red)
+PLOT(LINE,sma50)
+
+sma200 = SETCOLOR(orange)
+PLOT(LINE,sma200)
+

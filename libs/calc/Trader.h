@@ -1,0 +1,118 @@
+//
+//   This file is part of Filu.
+//
+//   Copyright (C) 2007, 2010  loh.tar@googlemail.com
+//
+//   Filu is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   Filu is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with Filu. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef TRADER_HPP
+#define TRADER_HPP
+
+#include "FClass.h"
+
+class Indicator;
+class DataTupleSet;
+class MyParser;
+
+/***********************************************************************
+*
+*  The Trader produce as output a list with buy/sell orders.
+*  To do the job he use an normal indicator file (with suitable commands
+*  of course) and a trading rule file.
+*
+*  He is used by CalcTrade.cpp to illustrade the result of the trading
+*  idea, the (FIXME: development not started) portfolio manager and
+*  (FIXME: not implemented) back tester inspectorf
+*
+*  See also in your source directory
+*    doc/indicator-file-format.txt
+*    doc/trading-rule-file-format.txt
+*
+************************************************************************/
+
+class Trader : public FClass
+{
+  public:
+    enum SomeDefines
+    {
+      eNextBlock = true
+    };
+
+                Trader(FClass* parent);
+    virtual    ~Trader();
+
+    typedef     QPair<MyParser*, QList<QStringList> > Rule;
+
+    bool        useRuleFile(const QString& fileName);
+    bool        useRule(const QStringList& rule);
+    void        getRule(QStringList& rule);
+    bool        useIndicator(const QStringList& indicator);
+    void        getIndicator(QStringList& indicator);
+    bool        check(int fiId, int marketId);   // FIXME: need by real tradings
+    bool        simulate(DataTupleSet* data);
+    int         prepare(const QDate& fromDate, const QDate& toDate);
+    int         simulateNext();
+    void        getOrders(QList<QStringList> &orders);
+    void        getReport(QList<QStringList> &report);
+    void        getVariablesList(QSet<QString> *list);
+
+  protected:
+    bool        parseRule();
+    bool        nextLine(bool nextBlock = false);
+    void        readSettings();
+    void        readRules();
+    void        appendMData(); // add all output variables to mData
+    void        takeActions(const QList<QStringList> &actions);
+    void        actionBuy(const QStringList& action);
+    void        actionSell(const QStringList& action);
+    void        checkOpenOrders();
+    void        checkOpenBuyOrder(QStringList& order);
+    void        checkOpenSellOrder(QStringList& order);
+    void        calcGain();
+    inline void setTo(const QString& name, double v);
+    inline void addTo(const QString& name, double v);
+    void        appendToMData(const QString& name);
+    void        appendReport(const QString& txt, const double v, const QString& vname, const int precision = 2);
+
+    QString     mLine;
+    QString     mOrigLine;          // for error messages
+    int         mLineNumber;        // for error messages
+    QStringList mOrigRule;          // holds the readed rule file as it is
+
+    QHash<QString,QString>       mSettings;
+    QHash<const QString, double> mVariable;
+    QStringList                  mDataAdded;  // holds variable names needs synced between mData and mVariable
+
+    QList<QStringList> mOpenOrders; // as the name implies, intern used
+    QList<QStringList> mOrders;     // for export/real trading. includes a date and "human readable" limit
+    QList<QStringList> mReport;     // like mOrders, but includes additional info about execution of orders
+                                    // and a statistic report
+
+    QList<Rule>    mRules;
+
+    Indicator*     mIndicator;
+    int            mBarsNeeded;
+    DataTupleSet*  mData;
+    QSqlQuery*     mFi;
+    QDate          mFromDate;
+    QDate          mToDate;
+
+    bool           mAutoLoadIndicator;
+    bool           mOkSettings;
+    bool           mOkRules;
+    QString        mTradingRulePath;
+};
+
+#endif

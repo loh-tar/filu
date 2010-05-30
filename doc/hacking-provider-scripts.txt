@@ -1,0 +1,74 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+Hacking Provider Scripts
+==========================
+This chapter include some notes about how to write a provider script. Filu use
+different kind of data. The provider scripts described here deliver these data.
+
+Each provider which is usable in Filu must have a folder located below
+progs/agentf/provider. The folder name *must* *exactly* fit with the name of the
+provider used in the database, <filu-schema>.stype.caption.
+
+After ./configure && sudo make install the provider will copied to the Filu
+ProviderPath, which is as default /usr/local/lib/Filu/provider. If you use a
+binary package of Filu then you have to copy your own provider below these
+ProviderPath.
+
+The names of the scripts subject to only one regulation: The name *must* begin
+with a unique name described below. Than could follow any other valid file name
+character. But it is recommend to include the same provider(folder) name into
+the script name leaded by a underline, e.g. fetchBar_Yahoo.pl
+
+This way is every time clear where the script belonged to, e.g. in case of a bug
+fixed version supplied by a community download page. There is also no
+restriction about the implementation of the script. If written in Perl or C or
+whatever. But a interpreter language like Perl is recommend for the suddenly
+need for a fix when a provider has change something.
+
+The scripts will called with some parameters in fixed order separated by a space
+character. It is behooves by the script to use all parameter or not. The data
+delivered by the script will read from stdin. So the script must write to
+stdout.
+
+The data written by the script must separate by a semicolon. The first line must
+be a header line, keys seperate by a semicolon too. Each data set must
+terminated with a newline character. No footer line.
+
+If the script is unable to deliver any data, return no data. If the script find
+only partial data, the missing data could leave out in most cases. It is also
+possible that the script leave out some header keys.
+
+An overview of all possible header keys you will found in
+import-file-format.txt. But it is not shure that the data delivered by the sript
+go the way thru Importer.cpp. For example, data from fetchBar* will go an own
+way into the database for a little better performance.
+
+Script Functions
+==================
+Name:     fetchBar*
+Purpose:  EOD Bar data to a FI in a given time frame
+Input:    FromDate, ToDate, Symbol, Market
+Output:   Date, Open, High, Low, Close, Volume, OpenInterest, Quality
+          Quality stored in the database could be:
+            0=platinum, modified by the user, don't change automatically
+            1=gold, as final classified data by script
+            2=bronze, as temporary classified data by script
+            3=tin, means there was an logical error in the data detected by the
+              database
+          So the sript should only deliver gold or bronze.
+          NOTICE: If only a close price is available, the missed prices must
+                  filled with the close price. Otherwise the database will
+          change the quality to tin.
+
+Name:     fetchFI* (draft status only)
+Purpose:  The master data to a FI
+Input:    SearchString, Market
+          SearchString could be a Symbol or a part of the name
+Output:   Name, Symbol, Market, RefSymbol, <KnownSymbolType>
+
+Name:     fetchIdx* (draft status only)
+Purpose:  All associated underlyings to an index with name and symbol(s)
+Input:    Symbol, Market
+Output:   Name, Symbol, Market, RefSymbol, <KnownSymbolType>
+

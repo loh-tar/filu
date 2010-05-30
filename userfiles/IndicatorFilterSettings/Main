@@ -1,0 +1,10 @@
+[General]
+CLOSE=true
+Date=true
+HIGH=true
+LOW=true
+OPEN=true
+OPINT=false
+VOLUME=false
+sma200=true
+sma50=true

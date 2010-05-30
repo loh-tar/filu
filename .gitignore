@@ -1,0 +1,6 @@
+# Lines starting with '#' are considered comments.
+
+Makefile
+/tmp
+database/build_filu.sql
+progs/managerf/qrc_icons.cpp

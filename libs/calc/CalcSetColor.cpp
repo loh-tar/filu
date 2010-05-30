@@ -1,0 +1,105 @@
+//
+//   This file is part of Filu.
+//
+//   Copyright (C) 2007, 2010  loh.tar@googlemail.com
+//
+//   Filu is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   Filu is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with Filu. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "CalcSetColor.h"
+
+CalcSetColor::CalcSetColor(Indicator* parent) : CalcType(parent)
+{
+  mType = "SetColor";
+}
+
+CalcSetColor::~CalcSetColor()
+{}
+
+bool CalcSetColor::prepare(CalcParms& parms)
+{
+  init(parms);
+  checkOutputCount(1);
+
+  if(1 == mIns.size())
+  {
+    // check format "<foo> = SETCOLOR(<color>)"
+    // mIns look like: "red"
+    QColor c;
+    c.setNamedColor(mIns.at(0));
+    if(!c.isValid())
+    {
+      addErrorText("CalcSetColor::prepare: Color not valid: " + mIns.at(0));
+    }
+  }
+  else if(3 == mIns.size())
+  {
+    // check format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
+    // mIns look like: "winday", "green", "red"
+
+    checkInputVariable(0);
+
+    QColor c;
+    c.setNamedColor(mIns.at(1));
+    if(!c.isValid())
+    {
+      addErrorText("CalcSetColor::prepare: Color No.1 not valid: " + mIns.at(1));
+    }
+
+    c.setNamedColor(mIns.at(2));
+    if(!c.isValid())
+    {
+      addErrorText("CalcSetColor::prepare: Color No.2 not valid: " + mIns.at(2));
+    }
+  }
+  else
+  {
+    addErrorText("CalcSetColor::prepare: Wrong parameter count");
+  }
+
+  if(hasError()) return false;
+
+  return true;
+}
+
+bool CalcSetColor::calc()
+{
+  if(hasError()) return false;
+
+  getIndicatorVariables();
+
+  mData->rewind();
+  if(1 == mIns.size())
+  {
+    // format "<foo> = SETCOLOR(<color>)"
+    while(mData->next())
+    {
+      mData->setColor(mOuts.at(0), mIns.at(0));
+    }
+  }
+  else
+  {
+    // format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
+    double var;
+    while(mData->next())
+    {
+      if(!mData->getValue(mIns.at(0), var)) {/* error */}
+
+      if(var > 0.0) mData->setColor(mOuts.at(0), mIns.at(1));
+      else mData->setColor(mOuts.at(0), mIns.at(2));
+    }
+  }
+
+  return true;
+}

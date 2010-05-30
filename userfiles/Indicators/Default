@@ -1,0 +1,5 @@
+* AddToGroup: Examples
+* AddToGroup: Chart
+
+PLOT(CANDLE,FI())
+

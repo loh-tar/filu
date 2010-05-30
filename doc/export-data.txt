@@ -1,0 +1,106 @@
+This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+
+
+Export of database data is done by Exporter.cpp which is used by "agentf exp"
+command. The parameter which exp takes, or rather Exporter.cpp, are described
+here.
+
+NOTE: Each parameter switch is always leaded by -- but that is below omitted. An
+export call may look like these:
+
+  agentf exp --setGroup MyFavorites --fiNames
+
+
+Output Destination
+====================
+toFile <fileName>
+  Write the exported data into <fileName>. If no "--toFile" is given, data will
+  written to stdout.
+
+
+Filter Settings
+=================
+Controls the qualities of exportet data.
+
+user <userName> FIXME: not implemented
+  Used e.g. by --co, --groups or --portfolio to spezify whoes data to export.
+  If no "--user" is given the calling user is used.
+
+setFiType <fiType>
+  e.g. "Stock"
+
+setGroup <group name>
+  Is one of performerf groups createt by the user
+
+setMarket <market name>
+  e.g. "NYSE"
+
+setProvider <symbol type>
+  e.g. "Yahoo"
+
+
+Export Switches
+=================
+Force the export of the given data type.
+
+fiNames
+  Export the master data of FIs. Name, Type and a reference Symbol
+
+symbols all|<type>[ <type2> ...]
+  "all" exports all known symbol types.
+
+  --symbols ISIN Reuters
+
+eodRaw [<fromDate> [<toDate>]]
+  The original eodBar data as they was collected over the lifetime of the
+  database.
+
+eodAdjusted [<fromDate> [<toDate>]] FIXME: not implemented
+  These eodBar data are adjusted by splits, if some. If no date is given, all data will exportet.
+
+splits
+  Export split data
+
+fiTypes
+  Export the ...
+
+markets
+  Export the ...
+
+marketSymbols FIXME: not implemented
+  Export the provider specific market symbols
+
+symbolTypes
+  Export the ...
+
+underlyings FIXME: not implemented
+  Export the ...
+
+offdays FIXME: not implemented
+  Export the ...
+
+
+Export Switches Of User Spezific Data
+=======================================
+co
+  Export chart objects
+
+groups
+  Exports the created groups at performerf
+
+portfolio FIXME: not implemented
+  Exports the ...
+
+
+Hints
+=======
+Afterwards manual modification of the exported data could done like these:
+
+Rename something
+  sed 's/yahoo/Yahoo/g' expData.imp > expDataModified.imp
+
+Delete something
+  sed '/yahoo/d' expData.imp > expDataModified.imp
+
+More you will find at  http://sed.sourceforge.net/sed1line_de.html.
+
