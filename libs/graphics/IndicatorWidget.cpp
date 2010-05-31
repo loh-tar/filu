@@ -36,7 +36,7 @@ IndicatorWidget::IndicatorWidget(const QString& name, const int number, FWidget*
                : FWidget(parent)
                , mSetName(name)
 {
-  mName = QString::number(number);
+  mName = QString::number(number + 1);
   init(parent);
 }
 
