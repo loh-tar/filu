@@ -24,7 +24,7 @@
 #include "Exporter.h"
 
 AgentF::AgentF(QCoreApplication* app)
-      : FObject ("agentf", app)
+      : FObject ("AgentF", app)
       , mConsole(stdout)
       , mErrConsole(stderr)
 {

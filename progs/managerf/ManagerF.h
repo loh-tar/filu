@@ -29,7 +29,7 @@ class ManagerF : public QDialog, public FClass
      Q_OBJECT
 
   public:
-                ManagerF(const QString connectionName = "managerf");
+                ManagerF(const QString connectionName = "ManagerF");
     virtual    ~ManagerF();
 
   public slots:

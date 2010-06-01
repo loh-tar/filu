@@ -23,7 +23,7 @@
 #include "IndicatorPage.h"
 #include "AddFiPage.h"
 
-ManagerF::ManagerF(const QString connectionName)
+ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
          : QDialog(), FClass(connectionName)
 {
   mPageIcons = new QListWidget;
@@ -61,7 +61,7 @@ ManagerF::ManagerF(const QString connectionName)
   mainLayout->addLayout(buttonsLayout);
   setLayout(mainLayout);
 
-  setWindowTitle(tr("managerf - The Filu Manager"));
+  setWindowTitle(tr("ManagerF - The Filu Manager"));
  }
 
 ManagerF::~ManagerF()

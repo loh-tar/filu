@@ -20,7 +20,7 @@
 #include "DiggerF.h"
 
 DiggerF::DiggerF(QObject* parent)
-       : QObject (parent), FClass("diggerf")
+       : QObject (parent), FClass("DiggerF")
 {
   mIndicator = 0;
 
