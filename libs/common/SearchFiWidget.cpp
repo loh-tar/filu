@@ -81,6 +81,9 @@ void SearchFiWidget::search()
   mView->hideColumn(0);
   mView->hideColumn(1);
   //resize(mView->columnWidth(2) + mView->columnWidth(3) + mView->columnWidth(4) + mView->columnWidth(5) + 10, height());
+
+  mCurrentRow = -1;
+
   show();
 }
 
