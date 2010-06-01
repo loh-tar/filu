@@ -831,7 +831,7 @@ void Importer::addSplit()
       int retVal = mFilu->addSplit(mSymbol->caption(), mData.value("SplitDate")
                                  , ratio, comment, quality);
 
-      if(retVal == Filu::eSuccess) break;
+      if(retVal >= Filu::eSuccess) break;
     }
   }
   else

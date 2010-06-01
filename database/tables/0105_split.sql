@@ -98,7 +98,7 @@ BEGIN
     IF allreadyhere IS NOT NULL THEN RETURN NULL; END IF;
 
     -- no, its not here, make an insert
-    IF new.split_id IS NULL OR 0 -- but only if id is not set
+    IF new.split_id IS NULL OR (new.split_id = 0) -- but only if id is not set
     THEN new.split_id := nextval('<schema>.split_split_id_seq'); END IF;
     --RAISE NOTICE ''inserted'';
     RETURN new;

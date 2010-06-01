@@ -1174,7 +1174,7 @@ int Filu::addSplit(const QString& symbol
 
   QSqlQuery* query = mSQLs.value("AddSplit");
 
-  query->bindValue(":splitId", 0);     // will replace by trigger intern of DB
+  query->bindValue(":fiId", 0);        // The DB will search the FiId by symbol
                                        // FIXME:expand function here to use them too
   query->bindValue(":symbol", symbol);
   query->bindValue(":date", date);
@@ -1189,7 +1189,7 @@ int Filu::addSplit(const QString& symbol
   query->next();
   int retVal = query->value(0).toInt();
 
-  if(retVal >= eData) return retVal; // newSplitId
+  if(retVal >= eData) return retVal; // (new or existing)SplitId
 
   return (eError + retVal);
 }
