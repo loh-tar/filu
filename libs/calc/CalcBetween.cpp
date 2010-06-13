@@ -57,14 +57,14 @@ bool CalcBetween::calc()
   getIndicatorVariables();
 
   // check if all operant variables exist. This should every time happens.
-  // But in case of an operant is a constant, we have probably to add
+  // But in case of an operand is a constant, we have probably to add
   // a new variable, but not if the same konstant exist already
 
   for(int i = 0; i < mVarCount + 2; ++i)
   {
     if(addToDataSet(mIns.at(i)))
     {
-      if(mIns.contains(QString("Operant-%1-IsNumber").arg(i)))
+      if(mIns.contains(QString("Operand-%1-IsNumber").arg(i)))
       {
         double value = mIns.at(i).toDouble();
         mData->rewind();

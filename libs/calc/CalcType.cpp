@@ -180,7 +180,7 @@ bool CalcType::checkInputVariable(int i)
     QString help = mIns.at(i);
     bool isNumber;
     mIns.at(i).toDouble(&isNumber);
-    if(isNumber) mIns.append(QString("Operant-%1-IsNumber").arg(i));
+    if(isNumber) mIns.append(QString("Operand-%1-IsNumber").arg(i));
     else
     {
       addErrorText(err + QString("Variable at position %1 not found: %2").arg(i + 1).arg(mIns.at(i)));

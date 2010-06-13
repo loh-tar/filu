@@ -67,48 +67,48 @@ bool CalcCross::calc()
 
   getIndicatorVariables();
 
-  QString operant1 = mIns.at(0);
-  QString operant2 = mIns.at(1);
+  QString operand1 = mIns.at(0);
+  QString operand2 = mIns.at(1);
   QString opertr   = mIns.at(2);
 
-  // check if both operant variables exist. This should every time happens.
-  // But in case of an operant is a constant, we have probably to add
+  // check if both operand variables exist. This should every time happens.
+  // But in case of an operand is a constant, we have probably to add
   // a new variable, but not if the same konstant exist already
 
-  // 1st operant...
-  if(addToDataSet(operant1))
+  // 1st operand...
+  if(addToDataSet(operand1))
   {
-    if(mIns.contains("Operant-0-IsNumber"))
+    if(mIns.contains("Operand-0-IsNumber"))
     {
-      double value = operant1.toDouble();
+      double value = operand1.toDouble();
       mData->rewind();
       while(mData->next())
       {
-        mData->setValue(operant1, value);
+        mData->setValue(operand1, value);
       }
     }
     else
     {
-      qDebug() << "CalcCross::calc: oops!?!? unknown variable-1 found, should never heappens" << operant1;
+      qDebug() << "CalcCross::calc: oops!?!? unknown variable-1 found, should never heappens" << operand1;
       return false;
     }
   }
 
-  // ..and the 2nd operant
-  if(addToDataSet(operant2))
+  // ..and the 2nd operand
+  if(addToDataSet(operand2))
   {
-    if(mIns.contains("Operant-1-IsNumber"))
+    if(mIns.contains("Operand-1-IsNumber"))
     {
-      double value = operant2.toDouble();
+      double value = operand2.toDouble();
       mData->rewind();
       while(mData->next())
       {
-        mData->setValue(operant2, value);
+        mData->setValue(operand2, value);
       }
     }
     else
     {
-      qDebug() << "CalcCross::calc: oops!?!? unknown variable-2 not found, should never heappens" << operant2;
+      qDebug() << "CalcCross::calc: oops!?!? unknown variable-2 not found, should never heappens" << operand2;
       return false;
     }
   }
@@ -120,9 +120,9 @@ bool CalcCross::calc()
   int outNbElement = 0;
   int firstValid = 0;
 
-  mData->getValidRange(operant1, outBegIdx, outNbElement);
+  mData->getValidRange(operand1, outBegIdx, outNbElement);
   firstValid = outBegIdx;
-  mData->getValidRange(operant2, outBegIdx, outNbElement);
+  mData->getValidRange(operand2, outBegIdx, outNbElement);
   if(firstValid < outBegIdx) firstValid = outBegIdx;
 
   mData->setValidRange(mOuts.at(0), firstValid + 1, mData->dataTupleSize() - firstValid);
@@ -138,8 +138,8 @@ bool CalcCross::calc()
     int wasUnder = 2; // 2=undefine, 1=yes, 0=no
     while(mData->next())
     {
-      if(!mData->getValue(operant1, op1)) {/* error */}
-      if(!mData->getValue(operant2, op2)) {/* error */}
+      if(!mData->getValue(operand1, op1)) {/* error */}
+      if(!mData->getValue(operand2, op2)) {/* error */}
 
       if(wasUnder == 1)
       {
@@ -162,8 +162,8 @@ bool CalcCross::calc()
     int wasUpper = 2; // 2=undefine, 1=yes, 0=no
     while(mData->next())
     {
-      if(!mData->getValue(operant1, op1)) {/* error */}
-      if(!mData->getValue(operant2, op2)) {/* error */}
+      if(!mData->getValue(operand1, op1)) {/* error */}
+      if(!mData->getValue(operand2, op2)) {/* error */}
 
       if(wasUpper == 1)
       {
@@ -187,8 +187,8 @@ bool CalcCross::calc()
     int wasUnder = 2;
     while(mData->next())
     {
-      if(!mData->getValue(operant1, op1)) {/* error */}
-      if(!mData->getValue(operant2, op2)) {/* error */}
+      if(!mData->getValue(operand1, op1)) {/* error */}
+      if(!mData->getValue(operand2, op2)) {/* error */}
 
       result = 0.0;
 
