@@ -92,7 +92,18 @@ void AddFiPage::createPage()
   mMarket->setMinimumContentsLength(10);
   mMarket->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
   mSymbolType = new QComboBox;
-  mSymbolType->insertItems(0, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot));
+  // read all symbol types out of the DB
+  QSqlQuery* query = mFilu->execSql("GetAllSymbolTypes");
+  if(!check4FiluError("AddFiPage::createPage: ERROR while exec GetAllSymbolTypes.sql"))
+  {
+    if(query)
+    {
+      while(query->next())
+      {
+         mSymbolType->insertItem(0, query->value(0).toString());
+      }
+    }
+  }
 
   QGridLayout* addEditLineLO = new QGridLayout;
   addEditLineLO->addWidget( new QLabel("RefSymbol"), 0, 0);
@@ -320,8 +331,8 @@ void AddFiPage::scriptFinished()
 
 void AddFiPage::addToDB()
 {
-  if(mDisplayType == "Stock")
-  {
+//   if(mDisplayType == "Stock")
+//   {
     qDebug() << "add to db";
 
     FiTuple fi(1);
@@ -354,14 +365,13 @@ void AddFiPage::addToDB()
 
     // here is the beef
     mFilu->addFiCareful(fi);
-
     if(mFilu->hadTrouble())
     {
       //printError("-addfi");
-      qDebug() << "agentf -addFi: Oops! new FI not added to DB";
+      qDebug() << "AddFiPage::addToDB: Oops! new FI not added to DB";
       qDebug() << "\tare you sure that FI type, market and symbol type exist?";
     }
-  }
+//   }
 }
 
 void AddFiPage::addToDBbyTWIB(QString psm, int row)
