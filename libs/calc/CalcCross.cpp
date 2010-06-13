@@ -37,17 +37,24 @@ bool CalcCross::prepare(CalcParms& parms)
   // mOuts looks like: "foo3"
 
   checkOutputCount(1);
-  if(!checkInputCount(3)) return false;
+  if(!checkInputCount(2)) return false;
+
+  if(mIns.size() > 2)
+  {
+    if(     mIns.at(2) != "UP"
+        and mIns.at(2) != "DOWN"
+        and mIns.at(2) != "BOTH")
+    {
+      addErrorText("CalcCross::prepare: Unknown operator: " + mIns.at(2));
+    }
+  }
+  else
+  {
+    mIns << "BOTH";
+  }
 
   checkInputVariable(0);
   checkInputVariable(1);
-
-  if(     mIns.at(2) != "UP"
-      and mIns.at(2) != "DOWN"
-      and mIns.at(2) != "BOTH")
-  {
-    addErrorText("CalcCross::prepare: Unknown operator: " + mIns.at(2));
-  }
 
   if(hasError()) return false;
 
@@ -71,7 +78,7 @@ bool CalcCross::calc()
   // 1st operant...
   if(addToDataSet(operant1))
   {
-    if(mIns.contains("Operant-1-IsNumber"))
+    if(mIns.contains("Operant-0-IsNumber"))
     {
       double value = operant1.toDouble();
       mData->rewind();
@@ -90,7 +97,7 @@ bool CalcCross::calc()
   // ..and the 2nd operant
   if(addToDataSet(operant2))
   {
-    if(mIns.contains("Operant-2-IsNumber"))
+    if(mIns.contains("Operant-1-IsNumber"))
     {
       double value = operant2.toDouble();
       mData->rewind();
