@@ -365,12 +365,8 @@ void AddFiPage::addToDB()
 
     // here is the beef
     mFilu->addFiCareful(fi);
-    if(mFilu->hadTrouble())
-    {
-      //printError("-addfi");
-      qDebug() << "AddFiPage::addToDB: Oops! new FI not added to DB";
-      qDebug() << "\tare you sure that FI type, market and symbol type exist?";
-    }
+    check4FiluError("AddFiPage::addToDB: Oops! new FI or Symbol not added to DB");
+
 //   }
 }
 
