@@ -126,7 +126,9 @@ Add FI Page
 =============
 Needs improvements under the hood and a fixed fetchFi_Yahoo.pl script.
 Therefore currently also not very useful. But you can enter by hand the FI data
-at the bottom input fields and click "Add to DB".
+at the bottom input fields and click "Add to DB". You can also add more symbols
+to existing FIs by filling the new symbol data and give an already known symbol
+in the RefSymbol field, Name and Type could leave blank in that case.
 
 Indicator Page
 ================

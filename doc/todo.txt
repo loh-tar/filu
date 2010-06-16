@@ -38,7 +38,7 @@ M: change market_insert function, return an ID/Error and take market_id. Maybe
 M: write new GetSymbols.sql, now is too complicate an delivers not ever what
    expected.
 M: add automatic new added FIs to the users FI group "New FIs". But that need a
-   merge of filu and FiluU.
+   merge of Filu and FiluU.
 L: figure out optimum postgres parameters.
 L: list all markets a specific provider provides (?)
 L: change in the creation *.sqls all function variables from absolute type
@@ -55,11 +55,16 @@ M: print more precise info when something goes wrong.
 PerformerF
 ============
 H: add possibility to change, add and remove the used indicator set
+H: split the toolbar in multiple toolbars
+H: add a shortcut to display/hide the toolbar, now you can disable the tb with
+   right-click by the mouse, but how you can bring them back?
 M: add spin boxes to set the to be loaded date range
 M: add buttons to change the density quickly
 M: improve drag&drop. when drop an index to the group list of the navi, create
    a group and insert all underlyings (hm, maybe it's the best *not* to insert
    the underlyings but include them on the fly when group is selected)
+M: add an "about" button with copyright and other stuff
+L: add an overview IndiWidget as QDockWidget
 
 
 ManagerF
@@ -69,11 +74,14 @@ M: add a split browse table to FI page, editable of course.
 M: add the possibility to define action(scripts) which will executed after an
    event. e.g. a new FI was added: download quotes. Or search for more info
    about the FI on the inet like full name, more symbols etc...
+M: save/restore window position and size
 L: redesign Managerf.cpp from QDialog to QApplicaton
 L: add syntax highlightning to indicator editor
 L: add picker menu for available functions/commands like for TA-LIB. This means
    PLOTFOO, SETFOO, CROSS etc. and, more important, also FiluPower-Indicators
    usable with CalcFilu. But that needs concept work...
+L: add a help page to display all (or most) available docu, copyright and other
+   stuff
 
 
 DiggerF
@@ -97,9 +105,22 @@ M: redesign FiGroupWidget signals/slots. use QModelIndex for slots and
 M: clean up Filu.cpp. redesign, remove almost all setXXX() functions. Of course
    needs then the progs to fit the new lib. (unsure if a good idea)
 L: short selling in Trader.cpp.
-L: LaunchPad.cpp, add a small GUI to add/edit/remove buttons. Add tool tip and
-   icons. Make icon/text optional showing. Make buttons turns 90° when tool bar
-   is placed left or right, as option of course.
+
+
+LaunchPad
+===========
+H: arrange the buttons vertical when the toolbar is placed left or right
+M: add a small GUI to add/edit/remove buttons.
+M: add tool tip and icons. Make icon/text optional showing.
+M: add as option that buttons turns 90° when tool bar is placed left or right
+
+
+PlotSheet/Painter
+===================
+H: possibility to switch the Y-Scale to a percent view. Zero is the last
+   PRIMARY() as default. On the fly changing to mouse position or moveable with
+   a grip at the scale.
+L: logarithmic Y-Scaling
 
 
 Indicator
@@ -117,8 +138,10 @@ L: REF(...) fix to the possibility with forecasts.
 
 IndicatorPicker
 =================
-H: possibility to reload all indicators
+H: possibility to reload available indicator list, automatic would be the best
 M: auto-detect if an indicator was edited, reload then (emit signal to..)
+M: restore/mark the used indicator after program start
+L: change from treeview to "something better"
 
 
 COType/COLine
@@ -130,6 +153,7 @@ Exporter
 ==========
 H: When export, don't print NoMarket at -markets, market_insert.sql expect
    Reuters as symbol
+H: add shortcut command(s) like --full, --userdata, --fullNoBars
 
 
 Importer

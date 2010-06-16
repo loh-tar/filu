@@ -64,6 +64,13 @@ WATCHDOGn, WATCHDOGRESULTn
 
 Commands
 ==========
+-DEF(<alias>, <value>)
+  Defines a constant with given value. The alias could used at any position in
+  the indicator file and will replaced with value. Whereas value does not have
+  to be a number.
+
+    DEF(pi, 3.1415926)
+
 INCLUDE(<indicator-name>[, IGNOREPLOT])
   Include the given indicator file and ignore any plot stuff located in that
   file when IGNOREPLOT is given.

@@ -97,5 +97,5 @@ will these fixes be lost when you run an data update again.
 
 Q: Why is it not possible to store two FIs with the same name but a differnt
    type?
-A: Um....It makes DB-insert functions much less complicate and an small suffix
+A: Um....It makes DB-insert functions much less complicate and a small suffix
    in the name to make them differend is also for the user not as bad.
