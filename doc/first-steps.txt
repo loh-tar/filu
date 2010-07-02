@@ -149,7 +149,7 @@ Not only the chart painting tool of Filu.
 
 Scroll the Chart
 ==================
-Is possible by drag them with the mouse. Hold down the Carl-Key to scroll in
+Is possible by drag them with the mouse. Hold down the Ctrl-Key to scroll in
 "turbo mode".
 
 Change the Density
@@ -168,7 +168,7 @@ Clicking one button from the menu right of the X-Button activates the chart
 object add mode. Click somewhere on the chart to add the chosen chart object.
 Changing and moving are almost as usual apart from that, that you do not have to
 hold down the left button while moving. Play around and you will see. Right
-click brings up the property editor. Pressing Del removes an selected CO. To
+click brings up the property editor. Pressing Del removes a selected CO. To
 leave the add mode click the X-Button.
 Available chart object types are currently only "Line".
 
