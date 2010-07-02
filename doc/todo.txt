@@ -22,6 +22,7 @@ L: replace all text what the user could read with tr(...) so that localised
 L: create and use fancy Icons in the user interfaces. But do it conform with
    rules from freedesktop.org, see:
    http://standards.freedesktop.org/icon-theme-spec/latest/ar01s05.html
+   maybe will these useful: http://gitorious.org/q-xdg
 
 
 Filu/Database

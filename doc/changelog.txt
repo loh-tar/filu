@@ -1,3 +1,6 @@
+2010-06-25
+              homepage updated with a nicer look.
+
 2010-06-14
   ManagerF:   fix at AddFi-Page, adding FIs or Symbols as described in
               doc/first-steps.txt has not worked.
