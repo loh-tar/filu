@@ -42,7 +42,7 @@ arguments:
   -g [Level]  // Debug level. The DB will prints        default 0
               // warning 1, notice 2, info 3
 
-If you create a extra DB for any purpose, it could be that some things already
+If you create an extra DB for any purpose, it could be that some things already
 exists. To prevent an error while install the new DB add some of these switches:
   -D  // don't create Database
   -S  // don't create Schema
@@ -82,6 +82,6 @@ Drop Your Database
 The last created database you could remove with:
   sudo make uninstall
 
-To remove a special database, e.g. testdb, that was created some else, you have
-to type:
+To remove a special database, e.g. testdb, that was created at some point, you
+have to type:
   sudo su postgres -c'psql -d template1 -c"DROP DATABASE testdb;" '
