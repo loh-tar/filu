@@ -6,7 +6,7 @@ OS you may need to do something deviating.
 
 Needed .deb Packages
 ======================
-  postgresql-8.4   At least 8.4
+  postgresql-8.4   At least 8.4. Version 9.x is NOT tested.
   pgadmin3         Not required but useful if you like to edit some data where
                    is not yet a tool at Filu to do the job. Use it with care.
 
