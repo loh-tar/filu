@@ -37,8 +37,7 @@ computer :-(
 
 In ~/.bashrc add the lines:
 
- PATH=/usr/local/Trolltech/Qt-4.3.5/bin:$PATH
- export PATH
+ export PATH=/usr/local/Trolltech/Qt-4.3.5/bin:$PATH
 
 I hope I have nothing forgot, good luck!
 
@@ -71,6 +70,7 @@ OS you may need to do something deviating.
 ============================
 To compile the programs you need the .deb packages:
   build-essential
+  cmake
   libqt4-sql
   libqt4-sql-psql
   libqt4-dev
@@ -82,8 +82,8 @@ The perl scripts needs the .dep packages:
 Install TALib from: http://ta-lib.org/
 Last tested version is 0.4.0.
   download ta-lib-0.4.0-src.tar.gz
-  unzip
-  cd into the extracted source dir
+  unzip the file
+  cd into the extracted source directory
   ./configure
   make
   sudo make install
@@ -91,8 +91,8 @@ Last tested version is 0.4.0.
 Install muParser from: http://sourceforge.net/projects/muparser/
 Last tested version is v132
   download v132.tar.gz
-  unzip
-  cd into the extracted source dir
+  unzip the file
+  cd into the extracted source directory
   ./configure --enable-samples=no
   make
   sudo make install
@@ -100,9 +100,11 @@ Last tested version is v132
 
 1-2-2- Compilation
 ====================
-After all steps above you can do as usual:
-  cd into FiluSource dir
-  ./configure
+After all steps above you have to do:
+  cd into the FiluSource directory
+  mkdir build
+  cd build
+  cmake ..         Yes, there are two dots !!!
   make
   sudo make install
   sudo ldconfig
@@ -132,9 +134,9 @@ NOTE: DON'T include some remarks as showing below, it's only to docu here!
   DatabaseName=filu
   FiluSchema=filu
   UserName=filu
-  Password=filu           // yes, of course pw in clear text is not as save
-  CommitBlockSize=500
-  DaysToFetchIfNoData=365 // fetch one year from the inet
+  Password=filu           // Yes, of course pw in clear text is not as save
+  CommitBlockSize=500     // Sadly not supported by the Qt4 Postgres driver
+  DaysToFetchIfNoData=365 // Fetch one year from the inet
   SqlDebugLevel=1         // 0:no extra debug info
                           // 1:extra after an error
                           // 2:print each processed sql
@@ -148,5 +150,8 @@ with first-steps.txt.
 
 4- Uninstall
 ==============
-cd in each of the above visited directories and do:
+To remove the Filu program collection cd into FiluSource/build and do:
+  sudo xargs rm < install_manifest.txt
+
+cd into each other of the above visited directories and do:
   sudo make uninstall
