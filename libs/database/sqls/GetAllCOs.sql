@@ -38,7 +38,7 @@ SELECT
   co.co_argv      AS "ArgV"
 
 FROM
-  lot.co co
+  :user.co co
   JOIN :filu.market m USING (market_id)
   JOIN :filu.fi f     USING (fi_id)
   JOIN :filu.ftype ft USING (ftype_id)

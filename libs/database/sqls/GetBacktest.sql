@@ -16,8 +16,8 @@ SELECT backtest_id, fdate, tdate, pgain, trule, tindicator, tname
   --WHERE backtest_id = :backtestId
   ORDER BY pgain
 
-SELECT * FROM lot.btlog
+SELECT * FROM :user.btlog
 WHERE fi_id = 307
 AND market_id = 302
-AND backtest_id = (select MAX(backtest_id) from lot.btlog where fi_id = 307 and market_id = 302)
+AND backtest_id = (select MAX(backtest_id) from :user.btlog where fi_id = 307 and market_id = 302)
 ORDER BY btlog_id
