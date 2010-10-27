@@ -31,5 +31,6 @@ install(TARGETS agentf
 set(PROVIDER_FILES ${agentf_SOURCE_DIR}/provider/)
 set(PROVIDER_PATH /usr/local/lib/Filu/provider)
 install(DIRECTORY ${PROVIDER_FILES}
+        USE_SOURCE_PERMISSIONS
         DESTINATION ${PROVIDER_PATH}
 )
