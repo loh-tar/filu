@@ -1,53 +1,13 @@
 This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
 
 
-First in advance because it's an ugly bug in Qt 4.5.x and later we need an older
-version. I solved this by install Qt from source on my Ubuntu 10.04 but maybe
-you can use *deb packages from Ubuntu 8.10. I didn't try it.
-
-You need as the replacement for the below listed packages libqt4-sql,
-libqt4-sql-psql and libqt4-dev:
-
-  build-essential
-  libpq-dev
-  libglib2.0-dev
-  libx11-dev
-  libxext-dev
-  libxrandr-dev
-  libxrender-dev
-  libxcursor-dev
-  libxfixes-dev
-  libxinerama-dev
-  libfontconfig1-dev
-  libfreetype6-dev
-  libxi-dev
-
-As one-liner:
-  sudo apt-get install build-essential libpq-dev libglib2.0-dev libx11-dev libxext-dev libxrandr-dev libxrender-dev libxcursor-dev libxfixes-dev libxinerama-dev libfontconfig1-dev libfreetype6-dev libxi-dev
-
-Download and unzip qt-x11-opensource-src-4.3.5.tar.gz from
-http://qt.nokia.com/ftp://ftp.qt.nokia.com/qt/source/
-
-./configure -opensource -qt-sql-psql -no-qt3support -nomake tools -nomake examples -nomake demos -no-exceptions
-make
-sudo make install
-
-Sadly need this a lot of time, some hours, if you don't have a high performance
-computer :-(
-
-In ~/.bashrc add the lines:
-
- export PATH=/usr/local/Trolltech/Qt-4.3.5/bin:$PATH
-
-I hope I have nothing forgot, good luck!
-
-
 Index
 =======
 1- Installation
 2- Customizing
 3- Further Readings
 4- Uninstall
+5- Fix Qt Bug in PSql Driver
 
 
 1- Installation
@@ -62,12 +22,34 @@ Follow the readme in database/
 
 1-2- Install The Filu Program Collection
 ==========================================
-The following infos apply to Ubuntu, a Debian like Linux. If you use a different
-OS you may need to do something deviating.
+The following infos apply to Ubuntu, a Debian like Linux and Arch Linux. If you
+use a different OS you may need to do something deviating.
 
 
 1-2-1- Needed Dependencies
 ============================
+Arch
+------
+To compile the programs you need:
+  base-devel
+  cmake
+  qt
+
+The perl scripts needs the packages:
+  perl-libwww
+
+Some more packages available with "bauerbill -S --cpan foo":
+  perl-date-simple
+  perl-finance-quote  (currently not needed, script is broken)
+
+To install TALib and muParser you could follow the Ubuntu instructions or use
+packages from AUR:
+  muparser
+  ta-lib
+
+
+Ubuntu
+--------
 To compile the programs you need the .deb packages:
   build-essential
   cmake
@@ -77,7 +59,7 @@ To compile the programs you need the .deb packages:
 
 The perl scripts needs the .dep packages:
   libdate-simple-perl
-  libfinance-quote-perl
+  libfinance-quote-perl  (currently not needed, script is broken)
 
 Install TALib from: http://ta-lib.org/
 Last tested version is 0.4.0.
@@ -108,6 +90,8 @@ After all steps above you have to do:
   make
   sudo make install
   sudo ldconfig
+
+NOTICE: Before you continue you have to do the instructions at chapter 5 below.
 
 After successful install you can check the working with:
   agentf
@@ -155,3 +139,64 @@ To remove the Filu program collection cd into FiluSource/build and do:
 
 cd into each other of the above visited directories and do:
   sudo make uninstall
+
+
+5- Fix Qt Bug in PSql Driver
+==============================
+In Qt later 4.3.5 (released May 2008) is an ugly bug in the PSql driver which is
+sadly still not fixed. Moreover it would seem that there is no plan fix it :-(
+  http://bugreports.qt.nokia.com/browse/QTBUG-3267
+  http://bugreports.qt.nokia.com/browse/QTBUG-7218
+  http://qt.gitorious.org/+qt-developers/qt/staging/commit/6c44ab0f6edebce1e7190b94ac5b74c81812f482
+
+As dirty workaround we have to do these steps:
+
+Download and unzip qt-everywhere-opensource-src-4.7.0.tar.gz from
+  ftp://ftp.qt.nokia.com/qt/source/
+
+NOTE: If your distribution uses a newer or older version of Qt, it might be wise
+      to download the suitable qt-source. They could named different, e.g.
+qt-x11-opensource-src-4.5.3.tar.gz. The source tree may also looks different, so
+you have to look for the appropriate files. In case of a newer version it is of cause
+possible that the bug is fixed and here is nothing to do.
+
+Edit the file
+  qt-everywhere-opensource-src-4.7.0/src/sql/drivers/psql/qsql_psql.cpp
+
+Search for this code block and comment out line 721 with "case PreparedQueries"
+that it looks as below:
+  bool QPSQLDriver::hasFeature(DriverFeature f) const
+  {
+      switch (f) {
+      case Transactions:
+      case QuerySize:
+      case LastInsertId:
+      case LowPrecisionNumbers:
+      case EventNotifications:
+          return true;
+  //    case PreparedQueries:
+      case PositionalPlaceholders:
+          return d->pro >= QPSQLDriver::Version82;
+      case BatchOperations:
+
+That will cause a warning when compiling in the next step which is OK. Now open
+a terminal and cd into the extracted qt source tree.
+
+  cd qt-everywhere-opensource-src-4.7.0/src/plugins/sqldrivers/psql
+
+Arch
+------
+  qmake -o Makefile "INCLUDEPATH+=/usr/include/libpq/" "LIBS+=-L/usr/lib -lpq" psql.pro
+  make
+
+If you like make a backup of the original driver:
+  sudo cp /usr/lib/qt/plugins/sqldrivers/libqsqlpsql.so /your-choice-dir/orig-libqsqlpsql.so
+
+Now replace the original with the new compiled one:
+  sudo cp libqsqlpsql.so /usr/lib/qt/plugins/sqldrivers/
+
+
+Ubuntu
+--------
+Not tested. But the procedure is the same as for Arch. You may only to have adjust
+the paths where libpq and qt is located.
