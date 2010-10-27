@@ -1,26 +1,47 @@
 This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
 
 
-The following infos apply to Ubuntu, a Debian like Linux. If you use a different
-OS you may need to do something deviating.
+Index
+=======
+1- Needed Packages
+2- Default Installation
+3- Custom Installation
+4- Default Values
+5- Backup
+6- Drop Your Database
 
-Needed .deb Packages
-======================
+
+1- Needed Packages
+====================
+The following infos apply to Ubuntu, a Debian like Linux and Arch Linux. If you
+use a different OS you may need to do something deviating.
+
+Arch
+------
+The package names are the same as for Ubuntu, except the "-8.4" suffix.
+After install start the server.
+  sudo /etc/rc.d/postgresql start
+
+Adding postgresql to your DAEMONS=(...) line in your rc.conf may a good idea.
+
+
+Ubuntu
+--------
   postgresql-8.4   At least 8.4. Version 9.x is NOT tested.
   pgadmin3         Not required but useful if you like to edit some data where
                    is not yet a tool at Filu to do the job. Use it with care.
 
-
-Default Installation
-======================
-View your /etc/postgresql/.../pg_hba.conf file. Search for:
+After the install view your /etc/postgresql/.../pg_hba.conf file and search for:
   # "local" is for Unix domain socket connections only
   local   all         all                               trust
 
-Make sure there is "trust" and not "ident same" user or something else.
-Otherwise edit your file to be right and reload postgres:
+Make sure there is "trust" and not "ident sameuser" or something else. Otherwise
+edit the file to be right and reload postgres:
   sudo /etc/init.d/postgresql-8.4 reload
 
+
+2- Default Installation
+=========================
 To create the Filu database use:
   ./configure
   sudo make install
@@ -28,12 +49,12 @@ To create the Filu database use:
 To drop the database use:
   sudo make uninstall
 
-To remove created sql files:
+To remove the temporary build sql files:
   make clean
 
 
-Custom Installation
-=====================
+3- Custom Installation
+========================
 To build a database with own parameters takes ./configure the following
 arguments:
   -d [dbname] // Database name                          default filu
@@ -59,16 +80,16 @@ Expecting the user exists already do:
 NOTE: Use only lower case letters for dbame, schema (and user?)
 
 
-Default Values
-================
+4- Default Values
+===================
 After creating the database there are no longer any default values, except
 these less you could find in the files at /FiluSource/database/defaults. But
 don't worry. After successful installation of the Filu programs read
 FiluSource/doc/first-steps.txt and be happy.
 
 
-Backup
-========
+5- Backup
+===========
 To backup your database with postgres tools consult:
   man pg_dump
   man pg_restore
@@ -77,8 +98,8 @@ An other way is to export all data with AgentF. For details read
 doc/export-data.txt.
 
 
-Drop Your Database
-====================
+6- Drop Your Database
+=======================
 The last created database you could remove with:
   sudo make uninstall
 
