@@ -1,3 +1,10 @@
+2010-10-26
+              change build system from qmake to cmake. Read again the readme for
+              updated install instructions if you are a skilled Filu user.
+
+2010-10-25
+              fix a bug with my hard coded user name when export chart objects
+
 2010-06-25
               homepage updated with a nicer look.
 
