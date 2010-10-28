@@ -41,12 +41,12 @@ Importer::~Importer()
   {
     if(mToDo.contains("eodBarsPending"))
     {
-      mToDo.insert("committEODBars");
+      mToDo.insert("commitEODBars");
       addEODBar();
     }
     else if(mToDo.contains("groupPending"))
     {
-      mToDo.insert("committGroup");
+      mToDo.insert("commitGroup");
       addGroup();
     }
   }
@@ -199,12 +199,12 @@ bool Importer::handleTag(QStringList& row)
   {
     if(mToDo.contains("eodBarsPending"))
     {
-      mToDo.insert("committEODBars");
+      mToDo.insert("commitEODBars");
       addEODBar();
     }
     else if(mToDo.contains("groupPending"))
     {
-      mToDo.insert("committGroup");
+      mToDo.insert("commitGroup");
       addGroup();
     }
   }
@@ -449,19 +449,19 @@ void Importer::setSymbol()
   // ...and add them to a fresh mSymbol tuple
   mSymbol = new SymbolTuple(mTotalSymbolCount);
 
-  // first, referenz symbols...
+  // first, reference symbols...
   for(int i = 0; i < mUsedRefSymbols.size(); ++i)
   {
     mSymbol->next();
     mSymbol->setCaption(mData.value(mUsedRefSymbols.at(i)));
     // don't set market & owner, so the symbol will not added
-    // but used for searchi the FI
+    // but used for searching for the FI
     mSymbol->setMarket("");
     mSymbol->setOwner("");
     //qDebug() << "Importer::setSymbol 1:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
-  // second, none provider symbols wich has to be installed
+  // second, none provider symbols which has to be installed
   for(int i = 0; i < mUsedKnownSymbols.size(); ++i)
   {
     mSymbol->next();
@@ -480,7 +480,7 @@ void Importer::setSymbol()
     //qDebug() << "Importer::setSymbol 2:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
-  // and last, provider symbols wich has to be installed
+  // and last, provider symbols which has to be installed
   for(int i = 0; i < mUsedSymbols; ++i)
   {
     QString p = "Provider" + QString::number(i);
@@ -497,9 +497,9 @@ void Importer::setSymbol()
 
 bool Importer::setSymbol(const QString& symbol)
 {
-  // Same name like setSymbol() but do a diffrent job.
+  // Same name like setSymbol() but do a different job.
   // Here will Filu called to set the FiId and the SqlParm :symbol
-  if(symbol == mData.value("_LastSymbol")) return true;
+  if(symbol == mData.value("_LastSymbol")) return true;  // we are up to date
 
   int retVal = mFilu->setSymbolCaption(symbol);
 
@@ -517,7 +517,7 @@ bool Importer::setSymbol(const QString& symbol)
 bool Importer::setMarket(const QString& market)
 {
   // Here will Filu called to set the marketId and the SqlParm :market
-  if(market == mData.value("_LastMarket")) return true;  // we are upt o date
+  if(market == mData.value("_LastMarket")) return true;  // we are up to date
 
   int retVal = mFilu->setMarketName(market);
 
@@ -688,9 +688,9 @@ void Importer::addUnderlying()
 
 void Importer::addEODBar()
 {
-  if(mToDo.contains("committEODBars"))
+  if(mToDo.contains("commitEODBars"))
   {
-    mConsole << endl << "Importer::addEODBar: committ " << mData.value("_EODSymbol")
+    mConsole << endl << "Importer::addEODBar: commit " << mData.value("_EODSymbol")
              << " " << mData.value("_EODMarket") << "..." << flush;
 
     mFilu->setMarketName(mData.value("_EODMarket"));
@@ -702,7 +702,7 @@ void Importer::addEODBar()
 //       if(ok) break;
 //     }
 
-    mToDo.remove("committEODBars");
+    mToDo.remove("commitEODBars");
     mToDo.remove("eodBarsPending");
 
     mData.remove("_EODSymbol");
@@ -723,7 +723,7 @@ void Importer::addEODBar()
     }
   }
 
-  // save market and symbol to detect if data owner changed
+  // save market and symbol to detect if data owner was changing
   QString symbol = mData.value(mAllUsedSymbols.at(0));
   QString market = mData.value("Market0");
 
@@ -737,8 +737,8 @@ void Importer::addEODBar()
   if(mData.value("_EODSymbol") != symbol or
      mData.value("_EODMarket") != market)
   {
-    mToDo.insert("committEODBars");
-    addEODBar(); // call myself to make the committ
+    mToDo.insert("commitEODBars");
+    addEODBar(); // call myself to make the commit
 
     mData.insert("_EODSymbol", symbol);
     mData.insert("_EODMarket", market);
@@ -770,7 +770,7 @@ void Importer::addEODBar()
 
 void Importer::addSplit()
 {
-  // if no quality set, use 1 as default
+  // if no quality is set, use 1 as default
   // 1=gold, as final classified data by script
   // see doc/hacking-provider-scripts.txt
   int quality = mData.value("Quality", "1").toInt();
@@ -867,12 +867,12 @@ void Importer::addCO()
 
 void Importer::addGroup()
 {
-  if(mToDo.contains("committGroup"))
+  if(mToDo.contains("commitGroup"))
   {
     mConsole << endl << "Importer::addGroup: Committ " << mData.value("GroupPath")
              << "..." << flush;
 
-    mToDo.remove("committGroup");
+    mToDo.remove("commitGroup");
     mToDo.remove("groupPending");
 
     mFilu->setSqlParm(":groupPath", mData.value("_GroupPath"));
@@ -909,7 +909,7 @@ void Importer::addGroup()
     return;
   }
 
-  // save path to detect if group changed
+  // save path to detect if group was changing
   QString path = mData.value("GroupPath");
 
   if(!mData.contains("_GroupPath"))
@@ -920,8 +920,8 @@ void Importer::addGroup()
 
   if(mData.value("_GroupPath") != path)
   {
-    mToDo.insert("committGroup");
-    addGroup(); // call myself to make the committ
+    mToDo.insert("commitGroup");
+    addGroup(); // call myself to make the commit
 
     mData.insert("_GroupPath", path);
   }

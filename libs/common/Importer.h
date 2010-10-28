@@ -72,11 +72,11 @@ class Importer : public FClass
     void          addGroup();
 
     QString       mOrigData;           // copy of the data at import(), FIXME:unused
-    QStringList   mPendingData;        // collect data till committetd
-    QHash<QString, QString> mData;     // the splittet mOrigData associated to header
+    QStringList   mPendingData;        // collect data till committed
+    QHash<QString, QString> mData;     // the split mOrigData associated to the [Header]
     QStringList   mHeader;             // must be a stringlist, we need the positions of header data
     QSet<QString> mGlobalKeys;
-    QSet<QString> mToDo;               // holds notes, wich job is todo to avoid redundant if()
+    QSet<QString> mToDo;               // holds notes, which job is todo to avoid redundant if()
     bool          mPrepared;
 
     QString       mMustBeUnique;
@@ -84,9 +84,9 @@ class Importer : public FClass
     QStringList   mKnownSymbolTypes;
     QHash<QString, bool> mKnownSTisProvider; // SymbolType is...?
     int           mTotalSymbolCount;
-    QStringList   mUsedRefSymbols;     // referenz symbols, don't install
-    QStringList   mUsedKnownSymbols;   // none provider symbols wich has to be installed
-    int           mUsedSymbols;        // provider symbols wich has to be installed
+    QStringList   mUsedRefSymbols;     // reference symbols, don't install
+    QStringList   mUsedKnownSymbols;   // none provider symbols which has to be installed
+    int           mUsedSymbols;        // provider symbols which has to be installed
     QStringList   mAllUsedSymbols;     // mUsedRefSymbols + mUsedKnownSymbols + mUsedSymbols
     FiTuple*      mFi;
     SymbolTuple*  mSymbol;
