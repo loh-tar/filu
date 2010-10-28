@@ -357,6 +357,11 @@ bool PlotSheet::event(QEvent* event)
 
 bool PlotSheet::checkForCO(QEvent* event)
 {
+  // Returns true if event was taken by a CO. But do *not* mark event as ignored
+  // if event was not used!
+
+  // Well, we use the event anyway to test if event is used,
+  // so take care that is later set back to accepted if it is not used.
   event->ignore();
 
   if(mPainter->mCOInProcess)
@@ -426,6 +431,8 @@ bool PlotSheet::checkForCO(QEvent* event)
   }
   else
   {
+    // Here we are, set back to accepted
+    event->accept();
     return false;
   }
 }
