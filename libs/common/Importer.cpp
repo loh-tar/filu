@@ -257,7 +257,7 @@ bool Importer::handleTag(QStringList& row)
   QString key, value;
   buildPair(key, value, row.at(0));
 
-  mGlobalKeys.insert(key);
+  //mGlobalKeys.insert(key);
   mData.insert(key, value);
   //qDebug() << "Importer::handleTag: New global Key: " << key << value;
 
@@ -272,7 +272,8 @@ QString Importer::makeUnique(const QString& key)
   for(int i = 0; true; ++i)
   {
     unique = key + QString::number(i);
-    if(!mData.contains(unique)) break;
+    //if(!mData.contains(unique)) break;
+    if(!mHeader.contains(unique)) break;
   }
 
   return unique;
@@ -283,7 +284,8 @@ void Importer::buildPair(QString& key, QString& value, const QString& line)
   // line looks like e.g. "[Provider]Yahoo" or "[Market1]Xetra"
   QStringList pair = line.split("]");
   pair[0].remove("[");
-  //key = makeUnique(pair.at(0));
+  // don't call here: key = makeUnique(pair.at(0))
+  // a global key can't be auto numbered.
   key = pair.at(0);
   if(mMustBeUnique.contains(key)) key.append("0");
   if(pair.size() > 1) value = pair.at(1);

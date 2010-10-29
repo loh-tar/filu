@@ -36,7 +36,10 @@ Controlling Tags
   following data are ordered in the same wise as the here listed Keys. Depend on
   which Keys are set will the Importer determine what data are able to store in
   the database. All previous declared Keys by [Header] are deleted, but *only*
-  these! Other Keys stay valid.
+  these! Other Keys stay valid. NOTE: New declared keys take not care about
+  existing keys defined with "[<Foo>]bar". That is especialy importand for
+  e.g. Provider/Symbol/Market. A maybe existing Symbol0 will be overwritten
+  with the new Header-Symbol, wich will be append by 0 and not 1, see below.
 
 [Ignore]foo=bar FIXME: not implemented
   Will ignore all data where key 'foo' has value 'bar'
@@ -79,7 +82,7 @@ with "(either or...)".
 
 <SymbolKey> is a must have but could be Symbol, RefSymbol or <KnownSymbolType>.
 
-<KnownSymbolType> depend on your database entrys. Typically known types are
+<KnownSymbolType> depend on your database entries. Typically known types are
 Reuters and Yahoo.
 
 
@@ -208,8 +211,8 @@ Quality (optional)
   see doc/hacking-provider-scripts.txt
 
 
-Groups, And Content Of Groups At Performerf
-============================================
+Groups, And Content Of Groups, At Performerf
+==============================================
 Creating a group, if not already exist,  in the navi panel of performerf and add
 a FI to that group.
 
