@@ -869,7 +869,7 @@ void Importer::addGroup()
 {
   if(mToDo.contains("commitGroup"))
   {
-    mConsole << endl << "Importer::addGroup: Committ " << mData.value("GroupPath")
+    mConsole << endl << "Importer::addGroup: Commit " << mData.value("GroupPath")
              << "..." << flush;
 
     mToDo.remove("commitGroup");
