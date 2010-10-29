@@ -78,7 +78,6 @@ void Importer::reset()
 {
   mPendingData.clear();
   mHeader.clear();
-  mGlobalKeys.clear();
   mData.clear();
   mKnownSymbolTypes.clear();
   mKnownSTisProvider.clear();
@@ -222,7 +221,6 @@ bool Importer::handleTag(QStringList& row)
     // delete old header keys, be on the save side
     for(int i = 0; i < mHeader.size(); ++i)
     {
-      if(mGlobalKeys.contains(mHeader.at(i))) continue;
       mData.remove(mHeader.at(i));
     }
 
@@ -257,7 +255,6 @@ bool Importer::handleTag(QStringList& row)
   QString key, value;
   buildPair(key, value, row.at(0));
 
-  //mGlobalKeys.insert(key);
   mData.insert(key, value);
   //qDebug() << "Importer::handleTag: New global Key: " << key << value;
 
@@ -272,7 +269,6 @@ QString Importer::makeUnique(const QString& key)
   for(int i = 0; true; ++i)
   {
     unique = key + QString::number(i);
-    //if(!mData.contains(unique)) break;
     if(!mHeader.contains(unique)) break;
   }
 
