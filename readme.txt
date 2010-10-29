@@ -198,5 +198,12 @@ Now replace the original with the new compiled one:
 
 Ubuntu
 --------
-Not tested. But the procedure is the same as for Arch. You may only to have adjust
-the paths where libpq and qt is located.
+Thanks to Thomas for reporting, tested with Kubuntu 10.04.
+  qmake -o Makefile "INCLUDEPATH+=/usr/include/postgresql" "LIBS+=-L/usr/lib -lpq" psql.pro
+  make
+
+If you like make a backup of the original driver:
+  sudo cp /usr/lib/qt4/plugins/sqldrivers/libqsqlpsql.so /your-choice-dir/orig-libqsqlpsql.so
+
+Now replace the original with the new compiled one:
+  sudo cp libqsqlpsql.so /usr/lib/qt4/plugins/sqldrivers/
