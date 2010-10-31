@@ -157,8 +157,12 @@ Download and unzip qt-everywhere-opensource-src-4.7.0.tar.gz from
 NOTE: If your distribution uses a newer or older version of Qt, it might be wise
       to download the suitable qt-source. They could named different, e.g.
 qt-x11-opensource-src-4.5.3.tar.gz. The source tree may also looks different, so
-you have to look for the appropriate files. In case of a newer version it is of cause
-possible that the bug is fixed and here is nothing to do.
+you have to look for the appropriate files. In case of a newer version it is of
+cause possible that the bug is fixed and here is nothing to do.
+
+NOTE: When your distribution install an update of Qt may the here compiled
+      driver fix overwritten. In that case you have to redo the last step and
+replace the original with the self compiled driver.
 
 Edit the file
   qt-everywhere-opensource-src-4.7.0/src/sql/drivers/psql/qsql_psql.cpp
