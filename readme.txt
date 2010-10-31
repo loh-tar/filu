@@ -199,6 +199,9 @@ Now replace the original with the new compiled one:
 Ubuntu
 --------
 Thanks to Thomas for reporting, tested with Kubuntu 10.04.
+You need an additional .deb package:
+  libpq-dev
+
   qmake -o Makefile "INCLUDEPATH+=/usr/include/postgresql" "LIBS+=-L/usr/lib -lpq" psql.pro
   make
 
