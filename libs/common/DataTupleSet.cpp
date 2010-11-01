@@ -69,11 +69,11 @@ bool DataTupleSet::append(const QString& key)
     //qDebug() << "DataTupleSet::append() key already exist:" << key;
     return false;
   }
-  
+
   DataTuple* dt = new DataTuple(dataTupleSize(), key);
-  
+
   while(dt->next()) dt->setValue(0.0); // needed e.g. by CalcWatchDogs.cpp
-  
+
   return append(dt);
 }
 
@@ -84,7 +84,7 @@ bool DataTupleSet::append(DataTuple* dt)
     //qDebug() << "DataTupleSet::append() key already exist:" << dt->Name;
     return false;
   }
-  
+
   if(DataSet.isEmpty())
   {
     MaxIndex = dt->size() - 1;
@@ -229,7 +229,7 @@ void DataTupleSet::setRange(int from /* = -1 */, int count /* = -1 */)
   int to = count + from;
   if(count < 0 or to > MaxIndex) RangeTo = MaxIndex;
   else RangeTo = to;
-  
+
   rewind();
 }
 
@@ -261,7 +261,7 @@ void DataTupleSet::setNeededBars(const QString& name, int value)
 int DataTupleSet::neededBars(const QString& name)
 {
   if(!DataSet.contains(name)) return 1; // in case name is a constant (number)
- 
+
   return DataSet.value(name)->mNeedsBars;
 }
 
