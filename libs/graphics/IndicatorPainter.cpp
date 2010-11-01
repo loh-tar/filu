@@ -55,6 +55,22 @@ IndicatorPainter::IndicatorPainter(PlotSheet* parent)
 
 IndicatorPainter::~IndicatorPainter()
 {
+  // clean up mPlotCommands
+  for(int i = 0; i < mPlotCommands.size(); i++)
+  {
+    delete mPlotCommands[i];
+  }
+
+  // delete old chart objects, if some
+  COType* oldCO;
+  foreach(oldCO, mCObjects)
+  {
+    delete oldCO;
+  }
+
+  if(mXSTicker)      delete mXSTicker;
+  delete mPlotType;
+  delete mScaler;
   delete mIndicator;
   if(mStaticSheet)   delete mStaticSheet;
   if(mVolatileSheet) delete mVolatileSheet;
@@ -64,7 +80,13 @@ bool IndicatorPainter::useIndicatorFile(const QString& file)
 {
   clearErrors();
 
+  // only call mPlotCommands.clear() is not enough
+  for(int i = 0; i < mPlotCommands.size(); i++)
+  {
+    delete mPlotCommands[i];
+  }
   mPlotCommands.clear();
+
   mPlotDataKeys.clear();
   mPrimaryValue.clear();
 

@@ -45,6 +45,7 @@ AgentF::AgentF(QCoreApplication* app)
 
 AgentF::~AgentF()
 {
+  if(mScript)   delete mScript;
   if(mImporter) delete mImporter;
   if(mExporter) delete mExporter;
 }
@@ -136,11 +137,14 @@ void AgentF::addEODBarData(const QStringList& parm)
 
   // because the IDs are don't set, we have to set they now
   // parm[2]=<symbol>, parm[3]=<market>, parm[4]=<provider>
-  if(!mFilu->searchSymbol(parm[2], parm[3], parm[4]))
+  SymbolTuple* st = mFilu->searchSymbol(parm[2], parm[3], parm[4]);
+  if(!st)
   {
     printError(QString("Symbol not found: %1, %2, %3").arg(parm[2]).arg(parm[3]).arg(parm[4]));
     return;
   }
+
+  delete st; // not used
 
   DateRange dateRange;
 

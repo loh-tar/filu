@@ -42,6 +42,7 @@ class CalcTALib : public CalcType
 
   protected:
     bool          initTALib(TA_ParamHolder **parmHolder);
+    void          freesParmHolder(TA_ParamHolder *parmHolder);
     void          setFirstValid();
     TA_Real*      valueArray(const QString& key);
 

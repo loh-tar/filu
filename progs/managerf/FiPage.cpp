@@ -42,7 +42,10 @@ FiPage::FiPage(FWidget* parent) : ManagerPage(parent)
 }
 
 FiPage::~FiPage()
-{}
+{
+  if(mFi) delete mFi;
+  if(mSymbols) delete mSymbols;
+}
 
 void FiPage::createPage()
 {

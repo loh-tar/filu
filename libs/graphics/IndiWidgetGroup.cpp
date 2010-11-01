@@ -25,6 +25,7 @@
 IndiWidgetGroup::IndiWidgetGroup(FWidget* parent)
                : FWidget(parent)
                , mSetName("DefaultSet")
+               , mBars(0)
 {
   init();
 }
@@ -32,6 +33,7 @@ IndiWidgetGroup::IndiWidgetGroup(FWidget* parent)
 IndiWidgetGroup::IndiWidgetGroup(const QString& name, FWidget* parent)
                : FWidget(parent)
                , mSetName(name)
+               , mBars(0)
 {
   init();
 }
@@ -40,6 +42,7 @@ IndiWidgetGroup::~IndiWidgetGroup()
 {
   saveSetup();
   delete mSplitter;
+  if(mBars) delete mBars;
 }
 
 void IndiWidgetGroup::init()
@@ -88,6 +91,10 @@ void IndiWidgetGroup::loadSetup(const QString& setup)
 
 void IndiWidgetGroup::showBarData(BarTuple* bars)
 {
+  if(mBars) delete mBars;
+
+  mBars = bars;
+
   for(int i = 0; i < mSplitter->count(); ++i)
   {
     IndicatorWidget* indi = (IndicatorWidget*)mSplitter->widget(i);

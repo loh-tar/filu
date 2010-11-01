@@ -213,5 +213,7 @@ void PerformerF::showWindowTitle(const QString& symbol, const QString& market)
     name = fi->name();
   }
 
+  if(fi) delete fi;
+
   setWindowTitle(name + " (" + symbol + " " + market + ") - " + mWindowTitel);
 }

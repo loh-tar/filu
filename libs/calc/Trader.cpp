@@ -37,6 +37,10 @@ Trader::Trader(FClass* parent)
 
 Trader::~Trader()
 {
+  if(mIndicator) delete mIndicator;
+  Rule rule;
+  foreach(rule, mRules) delete rule.first; // delete the parser
+  mRules.clear();
 }
 
 bool Trader::useRuleFile(const QString& fileName)

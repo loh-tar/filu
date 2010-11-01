@@ -77,13 +77,9 @@ DataTuple::DataTuple(const QString& name, double* value, DataTupleSet* dts)
 
 DataTuple::~DataTuple()
 {
-  if(mMyOwnData)
-  {
-    delete []Value;
+  if(mMyOwnData) delete []Value;
 
-    if(Color)
-      delete []Color;
-  }
+  if(Color) delete []Color;
 
   if(mIsAutonom)
   {

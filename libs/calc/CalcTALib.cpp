@@ -199,7 +199,8 @@ bool CalcTALib::calc()
   if(!retCode == TA_SUCCESS )
   {
     // error
-   qDebug() << "CalcTALib::calc: TALib returned error code" << retCode;
+    qDebug() << "CalcTALib::calc: TALib returned error code" << retCode;
+    freesParmHolder(parmHolder);
     return false;
   }
 
@@ -210,6 +211,8 @@ bool CalcTALib::calc()
     QString key = hit.next().value();
     mData->setValidRange(key, outBegIdx + mFirstValid, outNbElement);
   }
+
+  freesParmHolder(parmHolder);
 
   return true;
 }
@@ -237,6 +240,7 @@ int CalcTALib::barsNeeded(DataTupleSet* data)
     // error
     qDebug() << "error 7";
     mData = save;
+    freesParmHolder(parmHolder);
     return -1;
   }
 
@@ -250,6 +254,7 @@ int CalcTALib::barsNeeded(DataTupleSet* data)
   }
 
   mData = save;
+  freesParmHolder(parmHolder);
 
   return lookback;
 }
@@ -390,6 +395,19 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
   }
 
  return true;
+}
+
+void CalcTALib::freesParmHolder(TA_ParamHolder *parmHolder)
+{
+  TA_RetCode retCode;
+
+  retCode = TA_ParamHolderFree(parmHolder);
+
+  if(!retCode == TA_SUCCESS)
+  {
+    // error
+    qDebug() << "CalcTALib::freesParmHolder: TALib returned error code: " << retCode;
+  }
 }
 
 void CalcTALib::setFirstValid()

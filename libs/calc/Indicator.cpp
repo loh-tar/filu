@@ -43,6 +43,11 @@ Indicator::~Indicator()
   if(mData)  delete mData;
   if(mTALib) delete mTALib;
 
+  for(int i = 0; i < mCalcCommands.size(); ++i)
+  {
+    delete mCalcCommands[i];
+  }
+
   delete mAlreadyIncluded;
   delete mUsedVariables;
   delete mBuildInVariables;
@@ -95,6 +100,7 @@ DataTupleSet* Indicator::calculate(BarTuple* bars)
   {
     addErrorText("Indicator::calculate: Fail to create mData");
     delete mData;
+    mData = 0;
     return 0;
   }
 
@@ -116,6 +122,7 @@ DataTupleSet* Indicator::calculate(DataTupleSet* data)
 
   // All CalcType needs access to mData,
   // so we have to copy here if direct called from outside (e.g. Trader.cpp)
+  DataTupleSet* saveOwnMData = mData;
   mData = data;
 
   data->setRange();
@@ -187,6 +194,9 @@ DataTupleSet* Indicator::calculate(DataTupleSet* data)
       addErrorText(mCalcCommands.at(i)->errorText());
     }
   }
+
+  // Restore
+  mData = saveOwnMData;
 
   if(hasError()) return 0;
 
@@ -418,6 +428,10 @@ bool Indicator::prepare(QStringList& indicator)
   mUsedVariables->insert("VOLUME");
   mUsedVariables->insert("OPINT");
 
+  for(int i = 0; i < mCalcCommands.size(); ++i)
+  {
+    delete mCalcCommands[i];
+  }
   mCalcCommands.clear();
 
   //

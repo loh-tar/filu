@@ -24,6 +24,7 @@ Script::Script(FClass* parent)
       : FObject(parent)
       , mProviderPath(mRcFile->getST("ProviderPath"))
       , mShowWaitWindow(false)
+      , mProc(0)
 {}
 
 // Script::Script(FObject* parent)
@@ -33,7 +34,9 @@ Script::Script(FClass* parent)
 // {}
 
 Script::~Script()
-{}
+{
+  if(mProc) delete mProc;
+}
 
 
 QStringList * Script::execute(const QString& script, const QStringList& parameters)
@@ -49,6 +52,8 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
     qDebug("Script::execute: error - no script name");
     return 0;
   }
+
+  if(mProc) delete mProc;
 
   if(mShowWaitWindow)
   {
@@ -124,7 +129,10 @@ QStringList* Script::askProvider(const QString& provider
 
 void Script::stopRunning()
 {
+  if(!mProc) return;
   mProc->terminate();
+  delete mProc;
+  mProc = 0;
 }
 
 QString Script::locateProviderScript(const QString& provider, const QString& function)

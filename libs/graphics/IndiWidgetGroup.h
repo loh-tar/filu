@@ -57,6 +57,7 @@ class IndiWidgetGroup : public FWidget
     QString       mSetName;
     QString       mFullIndiSetsPath;
     QSplitter*    mSplitter;
+    BarTuple*     mBars;
 };
 
 #endif

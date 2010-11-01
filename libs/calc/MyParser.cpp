@@ -48,6 +48,7 @@ MyParser::MyParser()
 MyParser::~MyParser()
 {
   if(mMyVariables) delete mVariables;
+  if(mUsedMData) delete mUsedMData;
 }
 
 bool MyParser::setExp(const QString& expr)

@@ -51,7 +51,7 @@ DiggerF::DiggerF(QObject* parent)
 
 DiggerF::~DiggerF()
 {
-
+  if(mIndicator) delete mIndicator;
 }
 
 void DiggerF::printUsage()
