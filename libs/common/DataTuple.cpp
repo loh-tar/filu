@@ -35,10 +35,10 @@ DataTuple::DataTuple(int size, const QString& name)
   Index     = new int(-1);
   RangeFrom = new int(-1);
   RangeTo   = new int(MaxIndex);
-  
+
   mOldRangeFrom = -1;
   mOldRangeTo   = -1;
-  
+
   setRange();
 
   firstValid = 0;
@@ -57,15 +57,15 @@ DataTuple::DataTuple(const QString& name, double* value, DataTupleSet* dts)
 
   Name  = name;
   Label = name;
-  
+
   MaxIndex  =  dts->MaxIndex;
   Index     = &dts->Index;
   RangeFrom = &dts->RangeFrom;
   RangeTo   = &dts->RangeTo;
-  
+
   mOldRangeFrom = -1;
   mOldRangeTo   = -1;
-  
+
   //setRange();
 
   firstValid = 0;
@@ -158,10 +158,10 @@ void DataTuple::setEvenColor(const QString& color)
 void DataTuple::setRange(int from /* = -1*/, int count /* = -1*/)
 {
   int to = count + from;
-  
+
   // check if new range setting or not
   if( (from == *RangeFrom) and ( to == *RangeTo) ) return;
-  
+
   if(from < 0 or from > MaxIndex) *RangeFrom = 0;
   else* RangeFrom = from;
 
@@ -180,7 +180,7 @@ void DataTuple::getExtrema(double& min, double& max)
     max = mMaxHigh;
     return;
   }
-  
+
   mOldRangeFrom = *RangeFrom;
   mOldRangeTo   = *RangeTo;
 
@@ -213,6 +213,6 @@ void DataTuple::quitAutonomy(DataTupleSet* dts)
   Index     = &dts->Index;
   RangeFrom = &dts->RangeFrom;
   RangeTo   = &dts->RangeTo;
-  
+
   mIsAutonom = false;
 }
