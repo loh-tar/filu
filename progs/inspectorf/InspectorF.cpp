@@ -434,6 +434,7 @@ void InspectorF::runTest()
 {
   if(mEdited) return;
 
+  mBackTester->setDates(mFromDate.date(), mToDate.date());
   mBackTester->calc();
 }
 

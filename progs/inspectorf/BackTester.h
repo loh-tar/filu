@@ -41,6 +41,8 @@ class BackTester : public QThread, public FClass
     void            prepare(const QString& rule,
                             const QString& indicator,
                             const QDate& fdate, const QDate tdate);
+
+    void            setDates(const QDate& fdate, const QDate tdate);
     void            calc();
 
   signals:

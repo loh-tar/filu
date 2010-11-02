@@ -85,6 +85,12 @@ void BackTester::prepare(const QString& rule,
 
 }
 
+void BackTester::setDates(const QDate& fdate, const QDate tdate)
+{
+  mFromDate = fdate;
+  mToDate   = tdate;
+}
+
 void BackTester::calc()
 {
   QMutexLocker locker(&mMutex);
