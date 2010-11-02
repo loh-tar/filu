@@ -164,6 +164,7 @@ InspectorF::~InspectorF()
   saveSettings();
 
   if(mBackTester) delete mBackTester;
+  delete mTrader;
 }
 
 void InspectorF::init()
