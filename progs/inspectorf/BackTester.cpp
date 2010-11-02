@@ -41,6 +41,7 @@ BackTester::~BackTester()
 //    qDebug() << "~BackTester() wait for termination";
   wait();
   qDebug() << "I'm dead";
+  delete mTrader;
 }
 
 void BackTester::init()

@@ -668,10 +668,12 @@ int Trader::simulateNext()
   if(!simulate(data))
   {
     delete data;
+    delete bars;
     return 2;
   }
 
   delete data;
+  delete bars;
 
   return 1;
 }
