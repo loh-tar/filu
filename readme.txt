@@ -14,6 +14,9 @@ Index
 =================
 To become Filu working follow these steps recursive from top to down.
 
+If you want to update your Filu installation from a snapshot release take a look
+at doc/changelog.txt for things which must be considered.
+
 
 1-1- Install The Database
 ===========================
