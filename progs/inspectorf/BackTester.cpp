@@ -217,6 +217,7 @@ bool BackTester::backtest()
       if(ret == 2)
       {
         addErrorText(mTrader->errorText());
+        emit loopDone(loop);
         continue; // any problem while simulation, but go ahead
       }
 
