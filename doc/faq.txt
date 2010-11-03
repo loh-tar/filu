@@ -14,12 +14,12 @@ about that tend to an AgentF command which print out a table to stdout or into a
 file. Technically should it not to be as hard. What nicely works is exporting
 static data out of the database. For details see doc/export-data.txt.
 
-Q: Which other platforms than Ubuntu Linux are supported?
-A: I'm only use Ubuntu so I can't say it for sure, but it should run on all Unix
-   like systems with some make-/.pro file modifications. If you are an
-experienced BSD or OSX user and got it running let me know how we can put all
-under one hood. If you are a Suse/RedHat/what-ever-Linux user and got it
-running, let me know too. If you are a Windows... um, nope incredibly.
+Q: Which other platforms than Ubuntu and Arch Linux are supported?
+A: I can't say it for sure, but it should run on all Unix like systems with some
+   CMakeLists.txt modifications. If you are an experienced BSD, OSX, Suse,
+RedHat, what-ever-Linux user and got it running let me know how we can put all
+under one hood. I think it will not run on Windows, but if you got it, let me
+know too.
 
 
 Miscellaneous
