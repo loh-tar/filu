@@ -3,16 +3,21 @@ This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
 
 Priority
 ==========
-The priority of things todo are quite arbitrary chosen and may not guaranty
-that things are done in this order not even that they ever be done.
-
 H: high
 M: medium
 L: low
 
+The priority of things todo are quite arbitrary chosen and may not guaranty
+that things are done in this order not even that they ever be done.
+
+You are kindly invited to take one of these points to start your contribution.
+But you could of cause chose any other, not here listed, issue if you like.
+
 
 All Parts
 ===========
+H: finish cmake build system. I think there need some modifications in use of
+   variables
 H: add dbus support to the progs. Send messages whats going on and react on such
    message, e.g. agentf."FI updated" -> performerf "ah, reload chart"
 M: review code and use for error messages/handling from FClass addErrorText(),
