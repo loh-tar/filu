@@ -105,11 +105,14 @@ void FiPage::showEvent(QShowEvent * /*event*/)
 
 void FiPage::search()
 {
+  QString text = mLook4Edit->text();
+  if(text.isEmpty()) return;
+
   mFilu->setMarketName("");
   mFilu->setProviderName("");
   mFilu->setFiId(0);
   mFilu->setFiType("");
-  mFilu->setSymbolCaption(mLook4Edit->text());
+  mFilu->setSymbolCaption(text);
   mFilu->setOnlyProviderSymbols(false);
   SymbolTuple* symbols;
   symbols = mFilu->getSymbols();
@@ -129,7 +132,7 @@ void FiPage::search()
   }
   else
   {
-    mFilu->setFiName(mLook4Edit->text());
+    mFilu->setFiName(text);
     //mFilu->setFiType("");
     if(mFi) delete mFi;
     mFi = mFilu->getFi(true);
