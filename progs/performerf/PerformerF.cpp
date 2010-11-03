@@ -29,6 +29,7 @@ PerformerF::PerformerF()
           : FMainWindow("PerformerF")
 {
   mWindowTitel = tr("PerformerF - The Filu Chart Tool");
+  setWindowTitle(mWindowTitel);
 
   // some needs
   QPixmap icon(10, 10);
