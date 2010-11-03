@@ -372,7 +372,7 @@ bool Trader::simulate(DataTupleSet* data)
   //qDebug() << "Trader::simulate: indicator calculated in" << time.restart() << "milliseconds";
 
   // give each Parser at this point mData. Here includes mData only
-  // indicator variables. So the Parser can check witch of the variables
+  // indicator variables. So the Parser can check which of the variables
   // he use he have to read out of mData. This is important because
   // the Parser can only use mVariable to do the job. So if he have to
   // calc an expression with a mData variable he must copy them into mVariable.
