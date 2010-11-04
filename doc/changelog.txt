@@ -1,9 +1,23 @@
+2010-11-04    Release new snapshot. To update from the 2010-07-02 snapshot you
+              have *not* to reinstall the database. Read again the readme how to
+              compile the progs now and remove the added Qt4.3.5 lines in your
+              ~/.bashrc file.
+
+2010-11-03
+  InspectorF: Fix some minor bugs. Needs still many improvements.
+  ManagerF:   Fix some hanging at FiPage when search field was cleared.
+
+2010-11-02
+  All Parts:  Oops! Close many memory leaks detected by running Valgrind. It
+              seems that there are some memory leaks in the Qt library too, but
+              maybe I'm wrong.
+
 2010-10-26
-              change build system from qmake to cmake. Read again the readme for
-              updated install instructions if you are a skilled Filu user.
+              Change the build system from qmake to cmake. Read again the readme
+              for updated install instructions if you are a skilled Filu user.
 
 2010-10-25
-              fix a bug with my hard coded user name when export chart objects
+  Filu:       Fix a bug with my hard coded user name when export chart objects.
 
 2010-06-25
               homepage updated with a nicer look.
