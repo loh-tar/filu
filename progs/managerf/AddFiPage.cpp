@@ -81,7 +81,7 @@ void AddFiPage::createPage()
 
   QFontMetrics f(font());
   int w = f.width("X");
-  mAnySymbol = new QLineEdit;
+  mRefSymbol = new QLineEdit;
   mName = new QLineEdit;
   mName->setMinimumWidth(w * 30);
   mType = new QLineEdit;
@@ -105,7 +105,7 @@ void AddFiPage::createPage()
 
   QGridLayout* addEditLineLO = new QGridLayout;
   addEditLineLO->addWidget( new QLabel("RefSymbol"), 0, 0);
-  addEditLineLO->addWidget(mAnySymbol, 1, 0);
+  addEditLineLO->addWidget(mRefSymbol, 1, 0);
   addEditLineLO->addWidget( new QLabel("Name"), 0, 1);
   addEditLineLO->addWidget(mName, 1, 1);
   addEditLineLO->addWidget( new QLabel("Type"), 0, 2);
@@ -165,8 +165,8 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
   mResultList->selectRow(row);
 
   if(mResultKeys.contains("Symbol"))
-    mAnySymbol->setText(mResultList->item(row, mResultKeys.value("Symbol"))->text());
-  else mAnySymbol->setText("");
+    mRefSymbol->setText(mResultList->item(row, mResultKeys.value("Symbol"))->text());
+  else mRefSymbol->setText("");
 
   if(mResultKeys.contains("Name"))
     mName->setText(mResultList->item(row, mResultKeys.value("Name"))->text());
@@ -337,11 +337,11 @@ void AddFiPage::addToDB()
 
     SymbolTuple* symbol;
 
-    if(!mAnySymbol->text().isEmpty())
+    if(!mRefSymbol->text().isEmpty())
     {
       symbol = new SymbolTuple(2);
       symbol->next();
-      symbol->setCaption(mAnySymbol->text());
+      symbol->setCaption(mRefSymbol->text());
       symbol->setMarket("");
       symbol->setOwner("");
     }

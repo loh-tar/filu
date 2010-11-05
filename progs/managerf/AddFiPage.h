@@ -58,7 +58,7 @@ class AddFiPage : public ManagerPage
     QPushButton*  mSearchCancelBtn;
 
     QPushButton*  mAddBtn;
-    QLineEdit*    mAnySymbol;
+    QLineEdit*    mRefSymbol;
     QLineEdit*    mName;
     QLineEdit*    mType;
     QLineEdit*    mSymbol;
