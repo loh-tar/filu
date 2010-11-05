@@ -24,15 +24,11 @@
 
 AddFiPage::AddFiPage(ManagerF* parent) : ManagerPage(parent)
 {
-  mIcon = QIcon(":/icons/configure.xpm");
-  mIconText = tr("Add new FI");
   createPage();
 }
 
 AddFiPage::AddFiPage(FWidget* parent) : ManagerPage(parent)
 {
-  mIcon = QIcon(":/icons/configure.xpm");
-  mIconText = tr("Add new FI");
   createPage();
 }
 
@@ -43,6 +39,8 @@ AddFiPage::~AddFiPage()
 
 void AddFiPage::createPage()
 {
+  mIcon = QIcon(":/icons/configure.xpm");
+  mIconText = tr("Add new FI");
   readSettings();
 
   mScripter = new Script(this);
