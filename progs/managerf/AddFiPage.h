@@ -60,7 +60,7 @@ class AddFiPage : public ManagerPage
     QPushButton*  mAddBtn;
     QLineEdit*    mRefSymbol;
     QLineEdit*    mName;
-    QLineEdit*    mType;
+    QComboBox*    mType;
     QLineEdit*    mSymbol1, *mSymbol2, *mSymbol3;
     QComboBox*    mMarket1, *mMarket2, *mMarket3;
     QComboBox*    mSymbolType1, *mSymbolType2, *mSymbolType3;

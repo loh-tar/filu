@@ -84,7 +84,12 @@ void AddFiPage::createPage()
   mRefSymbol = new QLineEdit;
   mName = new QLineEdit;
   mName->setMinimumWidth(w * 30);
-  mType = new QLineEdit;
+
+  mType = new QComboBox;
+  QStringList types;
+  mFilu->getFiType(types);
+  mType->addItems(types);
+
   mSymbol1 = new QLineEdit;
   mSymbol2 = new QLineEdit;
   mSymbol3 = new QLineEdit;
@@ -202,9 +207,9 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
   else mName->setText("");
 
   if(mResultKeys.contains("Type"))
-    mType->setText(mResultList->item(row, mResultKeys.value("Type"))->text());
-  else if(mDisplayType == "Index") mType->setText("Index");
-        else mType->setText("");
+    mType->setCurrentIndex(mType->findText(mResultList->item(row, mResultKeys.value("Type"))->text()));
+  else if(mDisplayType == "Index") mType->setCurrentIndex(mType->findText("Index"));
+        else mType->setCurrentIndex(mType->findText(""));
 
   if(mResultKeys.contains("MySymbol"))
     mSymbol1->setText(mResultList->item(row, mResultKeys.value("MySymbol"))->text());
@@ -398,7 +403,7 @@ void AddFiPage::addToDB()
 
     fi.setSymbol(symbol);
     fi.setName(mName->text());
-    fi.setType(mType->text());
+    fi.setType(mType->currentText());
 
     // here is the beef
     mFilu->addFiCareful(fi);
