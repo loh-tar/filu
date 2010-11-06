@@ -19,25 +19,15 @@
 
 #include "ManagerPage.h"
 
-// ManagerPage::ManagerPage(ManagerF* parent)
-//            : FClass((FClass*)parent)
 ManagerPage::ManagerPage(ManagerF* parent)
            : FWidget((FWidget*)parent)
 {
-//qDebug() << "ManagerPage::ManagerPage(ManagerF* parent)        :FClass((FClass*)parent)" << mFilu;
-  //mFilu = ((ManagerF*)parent)->mFilu;
-
   //createPage();
 }
 
-// ManagerPage::ManagerPage(FWidget* parent)
-//            : FClass((FClass*)parent)
 ManagerPage::ManagerPage(FWidget* parent)
            : FWidget(parent)
 {
-//qDebug() << "ManagerPage::ManagerPage(FWidget* parent)        :FClass((FClass*)parent)" << mFilu;
-  //mFilu = ((ManagerF*)parent)->mFilu;
-
   //createPage();
 }
 
@@ -63,7 +53,7 @@ void ManagerPage::saveSettings()
 
 void ManagerPage::setPageIcon(QListWidgetItem* button)
 {
-//qDebug() << "ManagerPage::setPageIcon(QListWidgetItem* button)";
+  //qDebug() << "ManagerPage::setPageIcon(QListWidgetItem* button)";
   button->setIcon(mIcon);
   button->setText(mIconText);
   button->setTextAlignment(Qt::AlignHCenter);
