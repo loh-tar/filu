@@ -41,7 +41,6 @@ void AddFiPage::createPage()
 {
   mIcon = QIcon(":/icons/configure.xpm");
   mIconText = tr("Add new FI");
-  readSettings();
 
   mScripter = new Script(this);
   connect(mScripter, SIGNAL(newData(QStringList *))
@@ -56,6 +55,7 @@ void AddFiPage::createPage()
   connect(mSearchCancelBtn, SIGNAL(clicked()), this, SLOT(searchOrCancel()));
 
   mProviderSelector = new QComboBox;
+  mProviderPath = mRcFile->getST("ProviderPath");
   QDir dir(mProviderPath);
   mProviderSelector->insertItems(0, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot));
   mProviderSelector->setCurrentIndex(mProviderSelector->findText("Filu"));
@@ -341,9 +341,38 @@ void AddFiPage::fillResultTable(QStringList* data)
   mResultList->update();
 }
 
-void AddFiPage::readSettings()
+void AddFiPage::loadSettings()
 {
-  mProviderPath = mRcFile->getST("ProviderPath");
+  mRcFile->beginGroup("AddFiPage");
+
+  mType->setCurrentIndex(mType->findText(mRcFile->getST("Type")));
+
+  mMarket1->setCurrentIndex(mMarket1->findText(mRcFile->getST("Market1")));
+  mMarket2->setCurrentIndex(mMarket2->findText(mRcFile->getST("Market2")));
+  mMarket3->setCurrentIndex(mMarket3->findText(mRcFile->getST("Market3")));
+
+  mSymbolType1->setCurrentIndex(mSymbolType1->findText(mRcFile->getST("SymbolType1")));
+  mSymbolType2->setCurrentIndex(mSymbolType2->findText(mRcFile->getST("SymbolType2")));
+  mSymbolType3->setCurrentIndex(mSymbolType3->findText(mRcFile->getST("SymbolType3")));
+
+  mRcFile->endGroup(); // "AddFiPage"
+}
+
+void AddFiPage::saveSettings()
+{
+  mRcFile->beginGroup("AddFiPage");
+
+  mRcFile->set("Type", mType->currentText());
+
+  mRcFile->set("Market1", mMarket1->currentText());
+  mRcFile->set("Market2", mMarket2->currentText());
+  mRcFile->set("Market3", mMarket3->currentText());
+
+  mRcFile->set("SymbolType1", mSymbolType1->currentText());
+  mRcFile->set("SymbolType2", mSymbolType2->currentText());
+  mRcFile->set("SymbolType3", mSymbolType3->currentText());
+
+  mRcFile->endGroup(); // "AddFiPage"
 }
 
 void AddFiPage::searchOrCancel()

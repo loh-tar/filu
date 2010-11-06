@@ -34,6 +34,9 @@ class AddFiPage : public ManagerPage
                   AddFiPage(FWidget* parent);
     virtual      ~AddFiPage();
 
+    void          loadSettings();
+    void          saveSettings();
+
   protected slots:
     void          search();
     void          selectResultRow( int row, int column);
@@ -46,7 +49,7 @@ class AddFiPage : public ManagerPage
   protected:
     void          createPage();
     void          showEvent(QShowEvent * /*event*/);
-    void          readSettings();
+
 
     void          searchFi();
     void          searchIdx();
