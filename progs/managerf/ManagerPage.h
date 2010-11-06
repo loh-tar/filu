@@ -38,18 +38,18 @@ class ManagerPage : public FWidget
   //Q_OBJECT
 
   public:
-                ManagerPage(ManagerF* parent);
-                ManagerPage(FWidget* parent);
-    virtual    ~ManagerPage();
+                  ManagerPage(ManagerF* parent);
+                  ManagerPage(FWidget* parent);
+    virtual      ~ManagerPage();
 
-    virtual void loadSettings();
-    virtual void saveSettings();
+    virtual void  loadSettings();
+    virtual void  saveSettings();
 
-    void        setPageIcon(QListWidgetItem* button);
+    void          setPageIcon(QListWidgetItem* button);
 
   protected:
-    QIcon       mIcon;
-    QString     mIconText;
+    QIcon         mIcon;
+    QString       mIconText;
 };
 
 #endif
