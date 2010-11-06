@@ -433,8 +433,20 @@ void AddFiPage::addToDB()
     fi.setType(mType->currentText());
 
     // here is the beef
-    mFilu->addFiCareful(fi);
-    check4FiluError("AddFiPage::addToDB: Oops! new FI or Symbol not added to DB");
+    mFilu->errorText(); // make sure there are no old messages left
+    if(mFilu->addFiCareful(fi) < Filu::eSuccess)
+    {
+      check4FiluError("AddFiPage::addToDB: Oops! new FI or Symbol not added to DB");
+    }
+    else
+    {
+      // looks good, clear the edit fields
+      mRefSymbol->setText("");
+      mName->setText("");
+      mSymbol1->setText("");
+      mSymbol2->setText("");
+      mSymbol3->setText("");
+    }
 
 //   }
 }
