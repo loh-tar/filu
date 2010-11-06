@@ -394,8 +394,6 @@ void AddFiPage::addToDB()
 {
 //   if(mDisplayType == "Stock")
 //   {
-    qDebug() << "add to db";
-
     FiTuple fi(1);
 
     SymbolTuple* symbol;
