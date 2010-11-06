@@ -85,11 +85,23 @@ void AddFiPage::createPage()
   mName = new QLineEdit;
   mName->setMinimumWidth(w * 30);
   mType = new QLineEdit;
-  mSymbol = new QLineEdit;
-  mMarket = new QComboBox;
-  mMarket->setMinimumContentsLength(10);
-  mMarket->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-  mSymbolType = new QComboBox;
+  mSymbol1 = new QLineEdit;
+  mSymbol2 = new QLineEdit;
+  mSymbol3 = new QLineEdit;
+
+  mMarket1 = new QComboBox;
+  mMarket1->setMinimumContentsLength(10);
+  mMarket1->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+  mMarket2 = new QComboBox;
+  mMarket2->setMinimumContentsLength(10);
+  mMarket2->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+  mMarket3 = new QComboBox;
+  mMarket3->setMinimumContentsLength(10);
+  mMarket3->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+
+  mSymbolType1 = new QComboBox;
+  mSymbolType2 = new QComboBox;
+  mSymbolType3 = new QComboBox;
   // read all symbol types out of the DB
   QSqlQuery* query = mFilu->execSql("GetAllSymbolTypes");
   if(!check4FiluError("AddFiPage::createPage: ERROR while exec GetAllSymbolTypes.sql"))
@@ -98,7 +110,9 @@ void AddFiPage::createPage()
     {
       while(query->next())
       {
-         mSymbolType->insertItem(0, query->value(0).toString());
+         mSymbolType1->insertItem(0, query->value(0).toString());
+         mSymbolType2->insertItem(0, query->value(0).toString());
+         mSymbolType3->insertItem(0, query->value(0).toString());
       }
     }
   }
@@ -106,17 +120,30 @@ void AddFiPage::createPage()
   QGridLayout* addEditLineLO = new QGridLayout;
   addEditLineLO->addWidget( new QLabel("RefSymbol"), 0, 0);
   addEditLineLO->addWidget(mRefSymbol, 1, 0);
+  addEditLineLO->setColumnStretch(0, 2);
   addEditLineLO->addWidget( new QLabel("Name"), 0, 1);
-  addEditLineLO->addWidget(mName, 1, 1);
-  addEditLineLO->addWidget( new QLabel("Type"), 0, 2);
-  addEditLineLO->addWidget(mType, 1, 2);
-  addEditLineLO->addWidget( new QLabel("Symbol"), 0, 3);
-  addEditLineLO->addWidget(mSymbol, 1, 3);
-  addEditLineLO->addWidget( new QLabel("Market"), 0, 4);
-  addEditLineLO->addWidget(mMarket, 1, 4);
-  addEditLineLO->addWidget( new QLabel("Provider"), 0, 5);
-  addEditLineLO->addWidget(mSymbolType, 1, 5);
-  addEditLineLO->addWidget(mAddBtn, 1, 6);
+  addEditLineLO->addWidget(mName, 1, 1, 1, 3);          // span over three columns
+  addEditLineLO->setColumnStretch(3, 3);                // expand the empty column
+  addEditLineLO->addWidget( new QLabel("Type"), 0, 4);
+  addEditLineLO->addWidget(mType, 1, 4);
+
+  addEditLineLO->addWidget(mAddBtn, 1, 5);
+
+  addEditLineLO->addWidget( new QLabel("Symbol"), 2, 0);
+  addEditLineLO->addWidget(mSymbol1, 3, 0);
+  addEditLineLO->addWidget(mSymbol2, 4, 0);
+  addEditLineLO->addWidget(mSymbol3, 5, 0);
+
+  addEditLineLO->addWidget( new QLabel("Market"), 2, 1);
+  addEditLineLO->addWidget(mMarket1, 3, 1);
+  addEditLineLO->addWidget(mMarket2, 4, 1);
+  addEditLineLO->addWidget(mMarket3, 5, 1);
+
+  addEditLineLO->addWidget( new QLabel("Provider"), 2, 2);
+  addEditLineLO->addWidget(mSymbolType1, 3, 2);
+  addEditLineLO->addWidget(mSymbolType2, 4, 2);
+  addEditLineLO->addWidget(mSymbolType3, 5, 2);
+
 
   mFilu->setMarketName("");
   MarketTuple* markets = mFilu->getMarket();
@@ -125,7 +152,9 @@ void AddFiPage::createPage()
     QStringList sl;
     while(markets->next()) sl.append(markets->name());
     sl.sort();
-    mMarket->addItems(sl);
+    mMarket1->addItems(sl);
+    mMarket2->addItems(sl);
+    mMarket3->addItems(sl);
     delete markets;
   }
   else qDebug() << "AddFiPage::createPage: no markets found";
@@ -134,12 +163,12 @@ void AddFiPage::createPage()
   // build the main layout
   QGridLayout* searchLayout = new QGridLayout;
   searchLayout->addWidget(mProviderSelector  , 0, 0);
-  searchLayout->addWidget(mSearchField       , 0, 2);
   searchLayout->addWidget(mTypeSelector      , 0, 1);
+  searchLayout->addWidget(mSearchField       , 0, 2);
   searchLayout->addWidget(mSearchCancelBtn   , 0, 3);
   searchLayout->addWidget(mResultList    , 1, 0, 1, 4);
-  searchLayout->setColumnStretch(2, 1);
-  searchLayout->addLayout(addEditLineLO, 2, 0, 1, 4);
+  //searchLayout->setColumnStretch(2, 1);
+  searchLayout->addLayout(addEditLineLO, 2, 0, 1, 3);
 
   searchGroup->setLayout(searchLayout);
 
@@ -178,15 +207,15 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
         else mType->setText("");
 
   if(mResultKeys.contains("MySymbol"))
-    mSymbol->setText(mResultList->item(row, mResultKeys.value("MySymbol"))->text());
-  else mSymbol->setText("");
+    mSymbol1->setText(mResultList->item(row, mResultKeys.value("MySymbol"))->text());
+  else mSymbol1->setText("");
 
   if(mResultKeys.contains("Market"))
-    mMarket->setCurrentIndex(mMarket->findText(mResultList->item(row, mResultKeys.value("Market"))->text()));
+    mMarket1->setCurrentIndex(mMarket1->findText(mResultList->item(row, mResultKeys.value("Market"))->text()));
   else
-    mMarket->setCurrentIndex(mMarket->findText("OTC"));
+    mMarket1->setCurrentIndex(mMarket1->findText("OTC"));
 
-  mSymbolType->setCurrentIndex(mSymbolType->findText(mProvider));
+  mSymbolType1->setCurrentIndex(mSymbolType1->findText(mProvider));
 }
 
 void AddFiPage::search()
@@ -339,7 +368,7 @@ void AddFiPage::addToDB()
 
     if(!mRefSymbol->text().isEmpty())
     {
-      symbol = new SymbolTuple(2);
+      symbol = new SymbolTuple(4);
       symbol->next();
       symbol->setCaption(mRefSymbol->text());
       symbol->setMarket("");
@@ -347,13 +376,23 @@ void AddFiPage::addToDB()
     }
     else
     {
-      symbol = new SymbolTuple(1);
+      symbol = new SymbolTuple(3);
     }
 
     symbol->next();
-    symbol->setCaption(mSymbol->text());
-    symbol->setMarket(mMarket->currentText());
-    symbol->setOwner(mSymbolType->currentText());
+    symbol->setCaption(mSymbol1->text());
+    symbol->setMarket(mMarket1->currentText());
+    symbol->setOwner(mSymbolType1->currentText());
+
+    symbol->next();
+    symbol->setCaption(mSymbol2->text());
+    symbol->setMarket(mMarket2->currentText());
+    symbol->setOwner(mSymbolType2->currentText());
+
+    symbol->next();
+    symbol->setCaption(mSymbol3->text());
+    symbol->setMarket(mMarket3->currentText());
+    symbol->setOwner(mSymbolType3->currentText());
 
     fi.next(); // set on first position
 

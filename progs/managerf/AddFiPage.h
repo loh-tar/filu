@@ -61,9 +61,9 @@ class AddFiPage : public ManagerPage
     QLineEdit*    mRefSymbol;
     QLineEdit*    mName;
     QLineEdit*    mType;
-    QLineEdit*    mSymbol;
-    QComboBox*    mMarket;
-    QComboBox*    mSymbolType;
+    QLineEdit*    mSymbol1, *mSymbol2, *mSymbol3;
+    QComboBox*    mMarket1, *mMarket2, *mMarket3;
+    QComboBox*    mSymbolType1, *mSymbolType2, *mSymbolType3;
 
     Script*       mScripter;
 
