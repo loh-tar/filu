@@ -51,6 +51,16 @@ void  ManagerPage::createPage()
 }
 */
 
+void ManagerPage::loadSettings()
+{
+  //qDebug() << "ManagerPage::loadSettings()" << mIconText;
+}
+
+void ManagerPage::saveSettings()
+{
+  //qDebug() << "ManagerPage::saveSettings()" << mIconText;
+}
+
 void ManagerPage::setPageIcon(QListWidgetItem* button)
 {
 //qDebug() << "ManagerPage::setPageIcon(QListWidgetItem* button)";

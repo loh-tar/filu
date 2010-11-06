@@ -42,6 +42,9 @@ class ManagerPage : public FWidget
                 ManagerPage(FWidget* parent);
     virtual    ~ManagerPage();
 
+    virtual void loadSettings();
+    virtual void saveSettings();
+
     void        setPageIcon(QListWidgetItem* button);
 
   protected:

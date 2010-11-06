@@ -65,17 +65,31 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
  }
 
 ManagerF::~ManagerF()
-{}
+{
+  mRcFile->beginGroup("Manager");
+
+  for(int i = 0; i < mPageStack->count(); i++)
+  {
+    ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
+    mp->saveSettings();
+  }
+
+  mRcFile->endGroup();
+}
 
 void ManagerF::createIcons()
 {
+  mRcFile->beginGroup("Manager");
 
   for(int i = 0; i < mPageStack->count(); i++)
   {
     QListWidgetItem* icon = new QListWidgetItem(mPageIcons);
-    ManagerPage* helpMe = (ManagerPage*)mPageStack->widget(i);
-    helpMe->setPageIcon(icon);
+    ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
+    mp->setPageIcon(icon);
+    mp->loadSettings();
   }
+
+  mRcFile->endGroup();
 
   connect(mPageIcons,
     SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
