@@ -225,7 +225,6 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
 
 void AddFiPage::search()
 {
-qDebug() << "AddFiPage::search()";
   mNewQuery = true;
   mSearchCancelBtn->setText("Cancel");
 
@@ -245,6 +244,7 @@ qDebug() << "AddFiPage::search()";
 
 void AddFiPage::searchFi()
 {
+  emit message("Searching FI using " + mSearchField->text() + "...");
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
   mScripter->askProvider(mProvider, "fetchFi", parms);
@@ -252,6 +252,7 @@ void AddFiPage::searchFi()
 
 void AddFiPage::searchIdx()
 {
+  emit message("Searching Index using " + mSearchField->text() + "...");
   QStringList parms(mSearchField->text());
   QStringList* result = mScripter->askProvider(mProvider, "fetchIdx", parms);
   if(!result)
@@ -379,8 +380,11 @@ void AddFiPage::searchOrCancel()
 {
   if(mSearchCancelBtn->hasFocus())
   {
-    qDebug() << "searchOrCancel";
-    if(mSearchCancelBtn->text() == "Cancel") mScripter->stopRunning();
+    if(mSearchCancelBtn->text() == "Cancel")
+    {
+      mScripter->stopRunning();
+      emit message("Script canceled");
+    }
     else search();
   }
 }
@@ -388,6 +392,7 @@ void AddFiPage::searchOrCancel()
 void AddFiPage::scriptFinished()
 {
   mSearchCancelBtn->setText("Search");
+  emit message("Done");
 }
 
 void AddFiPage::addToDB()
@@ -432,14 +437,18 @@ void AddFiPage::addToDB()
     fi.setName(mName->text());
     fi.setType(mType->currentText());
 
-    // here is the beef
     mFilu->errorText(); // make sure there are no old messages left
+
+    // here is the beef
     if(mFilu->addFiCareful(fi) < Filu::eSuccess)
     {
       check4FiluError("AddFiPage::addToDB: Oops! new FI or Symbol not added to DB");
+      emit message(errorText().join("\n"));
+      //emit message("Fail to add FI");
     }
     else
     {
+      emit message("New FI added to DB");
       // looks good, clear the edit fields
       mRefSymbol->setText("");
       mName->setText("");
