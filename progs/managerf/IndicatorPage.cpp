@@ -25,15 +25,11 @@
 
 IndicatorPage::IndicatorPage(ManagerF* parent) : ManagerPage(parent)
 {
-  mIcon = QIcon(":/icons/configure.xpm");
-  mIconText = tr("Indicators");
   createPage();
 }
 
 IndicatorPage::IndicatorPage(FWidget* parent) : ManagerPage(parent)
 {
-  mIcon = QIcon(":/icons/configure.xpm");
-  mIconText = tr("Indicators");
   createPage();
 }
 
@@ -42,6 +38,9 @@ IndicatorPage::~IndicatorPage()
 
 void IndicatorPage::createPage()
 {
+  mIcon = QIcon(":/icons/indicator.png");
+  mIconText = tr("Indicators");
+
   QGroupBox* pageGroup = new QGroupBox(tr("Indicators"));
 
   mEditor = new IndicatorEditor((FWidget*)this);
