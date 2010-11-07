@@ -32,10 +32,9 @@ class ManagerF;
 
 //class FWidget;
 
-//class ManagerPage : public QWidget, public FClass
 class ManagerPage : public FWidget
 {
-  //Q_OBJECT
+  Q_OBJECT
 
   public:
                   ManagerPage(ManagerF* parent);
@@ -46,6 +45,13 @@ class ManagerPage : public FWidget
     virtual void  saveSettings();
 
     void          setPageIcon(QListWidgetItem* button);
+
+    signals:      // FIXME: 'error' is currently unused. The idea was that the
+                  // messages could temporary colored like some KDE progs do to
+                  // force more attention. I fail already to color the background
+                  // of the QLabel mMessage :-/
+                  // Furthermore could bool changed to enum like in Filu.h
+    void          message(const QString& msg, bool error = false);
 
   protected:
     QIcon         mIcon;
