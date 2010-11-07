@@ -34,12 +34,14 @@ class ManagerF : public QDialog, public FClass
 
   public slots:
     void        changePage(QListWidgetItem* current, QListWidgetItem* previous);
+    void        messageBox(const QString& msg, bool error = false);
 
   private:
     void        createIcons();
 
     QListWidget*    mPageIcons;
     QStackedWidget* mPageStack;
+    QLabel*         mMessage;
 };
 
 #endif

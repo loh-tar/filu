@@ -42,7 +42,6 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
 // mPageStack->addWidget(new ...);
 
   QPushButton* closeButton = new QPushButton(tr("Close"));
-
   createIcons();
   mPageIcons->setCurrentRow(0);
 
@@ -52,9 +51,14 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   horizontalLayout->addWidget(mPageIcons);
   horizontalLayout->addWidget(mPageStack, 1);
 
+  mMessage = new QLabel;
+  mMessage->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+
   QHBoxLayout* buttonsLayout = new QHBoxLayout;
-  buttonsLayout->addStretch(1);
+  buttonsLayout->addWidget(mMessage);
+  buttonsLayout->setStretch(0, 5);
   buttonsLayout->addWidget(closeButton);
+  buttonsLayout->setStretch(1, 1);
 
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addLayout(horizontalLayout);
@@ -87,6 +91,7 @@ void ManagerF::createIcons()
     ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
     mp->setPageIcon(icon);
     mp->loadSettings();
+    connect(mp, SIGNAL(message(const QString&, bool)), this, SLOT(messageBox(const QString&, bool)));
   }
 
   mRcFile->endGroup();
@@ -101,4 +106,15 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
   if (!current) current = previous;
 
   mPageStack->setCurrentIndex(mPageIcons->row(current));
+}
+
+void ManagerF::messageBox(const QString& msg, bool error/* = false*/)
+{
+  // FIXME: Work not as desired, see ManagerPage.h
+  if(error)
+    mMessage->setBackgroundRole(QPalette::Highlight);
+  else
+    mMessage->setBackgroundRole(QPalette::NoRole);
+
+  mMessage->setText(msg);
 }
