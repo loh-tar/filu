@@ -22,6 +22,7 @@
 #include "FiPage.h"
 #include "IndicatorPage.h"
 #include "AddFiPage.h"
+#include "LogBookPage.h"
 
 ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
          : QDialog(), FClass(connectionName)
@@ -40,6 +41,10 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   //mPageStack->addWidget(new ConfigPage(this));
   mPageStack->addWidget(new IndicatorPage(this));
 // mPageStack->addWidget(new ...);
+
+  // special treatment may to FIXME
+  mLogBookPage = new LogBookPage(this);
+  mPageStack->addWidget(mLogBookPage);
 
   QPushButton* closeButton = new QPushButton(tr("Close"));
   createIcons();
@@ -117,4 +122,5 @@ void ManagerF::messageBox(const QString& msg, const bool error/* = false*/)
     mMessage->setBackgroundRole(QPalette::NoRole);
 
   mMessage->setText(msg);
+  mLogBookPage->addToLog(msg, error);
 }

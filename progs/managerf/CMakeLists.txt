@@ -18,13 +18,16 @@ set(managerf_SRC
     main.cpp
     ManagerF.cpp
     ManagerPage.cpp
+    LogBookPage.cpp
 )
+
 set(managerf_MOCH
     AddFiPage.h
     FiPage.h
     IndicatorPage.h
     ManagerF.h
     ManagerPage.h
+    #LogBookPage.h
 )
 
 QT4_ADD_RESOURCES(managerf_MOCQRC icons.qrc)

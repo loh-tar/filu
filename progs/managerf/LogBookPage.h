@@ -17,34 +17,27 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MANAGERF_H
-#define MANAGERF_H
+#ifndef LOGBOOKPAGE_H
+#define LOGBOOKPAGE_H
 
-#include <QtGui>
+#include "ManagerPage.h"
 
-#include "FClass.h"
-
-class LogBookPage;
-
-class ManagerF : public QDialog, public FClass
+class LogBookPage : public ManagerPage
 {
-     Q_OBJECT
+  //Q_OBJECT
 
   public:
-                ManagerF(const QString connectionName = "ManagerF");
-    virtual    ~ManagerF();
+                  LogBookPage(ManagerF* parent);
+                  LogBookPage(FWidget* parent);
+    virtual      ~LogBookPage();
 
-  public slots:
-    void        changePage(QListWidgetItem* current, QListWidgetItem* previous);
-    void        messageBox(const QString& msg, const bool error = false);
+  //public slots:
+    void          addToLog(const QString& msg, const bool error);
 
-  private:
-    void        createIcons();
+  protected:
+    void          createPage();
 
-    QListWidget*    mPageIcons;
-    QStackedWidget* mPageStack;
-    QLabel*         mMessage;
-    LogBookPage*    mLogBookPage;
+    QTextEdit     mLogBook;
 };
 
 #endif
