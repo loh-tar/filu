@@ -5,5 +5,7 @@
     <file>icons/disable.xpm</file>
     <file>icons/disable_gray.xpm</file>
     <file>icons/ok.xpm</file>
+    <file>icons/indicator.png</file>
+    <file>icons/logbook.png</file>
  </qresource>
  </RCC>
