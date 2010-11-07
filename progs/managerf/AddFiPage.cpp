@@ -218,7 +218,7 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
   if(mResultKeys.contains("Market"))
     mMarket1->setCurrentIndex(mMarket1->findText(mResultList->item(row, mResultKeys.value("Market"))->text()));
   else
-    mMarket1->setCurrentIndex(mMarket1->findText("OTC"));
+    mMarket1->setCurrentIndex(mMarket1->findText("NoMarket"));
 
   mSymbolType1->setCurrentIndex(mSymbolType1->findText(mProvider));
 }
