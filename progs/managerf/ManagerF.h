@@ -34,7 +34,7 @@ class ManagerF : public QDialog, public FClass
 
   public slots:
     void        changePage(QListWidgetItem* current, QListWidgetItem* previous);
-    void        messageBox(const QString& msg, bool error = false);
+    void        messageBox(const QString& msg, const bool error = false);
 
   private:
     void        createIcons();

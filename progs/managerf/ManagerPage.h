@@ -51,7 +51,7 @@ class ManagerPage : public FWidget
                   // force more attention. I fail already to color the background
                   // of the QLabel mMessage :-/
                   // Furthermore could bool changed to enum like in Filu.h
-    void          message(const QString& msg, bool error = false);
+    void          message(const QString& msg, const bool error = false);
 
   protected:
     QIcon         mIcon;

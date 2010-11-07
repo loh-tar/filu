@@ -91,7 +91,7 @@ void ManagerF::createIcons()
     ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
     mp->setPageIcon(icon);
     mp->loadSettings();
-    connect(mp, SIGNAL(message(const QString&, bool)), this, SLOT(messageBox(const QString&, bool)));
+    connect(mp, SIGNAL(message(const QString&, const bool)), this, SLOT(messageBox(const QString&, const bool)));
   }
 
   mRcFile->endGroup();
@@ -108,7 +108,7 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
   mPageStack->setCurrentIndex(mPageIcons->row(current));
 }
 
-void ManagerF::messageBox(const QString& msg, bool error/* = false*/)
+void ManagerF::messageBox(const QString& msg, const bool error/* = false*/)
 {
   // FIXME: Work not as desired, see ManagerPage.h
   if(error)
