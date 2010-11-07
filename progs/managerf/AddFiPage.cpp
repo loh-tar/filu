@@ -244,7 +244,7 @@ void AddFiPage::search()
 
 void AddFiPage::searchFi()
 {
-  emit message("Searching FI using " + mSearchField->text() + "...");
+  emit message("Search FI matched to '" + mSearchField->text() + "'...");
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
   mScripter->askProvider(mProvider, "fetchFi", parms);
@@ -252,7 +252,7 @@ void AddFiPage::searchFi()
 
 void AddFiPage::searchIdx()
 {
-  emit message("Searching Index using " + mSearchField->text() + "...");
+  emit message("Search Index matched to '" + mSearchField->text() + "'...");
   QStringList parms(mSearchField->text());
   QStringList* result = mScripter->askProvider(mProvider, "fetchIdx", parms);
   if(!result)
@@ -399,8 +399,38 @@ void AddFiPage::addToDB()
 {
 //   if(mDisplayType == "Stock")
 //   {
-    FiTuple fi(1);
 
+    // build a hopefully useful log message
+    QStringList msg;
+    msg.append("Add to DB:");
+
+    if(!mRefSymbol->text().isEmpty()) msg.append(mRefSymbol->text());
+    if(!mName->text().isEmpty())      msg.append(mName->text());
+
+    if(!mSymbol1->text().isEmpty())
+    {
+      msg.append(mSymbol1->text() + "-"
+               + mMarket1->currentText() + "-"
+               + mSymbolType1->currentText() );
+    }
+
+    if(!mSymbol2->text().isEmpty())
+    {
+      msg.append(mSymbol2->text() + "-"
+               + mMarket2->currentText() + "-"
+               + mSymbolType2->currentText() );
+    }
+
+    if(!mSymbol3->text().isEmpty())
+    {
+      msg.append(mSymbol3->text() + "-"
+               + mMarket3->currentText() + "-"
+               + mSymbolType3->currentText() );
+    }
+
+    emit message(msg.join(" "));
+
+    FiTuple fi(1);
     SymbolTuple* symbol;
 
     if(!mRefSymbol->text().isEmpty())
@@ -443,7 +473,8 @@ void AddFiPage::addToDB()
     if(mFilu->addFiCareful(fi) < Filu::eSuccess)
     {
       check4FiluError("AddFiPage::addToDB: Oops! new FI or Symbol not added to DB");
-      emit message(errorText().join("\n"));
+      emit message(errorText().join("\n"), true); // true=is error message
+      clearErrors(); //FIXME Why does errorText() not clear?
       //emit message("Fail to add FI");
     }
     else
