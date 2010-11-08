@@ -198,8 +198,8 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
 {
   mResultList->selectRow(row);
 
-  if(mResultKeys.contains("Symbol"))
-    mRefSymbol->setText(mResultList->item(row, mResultKeys.value("Symbol"))->text());
+  if(mResultKeys.contains("RefSymbol"))
+    mRefSymbol->setText(mResultList->item(row, mResultKeys.value("RefSymbol"))->text());
   else mRefSymbol->setText("");
 
   if(mResultKeys.contains("Name"))
@@ -211,16 +211,29 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
   else if(mDisplayType == "Index") mType->setCurrentIndex(mType->findText("Index"));
         else mType->setCurrentIndex(mType->findText(""));
 
-  if(mResultKeys.contains("MySymbol"))
-    mSymbol1->setText(mResultList->item(row, mResultKeys.value("MySymbol"))->text());
-  else mSymbol1->setText("");
+  // Search for Symbol/Market/Provider with or without a number suffix
+  // FIXME When mSymbol1/mMarket1/mSymbolType1 is changed to dynamicaly list we will
+  //       improve herfe, till then we keep it simple and fill only the first set
+  QString suffix;
+  int i = -1;
+  do
+  {
+    if(mResultKeys.contains("Symbol" + suffix))
+    {
+      mSymbol1->setText(mResultList->item(row, mResultKeys.value("Symbol" + suffix))->text());
+      // We assume that by existing Symbol also Market and Provider exist
+      mMarket1->setCurrentIndex(mMarket1->findText(mResultList->item(row, mResultKeys.value("Market" + suffix))->text()));
+      mSymbolType1->setCurrentIndex(mSymbolType1->findText(mResultList->item(row, mResultKeys.value("Provider" + suffix))->text()));
+      break; // Remove this break when above FIXME was done
+    }
+    else
+    {
+      mSymbol1->setText("");
+      if(i > -1) break; // Don't try more if number-suffix was not found
+    }
+    suffix = QString::number(++i);
+  }while(true);
 
-  if(mResultKeys.contains("Market"))
-    mMarket1->setCurrentIndex(mMarket1->findText(mResultList->item(row, mResultKeys.value("Market"))->text()));
-  else
-    mMarket1->setCurrentIndex(mMarket1->findText("NoMarket"));
-
-  mSymbolType1->setCurrentIndex(mSymbolType1->findText(mProvider));
 }
 
 void AddFiPage::search()
@@ -294,9 +307,9 @@ void AddFiPage::fillResultTable(QStringList* data)
   for(r = 0; r < data->size(); ++r)  // rows
   {
     QStringList row = data->at(r).split(";");
-    if(row.at(0).startsWith("HEADER="))
+    if(row.at(0).startsWith("[Header]"))
     {
-      row[0].remove("HEADER=");
+      row[0].remove("[Header]");
 
       for(int i = mResultList->columnCount(); i < row.size(); ++i)
       {
@@ -503,7 +516,7 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
 
     SymbolTuple* symbol;
     QList<int> sl = mResultKeys.values("Symbol");
-    QList<int> msl = mResultKeys.values("MySymbol");
+    QList<int> msl = mResultKeys.values("RefSymbol");
     QList<int> psml = mResultKeys.values("Provider-Symbol-Market");
     int count = sl.size() + msl.size() + psml.size() + 1;
     if(count > 1)
