@@ -1,7 +1,29 @@
-2010-11-04    Release new snapshot. To update from the 2010-07-02 snapshot you
-              have *not* to reinstall the database. Read again the readme how to
-              compile the progs now and remove the added Qt4.3.5 lines in your
-              ~/.bashrc file.
+2010-11-08
+============
+ManagerF
+----------
+ - AddFiPage has now three symbol edit lines, so you can more comfortable add
+   new FIs by fill out the fields by hand. You could also add new symbols to an
+   existing FI by enter only an existing symbol in 'RefSymbol' (left name/type
+   empty) and the new in one the new lines.
+ - The upper script launcher/selector is still not very useful. But the "Filu-
+   Provider" and the underlying "database" was updated.
+ - Save/Restore last used settings. Window position and geometry sadly still not
+   handled.
+ - Has now a message line at the bottom where some feedback is given. The
+   quality of the info need improvements.
+ - New page 'Log Book' where are all messages collected for your reference.
+ - Some new icons but not as the best. Are you artistic talented?
+
+
+2010-11-04
+============
+Release new snapshot
+----------------------
+To update from the 2010-07-02 snapshot you have *not* to reinstall the database.
+Read again the readme how to compile the progs now and remove the added Qt4.3.5
+lines in your ~/.bashrc file.
+
 
 2010-11-03
   InspectorF: Fix some minor bugs. Needs still many improvements.
