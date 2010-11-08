@@ -47,11 +47,13 @@ BEGIN
   --   >0 if all is fine, the fiId
   --   -1 if fiType is not valid
   --   -2 if fiName was empty
-  --   -3 if stype is not valid
-  --   -4 if market is not valid
-  --   -5 if unique violation
-  --   -6 if foreign key violation (should impossible?)
-  --   -7 if other error (should impossible?)
+  --   -3 if symbol is empty
+  --   -4 if stype is not valid
+  --   -5 if market is not valid
+  --   -6 if unique violation
+  --   -7 if symbol was found more than one time and was associated to different FIs
+  --   -8 if foreign key violation (should impossible?)
+  --   -9 if other error (should impossible?)
 
   fiId := nfi_id;
   IF fiId IS NULL THEN fiId := 0; END IF;
@@ -70,9 +72,16 @@ BEGIN
 
   IF fiId < 1
   THEN  -- Check if Symbol is known
+  -- Returns:
+  --   >0 if no problem, (the FiId)
+  --    0 if Symbol was not found
+  --   -1 if Symbol was found more than one time and was associated to different FIs
+  --   -2 if Symbol was empty
     fiId := <schema>.fiid_from_symbolcaption(nsymbol);
 
-    IF fiId > 0 THEN addSymbol :=  false; END IF; -- symbol is known
+    IF fiId = -1 THEN RETURN -7; END IF;
+    IF fiId = -2 THEN RETURN -3; END IF;
+    IF fiId >  0 THEN addSymbol :=  false; END IF; -- symbol is known
   END IF;
 
   IF fiId > 0
@@ -107,9 +116,9 @@ BEGIN
   -- Ok, No fiId given, Symbol is not known and Name not found
   -- Try to insert both, but make last checks
   stId := <schema>.id_from_caption('stype', nstype);
-  IF stId < 1 THEN  RETURN -3; END IF;
+  IF stId < 1 THEN  RETURN -4; END IF;
   mid := <schema>.id_from_caption('market', nmarket);
-  IF mid < 1 THEN  RETURN -4; END IF;
+  IF mid < 1 THEN  RETURN -5; END IF;
 
   fiId := nextval('<schema>.fi_fi_id_seq');
   sid  := nextval('<schema>.symbol_symbol_id_seq');
@@ -124,12 +133,12 @@ BEGIN
     --RAISE INFO 'fi_insert: new FI % with symbol added: %, %', fiId, nfiName, nsymbol;
     RETURN fiId;
 
-    EXCEPTION WHEN unique_violation THEN RETURN -5;
-              WHEN foreign_key_violation THEN RETURN -6;
+    EXCEPTION WHEN unique_violation THEN RETURN -6;
+              WHEN foreign_key_violation THEN RETURN -8;
 
   END;
 
-  RETURN -7;
+  RETURN -9;
 
 END;
 $BODY$
