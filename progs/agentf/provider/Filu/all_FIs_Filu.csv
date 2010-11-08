@@ -1,139 +1,169 @@
-* all_FIs_FiMi.csv
+* This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
 *
-* FiMi-Symbol;LongName;Type;Native Market;Provider-Symbol-Market;Provider-Symbol-Market
-
-* German Stocks
-
-ADS;Adidas;Stock;Xetra;Yahoo ADS.DE Xetra;Yahoo ADS.F Frankfurt
-ALV;Allianz;Stock;Xetra;Yahoo ALV.DE Xetra;Yahoo ALV.F Frankfurt
-ALT;Altana;Stock;Xetra;Yahoo ALT.DE Xetra;Yahoo ALT.F Frankfurt
-BAS;BASF;Stock;Xetra;Yahoo BAS.DE Xetra;Yahoo BAS.F Frankfurt
-BAY;Bayer;Stock;Xetra;Yahoo BAY.DE Xetra;Yahoo BAY.F Frankfurt
-BMW;BMW;Stock;Xetra;Yahoo BMW.DE Xetra;Yahoo BMW.F Frankfurt
-CBK;Commerzbank;Stock;Xetra;Yahoo CBK.DE Xetra;Yahoo CBK.F Frankfurt
-CON;Continental AG;Stock;Xetra;Yahoo CON.DE Xetra;Yahoo CON.F Frankfurt
-DCX;DaimlerChrysler;Stock;Xetra;Yahoo DCX.DE Xetra;Yahoo DCX.F Frankfurt
-DBK;Deutsche Bank;Stock;Xetra;Yahoo DBK.DE Xetra;Yahoo DBK.F Frankfurt
-DB1;Deutsche Boerse;Stock;Xetra;Yahoo DB1.DE Xetra;Yahoo DB1.F Frankfurt
-DPW;Deutsche Post;Stock;Xetra;Yahoo DPW.DE Xetra;Yahoo DPW.F Frankfurt
-DPB;Deutsche Postbank;Stock;Xetra;Yahoo DPB.DE Xetra;Yahoo DPB.F Frankfurt
-DTE;Deutsche Telekom;Stock;Xetra;Yahoo DTE.DE Xetra;Yahoo DTE.F Frankfurt
-EOA;E.ON AG;Stock;Xetra;Yahoo EOA.DE Xetra;Yahoo EOA.F Frankfurt
-FME;Fresenius Med Care;Stock;Xetra;Yahoo FME.DE Xetra;Yahoo FME.F Frankfurt
-HEN3;HenkeL VZ;Stock;Xetra;Yahoo HEN3.DE Xetra;Yahoo HEN3.F Frankfurt
-HRX;Hypo Real Estate;Stock;Xetra;Yahoo HRX.DE Xetra;Yahoo HRX.F Frankfurt
-IFX;Infineon Technology;Stock;Xetra;Yahoo IFX.DE Xetra;Yahoo IFX.F Frankfurt
-LIN;Linde;Stock;Xetra;Yahoo LIN.DE Xetra;Yahoo LIN.F Frankfurt
-LHA;Dt.Lufthansa;Stock;Xetra;Yahoo LHA.DE Xetra;Yahoo LHA.F Frankfurt
-MAN;MAN;Stock;Xetra;Yahoo MAN.DE Xetra;Yahoo MAN.F Frankfurt
-MEO;METRO;Stock;Xetra;Yahoo MEO.DE Xetra;Yahoo MEO.F Frankfurt
-MUV2;Muenchner Rueckversicherung;Stock;Xetra;Yahoo MUV2.DE Xetra;Yahoo MUV2.F Frankfurt
-RWE;RWE;Stock;Xetra;Yahoo RWE.DE Xetra;Yahoo RWE.F Frankfurt
-SAP;SAP;Stock;Xetra;Yahoo SAP.DE Xetra;Yahoo SAP.F Frankfurt
-SIE;Siemens;Stock;Xetra;Yahoo SIE.DE Xetra;Yahoo SIE.F Frankfurt
-TKA;ThyssenKrupp;Stock;Xetra;Yahoo TKA.DE Xetra;Yahoo TKA.F Frankfurt
-TUI1;TUI;Stock;Xetra;Yahoo TUI1.DE Xetra;Yahoo TUI1.F Frankfurt
-VOW;Volkswagen;Stock;Xetra;Yahoo VOW.DE Xetra;Yahoo VOW.F Frankfurt
-
-* US Stocks
-
-AAPL;APPLE INC;Stock;NASDAQ;Yahoo AAPL NASDAQ;
-ADBE;ADOBE SYSTEMS INC;Stock;NASDAQ;Yahoo ADBE NASDAQ;
-ADSK;AUTODESK INC;Stock;NASDAQ;Yahoo ADSK NASDAQ;
-AKAM;AKAMAI TECH INC;Stock;NASDAQ;Yahoo AKAM NASDAQ;
-ALTR;ALTERA CP;Stock;NASDAQ;Yahoo ALTR NASDAQ;
-AMAT;APPLIED MATERIALS;Stock;NASDAQ;Yahoo AMAT NASDAQ;
-AMGN;AMGEN;Stock;NASDAQ;Yahoo AMGN NASDAQ;
-AMLN;AMYLIN PHARMA INC;Stock;NASDAQ;Yahoo AMLN NASDAQ;
-AMZN;AMAZON.COM INC;Stock;NASDAQ;Yahoo AMZN NASDAQ;
-APOL;APOLLO GP INC A;Stock;NASDAQ;Yahoo APOL NASDAQ;
-ATVI;ACTIVISION INC;Stock;NASDAQ;Yahoo ATVI NASDAQ;
-BBBY;BED BATH & BEYOND;Stock;NASDAQ;Yahoo BBBY NASDAQ;
-BEAS;BEA SYSTEMS INC;Stock;NASDAQ;Yahoo BEAS NASDAQ;
-BIIB;BIOGEN IDEC INC;Stock;NASDAQ;Yahoo BIIB NASDAQ;
-BMET;BIOMET INC;Stock;NASDAQ;Yahoo BMET NASDAQ;
-BRCM;BROADCOM CORP CL A;Stock;NASDAQ;Yahoo BRCM NASDAQ;
-CDNS;CADENCE DESIGN SYS;Stock;NASDAQ;Yahoo CDNS NASDAQ;
-CDWC;CDW CORP;Stock;NASDAQ;Yahoo CDWC NASDAQ;
-CELG;CELGENE CP;Stock;NASDAQ;Yahoo CELG NASDAQ;
-CHKP;CHECK POINT SOFTWA;Stock;NASDAQ;Yahoo CHKP NASDAQ;
-CHRW;C.H. ROBINSON WW;Stock;NASDAQ;Yahoo CHRW NASDAQ;
-CKFR;CHECKFREE CORP;Stock;NASDAQ;Yahoo CKFR NASDAQ;
-CMCSA;COMCAST CP A;Stock;NASDAQ;Yahoo CMCSA NASDAQ;
-COST;COSTCO WHOLESALE C;Stock;NASDAQ;Yahoo COST NASDAQ;
-CSCO;CISCO SYS INC;Stock;NASDAQ;Yahoo CSCO NASDAQ;
-CTAS;CINTAS CP;Stock;NASDAQ;Yahoo CTAS NASDAQ;
-CTSH;COGNIZANT TECH SOL;Stock;NASDAQ;Yahoo CTSH NASDAQ;
-CTXS;CITRIX SYSTEMS;Stock;NASDAQ;Yahoo CTXS NASDAQ;
-DELL;DELL INC;Stock;NASDAQ;Yahoo DELL NASDAQ;
-DISCA;DISCOVERY HLDNG A;Stock;NASDAQ;Yahoo DISCA NASDAQ;
-DISH;ECHOSTAR COMMUN A;Stock;NASDAQ;Yahoo DISH NASDAQ;
-EBAY;EBAY INC;Stock;NASDAQ;Yahoo EBAY NASDAQ;
-ERIC;LM ERICSSON ADR;Stock;NASDAQ;Yahoo ERIC NASDAQ;
-ERTS;ELECTRONIC ARTS;Stock;NASDAQ;Yahoo ERTS NASDAQ;
-ESRX;EXPRESS SCRIPTS CO;Stock;NASDAQ;Yahoo ESRX NASDAQ;
-EXPD;EXPEDITORS INTL;Stock;NASDAQ;Yahoo EXPD NASDAQ;
-EXPE;EXPEDIA;Stock;NASDAQ;Yahoo EXPE NASDAQ;
-FAST;FASTENAL CO;Stock;NASDAQ;Yahoo FAST NASDAQ;
-FISV;FISERV INC;Stock;NASDAQ;Yahoo FISV NASDAQ;
-FLEX;FLEXTRONICS INTL;Stock;NASDAQ;Yahoo FLEX NASDAQ;
-GENZ;GENZYME CORPORATION;Stock;NASDAQ;Yahoo GENZ NASDAQ;
-GILD;GILEAD SCIENCES;Stock;NASDAQ;Yahoo GILD NASDAQ;
-GOOG;GOOGLE;Stock;NASDAQ;Yahoo GOOG NASDAQ;
-GRMN;GARMIN LTD;Stock;NASDAQ;Yahoo GRMN NASDAQ;
-IACI;IAC/INTERACTIVE;Stock;NASDAQ;Yahoo IACI NASDAQ;
-INFY;INFOSYS TECHN ADS;Stock;NASDAQ;Yahoo INFY NASDAQ;
-INTC;INTEL CP;Stock;NASDAQ;Yahoo INTC NASDAQ;
-INTU;INTUIT INC;Stock;NASDAQ;Yahoo INTU NASDAQ;
-ISRG;INTUITIVE SURG INC;Stock;NASDAQ;Yahoo ISRG NASDAQ;
-JNPR;JUNIPER NETWORKS;Stock;NASDAQ;Yahoo JNPR NASDAQ;
-JOYG;JOY GLOBAL INC;Stock;NASDAQ;Yahoo JOYG NASDAQ;
-KLAC;KL A-TENCOR CP;Stock;NASDAQ;Yahoo KLAC NASDAQ;
-LAMR;LAMAR ADVERTIS A;Stock;NASDAQ;Yahoo LAMR NASDAQ;
-LBTYA;LIBERTY GLOBAL CL-A;Stock;NASDAQ;Yahoo LBTYA NASDAQ;
-LINTA;LIBERTY MED INT A;Stock;NASDAQ;Yahoo LINTA NASDAQ;
-LLTC;LINEAR TECHNOLOGY;Stock;NASDAQ;Yahoo LLTC NASDAQ;
-LOGI;LOGITECH INT SA;Stock;NASDAQ;Yahoo LOGI NASDAQ;
-LRCX;LAM RESEARCH CP;Stock;NASDAQ;Yahoo LRCX NASDAQ;
-LVLT;LEVEL 3 COMM INC;Stock;NASDAQ;Yahoo LVLT NASDAQ;
-MCHP;MICROCHIP TECH;Stock;NASDAQ;Yahoo MCHP NASDAQ;
-MEDI;MEDIMMUNE INC;Stock;NASDAQ;Yahoo MEDI NASDAQ;
-MICC;MILLICOM INTL CELL;Stock;NASDAQ;Yahoo MICC NASDAQ;
-MNST;MONSTER WORLDWIDE;Stock;NASDAQ;Yahoo MNST NASDAQ;
-MRVL;MARVELL TECH GROUP;Stock;NASDAQ;Yahoo MRVL NASDAQ;
-MSFT;MICROSOFT CP;Stock;NASDAQ;Yahoo MSFT NASDAQ;
-MXIM;MAXIM INTEGRATED;Stock;NASDAQ;Yahoo MXIM NASDAQ;
-NIHD;NII HLDGS INC;Stock;NASDAQ;Yahoo NIHD NASDAQ;
-NTAP;NETWORK APPLIANCE;Stock;NASDAQ;Yahoo NTAP NASDAQ;
-NVDA;NVIDIA CORP;Stock;NASDAQ;Yahoo NVDA NASDAQ;
-ORCL;ORACLE CORP;Stock;NASDAQ;Yahoo ORCL NASDAQ;
-PAYX;PAYCHEX INC;Stock;NASDAQ;Yahoo PAYX NASDAQ;
-PCAR;PACCAR INC;Stock;NASDAQ;Yahoo PCAR NASDAQ;
-PDCO;PATTERSON COMPANIES;Stock;NASDAQ;Yahoo PDCO NASDAQ;
-PETM;PET SMART INC;Stock;NASDAQ;Yahoo PETM NASDAQ;
-PTEN;PATTERSON-UTI ENER;Stock;NASDAQ;Yahoo PTEN NASDAQ;
-QCOM;QUALCOMM INC;Stock;NASDAQ;Yahoo QCOM NASDAQ;
-RIMM;RESEARCH IN MOTION;Stock;NASDAQ;Yahoo RIMM NASDAQ;
-ROST;ROSS STORES INC;Stock;NASDAQ;Yahoo ROST NASDAQ;
-RYAAY;RYANAIR HLDGS ADR;Stock;NASDAQ;Yahoo RYAAY NASDAQ;
-SBUX;STARBUCKS CP;Stock;NASDAQ;Yahoo SBUX NASDAQ;
-SEPR;SEPRACOR INC;Stock;NASDAQ;Yahoo SEPR NASDAQ;
-SHLD;SEARS HLDGS CORP;Stock;NASDAQ;Yahoo SHLD NASDAQ;
-SIAL;SIGMA ALDRICH CP;Stock;NASDAQ;Yahoo SIAL NASDAQ;
-SIRI;SIRIUS SATELLITE R;Stock;NASDAQ;Yahoo SIRI NASDAQ;
-SNDK;SANDISK CP;Stock;NASDAQ;Yahoo SNDK NASDAQ;
-SPLS;STAPLES INC;Stock;NASDAQ;Yahoo SPLS NASDAQ;
-SUNW;SUN MICROSYS INC;Stock;NASDAQ;Yahoo SUNW NASDAQ;
-SYMC;SYMANTEC CP;Stock;NASDAQ;Yahoo SYMC NASDAQ;
-TEVA;TEVA PHARM INDS AD;Stock;NASDAQ;Yahoo TEVA NASDAQ;
-TLAB;TELLABS INC;Stock;NASDAQ;Yahoo TLAB NASDAQ;
-UAUA;UAL CORP NEW;Stock;NASDAQ;Yahoo UAUA NASDAQ;
-VMED;VIRGIN MEDIA INC;Stock;NASDAQ;Yahoo VMED NASDAQ;
-VRSN;VERISIGN INC;Stock;NASDAQ;Yahoo VRSN NASDAQ;
-VRTX;VERTEX PHARMACEUT;Stock;NASDAQ;Yahoo VRTX NASDAQ;
-WFMI;WHOLE FOODS MARKT;Stock;NASDAQ;Yahoo WFMI NASDAQ;
-WYNN;WYNN RESORTS LTD;Stock;NASDAQ;Yahoo WYNN NASDAQ;
-XLNX;XILINX INC;Stock;NASDAQ;Yahoo XLNX NASDAQ;
-XMSR;XM SATELLITE RADIO;Stock;NASDAQ;Yahoo XMSR NASDAQ;
-XRAY;DENTSPLY INTL INC;Stock;NASDAQ;Yahoo XRAY NASDAQ;
-YHOO;YAHOO INC;Stock;NASDAQ;Yahoo YHOO NASDAQ;
+* The dummy "database" For the dummy "provider Filu"
+*
+[Header]RefSymbol;Name;Type;Provider0;Symbol0;Market0;Provider1;Symbol1;Market1
+*
+* German Stocks Xetra
+*
+ADS;Adidas;Stock;Yahoo;ADS.DE;Xetra;Reuters;ADS;NoMarket
+ALV;Allianz;Stock;Yahoo;ALV.DE;Xetra;Reuters;ALV;NoMarket
+BAS;BASF;Stock;Yahoo;BAS.DE;Xetra;Reuters;BAS;NoMarket
+BAYN;Bayer;Stock;Yahoo;BAYN.DE;Xetra;Reuters;BAYN;NoMarket
+BEI;Beiersdorf;Stock;Yahoo;BEI.DE;Xetra;Reuters;BEI;NoMarket
+BMW;BMW;Stock;Yahoo;BMW.DE;Xetra;Reuters;BMW;NoMarket
+CBK;Commerzbank;Stock;Yahoo;CBK.DE;Xetra;Reuters;CBK;NoMarket
+DAI;Daimler;Stock;Yahoo;DAI.DE;Xetra;Reuters;DAI;NoMarket
+DB1;Deutsche Boerse;Stock;Yahoo;DB1.DE;Xetra;Reuters;DB1;NoMarket
+DBK;Deutsche Bank;Stock;Yahoo;DBK.DE;Xetra;Reuters;DBK;NoMarket
+DPW;Deutsche Post;Stock;Yahoo;DPW.DE;Xetra;Reuters;DPW;NoMarket
+DTE;Deutsche Telekom;Stock;Yahoo;DTE.DE;Xetra;Reuters;DTE;NoMarket
+EOAN;E.ON;Stock;Yahoo;EOAN.DE;Xetra;Reuters;EOAN;NoMarket
+FME;Fresenius Med Care;Stock;Yahoo;FME.DE;Xetra;Reuters;FME;NoMarket
+FRE3;Fresenius VZ;Stock;Yahoo;FRE3.DE;Xetra;Reuters;FRE3;NoMarket
+HEN3;HenkeL VZ;Stock;Yahoo;HEN3.DE;Xetra;Reuters;HEN3;NoMarket
+IFX;Infineon Technologies;Stock;Yahoo;IFX.DE;Xetra;Reuters;IFX;NoMarket
+LHA;Dt.Lufthansa;Stock;Yahoo;LHA.DE;Xetra;Reuters;LHA;NoMarket
+LIN;Linde;Stock;Yahoo;LIN.DE;Xetra;Reuters;LIN;NoMarket
+MAN;MAN;Stock;Yahoo;MAN.DE;Xetra;Reuters;MAN;NoMarket
+MEO;METRO;Stock;Yahoo;MEO.DE;Xetra;Reuters;MEO;NoMarket
+MRK;Merck;Stock;Yahoo;MRK.DE;Xetra;Reuters;MRK;NoMarket
+MUV2;Muenchner Rueckversicherung;Stock;Yahoo;MUV2.DE;Xetra;Reuters;MUV2;NoMarket
+RWE;RWE;Stock;Yahoo;RWE.DE;Xetra;Reuters;RWE;NoMarket
+SAP;SAP;Stock;Yahoo;SAP.DE;Xetra;Reuters;SAP;NoMarket
+SDF;K+S ;Stock;Yahoo;SDF.DE;Xetra;Reuters;SDF;NoMarket
+SIE;Siemens;Stock;Yahoo;SIE.DE;Xetra;Reuters;SIE;NoMarket
+SZG;Salzgitter;Stock;Yahoo;SZG.DE;Xetra;Reuters;SZG;NoMarket
+TKA;ThyssenKrupp;Stock;Yahoo;TKA.DE;Xetra;Reuters;TKA;NoMarket
+VOW;Volkswagen;Stock;Yahoo;VOW3.DE;Xetra;Reuters;VOW;NoMarket
+*
+* US Stocks NYSE
+*
+MMM;3M Company ;Stock;Yahoo;MMM;NYSE
+AA;Alcoa Inc. ;Stock;Yahoo;AA;NYSE
+AXP;American Express Company ;Stock;Yahoo;AXP;NYSE
+T;AT&T Inc.;Stock;Yahoo;T;NYSE
+BAC;Bank of America;Stock;Yahoo;BAC;NYSE
+BA;Boeing Company;Stock;Yahoo;BA;NYSE
+CAT;Caterpillar, Inc. ;Stock;Yahoo;CAT;NYSE
+CVX;Chevron Corporation ;Stock;Yahoo;CVX;NYSE
+CSCO;Cisco Systems, Inc.;Stock;Yahoo;CSCO;NYSE
+KO;Coca-Cola Company;Stock;Yahoo;KO;NYSE
+DD;E.I. Du Pont de Nemours;Stock;Yahoo;DD;NYSE
+XOM;Exxon Mobil Corporation ;Stock;Yahoo;XOM;NYSE
+GE;General Electric Company ;Stock;Yahoo;GE;NYSE
+HPQ;Hewlett-Packard Company ;Stock;Yahoo;HPQ;NYSE
+HD;Home Depot, Inc.;Stock;Yahoo;HD;NYSE
+INTC;Intel Corporation;Stock;Yahoo;INTC;NYSE
+IBM;International Business Machines;Stock;Yahoo;IBM;NYSE
+JNJ;Johnson & Johnson ;Stock;Yahoo;JNJ;NYSE
+JPM;JP Morgan Chase & Co. ;Stock;Yahoo;JPM;NYSE
+KFT;Kraft Foods Inc. ;Stock;Yahoo;KFT;NYSE
+MCD;McDonald's Corporation ;Stock;Yahoo;MCD;NYSE
+MRK;Merck & Company, Inc. ;Stock;Yahoo;MRK;NYSE
+MSFT;Microsoft Corporation;Stock;Yahoo;MSFT;NYSE
+PFE;Pfizer, Inc. ;Stock;Yahoo;PFE;NYSE
+PG;Procter & Gamble Company;Stock;Yahoo;PG;NYSE
+TRV;The Travelers Companies, Inc. C;Stock;Yahoo;TRV;NYSE
+UTX;United Technologies Corporation;Stock;Yahoo;UTX;NYSE
+VZ;Verizon ;Stock;Yahoo;VZ;NYSE
+WMT;Wal-Mart Stores, Inc. ;Stock;Yahoo;WMT;NYSE
+DIS;Walt Disney Company;Stock;Yahoo;DIS;NYSE
+*
+* US Stocks NASDAQ
+*
+AAPL;Apple Inc.;Stock;Yahoo;AAPL;NASDAQ
+ADBE;Adobe Systems Incorporated;Stock;Yahoo;ADBE;NASDAQ
+ADP;Automatic Data Processing, Inc.;Stock;Yahoo;ADP;NASDAQ
+ADSK;Autodesk, Inc.;Stock;Yahoo;ADSK;NASDAQ
+AKAM;Akamai Technologies, Inc.;Stock;Yahoo;AKAM;NASDAQ
+ALTR;Altera Corporation;Stock;Yahoo;ALTR;NASDAQ
+AMAT;Applied Materials, Inc.;Stock;Yahoo;AMAT;NASDAQ
+AMGN;Amgen Inc.;Stock;Yahoo;AMGN;NASDAQ
+AMZN;Amazon.com, Inc.;Stock;Yahoo;AMZN;NASDAQ
+APOL;Apollo Group, Inc.;Stock;Yahoo;APOL;NASDAQ
+ATVI;Activision Blizzard, Inc;Stock;Yahoo;ATVI;NASDAQ
+BBBY;Bed Bath & Beyond Inc.;Stock;Yahoo;BBBY;NASDAQ
+BIDU;Baidu, Inc.;Stock;Yahoo;BIDU;NASDAQ
+BIIB;Biogen Idec Inc;Stock;Yahoo;BIIB;NASDAQ
+BRCM;Broadcom Corporation;Stock;Yahoo;BRCM;NASDAQ
+CA;CA Inc.;Stock;Yahoo;CA;NASDAQ
+CELG;Celgene Corporation;Stock;Yahoo;CELG;NASDAQ
+CEPH;Cephalon, Inc.;Stock;Yahoo;CEPH;NASDAQ
+CHKP;Check Point Software Technologi;Stock;Yahoo;CHKP;NASDAQ
+CHRW;C.H. Robinson Worldwide, Inc.;Stock;Yahoo;CHRW;NASDAQ
+CMCSA;Comcast Corporation;Stock;Yahoo;CMCSA;NASDAQ
+COST;Costco Wholesale Corporation;Stock;Yahoo;COST;NASDAQ
+CSCO;Cisco Systems, Inc.;Stock;Yahoo;CSCO;NASDAQ
+CTAS;Cintas Corporation;Stock;Yahoo;CTAS;NASDAQ
+CTSH;Cognizant Technology Solutions;Stock;Yahoo;CTSH;NASDAQ
+CTXS;Citrix Systems, Inc.;Stock;Yahoo;CTXS;NASDAQ
+DELL;Dell Inc.;Stock;Yahoo;DELL;NASDAQ
+DISH;DISH Network Corporation;Stock;Yahoo;DISH;NASDAQ
+EBAY;eBay Inc.;Stock;Yahoo;EBAY;NASDAQ
+ERTS;Electronic Arts Inc.;Stock;Yahoo;ERTS;NASDAQ
+ESRX;Express Scripts, Inc.;Stock;Yahoo;ESRX;NASDAQ
+EXPD;Expeditors International of Was;Stock;Yahoo;EXPD;NASDAQ
+EXPE;Expedia, Inc.;Stock;Yahoo;EXPE;NASDAQ
+FAST;Fastenal Company;Stock;Yahoo;FAST;NASDAQ
+FISV;Fiserv, Inc.;Stock;Yahoo;FISV;NASDAQ
+FLEX;Flextronics International Ltd.;Stock;Yahoo;FLEX;NASDAQ
+FLIR;FLIR Systems, Inc.;Stock;Yahoo;FLIR;NASDAQ
+FSLR;First Solar, Inc.;Stock;Yahoo;FSLR;NASDAQ
+FWLT;Foster Wheeler AG.;Stock;Yahoo;FWLT;NASDAQ
+GENZ;Genzyme Corporation;Stock;Yahoo;GENZ;NASDAQ
+GILD;Gilead Sciences, Inc.;Stock;Yahoo;GILD;NASDAQ
+GOOG;Google Inc.;Stock;Yahoo;GOOG;NASDAQ
+HANS;Hansen Natural Corporation;Stock;Yahoo;HANS;NASDAQ
+HOLX;Hologic, Inc.;Stock;Yahoo;HOLX;NASDAQ
+HSIC;Henry Schein, Inc.;Stock;Yahoo;HSIC;NASDAQ
+IACI;IAC/InterActiveCorp;Stock;Yahoo;IACI;NASDAQ
+ILMN;Illumina, Inc.;Stock;Yahoo;ILMN;NASDAQ
+INFY;Infosys Technologies Limited;Stock;Yahoo;INFY;NASDAQ
+INTC;Intel Corporation;Stock;Yahoo;INTC;NASDAQ
+INTU;Intuit Inc.;Stock;Yahoo;INTU;NASDAQ
+ISRG;Intuitive Surgical, Inc.;Stock;Yahoo;ISRG;NASDAQ
+JBHT;J.B. Hunt Transport Services, I;Stock;Yahoo;JBHT;NASDAQ
+JNPR;Juniper Networks, Inc. Common S;Stock;Yahoo;JNPR;NASDAQ
+JOYG;Joy Global Inc.;Stock;Yahoo;JOYG;NASDAQ
+KLAC;KLA-Tencor Corporation;Stock;Yahoo;KLAC;NASDAQ
+LBTYA;Liberty Global, Inc.;Stock;Yahoo;LBTYA;NASDAQ
+LIFE;Life Technologies Corporation;Stock;Yahoo;LIFE;NASDAQ
+LINTA;Liberty Media Corporation;Stock;Yahoo;LINTA;NASDAQ
+LLTC;Linear Technology Corporation;Stock;Yahoo;LLTC;NASDAQ
+LOGI;Logitech International S.A.;Stock;Yahoo;LOGI;NASDAQ
+LRCX;Lam Research Corporation;Stock;Yahoo;LRCX;NASDAQ
+MCHP;Microchip Technology Incorporat;Stock;Yahoo;MCHP;NASDAQ
+MICC;Millicom International Cellular;Stock;Yahoo;MICC;NASDAQ
+MRVL;Marvell Technology Group, Ltd.;Stock;Yahoo;MRVL;NASDAQ
+MSFT;Microsoft Corporation;Stock;Yahoo;MSFT;NASDAQ
+MXIM;Maxim Integrated Products, Inc.;Stock;Yahoo;MXIM;NASDAQ
+NIHD;NII Holdings, Inc.;Stock;Yahoo;NIHD;NASDAQ
+NTAP;NetApp, Inc.;Stock;Yahoo;NTAP;NASDAQ
+NVDA;NVIDIA Corporation;Stock;Yahoo;NVDA;NASDAQ
+NWSA;News Corporation;Stock;Yahoo;NWSA;NASDAQ
+ORCL;Oracle Corporation;Stock;Yahoo;ORCL;NASDAQ
+ORLY;O'Reilly Automotive, Inc.;Stock;Yahoo;ORLY;NASDAQ
+PAYX;Paychex, Inc.;Stock;Yahoo;PAYX;NASDAQ
+PCAR;PACCAR Inc.;Stock;Yahoo;PCAR;NASDAQ
+PDCO;Patterson Companies Inc.;Stock;Yahoo;PDCO;NASDAQ
+PPDI;Pharmaceutical Product Developm;Stock;Yahoo;PPDI;NASDAQ
+QCOM;QUALCOMM Incorporated;Stock;Yahoo;QCOM;NASDAQ
+RIMM;Research In Motion Limited;Stock;Yahoo;RIMM;NASDAQ
+ROST;Ross Stores, Inc.;Stock;Yahoo;ROST;NASDAQ
+RYAAY;Ryanair Holdings plc;Stock;Yahoo;RYAAY;NASDAQ
+SBUX;Starbucks Corporation;Stock;Yahoo;SBUX;NASDAQ
+SHLD;Sears Holdings Corporation;Stock;Yahoo;SHLD;NASDAQ
+SIAL;Sigma-Aldrich Corporation;Stock;Yahoo;SIAL;NASDAQ
+SPLS;Staples, Inc.;Stock;Yahoo;SPLS;NASDAQ
+SRCL;Stericycle, Inc.;Stock;Yahoo;SRCL;NASDAQ
+STLD;Steel Dynamics, Inc.;Stock;Yahoo;STLD;NASDAQ
+SYMC;Symantec Corporation;Stock;Yahoo;SYMC;NASDAQ
+TEVA;Teva Pharmaceutical Industries;Stock;Yahoo;TEVA;NASDAQ
+URBN;Urban Outfitters, Inc.;Stock;Yahoo;URBN;NASDAQ
+VRSN;VeriSign, Inc.;Stock;Yahoo;VRSN;NASDAQ
+VRTX;Vertex Pharmaceuticals Incorpor;Stock;Yahoo;VRTX;NASDAQ
+WYNN;Wynn Resorts, Limited;Stock;Yahoo;WYNN;NASDAQ
+XLNX;Xilinx, Inc.;Stock;Yahoo;XLNX;NASDAQ
+XRAY;DENTSPLY International Inc.;Stock;Yahoo;XRAY;NASDAQ
+YHOO;Yahoo! Inc.;Stock;Yahoo;YHOO;NASDAQ
