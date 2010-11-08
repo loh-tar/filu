@@ -949,22 +949,30 @@ int Filu::addFiCareful(FiTuple& fi)
   }
   else
   {
-    // no symbol found, try to add the FI
+    // No symbol found, try to add the FI
+    int retVal = eNoData; // Set to "All symbols are bad"
     symbol->rewind();
     while(symbol->next())
     {
-      // search a non RefSymbol
+      // Search a non RefSymbol
       if(symbol->caption().isEmpty()) continue;
       if(symbol->market().isEmpty()) continue;
       if(symbol->owner().isEmpty()) continue;
+      retVal = eData; // Set to "We have a valid symbol"
       break;
     }
 
-    int retVal = addFi(fi.name()
-                     , fi.type()
-                     , symbol->caption()
-                     , symbol->market()
-                     , symbol->owner());
+    if(retVal == eNoData)
+    {
+      addErrorText("Filu::addFiCareful: No valid symbol to add FI");
+      return eError;
+    }
+
+    retVal = addFi(fi.name()
+                   , fi.type()
+                   , symbol->caption()
+                   , symbol->market()
+                   , symbol->owner());
 
     if(retVal < eSuccess) return (eError + retVal);
 
