@@ -1034,15 +1034,18 @@ int Filu::addFi(const QString& name
   // The database will care about that the FI is not added twice when
   // the symbol is known. In that case the FI name and type will updatet.
   // If the symbol and the FI name is not found, both will inserted.
-  // Returns:
+  //
+  // AddFi.sql Returns:
   //   >0 if all is fine, the fiId
   //   -1 if fiType is not valid
   //   -2 if fiName was empty
-  //   -3 if stype is not valid
-  //   -4 if market is not valid
-  //   -5 if unique violation
-  //   -6 if foreign key violation (should impossible?)
-  //   -7 if other error (should impossible?)
+  //   -3 if symbol is empty
+  //   -4 if stype is not valid
+  //   -5 if market is not valid
+  //   -6 if unique violation
+  //   -7 if symbol was found more than one time and was associated to different FIs
+  //   -8 if foreign key violation (should impossible?)
+  //   -9 if other error (should impossible?)
 
   if(name.isEmpty())
   {
@@ -1076,11 +1079,13 @@ int Filu::addFi(const QString& name
   QString errParm = QString(" FI: %1, %2, Symbol: %3, %4, %5").arg(name).arg(type).arg(symbol).arg(market).arg(stype);
 
   if(retVal == -1) addErrorText("Filu::addFi: Fi Type not valid." + type);
-  if(retVal == -3) addErrorText("Filu::addFi: Symbol Type not valid: " + stype);
-  if(retVal == -4) addErrorText("Filu::addFi: Market not valid: " + market);
-  if(retVal == -5) addErrorText("Filu::addFi: Unique violation." + errParm);
-  if(retVal == -6) addErrorText("Filu::addFi: Bad Type of FI, Symbol or Market." + errParm);
-  if(retVal == -7) addErrorText("Filu::addFi: Error, No idea what's wrong." + errParm);
+  if(retVal == -3) addErrorText("Filu::addFi: Fi not known and Symbol was empty." + errParm);
+  if(retVal == -4) addErrorText("Filu::addFi: Symbol Type not valid: " + stype);
+  if(retVal == -5) addErrorText("Filu::addFi: Market not valid: " + market);
+  if(retVal == -6) addErrorText("Filu::addFi: Unique violation." + errParm);
+  if(retVal == -7) addErrorText("Filu::addFi: Symbol was found more than one time and was associated to different FIs" + errParm);
+  if(retVal == -8) addErrorText("Filu::addFi: Foreign Key Violation." + errParm);
+  if(retVal == -9) addErrorText("Filu::addFi: Error, No idea what's wrong." + errParm);
 
   return (eError + retVal);
 }
