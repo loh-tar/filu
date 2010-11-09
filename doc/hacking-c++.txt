@@ -93,11 +93,14 @@ possible.
 
 Comments can also provide notes for future work:
 
-  // FIXME: this is a todo item or a bug hint and should explain whats wrong
+  // FIXME: This is a todo item or a bug hint and should explain whats wrong
   // here or could be improved.
   // It is preferred that they are fixed, but if you don't fix it, at least
   // document it to save the next person some time in tracking down the
   // problem.
+
+Avoid to wrote all comment text in lower case letters. Text written in correct
+orthography looks nicer.
 
 
 Indenting
