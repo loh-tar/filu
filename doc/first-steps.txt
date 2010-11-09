@@ -104,12 +104,12 @@ e.g. at "full" to download quotes in parallel. The amount of instances is
 configurable in the settings file, ~/.config/Filu.conf by setting MaxClones=X.
 
 rcf
-=====
+-----
 Read Command File. The file can contain each command supported by AgentF. Lines
 begin with an asterisk are ignored as usual.
 
 daemon
-=======
+--------
 Is not a daemon as typical known. It is very similar to rcf. He read from stdin
 and execute each command line he read until Carl+D is pressed or "quit" is read.
 
@@ -119,11 +119,11 @@ ManagerF
 Is one of the oldest part of Filu and is far away from his projected features.
 
 FI Details Page
-=================
+-----------------
 IS the oldest part of Filu and is nearly useless.
 
 Add FI Page
-=============
+-------------
 Needs improvements under the hood and a fixed fetchFi_Yahoo.pl script.
 Therefore currently also not very useful. But you can enter by hand the FI data
 at the bottom input fields and click "Add to DB". You can also add more symbols
@@ -131,7 +131,7 @@ to existing FIs by filling the new symbol data and give an already known symbol
 in the RefSymbol field, Name and Type could leave blank in that case.
 
 Indicator Page
-================
+----------------
 The editor needs many improvements but is usable. To save a file click the down
 arrow left from the listbox.
 
@@ -148,22 +148,22 @@ PerformerF
 Not only the chart painting tool of Filu.
 
 Scroll the Chart
-==================
+------------------
 Is possible by drag them with the mouse. Hold down the Ctrl-Key to scroll in
 "turbo mode".
 
 Change the Density
-====================
+--------------------
 Is possible by mouse wheel.
 
 Groups
-========
+--------
 Create new groups with the green button. Double click a group to step in, click
 the up-arrow to leave the group. Use drag&drop from the search widget or from
 other groups to add FIs to groups. Drag FIs or groups out to remove them.
 
 Chart Objects
-===============
+---------------
 Clicking one button from the menu right of the X-Button activates the chart
 object add mode. Click somewhere on the chart to add the chosen chart object.
 Changing and moving are almost as usual apart from that, that you do not have to
@@ -173,7 +173,7 @@ leave the add mode click the X-Button.
 Available chart object types are currently only "Line".
 
 Plot Sheet Count
-==================
+------------------
 You can add more or less plot sheets by editing the file
 ~/Filu/IndicatorSets/DefaultSet and change the setting of IndicatorCount.
 Someone in the future will this be possible by clicking somewhere in the GUI.
@@ -181,7 +181,7 @@ But I'm unsure what the best way could be. A listbox in a toolbar or by right
 click on the chart. There is also a add/change/remove possibility needed.
 
 Launch Pad Configuration
-===========================
+--------------------------
 See doc/launchpad-file-format.txt.
 
 
