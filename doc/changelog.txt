@@ -18,8 +18,8 @@ ManagerF
 
 2010-11-04
 ============
-Release new snapshot
-----------------------
+New Snapshot
+--------------
 To update from the 2010-07-02 snapshot you have *not* to reinstall the database.
 Read again the readme how to compile the progs now and remove the added Qt4.3.5
 lines in your ~/.bashrc file.
