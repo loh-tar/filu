@@ -109,6 +109,8 @@ PerformerF::PerformerF()
   // create the launch pad
   mLaunchPad = new LaunchPad("LaunchPad", this);
   tb->addWidget(mLaunchPad);
+  connect(tb, SIGNAL(orientationChanged(Qt::Orientation)),
+          mLaunchPad, SLOT(orientationChanged(Qt::Orientation)));
 
   // create the chart object buttons
   QStringList coTypes;

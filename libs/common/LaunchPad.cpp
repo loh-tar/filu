@@ -51,6 +51,8 @@ void LaunchPad::loadSettings()
     QString name = settings.value("Name", "Dummy").toString();
     QToolButton* button = new QToolButton;
     button->setText(name);
+    button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
     mButtons.addButton(button);
     mButtons.setId(button, i);
 
@@ -96,6 +98,20 @@ void LaunchPad::newSelection(int fiId, int marketId)
   //qDebug() << "LaunchPad::newSelection:" << fiId << marketId;
   mFiId     = fiId;
   mMarketId = marketId;
+}
+
+void  LaunchPad::orientationChanged(Qt::Orientation o) // Slot
+{
+  if(Qt::Horizontal == o)
+  {
+    mLayout->setDirection(QBoxLayout::LeftToRight);
+  }
+  else
+  {
+    mLayout->setDirection(QBoxLayout::TopToBottom);
+  }
+
+  parentWidget()->adjustSize();
 }
 
 void LaunchPad::buttonClicked(int id)

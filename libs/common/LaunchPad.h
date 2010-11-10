@@ -41,6 +41,7 @@ class LaunchPad : public FWidget
     void          loadSettings();
     void          saveSettings();
     void          newSelection(int fiId, int marketId);
+    void          orientationChanged(Qt::Orientation o);
 
   protected:
     void          execCmd(const QString command, SymbolTuple* st);
