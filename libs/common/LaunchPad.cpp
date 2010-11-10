@@ -76,13 +76,10 @@ void LaunchPad::saveSettings()
 
   QSettings settings(filuHome + "LaunchPads/" + mName + ".ini",  QSettings::IniFormat);
 
-  QList<QAbstractButton *> bl = mButtons.buttons();
-
   QAbstractButton* btn;
-  foreach(btn, bl)
+  foreach(btn, mButtons.buttons())
   {
     int id = mButtons.id(btn);
-
     settings.beginGroup(QString::number(id));
 
     settings.setValue("Name",       btn->text());
