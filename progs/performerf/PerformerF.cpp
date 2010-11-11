@@ -38,7 +38,7 @@ PerformerF::PerformerF()
   QAction*      act;
 
   // Create the main tool bar
-  tb = addToolBar("MainToolBar");
+  tb = addToolBar("Main Tool Bar");
   tb->setObjectName("MainToolBar");
   tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
   tb->setIconSize(QSize(10, 10));
@@ -104,13 +104,23 @@ PerformerF::PerformerF()
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
-  // Create the LaunchPad
+  // Create the LaunchPad with an own tool bar
+  tb = addToolBar("LaunchPad");
+  tb->setObjectName("LPToolBar");
+  //tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
+  //tb->setIconSize(QSize(10, 10));
+
   mLaunchPad = new LaunchPad("LaunchPad", this);
   tb->addWidget(mLaunchPad);
   connect(tb, SIGNAL(orientationChanged(Qt::Orientation)),
           mLaunchPad, SLOT(orientationChanged(Qt::Orientation)));
 
-  // Create the chart object buttons
+  // Create the chart object buttons with an own tool bar
+  tb = addToolBar("Chart Objects");
+  tb->setObjectName("COToolBar");
+  //tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
+  //tb->setIconSize(QSize(10, 10));
+
   QStringList coTypes;
   COType::getAllTypes(coTypes);
   QActionGroup* actGrp = new QActionGroup(tb);
@@ -157,6 +167,13 @@ PerformerF::PerformerF()
   mRcFile->endGroup(); // "Performer"
 
   mLaunchPad->loadSettings();
+
+//   FIXME: Doesn't work, see doc/todo.txt
+//   // Set a short cut to bring up the toolbars/dock widget menue
+//   // which appears by right click on a toolbar/docwidget
+//   act = createPopupMenu()->menuAction();
+//   act->setShortcut(QKeySequence(QKeySequence::HelpContents));
+//   act->setShortcutContext(Qt::ApplicationShortcut);
 }
 
 PerformerF::~PerformerF()

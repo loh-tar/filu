@@ -61,7 +61,6 @@ M: print more precise info when something goes wrong.
 PerformerF
 ============
 H: add possibility to change, add and remove the used indicator set
-H: split the toolbar in multiple toolbars
 H: add a shortcut to display/hide the toolbar, now you can disable the tb with
    right-click by the mouse, but how you can bring them back?
 M: add spin boxes to set the to be loaded date range
