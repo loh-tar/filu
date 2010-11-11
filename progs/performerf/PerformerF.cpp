@@ -31,22 +31,19 @@ PerformerF::PerformerF()
   mWindowTitel = tr("PerformerF - The Filu Chart Tool");
   setWindowTitle(mWindowTitel);
 
-  // some needs
-  QPixmap icon(10, 10);
-  icon.fill(Qt::red);
+  // Some needs
+  QPixmap       icon(10, 10);
+  QToolBar*     tb;
+  QDockWidget*  dw;
+  QAction*      act;
 
-  QToolBar* tb;
-  QDockWidget* dw;
-  QAction* act;
-
-  // create the main tool bar
-  tb  = addToolBar("MainToolBar");
+  // Create the main tool bar
+  tb = addToolBar("MainToolBar");
   tb->setObjectName("MainToolBar");
   tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
   tb->setIconSize(QSize(10, 10));
 
-
-  // create the beef-widget withn all action-connections
+  // Create the beef-widget withn all action-connections
   mIndiGroup = new IndiWidgetGroup((FWidget*)this);
   setCentralWidget(mIndiGroup);
 
@@ -57,19 +54,20 @@ PerformerF::PerformerF()
   connect(searchFi, SIGNAL(selected(int, int))
         , this, SLOT(loadData(int, int)));
 
-  // create the FI search dock
+  // Create the FI search dock
   dw = new QDockWidget(tr("Search FI"), this);
   dw->setObjectName("SearchFI");
   dw->setAllowedAreas(Qt::LeftDockWidgetArea |
                               Qt::RightDockWidgetArea);
   dw->setWidget(searchFi);
   act = dw->toggleViewAction();
+  icon.fill(Qt::red);
   act->setIcon(icon);
   tb->addAction(act);
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
-  // create the fi group dock
+  // Create the FI group dock
   mGroupNavi = new FiGroupWidget((FWidget*)this);
   connect(mGroupNavi, SIGNAL(selected(const QString &, const QString &))
         , this, SLOT(showWindowTitle(const QString &, const QString &)));
@@ -88,12 +86,12 @@ PerformerF::PerformerF()
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
-  // create the fi group dock 2
+  // Create the FI group dock 2
   mGroupNavi2 = new FiGroupWidget((FWidget*)this);
   connect(mGroupNavi2, SIGNAL(selected(const QString &, const QString &))
-  , this, SLOT(showWindowTitle(const QString &, const QString &)));
+        , this, SLOT(showWindowTitle(const QString &, const QString &)));
   connect(mGroupNavi2, SIGNAL(selected(int, int))
-  , this, SLOT(loadData(int, int)));
+        , this, SLOT(loadData(int, int)));
 
   dw = new QDockWidget(tr("Group Navi 2"), this);
   dw->setObjectName("GroupNavi2");
@@ -106,13 +104,13 @@ PerformerF::PerformerF()
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
-  // create the launch pad
+  // Create the LaunchPad
   mLaunchPad = new LaunchPad("LaunchPad", this);
   tb->addWidget(mLaunchPad);
   connect(tb, SIGNAL(orientationChanged(Qt::Orientation)),
           mLaunchPad, SLOT(orientationChanged(Qt::Orientation)));
 
-  // create the chart object buttons
+  // Create the chart object buttons
   QStringList coTypes;
   COType::getAllTypes(coTypes);
   QActionGroup* actGrp = new QActionGroup(tb);
@@ -136,7 +134,7 @@ PerformerF::PerformerF()
 
   tb->addActions(actGrp->actions());
 
-  // restore all settings
+  // Restore all settings
   mRcFile->beginGroup("Performer");
   QSize size;
   size = mRcFile->getSZ("PerformerSize");
@@ -183,7 +181,7 @@ PerformerF::~PerformerF()
 
 void PerformerF::loadData(int fiId, int marketId)
 {
-  // FIXME: add edit fields for dates to performers toolbar
+  // FIXME: Add edit fields for dates to performers toolbar
   //        and read the dates out there
 
   //mFilu->setBarsToLoad(400);
