@@ -37,6 +37,8 @@ class LaunchPad : public FWidget
                   LaunchPad(const QString& name, FClass* parent);
     virtual      ~LaunchPad();
 
+    void          addToToolBar(QToolBar* tb);
+
   public slots:
     void          loadSettings();
     void          saveSettings();

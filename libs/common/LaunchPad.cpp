@@ -33,6 +33,19 @@ LaunchPad::LaunchPad(const QString& name, FClass* parent)
 LaunchPad::~LaunchPad()
 {}
 
+void LaunchPad::addToToolBar(QToolBar* tb)
+{
+  if(!tb) return;
+
+  foreach(QAbstractButton* btn, mButtons.buttons())
+  {
+    QAction* act = tb->addWidget(btn);
+    act->setObjectName("Act" + btn->objectName());
+  }
+
+  setParent(tb);
+}
+
 void LaunchPad::loadSettings()
 {
   QString filuHome = mRcFile->getST("FiluHome");
@@ -51,6 +64,8 @@ void LaunchPad::loadSettings()
     QString name = settings.value("Name", "Dummy").toString();
     QToolButton* button = new QToolButton;
     button->setText(name);
+    button->setObjectName("Btn" + name);
+    button->setToolTip(name);
     button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     mButtons.addButton(button);
