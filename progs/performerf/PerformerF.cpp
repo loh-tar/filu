@@ -117,9 +117,8 @@ PerformerF::PerformerF()
   //tb->setIconSize(QSize(10, 10));
 
   mLaunchPad = new LaunchPad("LaunchPad", this);
-  tb->addWidget(mLaunchPad);
-  connect(tb, SIGNAL(orientationChanged(Qt::Orientation)),
-          mLaunchPad, SLOT(orientationChanged(Qt::Orientation)));
+  mLaunchPad->loadSettings();
+  mLaunchPad->addToToolBar(tb);
 
   // Create the chart object buttons with an own tool bar
   tb = new FToolBar("Chart Objects", this);
@@ -179,8 +178,6 @@ PerformerF::PerformerF()
   }
 
   mRcFile->endGroup(); // "Performer"
-
-  mLaunchPad->loadSettings();
 
 //   FIXME: Doesn't work, see doc/todo.txt
 //   // Set a short cut to bring up the toolbars/dock widget menue
