@@ -24,6 +24,7 @@
 #include "IndiWidgetGroup.h"
 #include "FiGroupWidget.h"
 #include "LaunchPad.h"
+#include "FToolBar.h"
 
 PerformerF::PerformerF()
           : FMainWindow("PerformerF")
@@ -33,12 +34,13 @@ PerformerF::PerformerF()
 
   // Some needs
   QPixmap       icon(10, 10);
-  QToolBar*     tb;
+  FToolBar*     tb;
   QDockWidget*  dw;
   QAction*      act;
 
   // Create the main tool bar
-  tb = addToolBar("Main Tool Bar");
+  tb = new FToolBar("Main Tool Bar", this);
+  addToolBar(tb);
   tb->setObjectName("MainToolBar");
   tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
   tb->setIconSize(QSize(10, 10));
@@ -61,6 +63,7 @@ PerformerF::PerformerF()
                               Qt::RightDockWidgetArea);
   dw->setWidget(searchFi);
   act = dw->toggleViewAction();
+  act->setObjectName("Act" + dw->objectName());
   icon.fill(Qt::red);
   act->setIcon(icon);
   tb->addAction(act);
@@ -80,6 +83,7 @@ PerformerF::PerformerF()
                               Qt::RightDockWidgetArea);
   dw->setWidget(mGroupNavi);
   act = dw->toggleViewAction();
+  act->setObjectName("Act" + dw->objectName());
   icon.fill(Qt::blue);
   act->setIcon(icon);
   tb->addAction(act);
@@ -98,6 +102,7 @@ PerformerF::PerformerF()
   dw->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   dw->setWidget(mGroupNavi2);
   act = dw->toggleViewAction();
+  act->setObjectName("Act" + dw->objectName());
   icon.fill(Qt::darkBlue);
   act->setIcon(icon);
   tb->addAction(act);
@@ -105,7 +110,8 @@ PerformerF::PerformerF()
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
   // Create the LaunchPad with an own tool bar
-  tb = addToolBar("LaunchPad");
+  tb = new FToolBar("LaunchPad", this);
+  addToolBar(tb);
   tb->setObjectName("LPToolBar");
   //tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
   //tb->setIconSize(QSize(10, 10));
@@ -116,7 +122,8 @@ PerformerF::PerformerF()
           mLaunchPad, SLOT(orientationChanged(Qt::Orientation)));
 
   // Create the chart object buttons with an own tool bar
-  tb = addToolBar("Chart Objects");
+  tb = new FToolBar("Chart Objects", this);
+  addToolBar(tb);
   tb->setObjectName("COToolBar");
   //tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
   //tb->setIconSize(QSize(10, 10));
@@ -130,6 +137,7 @@ PerformerF::PerformerF()
 
   act = new QAction(actGrp);
   act->setIconText("X");
+  act->setObjectName("Act" + act->text());
   act->setData(""); // set to "no type"
   act->setCheckable(true);
   act->setChecked(true);
@@ -138,6 +146,7 @@ PerformerF::PerformerF()
   {
     act = new QAction(actGrp);
     act->setIconText(type);
+    act->setObjectName("Act" + act->text());
     act->setData(type);
     act->setCheckable(true);
   }
@@ -163,6 +172,11 @@ PerformerF::PerformerF()
   mRcFile->beginGroup("GroupNavi2");
   mGroupNavi2->loadSettings();
   mRcFile->endGroup();
+
+  foreach(QObject* child, children())
+  {
+    if(child->inherits("FToolBar")) static_cast<FToolBar*>(child)->loadSettings();
+  }
 
   mRcFile->endGroup(); // "Performer"
 
@@ -190,6 +204,11 @@ PerformerF::~PerformerF()
   mRcFile->beginGroup("GroupNavi2");
   mGroupNavi2->saveSettings();
   mRcFile->endGroup();
+
+  foreach(QObject* child, children())
+  {
+    if(child->inherits("FToolBar")) static_cast<FToolBar*>(child)->saveSettings();
+  }
 
   mRcFile->endGroup(); // "Performer"
 

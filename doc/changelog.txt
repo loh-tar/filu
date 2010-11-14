@@ -1,9 +1,10 @@
-2010-11-12
+2010-11-14
 ============
 PerformerF
 ------------
  - Arrange the LaunchPad buttons vertical when the toolbar is left or right.
  - Split the MainToolBar. Each functionality group has now his own toolbar.
+ - The toolbar buttons are now moveable by Ctrl-LeftMouseBtn.
 
 
 2010-11-08
