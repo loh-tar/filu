@@ -208,8 +208,6 @@ PerformerF::~PerformerF()
   }
 
   mRcFile->endGroup(); // "Performer"
-
-  mLaunchPad->saveSettings();
 }
 
 void PerformerF::loadData(int fiId, int marketId)
