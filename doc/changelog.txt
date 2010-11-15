@@ -6,6 +6,10 @@ PerformerF
  - Split the MainToolBar. Each functionality group has now his own toolbar.
  - The toolbar buttons are now moveable by Ctrl-LeftMouseBtn.
 
+LaunchPad
+-----------
+ - Add Tip as key to the ini file to provide a tool tip information.
+
 
 2010-11-08
 ============

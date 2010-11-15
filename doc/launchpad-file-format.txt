@@ -27,6 +27,9 @@ SymbolType
   The symbol type which must fit to call the program with correct parameters.
   When here is no value set it could be any symbol type.
 
+Tip
+  The tool tip message. When not set is "Name" used.
+
 
 Command Tags
 ==============
@@ -44,11 +47,13 @@ Example File
   AllMarkets=true
   Command="echo Symbol=[Symbol] FiId=[FiId] MarketId=[MarketId]"
   Name=Echo
+  Tip=Print infos to the console
 
   [1]
   AllMarkets=false
   Command="firefox http://de.finance.yahoo.com/q?s=[Symbol]"
   Name=Yahoo
+  Tip=Yahoo Finance Overview
   SymbolType=Yahoo
 
   [2]

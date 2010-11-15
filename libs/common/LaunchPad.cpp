@@ -61,11 +61,15 @@ void LaunchPad::loadSettings()
   {
     settings.beginGroup(QString::number(i));
 
-    QString name = settings.value("Name", "Dummy").toString();
+    QString txt = settings.value("Name", "Dummy").toString();
     QToolButton* button = new QToolButton;
-    button->setText(name);
-    button->setObjectName("Btn" + name);
-    button->setToolTip(name);
+    button->setText(txt);
+    button->setObjectName("Btn" + txt);
+
+    txt = settings.value("Tip").toString();
+    if(txt.isEmpty()) button->setToolTip(button->text());
+    else button->setToolTip(txt);
+
     button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     mButtons.addButton(button);
@@ -100,6 +104,7 @@ void LaunchPad::saveSettings()
     settings.beginGroup(QString::number(id));
 
     settings.setValue("Name",       btn->text());
+    settings.setValue("Tip",        btn->toolTip());
     settings.setValue("Command",    mCommands.at(id));
     settings.setValue("SymbolType", mSymbolTypes.at(id));
     settings.setValue("AllMarkets", mMultis.at(id));
