@@ -3,7 +3,7 @@ This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
 
 The launch pad configuration files are typical config files in *.ini format
 and be located by default in ~/Filu/LaunchPad. There are only numbered top
-level groups [0..n] where ach of them define one button.
+level groups [0..n] where each of them define one button.
 
 NOTE: Currently is only one LaunchPad supported, therefore is only one file
       used: LaunchPad.ini
