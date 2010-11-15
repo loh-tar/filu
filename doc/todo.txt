@@ -114,9 +114,8 @@ L: short selling in Trader.cpp.
 
 LaunchPad
 ===========
-M: add a small GUI to add/edit/remove buttons.
-M: add tool tip and icons. Make icon/text optional showing.
-M: add as option that buttons turns 90° when tool bar is placed left or right
+L: add icons. Make icon/text optional showing.
+L: add as option that buttons turns 90° when tool bar is placed left or right
 
 
 PlotSheet/Painter
