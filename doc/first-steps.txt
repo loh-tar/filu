@@ -180,9 +180,12 @@ Someone in the future will this be possible by clicking somewhere in the GUI.
 But I'm unsure what the best way could be. A listbox in a toolbar or by right
 click on the chart. There is also a add/change/remove possibility needed.
 
-Launch Pad Configuration
---------------------------
-See doc/launchpad-file-format.txt.
+LaunchPad Configuration
+-------------------------
+The LaunchPad can start any application you want with some parameter related to
+the current viewing FI. For details see doc/launchpad-file-format.txt. You can
+edit, add and remove buttons of the LaunchPad by Right-Click with the mouse and
+move around the buttons by Ctrl-LeftMouseBtn.
 
 
 DiggerF
