@@ -1,4 +1,4 @@
-2010-11-14
+2010-11-15
 ============
 PerformerF
 ------------
@@ -9,6 +9,7 @@ PerformerF
 LaunchPad
 -----------
  - Add Tip as key to the ini file to provide a tool tip information.
+ - Add context menu. Edit, add and remove buttons with a simple GUI.
 
 
 2010-11-08

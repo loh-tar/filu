@@ -18,6 +18,7 @@
 //
 
 #include "LaunchPad.h"
+#include "DialogButton.h"
 
 LaunchPad::LaunchPad(const QString& name, FClass* parent)
          : FWidget(parent)
@@ -62,20 +63,13 @@ void LaunchPad::loadSettings()
     settings.beginGroup(QString::number(i));
 
     QString txt = settings.value("Name", "Dummy").toString();
-    QToolButton* button = new QToolButton;
-    button->setText(txt);
-    button->setObjectName("Btn" + txt);
+    QToolButton* button = newButton(txt);
 
     txt = settings.value("Tip").toString();
     if(txt.isEmpty()) button->setToolTip(button->text());
     else button->setToolTip(txt);
 
-    button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-    mButtons.addButton(button);
     mButtons.setId(button, i);
-
-    mLayout->addWidget(button);
 
     QString defaultCmd("echo Dummy button clicked: "
                        "SymbolType=[Provider] "
@@ -96,6 +90,7 @@ void LaunchPad::saveSettings()
   QString filuHome = mRcFile->getST("FiluHome");
 
   QSettings settings(filuHome + "LaunchPads/" + mName + ".ini",  QSettings::IniFormat);
+  settings.remove("");  // Delete all settings
 
   QAbstractButton* btn;
   foreach(btn, mButtons.buttons())
@@ -193,7 +188,120 @@ void LaunchPad::buttonClicked(int id)
   delete st;
 }
 
-void  LaunchPad::execCmd(const QString command, SymbolTuple* st)
+void  LaunchPad::buttonContextMenu(const QPoint& /*pos*/)
+{
+  QAbstractButton* btn = static_cast<QAbstractButton*>(sender());
+  int id = mButtons.id(btn);
+
+  QDialog      dialog;
+  QGridLayout  layout(&dialog);
+  QLabel*      label;
+  int          row = 0;            // Count layout rows
+
+  label = new QLabel(tr("Name"));
+  label->setAlignment(Qt::AlignRight);
+  layout.addWidget(label, row, 0);
+  QLineEdit name(btn->text());
+  layout.addWidget(&name, row++, 1);
+  layout.setColumnStretch(1, 1);
+
+  label = new QLabel(tr("Tool Tip"));
+  label->setAlignment(Qt::AlignRight);
+  layout.addWidget(label, row, 0);
+  QLineEdit tip(btn->toolTip());
+  layout.addWidget(&tip, row++, 1);
+
+  label = new QLabel(tr("Command"));
+  label->setAlignment(Qt::AlignRight);
+  layout.addWidget(label, row, 0);
+  QLineEdit command(mCommands.at(id));
+  //QTextEdit command(mCommands.at(id));
+  layout.addWidget(&command, row++, 1, 1, 2); // Spawn over two colums...
+  layout.setColumnStretch(2, 2);              // ...and take more space
+
+  label = new QLabel(tr("Symbol Type"));
+  label->setAlignment(Qt::AlignRight);
+  layout.addWidget(label, row, 0);
+  QLineEdit symbolType(mSymbolTypes.at(id));
+  layout.addWidget(&symbolType, row, 1);
+
+  QCheckBox allMarkets(tr("All Markets"));
+  allMarkets.setChecked(mMultis.at(id));
+  layout.addWidget(&allMarkets, row++, 2);
+
+  // Add an empty row to take unused space
+  layout.addWidget(new QWidget, row, 1);
+  layout.setRowStretch(row++, 2);
+
+  // Build the button line
+  QDialogButtonBox dlgBtns(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  connect(&dlgBtns, SIGNAL(accepted()), &dialog, SLOT(accept()));
+  connect(&dlgBtns, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+  DialogButton* remove = new DialogButton(tr("&Remove"), -1);
+  dlgBtns.addButton(remove, QDialogButtonBox::ActionRole);
+  connect(remove, SIGNAL(clicked(int)), &dialog, SLOT(done(int)));
+
+  DialogButton* add = new DialogButton(tr("&Add"), 2);
+  dlgBtns.addButton(add, QDialogButtonBox::ActionRole);
+  connect(add, SIGNAL(clicked(int)), &dialog, SLOT(done(int)));
+
+  layout.addWidget(&dlgBtns, row, 1, 1, 2);
+
+  dialog.setMinimumWidth(350);
+
+  switch (dialog.exec())
+  {
+    case 0:     // Cancel
+      return;
+      break;
+    case -1:    // Remove
+      foreach(QAbstractButton* thisBtn, mButtons.buttons())
+      {
+        int thisId = mButtons.id(thisBtn);
+        if(thisId > id) mButtons.setId(thisBtn, thisId - 1);
+      }
+
+      mButtons.removeButton(btn);
+      mCommands.removeAt(id);
+      mSymbolTypes.removeAt(id);
+      mMultis.removeAt(id);
+
+      if(parent()->inherits("QToolBar"))
+      {
+        QToolBar* tb = static_cast<QToolBar*>(parent());
+        foreach(QAction* act, tb->actions())
+        {
+          if(tb->widgetForAction(act) != btn) continue;
+          tb->removeAction(act);
+        }
+      }
+      break;
+    case  1:    // OK
+      btn->setText(name.text());
+      btn->setToolTip(tip.text());
+
+      mCommands[id] = command.text();
+      //mCommands[id] = command.toPlainText();
+      mSymbolTypes[id] = symbolType.text();
+      mMultis[id] = allMarkets.isChecked();
+      break;
+    case  2:    // Add
+      btn = newButton(name.text());
+      btn->setToolTip(tip.text());
+
+      mCommands.append(command.text());
+      //mCommands.append(command.toPlainText());
+      mSymbolTypes.append(symbolType.text());
+      mMultis.append(allMarkets.isChecked());
+      mButtons.setId(btn, mCommands.size() - 1);
+      break;
+  }
+
+  saveSettings();
+}
+
+void LaunchPad::execCmd(const QString command, SymbolTuple* st)
 {
   QString cmd = command;
   cmd.replace("[FiId]",     QString::number(st->fiId()));
@@ -203,4 +311,29 @@ void  LaunchPad::execCmd(const QString command, SymbolTuple* st)
   cmd.replace("[Market]",   st->market());
 
   QProcess::startDetached(cmd);
+}
+
+QToolButton* LaunchPad::newButton(const QString& name)
+{
+  QToolButton* btn = new QToolButton;
+  btn->setContextMenuPolicy(Qt::CustomContextMenu);
+  btn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+  btn->setText(name);
+  btn->setObjectName("Btn" + name);
+
+  connect(btn, SIGNAL(customContextMenuRequested(const QPoint&)),
+          this, SLOT(buttonContextMenu(const QPoint&)));
+
+  mLayout->addWidget(btn);
+  mButtons.addButton(btn);
+
+  if(!parent()) return btn;
+
+  if(parent()->inherits("QToolBar"))
+  {
+    QAction* act = static_cast<QToolBar*>(parent())->addWidget(btn);
+    act->setObjectName("Act" + btn->objectName());
+  }
+
+  return btn;
 }

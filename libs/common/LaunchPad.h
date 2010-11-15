@@ -47,6 +47,7 @@ class LaunchPad : public FWidget
 
   protected:
     void          execCmd(const QString command, SymbolTuple* st);
+    QToolButton*  newButton(const QString& name);
 
     QString       mName;
     QBoxLayout*   mLayout;
@@ -59,6 +60,7 @@ class LaunchPad : public FWidget
 
   protected slots:
     void          buttonClicked(int id);
+    void          buttonContextMenu(const QPoint& pos);
 };
 
 #endif
