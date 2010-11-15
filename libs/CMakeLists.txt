@@ -50,6 +50,7 @@ set(Filu_SRC ${Filu_SRC}
     common/SearchField.cpp
     common/StrategyEditor.cpp
     common/FToolBar.cpp
+    common/DialogButton.cpp
 )
 set(Filu_MOCH ${Filu_MOCH}
     common/LaunchPad.h
@@ -59,6 +60,7 @@ set(Filu_MOCH ${Filu_MOCH}
     common/SqlTableView.h
     common/StrategyEditor.h
     common/FToolBar.h
+    common/DialogButton.h
 )
 include_directories(common)
 
