@@ -19,24 +19,19 @@
 
 #include "IndicatorWidget.h"
 
-#include "IndicatorPainter.h"
+#include "PlotSheet.h"
 #include "IndicatorPicker.h"
 #include "IndicatorDataView.h"
-#include "PlotSheet.h"
 
 IndicatorWidget::IndicatorWidget(const QString& name, FWidget* parent)
-               : FWidget(parent)
-               , mName("1")
-               , mSetName(name)
+               : IndiWidgetSimple(name, parent)
 {
   init(parent);
 }
 
 IndicatorWidget::IndicatorWidget(const QString& name, const int number, FWidget* parent)
-               : FWidget(parent)
-               , mSetName(name)
+               : IndiWidgetSimple(name, number, parent)
 {
-  mName = QString::number(number + 1);
   init(parent);
 }
 
@@ -47,19 +42,14 @@ IndicatorWidget::~IndicatorWidget()
 
 void IndicatorWidget::init(FWidget* parent)
 {
-  mFullIndiSetsPath = mRcFile->getST("IndiSetsPath");
-
   QList<int> sizes;
 
   mPicker = new IndicatorPicker(parent);
-  sizes.append(mPicker->minimumSizeHint().width());
-
-  mSheet = new PlotSheet(parent);
-  connect(mSheet, SIGNAL(mouse(MyMouseEvent*)), this, SIGNAL(mouse(MyMouseEvent*)));
-  sizes.append(mSheet->sizeHint().width()*2);
-
   connect(mPicker, SIGNAL(changed(QString))
         , this, SLOT(useIndicator(const QString &)));
+  sizes.append(mPicker->minimumSizeHint().width());
+
+  sizes.append(mSheet->sizeHint().width()*2);
 
   mDataView = new IndicatorDataView(mSheet);
   connect(mSheet, SIGNAL(mouse(MyMouseEvent*))
@@ -75,34 +65,26 @@ void IndicatorWidget::init(FWidget* parent)
 
   readSettings();
 
+  delete layout();
   QHBoxLayout* lay = new QHBoxLayout;
   lay->addWidget(mSplitter);
   lay->setMargin(0);
   setLayout(lay);
 }
 
-void IndicatorWidget::setName(const QString& name)
-{
-  saveSettings();
-  mName = name;
-  readSettings();
-}
-
-void IndicatorWidget::useIndicator(const QString& file)
-{
-  mSheet->useIndicator(file);
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  settings.beginGroup(mName);
-  settings.setValue("Indicator", file);
-}
-
 void IndicatorWidget::showBarData(BarTuple* bars)
 {
-  mSheet->showBarData(bars);
-  mDataView->initView(); //FIXME:here only added for CalcWatchDogs.cpp
+  IndiWidgetSimple::showBarData(bars);
+  mDataView->initView();
 }
 
-void IndicatorWidget::splitterMoved(/*int pos, int idx*/)
+void IndicatorWidget::showFiIdMarketId(int fiId, int marketId)
+{
+  IndiWidgetSimple::showFiIdMarketId(fiId, marketId);
+  mDataView->initView();
+}
+
+void IndicatorWidget::splitterMoved()
 {
   QList<int> size = mSplitter->sizes();
   emit newSize(&size);
@@ -113,41 +95,24 @@ void IndicatorWidget::setSize(QList<int> &size)
   mSplitter->setSizes(size);
 }
 
-void IndicatorWidget::showFiIdMarketId(int fiId, int marketId)
-{
-  mSheet->showFiIdMarketId(fiId, marketId);
-}
-
 void IndicatorWidget::readSettings()
 {
+  IndiWidgetSimple::readSettings();
+
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   mSplitter->restoreState(settings.value("IndicatorSplitter").toByteArray());
-  mSheet->mPainter->setDensity(settings.value("Density", 10).toDouble());
-
-  settings.beginGroup(mName);
-  mSheet->useIndicator(settings.value("Indicator", "Default").toString());
-  mSheet->mPainter->mShowXScale = settings.value("ShowXScale", true).toBool();
-  mSheet->mPainter->mScaleToScreen = settings.value("ScaleToScreen", 10).toInt();
 }
 
 void IndicatorWidget::saveSettings()
 {
+  IndiWidgetSimple::saveSettings();
+
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   settings.setValue("IndicatorSplitter", mSplitter->saveState());
-  settings.setValue("Density", mSheet->mPainter->mDensity);
-
-  settings.beginGroup(mName);
-  settings.setValue("ShowXScale", mSheet->mPainter->mShowXScale);
-  settings.setValue("ScaleToScreen", mSheet->mPainter->mScaleToScreen);
 }
 
 void IndicatorWidget::mouseSlot(MyMouseEvent* event)
 {
-  mSheet->mouseSlot(event);
+  IndiWidgetSimple::mouseSlot(event);
   mDataView->mouseSlot(event);
-}
-
-void IndicatorWidget::chartObjectChosen(const QString& type)
-{
-  mSheet->mNewCOType = type;
 }

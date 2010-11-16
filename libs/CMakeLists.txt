@@ -106,6 +106,7 @@ set(Filu_SRC ${Filu_SRC}
     graphics/IndicatorPainter.cpp
     graphics/PlotDashLine.cpp
     graphics/PlotType.cpp
+    graphics/IndiWidgetSimple.cpp
 )
 set(Filu_MOCH ${Filu_MOCH}
     graphics/COType.h
@@ -114,6 +115,7 @@ set(Filu_MOCH ${Filu_MOCH}
     graphics/IndicatorWidget.h
     graphics/IndiWidgetGroup.h
     graphics/PlotSheet.h
+    graphics/IndiWidgetSimple.h
 )
 include_directories(graphics)
 

@@ -70,7 +70,7 @@ class IndicatorPainter : public FWidget
   friend class Scaler;
   friend class XScaleTicker;
   friend class PlotSheet;
-  friend class IndicatorWidget;
+  friend class IndiWidgetSimple;
   friend class IndicatorDataView;
   friend class COType;
   friend class Grip;

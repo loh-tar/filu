@@ -77,7 +77,7 @@ class PlotSheet : public FWidget
     void          mouse(MyMouseEvent*);
     void          newIndicator(const QString&);
 
-    friend class  IndicatorWidget;
+    friend class  IndiWidgetSimple;
     friend class  IndicatorDataView;
 
   public slots:

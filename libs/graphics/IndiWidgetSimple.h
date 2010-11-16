@@ -17,51 +17,52 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef INDICATORWIDGET_HPP
-#define INDICATORWIDGET_HPP
+#ifndef INDIWIDGETSIMPLE_HPP
+#define INDIWIDGETSIMPLE_HPP
 
-#include "IndiWidgetSimple.h"
+#include "FWidget.h"
 
-class IndicatorPicker;
-class IndicatorDataView;
+class PlotSheet;
+class MyMouseEvent;
 
 /***********************************************************************
 *
-*  He is the same as IndiWidgetSimple with the improvement of
-*  additional IndicatorPicker and IndicatorDataView.
+*  This class is something like a wrapper for the PlotSheet class.
+*  He save and restore all settings PlotSheet need. To do the job he
+*  has to forward all mouse events to PlotSheet.
 *
 ************************************************************************/
 
-class IndicatorWidget : public IndiWidgetSimple
+class IndiWidgetSimple : public FWidget
 {
   Q_OBJECT
 
   public:
-                  IndicatorWidget(const QString& name, FWidget* parent);
-                  IndicatorWidget(const QString& name, const int number, FWidget* parent);
-    virtual      ~IndicatorWidget();
+                  IndiWidgetSimple(const QString& name, FWidget* parent);
+                  IndiWidgetSimple(const QString& name, const int number, FWidget* parent);
+    virtual      ~IndiWidgetSimple();
+
+    void          setName(const QString& name);
 
     signals:
-    void          newSize(QList<int>*);
+    void          mouse(MyMouseEvent*);
 
   public slots:
-    void          showBarData(BarTuple* bars);
-    void          showFiIdMarketId(int fiId, int marketId);
-    void          setSize(QList<int> &size);
-    void          mouseSlot(MyMouseEvent*);
-
-  protected slots:
-    void          splitterMoved();
+    virtual void  showBarData(BarTuple* bars);
+    virtual void  showFiIdMarketId(int fiId, int marketId);
+            void  useIndicator(const QString& file);
+    virtual void  mouseSlot(MyMouseEvent*);
+    void          chartObjectChosen(const QString& type);
 
   protected:
     void          init(FWidget* parent);
     void          readSettings();
     void          saveSettings();
 
-    IndicatorPicker*   mPicker;
-    IndicatorDataView* mDataView;
-    QSplitter*         mSplitter;
-
+    PlotSheet*    mSheet;
+    QString       mName;
+    QString       mSetName;
+    QString       mFullIndiSetsPath;
 };
 
 #endif
