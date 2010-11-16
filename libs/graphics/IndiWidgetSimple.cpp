@@ -27,7 +27,7 @@ IndiWidgetSimple::IndiWidgetSimple(const QString& name, FWidget* parent)
                 , mName("1")
                 , mSetName(name)
 {
-  init(parent);
+  init();
 }
 
 IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FWidget* parent)
@@ -35,7 +35,7 @@ IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FWidge
                , mSetName(name)
 {
   mName = QString::number(number + 1);
-  init(parent);
+  init();
 }
 
 IndiWidgetSimple::~IndiWidgetSimple()
@@ -43,11 +43,11 @@ IndiWidgetSimple::~IndiWidgetSimple()
   saveSettings();
 }
 
-void IndiWidgetSimple::init(FWidget* parent)
+void IndiWidgetSimple::init()
 {
   mFullIndiSetsPath = mRcFile->getST("IndiSetsPath");
 
-  mSheet = new PlotSheet(parent);
+  mSheet = new PlotSheet(this);
   connect(mSheet, SIGNAL(mouse(MyMouseEvent*)), this, SIGNAL(mouse(MyMouseEvent*)));
 
   QHBoxLayout* lay = new QHBoxLayout;

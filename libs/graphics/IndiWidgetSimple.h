@@ -55,7 +55,7 @@ class IndiWidgetSimple : public FWidget
     void          chartObjectChosen(const QString& type);
 
   protected:
-    void          init(FWidget* parent);
+    void          init();
     void          readSettings();
     void          saveSettings();
 

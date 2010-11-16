@@ -54,7 +54,7 @@ class IndicatorWidget : public IndiWidgetSimple
     void          splitterMoved();
 
   protected:
-    void          init(FWidget* parent);
+    void          init();
     void          readSettings();
     void          saveSettings();
 

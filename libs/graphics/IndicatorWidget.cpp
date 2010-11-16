@@ -26,13 +26,13 @@
 IndicatorWidget::IndicatorWidget(const QString& name, FWidget* parent)
                : IndiWidgetSimple(name, parent)
 {
-  init(parent);
+  init();
 }
 
 IndicatorWidget::IndicatorWidget(const QString& name, const int number, FWidget* parent)
                : IndiWidgetSimple(name, number, parent)
 {
-  init(parent);
+  init();
 }
 
 IndicatorWidget::~IndicatorWidget()
@@ -40,11 +40,11 @@ IndicatorWidget::~IndicatorWidget()
   saveSettings();
 }
 
-void IndicatorWidget::init(FWidget* parent)
+void IndicatorWidget::init()
 {
   QList<int> sizes;
 
-  mPicker = new IndicatorPicker(parent);
+  mPicker = new IndicatorPicker(this);
   connect(mPicker, SIGNAL(changed(QString))
         , this, SLOT(useIndicator(const QString &)));
   sizes.append(mPicker->minimumSizeHint().width());
