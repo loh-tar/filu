@@ -66,13 +66,7 @@ QSize PlotSheet::minimumSizeHint() const
 
 QSize PlotSheet::sizeHint() const
 {
-    return QSize(300, 400);
-}
-
-
-QSizePolicy PlotSheet::sizePolicy () const
-{
-  return QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    return QSize(300, 200);
 }
 
 bool PlotSheet::useIndicator(const QString& file)
@@ -154,7 +148,6 @@ void PlotSheet::paintEvent(QPaintEvent * /*event*/)
   addErrorText(mPainter->errorText());
 
   printError(); // only if some happend
-
   return;
 }
 

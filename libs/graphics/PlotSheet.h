@@ -64,7 +64,6 @@ class PlotSheet : public FWidget
 
     QSize         minimumSizeHint() const;
     QSize         sizeHint() const;
-    QSizePolicy   sizePolicy() const;
 
     bool          useIndicator(const QString& file);
     void          showBarData(BarTuple* bars);
