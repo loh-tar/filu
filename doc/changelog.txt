@@ -1,3 +1,15 @@
+2010-11-16
+============
+PerformerF
+------------
+ - Add a "Zoom Out View" as dock widget. The idea is to have a small window
+   which give an overview with longer time frame. After start and close of
+   PerformerF you will find an indicator settings file "ZoomOutWidget" in
+   ~/Filu/IndicatorSets. Here should you set ShowX/YScale to "false". To use an
+   indicator of your choice append a "Indicator=YourChoice" line.
+ - The icon color of "Group Navi 2" is changed from dark blue to cyan.
+
+
 2010-11-15
 ============
 PerformerF
