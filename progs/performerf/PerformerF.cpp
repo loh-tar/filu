@@ -25,6 +25,7 @@
 #include "FiGroupWidget.h"
 #include "LaunchPad.h"
 #include "FToolBar.h"
+#include "IndiWidgetSimple.h"
 
 PerformerF::PerformerF()
           : FMainWindow("PerformerF")
@@ -49,14 +50,13 @@ PerformerF::PerformerF()
   mIndiGroup = new IndiWidgetGroup((FWidget*)this);
   setCentralWidget(mIndiGroup);
 
-
+  // Create the FI search dock
   SearchFiWidget* searchFi = new SearchFiWidget(this);
   connect(searchFi, SIGNAL(selected(const QString &, const QString &))
         , this, SLOT(showWindowTitle(const QString &, const QString &)));
   connect(searchFi, SIGNAL(selected(int, int))
         , this, SLOT(loadData(int, int)));
 
-  // Create the FI search dock
   dw = new QDockWidget(tr("Search FI"), this);
   dw->setObjectName("SearchFI");
   dw->setAllowedAreas(Qt::LeftDockWidgetArea |
@@ -103,7 +103,21 @@ PerformerF::PerformerF()
   dw->setWidget(mGroupNavi2);
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
-  icon.fill(Qt::darkBlue);
+  icon.fill(Qt::cyan);
+  act->setIcon(icon);
+  tb->addAction(act);
+
+  addDockWidget(Qt::RightDockWidgetArea, dw);
+
+  // Create the ZoomOut dock
+  mZoomOutWidget = new IndiWidgetSimple("ZoomOutWidget", (FWidget*)this);
+  dw = new QDockWidget(tr("Zoom Out View"), this);
+  dw->setObjectName("ZoomOutView");
+  dw->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  dw->setWidget(mZoomOutWidget);
+  act = dw->toggleViewAction();
+  act->setObjectName("Act" + dw->objectName());
+  icon.fill(Qt::black);
   act->setIcon(icon);
   tb->addAction(act);
 
@@ -219,10 +233,11 @@ void PerformerF::loadData(int fiId, int marketId)
   //mFilu->setFromDate("1900-01-01");
   //mFilu->setToDate(QDate::currentDate().toString(Qt::ISODate));
 
-  mIndiGroup->showBarData(mFilu->getBars(fiId,
-                                         marketId,
-                                         "1900-01-01",
-                                         QDate::currentDate().toString(Qt::ISODate)));
+  BarTuple* bars = mFilu->getBars(fiId, marketId, "1900-01-01"
+                                , QDate::currentDate().toString(Qt::ISODate));
+
+  mIndiGroup->showBarData(bars);     // Will eaten "bars", no need to delete them here
+  mZoomOutWidget->showBarData(bars);
 
   mLaunchPad->newSelection(fiId, marketId);
 }

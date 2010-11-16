@@ -25,6 +25,7 @@
 class IndiWidgetGroup;
 class FiGroupWidget;
 class LaunchPad;
+class IndiWidgetSimple;
 
 /***********************************************************************
 *
@@ -44,11 +45,12 @@ class PerformerF : public FMainWindow
     void            loadData(int fiId, int marketId);
 
   protected:
-    IndiWidgetGroup* mIndiGroup;
-    FiGroupWidget*   mGroupNavi;
-    FiGroupWidget*   mGroupNavi2;
-    LaunchPad*       mLaunchPad;
-    QString          mWindowTitel;
+    IndiWidgetGroup*  mIndiGroup;
+    FiGroupWidget*    mGroupNavi;
+    FiGroupWidget*    mGroupNavi2;
+    IndiWidgetSimple* mZoomOutWidget;
+    LaunchPad*        mLaunchPad;
+    QString           mWindowTitel;
 };
 
 #endif
