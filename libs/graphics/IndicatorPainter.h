@@ -57,6 +57,7 @@ class IndicatorPainter : public FWidget
 
     void showGrid(bool yes);
     void showXScale(bool yes);
+    void showYScale(bool yes);
     void setScaleToScreen(int minRange);
 
     void setDensity(float density);

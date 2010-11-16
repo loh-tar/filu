@@ -91,6 +91,7 @@ void IndiWidgetSimple::readSettings()
   settings.beginGroup(mName);
   mSheet->useIndicator(settings.value("Indicator", "Default").toString());
   mSheet->mPainter->mShowXScale = settings.value("ShowXScale", true).toBool();
+  mSheet->mPainter->mShowYScale = settings.value("ShowYScale", true).toBool();
   mSheet->mPainter->mScaleToScreen = settings.value("ScaleToScreen", 10).toInt();
 }
 
@@ -101,6 +102,7 @@ void IndiWidgetSimple::saveSettings()
 
   settings.beginGroup(mName);
   settings.setValue("ShowXScale", mSheet->mPainter->mShowXScale);
+  settings.setValue("ShowYScale", mSheet->mPainter->mShowYScale);
   settings.setValue("ScaleToScreen", mSheet->mPainter->mScaleToScreen);
 }
 

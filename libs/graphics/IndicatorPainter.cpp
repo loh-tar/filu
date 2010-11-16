@@ -279,6 +279,11 @@ void IndicatorPainter::showXScale(bool yes)
   mShowXScale = yes;
 }
 
+void IndicatorPainter::showYScale(bool yes)
+{
+  mShowYScale = yes;
+}
+
 void IndicatorPainter::setScaleToScreen(int minRange)
 {
   // minRange is a percent value. when set to 0, the whole data set is used
