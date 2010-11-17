@@ -57,6 +57,9 @@ class Scaler
     bool        nextYTick(int& y, QString& text);
     void        getValueText(const double& val, QString& text);
 
+    bool        beginYPercentTicking();
+    bool        nextYPercentTick(int& y, QString& text);
+
     void        getErrorText(QStringList& errorMessage);
 
   protected:
@@ -75,7 +78,11 @@ class Scaler
     double      mValuePerTick;
     double      mTickValue;
 
-    QStringList mErrorMessage;
+    QList<double>  mYTickValue;      // Holds Y-Values for (percent) ticking
+    QStringList    mYTickText;       // The corresponding text of mYTickValue
+    QList<double>  mYValuePerTick;   // Holds thresholds
+
+    QStringList    mErrorMessage;
 };
 
 #endif

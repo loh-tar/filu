@@ -40,6 +40,7 @@ IndicatorPainter::IndicatorPainter(PlotSheet* parent)
   mShowYScale = true;
   mScaleToScreen = 5;
   mShowGrid = true;
+  mShowPercentScale = false;
   mXSTicker = 0;
   mPlotType = new PlotType();
   mScaler   = new Scaler(this);
@@ -689,26 +690,43 @@ void IndicatorPainter::paintCrosshair()
   // paint y-scale hair
   painter.resetTransform();
   painter.translate(mChartArea.bottomRight());
-  painter.drawLine(0, p.y(), 4, p.y());
 
-  mScaler->getValueText(mMouseYValue, text);
+  mScaler->beginYPercentTicking();
 
-  rect = painter.boundingRect(rect, Qt::AlignLeft, text);
-  box  = rect;
+  bool paintBox = mShowPercentScale;
+  int y;
+  while(mScaler->nextYPercentTick(y, text))
+  {
+    painter.drawLine(0, y, 4, y);
 
-  // once more, paint a box...
-  box.adjust(0, 0, boxOverSizeX, 1);
-  box.moveCenter(p);
-  if(box.top() < -mChartArea.height()) box.moveTop(-mChartArea.height());
-  box.moveLeft(0 + 8);
-  //painter.drawRect(box); // ...or not
-  painter.eraseRect(box);
+    rect = painter.boundingRect(rect, Qt::AlignLeft, text);
+    box  = rect;
 
-  // and paint the text
-  rect.moveCenter(p);
-  if(rect.top() < -mChartArea.height()) rect.moveTop(-mChartArea.height());
-  rect.moveLeft(0 + 8);
-  painter.drawText(rect, Qt::AlignLeft, text);
+    // once more, paint a box...
+    box.adjust(0, 0, boxOverSizeX, 1);
+    box.moveCenter(QPoint(0, y));
+    box.moveLeft(-3 + 8);
+
+    if(box.top() < -mChartArea.height() + 1) box.moveTop(-mChartArea.height() + 1);
+    if(box.bottom() > -1) box.moveBottom(-1);
+
+    if(paintBox)
+    {
+      paintBox = false;      // Paint only around the first value (mouse position) a box
+      painter.drawRect(box);
+    }
+    else
+    {
+      painter.eraseRect(box);
+    }
+
+    // and paint the text
+    rect.moveCenter(QPoint(0, y));
+    if(rect.top() < -mChartArea.height() + 2) rect.moveTop(-mChartArea.height() + 2);
+    if(rect.bottom() > -1) rect.moveBottom(-1);
+    rect.moveLeft(0 + 8);
+    painter.drawText(rect, Qt::AlignLeft, text);
+  }
 }
 
 /***********************************************************************

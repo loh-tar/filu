@@ -1,4 +1,4 @@
-2010-11-16
+2010-11-18
 ============
 PerformerF
 ------------
@@ -8,6 +8,10 @@ PerformerF
    ~/Filu/IndicatorSets. Here should you set ShowX/YScale to "false". To use an
    indicator of your choice append a "Indicator=YourChoice" line.
  - The icon color of "Group Navi 2" is changed from dark blue to cyan.
+
+PlotSheet/Painter
+-------------------
+ - Add a percent scale when click or hold down the middle mouse button.
 
 
 2010-11-15

@@ -119,6 +119,7 @@ class IndicatorPainter : public FWidget
     bool             mShowYScale;
     int              mScaleToScreen;     // 0 == No, > 0 yes, minRange in %
     bool             mShowGrid;
+    bool             mShowPercentScale;
 
     QFont            mPlotFont;
     QColor           mSheetColor;

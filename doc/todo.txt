@@ -120,9 +120,6 @@ L: add as option that buttons turns 90° when tool bar is placed left or right
 
 PlotSheet/Painter
 ===================
-H: possibility to switch the Y-Scale to a percent view. Zero is the last
-   PRIMARY() as default. On the fly changing to mouse position or moveable with
-   a grip at the scale.
 L: logarithmic Y-Scaling
 
 

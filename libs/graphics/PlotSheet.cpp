@@ -322,6 +322,23 @@ bool PlotSheet::event(QEvent* event)
 
       return true;
     }
+
+    if(qme->button() == Qt::MidButton)
+    {
+      mPainter->mShowPercentScale = true;
+      update();
+    }
+  }
+
+  if(event->type() == QEvent::MouseButtonRelease)
+  {
+    QMouseEvent* qme = static_cast<QMouseEvent*>(event);
+
+    if(qme->button() == Qt::MidButton)
+    {
+      mPainter->mShowPercentScale = false;
+      //update();
+    }
   }
 
   if(event->type() == QEvent::Wheel)

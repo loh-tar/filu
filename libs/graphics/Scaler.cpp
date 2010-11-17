@@ -24,7 +24,9 @@
 
 Scaler::Scaler(IndicatorPainter* painter)
       : mP(painter)
-{}
+{
+  mYValuePerTick << 5.0 << 3.0 << 2.5 << 2.0 << 1.0 << 0.0;
+}
 
 Scaler::~Scaler()
 {}
@@ -249,6 +251,84 @@ void Scaler::getValueText(const double& val, QString& text)
     text = QLocale().toString(val, 'f', 2);
   }
 
+}
+
+bool Scaler::beginYPercentTicking()
+{
+  if(mMaxHigh < mMinLow) return false; // Unvalid data, nothing to plot
+
+  mYTickValue.clear();
+  mYTickText.clear();
+
+  double mouseValue = mP->mMouseYValue;
+  mYTickValue.append(mouseValue);
+
+  QString text;
+  getValueText(mouseValue, text);
+  mYTickText.append(text);
+
+  if(!mP->mShowPercentScale) return true;  // No more todo
+
+  if(!mouseValue) return true; // We can't calc percents from 0.0
+
+  // Don't plot ticks too close together. The formula...
+  //   (mouseValue * valuePerTick * 0.01 * mFactor)
+  // is equivalent to...
+  //   calcToPixel(mouseValue + x%) - calcToPixel(mouseValue)
+  //
+  // We calc in the following with fabs(mouseValue) because of some indicators may
+  // have negative values.
+  double valuePerTick = 0.0;
+  double power = 0.1;
+  int i = mYValuePerTick.size() -1;
+  while((fabs(mouseValue) * valuePerTick * 0.01 * mFactor) < 40)
+  {
+    valuePerTick = mYValuePerTick.at(i--) * power;
+    if(i < 0)
+    {
+      i = mYValuePerTick.size() -1;
+      power *= 10;
+    }
+  }
+
+  if(!valuePerTick) return true; // Don't increment with 0.0
+
+  //
+  // Calc all ticks and store them for later access
+  // First the gain (+x%) ticks...
+  double sumTick = valuePerTick;
+  double value   = mouseValue + fabs(mouseValue * sumTick * 0.01);
+  while(value < mMaxHigh)
+  {
+    mYTickValue.append(value);
+    mYTickText.append("  +" + QString::number(sumTick) + "%");
+    sumTick += valuePerTick;
+    value    = mouseValue + fabs(mouseValue * sumTick * 0.01);
+  }
+
+  // ...and the lost (-x%) ticks
+  sumTick = valuePerTick;
+  value   = mouseValue - fabs(mouseValue * sumTick * 0.01);
+  while(value > mMinLow)
+  {
+    mYTickValue.append(value);
+    mYTickText.append("  -" + QString::number(sumTick) + "%");
+    sumTick += valuePerTick;
+    value    = mouseValue - fabs(mouseValue * sumTick * 0.01);
+  }
+
+  return true;
+}
+
+bool Scaler::nextYPercentTick(int& y, QString& text)
+{
+  // Read precalculated ticks out of the lists
+  if(mYTickValue.isEmpty())  return false;
+
+  y = calcToPixel(mYTickValue.takeFirst());
+  text = mYTickText.takeFirst();
+
+  return true;
 }
 
 void Scaler::getErrorText(QStringList& errorMessage)
