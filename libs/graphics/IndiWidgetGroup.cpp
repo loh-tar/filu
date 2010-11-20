@@ -24,7 +24,7 @@
 
 IndiWidgetGroup::IndiWidgetGroup(FWidget* parent)
                : FWidget(parent)
-               , mSetName("DefaultSet")
+               , mSetName("")
                , mBars(0)
 {
   init();
@@ -61,6 +61,8 @@ void IndiWidgetGroup::init()
 void IndiWidgetGroup::addWindow()
 {
     IndicatorWidget* indi = new IndicatorWidget(mSetName, mSplitter->count(), this);
+    indi->showBarData(mBars);
+
     connect(indi, SIGNAL(newSize(QList<int>*)), this, SLOT(childSplitterMoved(QList<int>*)));
     connect(indi, SIGNAL(mouse(MyMouseEvent*)), this, SLOT(mouseSlot(MyMouseEvent*)));
 
@@ -75,6 +77,7 @@ void IndiWidgetGroup::removeWindow()
 
 void IndiWidgetGroup::loadSetup(const QString& setup)
 {
+  if(setup.isEmpty()) return;
   if(setup != mSetName) saveSetup();
 
   mSetName = setup;
@@ -82,6 +85,11 @@ void IndiWidgetGroup::loadSetup(const QString& setup)
   int rowCount;
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   rowCount = settings.value("IndicatorCount", 2).toInt();
+
+  for(int i = 0; (i < mSplitter->count()) and (i < rowCount); ++i)
+  {
+    static_cast<IndicatorWidget*>(mSplitter->widget(i))->loadSetup(mSetName, i);
+  }
 
   while(mSplitter->count() < rowCount) addWindow();
   while(mSplitter->count() > rowCount) removeWindow();
@@ -104,9 +112,11 @@ void IndiWidgetGroup::showBarData(BarTuple* bars)
 
 void IndiWidgetGroup::saveSetup()
 {
+  if(mSetName.isEmpty()) return;
+
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   settings.setValue("GroupSplitter", mSplitter->saveState());
-  settings.setValue("IndicatorCount", mSplitter->count());
+  //settings.setValue("IndicatorCount", mSplitter->count());
 }
 
 /***********************************************************************

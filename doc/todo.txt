@@ -60,7 +60,6 @@ M: print more precise info when something goes wrong.
 
 PerformerF
 ============
-H: add possibility to change, add and remove the used indicator set
 H: add a shortcut to display/hide the toolbar, now you can disable the tb with
    right-click by the mouse, but how you can bring them back?
 M: add spin boxes to set the to be loaded date range
@@ -69,7 +68,6 @@ M: improve drag&drop. when drop an index to the group list of the navi, create
    a group and insert all underlyings (hm, maybe it's the best *not* to insert
    the underlyings but include them on the fly when group is selected)
 M: add an "about" button with copyright and other stuff
-L: add an overview IndiWidget as QDockWidget
 
 
 ManagerF

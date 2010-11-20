@@ -26,6 +26,7 @@
 #include "LaunchPad.h"
 #include "FToolBar.h"
 #include "IndiWidgetSimple.h"
+#include "IndiSetPad.h"
 
 PerformerF::PerformerF()
           : FMainWindow("PerformerF")
@@ -139,6 +140,20 @@ PerformerF::PerformerF()
   mLaunchPad->loadSettings();
   mLaunchPad->addToToolBar(tb);
 
+  //
+  // Create the IndiSetPad with an own tool bar
+  tb = new FToolBar("IndiSetPad", this);
+  addToolBar(tb);
+  tb->setObjectName("ISToolBar");
+
+  IndiSetPad* isp = new IndiSetPad("PerformerIndiSetPad", this);
+  isp->loadSettings();
+  isp->addToToolBar(tb);
+
+  connect(isp, SIGNAL(setupChosen(const QString&)),
+          mIndiGroup, SLOT(loadSetup(const QString&)));
+
+  //
   // Create the chart object buttons with an own tool bar
   tb = new FToolBar("Chart Objects", this);
   addToolBar(tb);
@@ -194,7 +209,11 @@ PerformerF::PerformerF()
     if(child->inherits("FToolBar")) static_cast<FToolBar*>(child)->loadSettings();
   }
 
+  QString indiSet = mRcFile->getST("PerformerIndiSet");
+
   mRcFile->endGroup(); // "Performer"
+
+  mIndiGroup->loadSetup(indiSet);  // Must done after mRcFile->endGroup(); // "Performer"
 
 //   FIXME: Doesn't work, see doc/todo.txt
 //   // Set a short cut to bring up the toolbars/dock widget menue
@@ -223,6 +242,8 @@ PerformerF::~PerformerF()
   {
     if(child->inherits("FToolBar")) static_cast<FToolBar*>(child)->saveSettings();
   }
+
+  mRcFile->set("PerformerIndiSet", mIndiGroup->indiSetName());
 
   mRcFile->endGroup(); // "Performer"
 }

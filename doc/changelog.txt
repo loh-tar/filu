@@ -2,7 +2,17 @@
 ============
 LaunchPad
 -----------
- - Stores his configuration now in ~/Filu/ButtonPads/LaunchPad.
+ - Stores his configuration now in ~/Filu/ButtonPads/LaunchPad. Therefore you
+   have to move your existing LaunchPad.ini file if you has done an update.
+
+PerformerF
+------------
+ - Add new toolbar to handle IndicatorSets. Works like the LaunchPad,
+   Right-Click for a context menu. The button settings are stored in
+   ~/Filu/ButtonPads/PerformerIndiSetPad. The settings of the IndicatorSet
+   itself is stored as usual in ~/Filu/IndicatorSets. The name of the button
+   is used for the IndicatorSet-Name. Deletion of a button will not delete
+   the IndicatorSet.
 
 
 2010-11-18
