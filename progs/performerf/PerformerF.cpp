@@ -39,6 +39,7 @@ PerformerF::PerformerF()
   QDockWidget*  dw;
   QAction*      act;
 
+  //
   // Create the main tool bar
   tb = new FToolBar("Main Tool Bar", this);
   addToolBar(tb);
@@ -46,10 +47,12 @@ PerformerF::PerformerF()
   tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
   tb->setIconSize(QSize(10, 10));
 
+  //
   // Create the beef-widget withn all action-connections
   mIndiGroup = new IndiWidgetGroup((FWidget*)this);
   setCentralWidget(mIndiGroup);
 
+  //
   // Create the FI search dock
   SearchFiWidget* searchFi = new SearchFiWidget(this);
   connect(searchFi, SIGNAL(selected(const QString &, const QString &))
@@ -70,6 +73,7 @@ PerformerF::PerformerF()
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
+  //
   // Create the FI group dock
   mGroupNavi = new FiGroupWidget((FWidget*)this);
   connect(mGroupNavi, SIGNAL(selected(const QString &, const QString &))
@@ -90,6 +94,7 @@ PerformerF::PerformerF()
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
+  //
   // Create the FI group dock 2
   mGroupNavi2 = new FiGroupWidget((FWidget*)this);
   connect(mGroupNavi2, SIGNAL(selected(const QString &, const QString &))
@@ -109,6 +114,7 @@ PerformerF::PerformerF()
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
+  //
   // Create the ZoomOut dock
   mZoomOutWidget = new IndiWidgetSimple("ZoomOutWidget", (FWidget*)this);
   dw = new QDockWidget(tr("Zoom Out View"), this);
@@ -123,12 +129,11 @@ PerformerF::PerformerF()
 
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
+  //
   // Create the LaunchPad with an own tool bar
   tb = new FToolBar("LaunchPad", this);
   addToolBar(tb);
   tb->setObjectName("LPToolBar");
-  //tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
-  //tb->setIconSize(QSize(10, 10));
 
   mLaunchPad = new LaunchPad("LaunchPad", this);
   mLaunchPad->loadSettings();
@@ -138,8 +143,6 @@ PerformerF::PerformerF()
   tb = new FToolBar("Chart Objects", this);
   addToolBar(tb);
   tb->setObjectName("COToolBar");
-  //tb->setToolButtonStyle(Qt::ToolButtonIconOnly);
-  //tb->setIconSize(QSize(10, 10));
 
   QStringList coTypes;
   COType::getAllTypes(coTypes);
@@ -154,8 +157,7 @@ PerformerF::PerformerF()
   act->setData(""); // set to "no type"
   act->setCheckable(true);
   act->setChecked(true);
-  QString type;
-  foreach(type, coTypes)
+  foreach(QString type, coTypes)
   {
     act = new QAction(actGrp);
     act->setIconText(type);
@@ -166,6 +168,7 @@ PerformerF::PerformerF()
 
   tb->addActions(actGrp->actions());
 
+  //
   // Restore all settings
   mRcFile->beginGroup("Performer");
   QSize size;
