@@ -65,6 +65,14 @@ void IndiWidgetSimple::setName(const QString& name)
   readSettings();
 }
 
+void IndiWidgetSimple::loadSetup(const QString& name, const int number)
+{
+  saveSettings();
+  mSetName = name;
+  mName = QString::number(number + 1);
+  readSettings();
+}
+
 void IndiWidgetSimple::useIndicator(const QString& file)
 {
   mSheet->useIndicator(file);

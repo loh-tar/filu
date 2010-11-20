@@ -43,6 +43,7 @@ class IndiWidgetSimple : public FWidget
     virtual      ~IndiWidgetSimple();
 
     void          setName(const QString& name);
+    void          loadSetup(const QString& name, const int number);
 
     signals:
     void          mouse(MyMouseEvent*);
@@ -56,8 +57,8 @@ class IndiWidgetSimple : public FWidget
 
   protected:
     void          init();
-    void          readSettings();
-    void          saveSettings();
+    virtual void  readSettings();
+    virtual void  saveSettings();
 
     PlotSheet*    mSheet;
     QString       mName;
