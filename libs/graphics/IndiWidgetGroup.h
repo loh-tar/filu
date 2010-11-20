@@ -40,6 +40,8 @@ class IndiWidgetGroup : public FWidget
                   IndiWidgetGroup(const QString& name, FWidget* parent);
     virtual      ~IndiWidgetGroup();
 
+    const QString&  indiSetName() { return mSetName; } ;
+
   public slots:
     void          addWindow();
     void          removeWindow();
