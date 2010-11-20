@@ -52,6 +52,7 @@ set(Filu_SRC ${Filu_SRC}
     common/FToolBar.cpp
     common/DialogButton.cpp
     common/ButtonPad.cpp
+    common/IndiSetPad.cpp
 )
 set(Filu_MOCH ${Filu_MOCH}
     common/LaunchPad.h
@@ -63,6 +64,7 @@ set(Filu_MOCH ${Filu_MOCH}
     common/FToolBar.h
     common/DialogButton.h
     common/ButtonPad.h
+    common/IndiSetPad.h
 )
 include_directories(common)
 
