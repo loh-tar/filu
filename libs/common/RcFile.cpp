@@ -52,6 +52,7 @@ RcFile::RcFile() : QSettings("Filu")
   mDefault.insert("PerformerSize",     QSize(832,512));
   mDefault.insert("PerformerPosition", "");
   mDefault.insert("PerformerState",    "");
+  mDefault.insert("PerformerIndiSet",  "DefaultSet");
 
   // inspetor stuff
   mDefault.insert("InspectorSize",     QSize(832,512));
