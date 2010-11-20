@@ -51,6 +51,7 @@ set(Filu_SRC ${Filu_SRC}
     common/StrategyEditor.cpp
     common/FToolBar.cpp
     common/DialogButton.cpp
+    common/ButtonPad.cpp
 )
 set(Filu_MOCH ${Filu_MOCH}
     common/LaunchPad.h
@@ -61,6 +62,7 @@ set(Filu_MOCH ${Filu_MOCH}
     common/StrategyEditor.h
     common/FToolBar.h
     common/DialogButton.h
+    common/ButtonPad.h
 )
 include_directories(common)
 

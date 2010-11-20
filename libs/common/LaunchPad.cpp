@@ -21,91 +21,61 @@
 #include "DialogButton.h"
 
 LaunchPad::LaunchPad(const QString& name, FClass* parent)
-         : FWidget(parent)
-{
-  mName   = name;
-  mLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-
-  setLayout(mLayout);
-
-  connect(&mButtons, SIGNAL(buttonClicked(int)), this, SLOT(buttonClicked(int)));
-}
+         : ButtonPad(name, parent)
+{}
 
 LaunchPad::~LaunchPad()
 {}
 
-void LaunchPad::addToToolBar(QToolBar* tb)
+int LaunchPad::loadSettings()
 {
-  if(!tb) return;
+  QSettings* settings = openSettings();
 
-  foreach(QAbstractButton* btn, mButtons.buttons())
-  {
-    QAction* act = tb->addWidget(btn);
-    act->setObjectName("Act" + btn->objectName());
-  }
-
-  setParent(tb);
-}
-
-void LaunchPad::loadSettings()
-{
-  QString filuHome = mRcFile->getST("FiluHome");
-
-  QSettings settings(filuHome + "LaunchPads/" + mName + ".ini",  QSettings::IniFormat);
-
-  // determine how many buttons we have
-  QStringList buttonGroups = settings.childGroups();
-  int count = buttonGroups.size();
+  int count = ButtonPad::loadSettings();
 
   // It's not a bug, it's a feature. We add an Dummy button if the file is empty
   for(int i = 0; i < count; ++i)
   {
-    settings.beginGroup(QString::number(i));
-
-    QString txt = settings.value("Name", "Dummy").toString();
-    QToolButton* button = newButton(txt);
-
-    txt = settings.value("Tip").toString();
-    if(txt.isEmpty()) button->setToolTip(button->text());
-    else button->setToolTip(txt);
-
-    mButtons.setId(button, i);
+    settings->beginGroup(QString::number(i));
 
     QString defaultCmd("echo Dummy button clicked: "
                        "SymbolType=[Provider] "
                        "Symbol=[Symbol] Market=[Market] "
                        "FiId=[FiId] MarketId=[MarketId]");
 
-    mCommands.append(settings.value("Command", defaultCmd).toString());
+    mCommands.append(settings->value("Command", defaultCmd).toString());
 
-    mSymbolTypes.append(settings.value("SymbolType", "").toString());
-    mMultis.append(settings.value("AllMarkets", false).toBool());
+    mSymbolTypes.append(settings->value("SymbolType", "").toString());
+    mMultis.append(settings->value("AllMarkets", false).toBool());
 
-    settings.endGroup();
+    settings->endGroup();
   }
+
+  closeSettings();
+
+  return count;
 }
 
-void LaunchPad::saveSettings()
+int LaunchPad::saveSettings()
 {
-  QString filuHome = mRcFile->getST("FiluHome");
+  QSettings* settings = openSettings();
 
-  QSettings settings(filuHome + "LaunchPads/" + mName + ".ini",  QSettings::IniFormat);
-  settings.remove("");  // Delete all settings
+  int count = ButtonPad::saveSettings();
 
-  QAbstractButton* btn;
-  foreach(btn, mButtons.buttons())
+  for(int i = 0; i < count; ++i)
   {
-    int id = mButtons.id(btn);
-    settings.beginGroup(QString::number(id));
+    settings->beginGroup(QString::number(i));
 
-    settings.setValue("Name",       btn->text());
-    settings.setValue("Tip",        btn->toolTip());
-    settings.setValue("Command",    mCommands.at(id));
-    settings.setValue("SymbolType", mSymbolTypes.at(id));
-    settings.setValue("AllMarkets", mMultis.at(id));
+    settings->setValue("Command",    mCommands.at(i));
+    settings->setValue("SymbolType", mSymbolTypes.at(i));
+    settings->setValue("AllMarkets", mMultis.at(i));
 
-    settings.endGroup();
+    settings->endGroup();
   }
+
+  closeSettings();
+
+  return count;
 }
 
 void LaunchPad::newSelection(int fiId, int marketId)
@@ -113,20 +83,6 @@ void LaunchPad::newSelection(int fiId, int marketId)
   //qDebug() << "LaunchPad::newSelection:" << fiId << marketId;
   mFiId     = fiId;
   mMarketId = marketId;
-}
-
-void  LaunchPad::orientationChanged(Qt::Orientation o) // Slot
-{
-  if(Qt::Horizontal == o)
-  {
-    mLayout->setDirection(QBoxLayout::LeftToRight);
-  }
-  else
-  {
-    mLayout->setDirection(QBoxLayout::TopToBottom);
-  }
-
-  parentWidget()->adjustSize();
 }
 
 void LaunchPad::buttonClicked(int id)
@@ -256,29 +212,14 @@ void  LaunchPad::buttonContextMenu(const QPoint& /*pos*/)
       return;
       break;
     case -1:    // Remove
-      foreach(QAbstractButton* thisBtn, mButtons.buttons())
-      {
-        int thisId = mButtons.id(thisBtn);
-        if(thisId > id) mButtons.setId(thisBtn, thisId - 1);
-      }
+      deleteButton(btn);
 
-      mButtons.removeButton(btn);
       mCommands.removeAt(id);
       mSymbolTypes.removeAt(id);
       mMultis.removeAt(id);
-
-      if(parent()->inherits("QToolBar"))
-      {
-        QToolBar* tb = static_cast<QToolBar*>(parent());
-        foreach(QAction* act, tb->actions())
-        {
-          if(tb->widgetForAction(act) != btn) continue;
-          tb->removeAction(act);
-        }
-      }
       break;
     case  1:    // OK
-      btn->setText(name.text());
+      setButtonName(btn, name.text());
       btn->setToolTip(tip.text());
 
       mCommands[id] = command.text();
@@ -311,29 +252,4 @@ void LaunchPad::execCmd(const QString command, SymbolTuple* st)
   cmd.replace("[Market]",   st->market());
 
   QProcess::startDetached(cmd);
-}
-
-QToolButton* LaunchPad::newButton(const QString& name)
-{
-  QToolButton* btn = new QToolButton;
-  btn->setContextMenuPolicy(Qt::CustomContextMenu);
-  btn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-  btn->setText(name);
-  btn->setObjectName("Btn" + name);
-
-  connect(btn, SIGNAL(customContextMenuRequested(const QPoint&)),
-          this, SLOT(buttonContextMenu(const QPoint&)));
-
-  mLayout->addWidget(btn);
-  mButtons.addButton(btn);
-
-  if(!parent()) return btn;
-
-  if(parent()->inherits("QToolBar"))
-  {
-    QAction* act = static_cast<QToolBar*>(parent())->addWidget(btn);
-    act->setObjectName("Act" + btn->objectName());
-  }
-
-  return btn;
 }

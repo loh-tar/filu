@@ -20,16 +20,16 @@
 #ifndef LAUNCHPAD_HPP
 #define LAUNCHPAD_HPP
 
-#include "FWidget.h"
+#include "ButtonPad.h"
 
 /***********************************************************************
 *
-* Holds a collection of user defineable buttons to start any
-* external application with current viewing FI as parameter
-* FIXME: add icons
+*   Holds a collection of user defineable buttons to start any
+*   external application with current viewing FI as parameter
+*
 ************************************************************************/
 
-class LaunchPad : public FWidget
+class LaunchPad : public ButtonPad
 {
   Q_OBJECT
 
@@ -37,21 +37,15 @@ class LaunchPad : public FWidget
                   LaunchPad(const QString& name, FClass* parent);
     virtual      ~LaunchPad();
 
-    void          addToToolBar(QToolBar* tb);
+    int           loadSettings();
 
   public slots:
-    void          loadSettings();
-    void          saveSettings();
     void          newSelection(int fiId, int marketId);
-    void          orientationChanged(Qt::Orientation o);
 
   protected:
+    int           saveSettings();
     void          execCmd(const QString command, SymbolTuple* st);
-    QToolButton*  newButton(const QString& name);
 
-    QString       mName;
-    QBoxLayout*   mLayout;
-    QButtonGroup  mButtons;
     QStringList   mCommands;
     QStringList   mSymbolTypes;
     QList<bool>   mMultis;
