@@ -61,3 +61,15 @@ Example File
   Command="firefox http://www.onvista.de/suche.html?SEARCH_VALUE=[Symbol]&SELECTED_TOOL=ALL_TOOLS"
   Name=Onvista
   SymbolType=Reuters
+  Tip=News
+
+  [3]
+  Name=UpdateThis
+  Tip=Download new bars from Yahoo
+  Command=agentf this [Symbol] [Market] [Provider]
+  SymbolType=Yahoo
+  AllMarkets=true
+
+Note: Button [3] will download the bars but not update the chart. To see the new
+      bar you have to reload the chart e.g. by double click on the symbol in the
+Group Navi.

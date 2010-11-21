@@ -172,13 +172,15 @@ click brings up the property editor. Pressing Del removes a selected CO. To
 leave the add mode click the X-Button.
 Available chart object types are currently only "Line".
 
-Plot Sheet Count
-------------------
-You can add more or less plot sheets by editing the file
-~/Filu/IndicatorSets/DefaultSet and change the setting of IndicatorCount.
-Someone in the future will this be possible by clicking somewhere in the GUI.
-But I'm unsure what the best way could be. A listbox in a toolbar or by right
-click on the chart. There is also a add/change/remove possibility needed.
+IndiSetPad
+------------
+Let you quickly switch between sets of indicators. The buttons are stored in
+~/Filu/ButtonPads/PerformerIndiSetPad.ini. You can edit, add and remove buttons
+of the IndiSetPad by Right-Click with the mouse and move around the buttons by
+Ctrl-LeftMouseBtn. The settings of the IndicatorSets itself are stored in
+~/Filu/IndicatorSets. The name of the button is used for the IndicatorSet-Name.
+Deletion of a button will not delete the IndicatorSet. Each set stores also
+individual view settings.
 
 LaunchPad Configuration
 -------------------------
