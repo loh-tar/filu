@@ -257,17 +257,20 @@ void ButtonPad::deleteButton(QAbstractButton* btn)
 
   mButtons.removeButton(btn);
 
-  if(!parent()) return;
-
-  if(parent()->inherits("QToolBar"))
+  if(parent())
   {
-    QToolBar* tb = static_cast<QToolBar*>(parent());
-    foreach(QAction* act, tb->actions())
+    if(parent()->inherits("QToolBar"))
     {
-      if(tb->widgetForAction(act) != btn) continue;
-      tb->removeAction(act);
+      QToolBar* tb = static_cast<QToolBar*>(parent());
+      foreach(QAction* act, tb->actions())
+      {
+        if(tb->widgetForAction(act) != btn) continue;
+        tb->removeAction(act);
+      }
     }
   }
+
+  delete btn;
 }
 
 void ButtonPad::setButtonName(QAbstractButton* btn, const QString& name)
