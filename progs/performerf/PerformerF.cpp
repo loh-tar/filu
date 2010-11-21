@@ -214,6 +214,7 @@ PerformerF::PerformerF()
   mRcFile->endGroup(); // "Performer"
 
   mIndiGroup->loadSetup(indiSet);  // Must done after mRcFile->endGroup(); // "Performer"
+  isp->setCurrentSetup(indiSet);
 
 //   FIXME: Doesn't work, see doc/todo.txt
 //   // Set a short cut to bring up the toolbars/dock widget menue

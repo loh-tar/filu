@@ -55,13 +55,13 @@ class ButtonPad : public FWidget
     void            setButtonName(QAbstractButton* btn, const QString& name);
 
     QButtonGroup    mButtons;
+    QBoxLayout*     mLayout;            // Only used when standalone widget
 
   protected slots:
     virtual void    buttonClicked(int id);
     virtual void    buttonContextMenu(const QPoint& pos);
 
   private:
-    QBoxLayout*     mLayout;            // Only used when standalone widget
     QSettings*      mSettings;
 };
 

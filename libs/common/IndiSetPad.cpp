@@ -22,7 +22,18 @@
 
 IndiSetPad::IndiSetPad(const QString& name, FClass* parent)
           : ButtonPad(name, parent)
-{}
+{
+  mSetSelector = new QComboBox;
+  mSetSelector->setObjectName("SetSelector");
+  //mSetSelector->setMinimumContentsLength(9);
+  mSetSelector->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  QDir dir(mRcFile->getST("IndiSetsPath"));
+  QStringList files = dir.entryList(QDir::Files, QDir::Name);
+  mSetSelector->insertItems(0, files);
+  connect(mSetSelector, SIGNAL(activated(int)), this, SLOT(setSelectorChanged()));
+
+  mLayout->addWidget(mSetSelector);
+}
 
 IndiSetPad::~IndiSetPad()
 {}
@@ -30,6 +41,11 @@ IndiSetPad::~IndiSetPad()
 int IndiSetPad::loadSettings()
 {
   int count = ButtonPad::loadSettings();
+
+  if((1 == count) and ("Dummy" == mButtons.button(0)->text()))
+  {
+    setButtonName(mButtons.button(0), "DefaultSet");
+  }
 
   QString indiSetsPath = mRcFile->getST("IndiSetsPath");
 
@@ -39,7 +55,41 @@ int IndiSetPad::loadSettings()
     mIndiCount.append(settings.value("IndicatorCount", 1).toInt());
   }
 
+  // Remove buttons where the SetFile was deleted
+  int  id = 0;
+  bool deleted = false;
+  forever
+  {
+    QAbstractButton* btn = mButtons.button(id);
+    if(!btn) break;
+    if(mSetSelector->findText(btn->text()) == -1)
+    {
+      deleteButton(btn);
+      mIndiCount.removeAt(id);
+      deleted = true;
+    }
+    else
+    {
+      ++id;
+    }
+  }
+
+  if(deleted) return saveSettings();
+
   return count;
+}
+
+void IndiSetPad::addToToolBar(QToolBar* tb)
+{
+  QAction* act = tb->addWidget(mSetSelector);
+  act->setObjectName("Act" + mSetSelector->objectName());
+
+  ButtonPad::addToToolBar(tb);
+}
+
+void IndiSetPad::setCurrentSetup(const QString& setup)
+{
+  mSetSelector->setCurrentIndex(mSetSelector->findText(setup));
 }
 
 int IndiSetPad::saveSettings()
@@ -60,6 +110,7 @@ int IndiSetPad::saveSettings()
 void IndiSetPad::buttonClicked(int id)
 {
   //qDebug() << "IndiSetPad::buttonClicked:" << id << mButtons.button(id)->text();
+  setCurrentSetup(mButtons.button(id)->text());
   emit setupChosen(mButtons.button(id)->text());
 }
 
@@ -141,4 +192,23 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
       buttonClicked(mButtons.id(btn));
       break;
   }
+
+  // Update the SetSelector
+  int idx = mSetSelector->findText(name.text());
+  if(-1 == idx)
+  {
+    for(idx = 0; idx < mSetSelector->count(); ++idx)
+    {
+      if(mSetSelector->itemText(idx) > name.text()) break;
+    }
+    mSetSelector->insertItem(idx, name.text());
+  }
+
+  idx = mSetSelector->findText(name.text());
+  mSetSelector->setCurrentIndex(idx);
+}
+
+void IndiSetPad::setSelectorChanged()
+{
+  emit setupChosen(mSetSelector->currentText());
 }

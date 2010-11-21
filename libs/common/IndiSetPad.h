@@ -38,6 +38,8 @@ class IndiSetPad : public ButtonPad
     virtual      ~IndiSetPad();
 
     int           loadSettings();
+    void          addToToolBar(QToolBar* tb);
+    void          setCurrentSetup(const QString& setup);
 
   signals:
     void          setupChosen(const QString& setup);
@@ -48,10 +50,12 @@ class IndiSetPad : public ButtonPad
     int           saveSettings();
 
     QList<int>    mIndiCount;
+    QComboBox*    mSetSelector;
 
   protected slots:
     void          buttonClicked(int id);
     void          buttonContextMenu(const QPoint& pos);
+    void          setSelectorChanged();
 };
 
 #endif

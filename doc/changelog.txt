@@ -1,3 +1,11 @@
+2010-11-21
+============
+IndiSetPad
+------------
+ - Add a SetSelector. These QComboBox displays the currrent used indicator set
+   and let you choose one of all existing sets.
+
+
 2010-11-20
 ============
 LaunchPad
