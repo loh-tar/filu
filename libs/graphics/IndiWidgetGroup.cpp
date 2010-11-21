@@ -84,7 +84,7 @@ void IndiWidgetGroup::loadSetup(const QString& setup)
 
   int rowCount;
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  rowCount = settings.value("IndicatorCount", 2).toInt();
+  rowCount = settings.value("IndicatorCount", 1).toInt();
 
   for(int i = 0; (i < mSplitter->count()) and (i < rowCount); ++i)
   {
