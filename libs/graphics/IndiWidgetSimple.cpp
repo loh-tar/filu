@@ -93,13 +93,23 @@ void IndiWidgetSimple::showFiIdMarketId(int fiId, int marketId)
 
 void IndiWidgetSimple::readSettings()
 {
+  // FIXME: Hardcoded settings
+  mSheet->useFont(QFont("DejaVu Sans", 9, 50, 0));
+  mSheet->useScaleColor(QColor(Qt::white));
+  mSheet->useGridColor(QColor(Qt::gray));
+  mSheet->useSheetColor(QColor(Qt::black));
+  mSheet->setPalette(QPalette(QColor(Qt::black)));
+  mSheet->setDateRange(QDate(1900,1,1), QDate::currentDate());
+
+  // Individual settings
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  mSheet->mPainter->setDensity(settings.value("Density", 10).toDouble());
+  mSheet->setDensity(settings.value("Density", 10).toDouble());
 
   settings.beginGroup(mName);
   mSheet->useIndicator(settings.value("Indicator", "Default").toString());
-  mSheet->mPainter->mShowXScale = settings.value("ShowXScale", true).toBool();
-  mSheet->mPainter->mShowYScale = settings.value("ShowYScale", true).toBool();
+  mSheet->showGrid(settings.value("ShowGrid", true).toBool());
+  mSheet->showXScale(settings.value("ShowXScale", true).toBool());
+  mSheet->showYScale(settings.value("ShowYScale", true).toBool());
   mSheet->mPainter->mScaleToScreen = settings.value("ScaleToScreen", 10).toInt();
 }
 
@@ -109,6 +119,7 @@ void IndiWidgetSimple::saveSettings()
   settings.setValue("Density", mSheet->mPainter->mDensity);
 
   settings.beginGroup(mName);
+  settings.setValue("ShowGrid", mSheet->mPainter->mShowGrid);
   settings.setValue("ShowXScale", mSheet->mPainter->mShowXScale);
   settings.setValue("ShowYScale", mSheet->mPainter->mShowYScale);
   settings.setValue("ScaleToScreen", mSheet->mPainter->mScaleToScreen);

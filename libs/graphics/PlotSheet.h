@@ -37,7 +37,8 @@ enum MyMouseEventType
 {
   eDensityChanged = 0x1,
   eScrollChart    = 0x2,
-  eMouseMove      = 0x4
+  eMouseMove      = 0x4,
+  eShowYScale     = 0x8
 };
 
 //typedef struct
@@ -68,9 +69,7 @@ class PlotSheet : public FWidget
     bool          useIndicator(const QString& file);
     void          showBarData(BarTuple* bars);
     void          showFiIdMarketId(int fiId, int marketId);
-    void          setDateRange(QDate& from, QDate& toDate);
-
-    void          readSettings(); // not privat, call this to reload settings
+    void          setDateRange(const QDate& from, const QDate& toDate);
 
     signals:
     void          mouse(MyMouseEvent*);
@@ -81,6 +80,15 @@ class PlotSheet : public FWidget
 
   public slots:
     void          mouseSlot(MyMouseEvent*);
+    void          useFont(const QFont& font);
+    void          useScaleColor(const QColor& color);
+    void          useGridColor(const QColor& color);
+    void          useSheetColor(const QColor& color);
+    void          setDensity(float density);
+    void          setScaleToScreen(int minRange);
+    void          showGrid(bool yes = true);
+    void          showXScale(bool yes = true);
+    void          showYScale(bool yes = true);
 
   protected:
     void          init();
@@ -103,9 +111,6 @@ class PlotSheet : public FWidget
     BarTuple*     mMyBars;      // for self loaded bars, delete when no longer needed
     QDate         mFromDate;
     QDate         mToDate;
-
-    QFont         mPlotFont;
-    QColor        mSheetColor;
 
     MyMouseEvent  mMouseEvent;
     int           mOldMouseXPos; // holds a pixel value

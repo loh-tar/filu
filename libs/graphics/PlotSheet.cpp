@@ -50,7 +50,6 @@ void PlotSheet::init()
 
   //dont work here: mCOInProcess = 0;
 
-  readSettings();
 }
 
 PlotSheet::~PlotSheet()
@@ -105,35 +104,10 @@ void PlotSheet::showFiIdMarketId(int fiId, int marketId)
   showBarData(mMyBars);
 }
 
-void PlotSheet::setDateRange(QDate& fromDate, QDate& toDate)
+void PlotSheet::setDateRange(const QDate& fromDate, const QDate& toDate)
 {
   mFromDate = fromDate;
   mToDate   = toDate;
-}
-
-void PlotSheet::readSettings()
-{
-  // call this to reload settings previous
-  // write to the RcFile after user changes
-  // FIXME: use RcFile, set settings direct, don't store in variables
-  //        if there is no reason
-
-  mPlotFont = QFont("DejaVu Sans", 9, 50, 0);
-  mPainter->useFont(mPlotFont);
-  mPainter->useScaleColor(QColor(Qt::white));
-  mPainter->useGridColor(QColor(Qt::gray));
-  mPainter->setDensity(30);
-  mPainter->showGrid(true);
-  mPainter->showXScale(true);
-
-  mPainter->setScaleToScreen(10);
-
-  mSheetColor = QColor(Qt::black);
-  //setBackgroundRole(mSheetColor)
-  setPalette(QPalette(mSheetColor));
-
-  mToDate = QDate::currentDate();
-  mFromDate = QDate(1900,1,1);//mToDate.addDays(-45);
 }
 
 /******************************************************************
@@ -211,9 +185,9 @@ void PlotSheet::printError()
   int x = size().width() / 2;
   int y = size().height() / 2;
 
-  QFontMetrics fm(mPlotFont);
+  QFontMetrics fm(mPainter->mPlotFont);
   QPainter painter(this);
-  painter.setFont(mPlotFont);
+  painter.setFont(mPainter->mPlotFont);
 
   QRect rc = fm.boundingRect(0, 0, 1, 1, Qt::AlignLeft /*||FIXME: Qt::TextExpandTabs*/, error);
   rc.moveCenter(QPoint(x,y));
@@ -248,6 +222,77 @@ void PlotSheet::mouseSlot(MyMouseEvent* mme)
     mPainter->mUpdateStaticSheet = true;
     update();
   }
+
+  if(mme->type & eShowYScale)
+  {
+    mPainter->mShowYScale = mme->place4Bars;  // place4Bars is abused
+    mPainter->mUpdateStaticSheet = true;
+    mActShowYScale->setChecked(mme->place4Bars);
+    //update();
+  }
+}
+void PlotSheet::useFont(const QFont& font)
+{
+  mPainter->mPlotFont = font;
+  mPainter->mUpdateStaticSheet = true;
+}
+
+void PlotSheet::useScaleColor(const QColor& color)
+{
+  mPainter->mScaleColor = color;
+  mPainter->mUpdateStaticSheet = true;
+}
+
+void PlotSheet::useGridColor(const QColor& color)
+{
+  mPainter->mGridColor = color;
+  mPainter->mUpdateStaticSheet = true;
+}
+
+void PlotSheet::useSheetColor(const QColor& color)
+{
+  mPainter->mSheetColor = color;
+  mPainter->mUpdateStaticSheet = true;
+}
+
+void PlotSheet::setDensity(float density)
+{
+  mPainter->mDensity = density;
+  mPainter->densityChanged(0);
+}
+
+void PlotSheet::setScaleToScreen(int minRange)
+{
+  // minRange is a percent value. when set to 0, the whole data set is used
+  // and no adjustment will done. A minRange of 10 means that the
+  // minLow and maxHigh of displayed range at least 10% differs
+  mPainter->mScaleToScreen = minRange;
+  mPainter->mUpdateStaticSheet = true;
+}
+
+void PlotSheet::showGrid(bool yes)
+{
+  mPainter->mShowGrid = yes;
+  mPainter->mUpdateStaticSheet = true;
+  mActShowGrid->setChecked(yes);
+}
+
+void PlotSheet::showXScale(bool yes)
+{
+  mPainter->mShowXScale = yes;
+  mPainter->mUpdateStaticSheet = true;
+  mActShowXScale->setChecked(yes);
+}
+
+void PlotSheet::showYScale(bool yes)
+{
+  mPainter->mShowYScale = yes;
+  mPainter->mUpdateStaticSheet = true;
+  mActShowYScale->setChecked(yes);
+
+  mMouseEvent.type = mMouseEvent.type | eShowYScale;
+  mMouseEvent.place4Bars = yes;             // place4Bars is abused
+  emit mouse(&mMouseEvent);
 }
 
 /******************************************************************

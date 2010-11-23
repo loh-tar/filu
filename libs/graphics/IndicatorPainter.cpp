@@ -255,44 +255,6 @@ void IndicatorPainter::useSheet(QPaintDevice* sheet)
   mSheet = sheet;
 }
 
-void IndicatorPainter::useFont(const QFont& font)
-{
-  mPlotFont = font;
-}
-
-void IndicatorPainter::useScaleColor(const QColor& color)
-{
-  mScaleColor = color;
-}
-
-void IndicatorPainter::useGridColor(const QColor& color)
-{
-  mGridColor = color;
-}
-
-void IndicatorPainter::showGrid(bool yes)
-{
-  mShowGrid = yes;
-}
-
-void IndicatorPainter::showXScale(bool yes)
-{
-  mShowXScale = yes;
-}
-
-void IndicatorPainter::showYScale(bool yes)
-{
-  mShowYScale = yes;
-}
-
-void IndicatorPainter::setScaleToScreen(int minRange)
-{
-  // minRange is a percent value. when set to 0, the whole data set is used
-  // and no adjustment will done. A minRange of 10 means that the
-  // minLow and maxHigh of displayed range at least 10% differs
-  mScaleToScreen = minRange;
-}
-
 void IndicatorPainter::calcSizes()
 {
   mChartArea = QRect(QPoint(0, 0), QPoint(mSheet->width(), mSheet->height()));
@@ -349,12 +311,6 @@ void IndicatorPainter::calcSizes()
   mScaler->setHighLow(maxHigh, minLow);
 
   mUpdateStaticSheet = true;
-}
-
-void IndicatorPainter::setDensity(float density)
-{
-  mDensity = density;
-  densityChanged(0);
 }
 
 bool IndicatorPainter::densityChanged(int step)

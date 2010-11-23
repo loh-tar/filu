@@ -51,16 +51,6 @@ class IndicatorPainter : public FWidget
     void useData(BarTuple* bars);
     void useSheet(QPaintDevice* sheet);
 
-    void useFont(const QFont& font);
-    void useScaleColor(const QColor& color);
-    void useGridColor(const QColor& color);
-
-    void showGrid(bool yes);
-    void showXScale(bool yes);
-    void showYScale(bool yes);
-    void setScaleToScreen(int minRange);
-
-    void setDensity(float density);
     bool densityChanged(int step);
     void setIndicatingRange(int from, int count);
     bool scrollHorizontal(int step);
