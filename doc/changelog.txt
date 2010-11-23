@@ -1,9 +1,14 @@
-2010-11-21
+2010-11-23
 ============
 IndiSetPad
 ------------
  - Add a SetSelector. These QComboBox displays the currrent used indicator set
    and let you choose one of all existing sets.
+
+Indicator Widget
+------------------
+ - Add context menu to switch X/YScale and Grid on/off. Well, the grid can
+   currently only switch off, which means it can't be shown without the scale.
 
 
 2010-11-20

@@ -56,6 +56,8 @@ void IndiWidgetSimple::init()
   setLayout(lay);
 
   readSettings();
+
+  addActions(mSheet->actions());
 }
 
 void IndiWidgetSimple::setName(const QString& name)
@@ -130,7 +132,12 @@ void IndiWidgetSimple::mouseSlot(MyMouseEvent* event)
   mSheet->mouseSlot(event);
 }
 
-void IndiWidgetSimple::chartObjectChosen(const QString& type)
+void IndiWidgetSimple::chartObjectChosen(const QString& type) // Slot
 {
   mSheet->mNewCOType = type;
+}
+
+void IndiWidgetSimple::contextMenuEvent(QContextMenuEvent* event)
+{
+  QMenu::exec(actions(), event->globalPos());
 }

@@ -50,6 +50,24 @@ void PlotSheet::init()
 
   //dont work here: mCOInProcess = 0;
 
+  // Create the context menu actions
+  mActShowGrid = new QAction("Show &Grid", this);
+  mActShowGrid->setCheckable(true);
+  mActShowGrid->setChecked(mPainter->mShowGrid);
+  connect(mActShowGrid, SIGNAL(triggered(bool)), this, SLOT(showGrid(bool)));
+  addAction(mActShowGrid);
+
+  mActShowXScale = new QAction("Show &X-Scale", this);
+  mActShowXScale->setCheckable(true);
+  mActShowXScale->setChecked(mPainter->mShowXScale);
+  connect(mActShowXScale, SIGNAL(triggered(bool)), this, SLOT(showXScale(bool)));
+  addAction(mActShowXScale);
+
+  mActShowYScale = new QAction("Show &Y-Scale", this);
+  mActShowYScale->setCheckable(true);
+  mActShowYScale->setChecked(mPainter->mShowYScale);
+  connect(mActShowYScale, SIGNAL(triggered(bool)), this, SLOT(showYScale(bool)));
+  addAction(mActShowYScale);
 }
 
 PlotSheet::~PlotSheet()

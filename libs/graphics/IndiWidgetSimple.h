@@ -53,12 +53,13 @@ class IndiWidgetSimple : public FWidget
     virtual void  showFiIdMarketId(int fiId, int marketId);
             void  useIndicator(const QString& file);
     virtual void  mouseSlot(MyMouseEvent*);
-    void          chartObjectChosen(const QString& type);
+            void  chartObjectChosen(const QString& type);
 
   protected:
     void          init();
     virtual void  readSettings();
     virtual void  saveSettings();
+            void  contextMenuEvent(QContextMenuEvent* event);
 
     PlotSheet*    mSheet;
     QString       mName;

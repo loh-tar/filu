@@ -116,6 +116,10 @@ class PlotSheet : public FWidget
     int           mOldMouseXPos; // holds a pixel value
 
     QString       mNewCOType;
+
+    QAction*      mActShowGrid;
+    QAction*      mActShowXScale;
+    QAction*      mActShowYScale;
 };
 
 #endif
