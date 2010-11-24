@@ -37,13 +37,13 @@ lot@N110:~/FiluSource$ agentf imp doc/example-apple.imp
 lot@N110:~/FiluSource$ agentf full
 lot@N110:~/FiluSource$ performerf
 
-Go to the "Search FI" widget, type in "a" and click "Apple Inc." Nice?
+Go to the 'Search FI' widget, type in 'a' and click 'Apple Inc.' Nice?
 
 What have we done? 'cat doc/example-apple.imp' shows the content of the import
 file. As you can see there are only two Header and two data lines included, the
 rest is comment which explain what kind of data we have imported. The second
 command 'agentf full' forces an update of all eodBars of all FIs stored in the
-database. We have three FIs in the database. "Three?" Yes! Of cause 'Apple Inc.'
+database. We have three FIs in the database. 'Three?' Yes! Of cause 'Apple Inc.'
 as stock but also 'US Dollar' as currency and one more dummy currency 'No
 Currency'.
 
@@ -72,7 +72,7 @@ download anything.
 As consequence of that naming convention is 'Reuters' a symbol type but not a
 provider because we have no Reuters-Script to download anything from Reuters.
 Currently we have less than a handful provider usable at Filu. Yahoo, oander
-and Filu. "Filu?". Um...yes, there are some simple shell scripts they are
+and Filu. 'Filu?'. Um...yes, there are some simple shell scripts they are
 usable at ManagerF AddFi-Page.
 
 Choose 'Filu' in the upper left list box, 'Search FI' right of that, type 'app'
@@ -80,8 +80,8 @@ in the middle edit field and hit 'Search' at the right or simple press Enter.
 Now you should see 'Apple Inc.' and some others in the center. These data come
 not out of the database but rather out of some *.csv files located at
 /usr/local/lib/Filu/provider/Filu, and was read by fetchFi_Filu.sh. When you now
-hit one of the down arrows in the shown list will these FI with that provider
-symbol added to the data base.
+click one of the rows in the shown list will these FI copy to the fields below
+where you can make some edits or simple click 'Add to DB'.
 
 NOTE: ManagerFs AddFi page is something outdated and need a review, so don't
       wonder why the result you got after the search has strange column names.
@@ -100,7 +100,7 @@ or be known to be improved.
 AgentF
 ========
 He is like the Swiss knife of Filu. He starts multiple instances to do a big job
-e.g. at "full" to download quotes in parallel. The amount of instances is
+e.g. at 'full' to download quotes in parallel. The amount of instances is
 configurable in the settings file, ~/.config/Filu.conf by setting MaxClones=X.
 
 rcf
@@ -111,7 +111,7 @@ begin with an asterisk are ignored as usual.
 daemon
 --------
 Is not a daemon as typical known. It is very similar to rcf. He read from stdin
-and execute each command line he read until Carl+D is pressed or "quit" is read.
+and execute each command line he read until Carl+D is pressed or 'quit' is read.
 
 
 ManagerF
@@ -126,7 +126,7 @@ Add FI Page
 -------------
 Needs improvements under the hood and a fixed fetchFi_Yahoo.pl script.
 Therefore currently also not very useful. But you can enter by hand the FI data
-at the bottom input fields and click "Add to DB". You can also add more symbols
+at the bottom input fields and click 'Add to DB'. You can also add more symbols
 to existing FIs by filling the new symbol data and give an already known symbol
 in the RefSymbol field, Name and Type could leave blank in that case.
 
@@ -142,15 +142,29 @@ Select one of the TA-Lib functions and click below one of the lines begin with
 CallX: or IncludeX:. Hit then the Add button to copy that kind of use into
 the editor. See also doc/indicator-file-format.txt.
 
+Log Book
+----------
+Here find you some messages which may produce the other pages. Currently write
+only AddFi some messages, and not the very best.
+
 
 PerformerF
 ============
 Not only the chart painting tool of Filu.
 
+Indicator Look
+----------------
+With the RightMouseBtn comes up a menu where you can adjust the count of
+indicator screens and toggle scale and grid painting on/off. The grid can
+currently only switch off, which means it can't be shown without the
+scale.
+Press/Click the MiddleMouseBtn displays temporary a percent scale, but only when
+the Y-Scale is not disabled.
+
 Scroll the Chart
 ------------------
 Is possible by drag them with the mouse. Hold down the Ctrl-Key to scroll in
-"turbo mode".
+'turbo mode'.
 
 Change the Density
 --------------------
@@ -170,7 +184,7 @@ Changing and moving are almost as usual apart from that, that you do not have to
 hold down the left button while moving. Play around and you will see. Right
 click brings up the property editor. Pressing Del removes a selected CO. To
 leave the add mode click the X-Button.
-Available chart object types are currently only "Line".
+Available chart object types are currently only 'Line'.
 
 IndiSetPad
 ------------
@@ -179,8 +193,9 @@ Let you quickly switch between sets of indicators. The buttons are stored in
 of the IndiSetPad by Right-Click with the mouse and move around the buttons by
 Ctrl-LeftMouseBtn. The settings of the IndicatorSets itself are stored in
 ~/Filu/IndicatorSets. The name of the button is used for the IndicatorSet-Name.
-Deletion of a button will not delete the IndicatorSet. Each set stores also
-individual view settings.
+Deletion of a button will not delete the IndicatorSet but add a button with a
+new name will create such set. Each set stores also individual view settings.
+The ComboBox list all existing sets and shows which set is actual used.
 
 LaunchPad Configuration
 -------------------------
@@ -189,11 +204,20 @@ the current viewing FI. For details see doc/launchpad-file-format.txt. You can
 edit, add and remove buttons of the LaunchPad by Right-Click with the mouse and
 move around the buttons by Ctrl-LeftMouseBtn.
 
+Zoom Out View
+---------------
+This is a single and a little simplified indicator screen. The idea is to have a
+small window which give an overview with a longer time frame. The widget uses an
+indicator settings file 'ZoomOutWidget' in ~/Filu/IndicatorSets. To use an
+indicator of your choice append a 'Indicator=YourChoice' line or select in the
+ComboBox of the IndiSetPad 'ZoomOutWidget', select a different indicator and
+restart PerformerF.
+
 
 DiggerF
 =========
-The scanner tool. If the variable "SCAN4" in an indicator is greater null the
-FI will added to the PerformerF group "ScanResults/<indicatorName>".
+The scanner tool. If the variable 'SCAN4' in an indicator is greater null the
+FI will added to the PerformerF group 'ScanResults/<indicatorName>'.
 
 
 InspectorF
@@ -207,7 +231,7 @@ Strategy-Tab encapsulated in braces {} in two ways:
 
 Click on the Testing-Tab and you see only the edited constants still in braces
 and the progress bar on the bottom shows how many calculations will done when
-you click the "Run Serial Test"-Button.
+you click the 'Run Serial Test'-Button.
 
 While the test is running you could change the tabs to look at the results.
 Select one result at any tab and click the detail tab to see what exactly was
