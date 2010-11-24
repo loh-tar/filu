@@ -2,8 +2,11 @@
 ============
 IndiSetPad
 ------------
- - Add a SetSelector. These QComboBox displays the currrent used indicator set
+ - Add a SetSelector. These QComboBox displays the current used indicator set
    and let you choose one of all existing sets.
+ - Remove in the edit window the IndicatorCount field.
+ - Replace in the edit window the Name field with an editable QComboBox. These
+   box list all existing sets.
 
 Indicator Widget
 ------------------

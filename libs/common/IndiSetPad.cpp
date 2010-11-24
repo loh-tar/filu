@@ -103,7 +103,12 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
   label = new QLabel(tr("Name"));
   label->setAlignment(Qt::AlignRight);
   layout.addWidget(label, row, 0);
-  QLineEdit name(btn->text());
+  QDir dir(mRcFile->getST("IndiSetsPath"));
+  QStringList files = dir.entryList(QDir::Files, QDir::Name);
+  QComboBox name;
+  name.insertItems(0, files);
+  name.setCurrentIndex(name.findText(btn->text()));
+  name.setEditable(true);
   layout.addWidget(&name, row++, 1);
   layout.setColumnStretch(1, 1);
 
@@ -111,7 +116,8 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
   label->setAlignment(Qt::AlignRight);
   layout.addWidget(label, row, 0);
   QLineEdit tip(btn->toolTip());
-  layout.addWidget(&tip, row++, 1);
+  layout.addWidget(&tip, row++, 1, 1, 2);
+  layout.setColumnStretch(2, 3);
 
   // Add an empty row to take unused space
   layout.addWidget(new QWidget, row, 1);
@@ -134,7 +140,9 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
 
   dialog.setMinimumWidth(350);
 
-  switch (dialog.exec())
+  int retVal = dialog.exec();
+  QString newName = name.lineEdit()->text();
+  switch(retVal)
   {
     case 0:     // Cancel
       return;
@@ -144,13 +152,13 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
       saveSettings();
       break;
     case  1:    // OK
-      setButtonName(btn, name.text());
+      setButtonName(btn, newName);
       btn->setToolTip(tip.text());
       saveSettings();
       buttonClicked(id);
       break;
     case  2:    // Add
-      btn = newButton(name.text());
+      btn = newButton(newName);
       btn->setToolTip(tip.text());
       saveSettings();
       buttonClicked(mButtons.id(btn));
@@ -158,18 +166,19 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
   }
 
   // Update the SetSelector
-  int idx = mSetSelector->findText(name.text());
+  int idx = mSetSelector->findText(newName);
   if(-1 == idx)
   {
     for(idx = 0; idx < mSetSelector->count(); ++idx)
     {
-      if(mSetSelector->itemText(idx) > name.text()) break;
+      if(mSetSelector->itemText(idx) > newName) break;
     }
-    mSetSelector->insertItem(idx, name.text());
+    mSetSelector->insertItem(idx, newName);
   }
 
-  idx = mSetSelector->findText(name.text());
+  idx = mSetSelector->findText(newName);
   mSetSelector->setCurrentIndex(idx);
+  setSelectorChanged();
 }
 
 void IndiSetPad::setSelectorChanged()
