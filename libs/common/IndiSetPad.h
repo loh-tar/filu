@@ -47,9 +47,6 @@ class IndiSetPad : public ButtonPad
   public slots:
 
   protected:
-    int           saveSettings();
-
-    QList<int>    mIndiCount;
     QComboBox*    mSetSelector;
 
   protected slots:

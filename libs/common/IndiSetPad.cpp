@@ -47,14 +47,6 @@ int IndiSetPad::loadSettings()
     setButtonName(mButtons.button(0), "DefaultSet");
   }
 
-  QString indiSetsPath = mRcFile->getST("IndiSetsPath");
-
-  for(int i = 0; i < count; ++i)
-  {
-    QSettings settings(indiSetsPath + mButtons.button(i)->text(),  QSettings::IniFormat);
-    mIndiCount.append(settings.value("IndicatorCount", 1).toInt());
-  }
-
   // Remove buttons where the SetFile was deleted
   int  id = 0;
   bool deleted = false;
@@ -65,7 +57,6 @@ int IndiSetPad::loadSettings()
     if(mSetSelector->findText(btn->text()) == -1)
     {
       deleteButton(btn);
-      mIndiCount.removeAt(id);
       deleted = true;
     }
     else
@@ -90,21 +81,6 @@ void IndiSetPad::addToToolBar(QToolBar* tb)
 void IndiSetPad::setCurrentSetup(const QString& setup)
 {
   mSetSelector->setCurrentIndex(mSetSelector->findText(setup));
-}
-
-int IndiSetPad::saveSettings()
-{
-  int count = ButtonPad::saveSettings();
-
-  QString indiSetsPath = mRcFile->getST("IndiSetsPath");
-
-  for(int i = 0; i < count; ++i)
-  {
-    QSettings settings(indiSetsPath + mButtons.button(i)->text(),  QSettings::IniFormat);
-    settings.setValue("IndicatorCount", mIndiCount.at(i));
-  }
-
-  return count;
 }
 
 void IndiSetPad::buttonClicked(int id)
@@ -137,14 +113,6 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
   QLineEdit tip(btn->toolTip());
   layout.addWidget(&tip, row++, 1);
 
-  label = new QLabel(tr("Indicator Count"));
-  label->setAlignment(Qt::AlignRight);
-  layout.addWidget(label, row, 0);
-  QSpinBox indiCount;
-  indiCount.setMinimum(1);
-  indiCount.setValue(mIndiCount.at(id));
-  layout.addWidget(&indiCount, row++, 1);
-
   // Add an empty row to take unused space
   layout.addWidget(new QWidget, row, 1);
   layout.setRowStretch(row++, 2);
@@ -173,21 +141,17 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
       break;
     case -1:    // Remove
       deleteButton(btn);
-      mIndiCount.removeAt(id);
       saveSettings();
       break;
     case  1:    // OK
       setButtonName(btn, name.text());
       btn->setToolTip(tip.text());
-      mIndiCount[id] = indiCount.value();
       saveSettings();
       buttonClicked(id);
       break;
     case  2:    // Add
       btn = newButton(name.text());
       btn->setToolTip(tip.text());
-      mIndiCount.append(indiCount.value());
-      mButtons.setId(btn, mIndiCount.size() - 1);
       saveSettings();
       buttonClicked(mButtons.id(btn));
       break;
