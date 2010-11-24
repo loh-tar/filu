@@ -50,6 +50,7 @@ class IndiWidgetGroup : public FWidget
     void          childSplitterMoved(QList<int> *size);
     void          mouseSlot(MyMouseEvent *);
     void          chartObjectChosen(QAction* action);
+    void          changeWindowCount(QAction* action);
 
   protected:
     void          init();

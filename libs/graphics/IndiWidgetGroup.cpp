@@ -47,6 +47,33 @@ IndiWidgetGroup::~IndiWidgetGroup()
 
 void IndiWidgetGroup::init()
 {
+  // Create the context menu actions
+  QMenu* menu = new QMenu(this);
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(changeWindowCount(QAction*)));
+  QAction* act;
+  act = menu->addAction("+1");
+  act->setData(1);
+  act = menu->addAction("+2");
+  act->setData(2);
+  act = menu->addAction("+3");
+  act->setData(3);
+  act = new QAction(tr("More Indicators..."), this);
+  act->setMenu(menu);
+  addAction(act);
+
+  menu = new QMenu(this);
+  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(changeWindowCount(QAction*)));
+  act = menu->addAction("-1");
+  act->setData(-1);
+  act = menu->addAction("-2");
+  act->setData(-2);
+  act = menu->addAction("-3");
+  act->setData(-3);
+  act = new QAction(tr("Less Indicators..."), this);
+  act->setMenu(menu);
+  addAction(act);
+
+
   mFullIndiSetsPath = mRcFile->getST("IndiSetsPath");
   mSplitter = new QSplitter(Qt::Vertical);
 
@@ -62,6 +89,7 @@ void IndiWidgetGroup::addWindow()
 {
     IndicatorWidget* indi = new IndicatorWidget(mSetName, mSplitter->count(), this);
     indi->showBarData(mBars);
+    indi->insertActions(indi->actions().at(0), actions());
 
     connect(indi, SIGNAL(newSize(QList<int>*)), this, SLOT(childSplitterMoved(QList<int>*)));
     connect(indi, SIGNAL(mouse(MyMouseEvent*)), this, SLOT(mouseSlot(MyMouseEvent*)));
@@ -116,7 +144,7 @@ void IndiWidgetGroup::saveSetup()
 
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   settings.setValue("GroupSplitter", mSplitter->saveState());
-  //settings.setValue("IndicatorCount", mSplitter->count());
+  settings.setValue("IndicatorCount", mSplitter->count());
 }
 
 /***********************************************************************
@@ -150,5 +178,23 @@ void IndiWidgetGroup::chartObjectChosen(QAction* action)
   {
     IndicatorWidget* indi = static_cast<IndicatorWidget*>(mSplitter->widget(i));
     indi->chartObjectChosen(type);
+  }
+}
+
+void IndiWidgetGroup::changeWindowCount(QAction* action) // Slot
+{
+  int count = action->data().toInt();
+
+  if(count > 0)
+  {
+    for(int i = 0; i < count; ++i) addWindow();
+  }
+  else
+  {
+    for(int i = 0; i > count; --i)
+    {
+      if(1 == mSplitter->count()) break; // Don't remove the last IndicatorWindow
+      removeWindow();
+    }
   }
 }

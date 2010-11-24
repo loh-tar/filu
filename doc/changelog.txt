@@ -1,4 +1,4 @@
-2010-11-23
+2010-11-24
 ============
 IndiSetPad
 ------------
@@ -9,6 +9,7 @@ Indicator Widget
 ------------------
  - Add context menu to switch X/YScale and Grid on/off. Well, the grid can
    currently only switch off, which means it can't be shown without the scale.
+ - Add context menu to change the count of indicator windows.
 
 
 2010-11-20
