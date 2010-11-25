@@ -106,24 +106,27 @@ void IndiWidgetSimple::readSettings()
   // Individual settings
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   mSheet->setDensity(settings.value("Density", 10).toDouble());
+  mSheet->showYScale(settings.value("ShowYScale", true).toBool());
 
   settings.beginGroup(mName);
   mSheet->useIndicator(settings.value("Indicator", "Default").toString());
   mSheet->showGrid(settings.value("ShowGrid", true).toBool());
   mSheet->showXScale(settings.value("ShowXScale", true).toBool());
-  mSheet->showYScale(settings.value("ShowYScale", true).toBool());
   mSheet->mPainter->mScaleToScreen = settings.value("ScaleToScreen", 10).toInt();
 }
 
 void IndiWidgetSimple::saveSettings()
 {
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  settings.setValue("Density", mSheet->mPainter->mDensity);
+  if("1" == mName)
+  {
+    settings.setValue("Density", mSheet->mPainter->mDensity);
+    settings.setValue("ShowYScale", mSheet->mPainter->mShowYScale);
+  }
 
   settings.beginGroup(mName);
   settings.setValue("ShowGrid", mSheet->mPainter->mShowGrid);
   settings.setValue("ShowXScale", mSheet->mPainter->mShowXScale);
-  settings.setValue("ShowYScale", mSheet->mPainter->mShowYScale);
   settings.setValue("ScaleToScreen", mSheet->mPainter->mScaleToScreen);
 }
 

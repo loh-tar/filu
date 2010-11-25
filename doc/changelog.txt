@@ -1,3 +1,10 @@
+2010-11-25
+============
+Indicator Widget
+------------------
+ - Move settings key 'ShowYScale' from individual group [n] to [General].
+
+
 2010-11-24
 ============
 IndiSetPad

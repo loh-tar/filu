@@ -3,21 +3,19 @@ GroupSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\x1\x2\0\0\0\xaa\0\0\0X\
 Density=@Variant(\0\0\0\x87@v\xbfh)
 IndicatorSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\0\0\0\0\x3\x42\0\0\0\0\x1\0\0\0\x3\x1\0\0\0\x1)
 IndicatorCount=3
+ShowYScale=true
 
 [2]
 ShowXScale=false
-ShowYScale=true
 ScaleToScreen=10
 Indicator=TradeBalance
 
 [1]
 ShowXScale=false
-ShowYScale=true
 ScaleToScreen=10
 Indicator=TradeView
 
 [3]
 Indicator=XsmaTrader
 ShowXScale=true
-ShowYScale=true
 ScaleToScreen=10

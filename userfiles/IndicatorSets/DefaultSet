@@ -3,15 +3,14 @@ Density=@Variant(\0\0\0\x87\x41\x11t])
 GroupSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x2\0\0\x1\x9e\0\0\0h\x1\0\0\0\x4\x1\0\0\0\x2)
 IndicatorCount=2
 IndicatorSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\0w\0\0\x2s\0\0\0V\x1\0\0\0\x4\x1\0\0\0\x1)
+ShowYScale=true
 
 [1]
 Indicator=Main
 ScaleToScreen=10
 ShowXScale=false
-ShowYScale=true
 
 [2]
 Indicator=Volume
 ScaleToScreen=10
 ShowXScale=true
-ShowYScale=true

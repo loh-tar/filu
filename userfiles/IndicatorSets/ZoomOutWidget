@@ -1,7 +1,7 @@
 [General]
 Density="@Variant(\0\0\0\x87?\xfd=\xbd)"
+ShowYScale=false
 
 [1]
 ShowXScale=false
-ShowYScale=false
 ScaleToScreen=10
