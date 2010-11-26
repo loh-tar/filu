@@ -35,10 +35,12 @@ class COType;
 
 enum MyMouseEventType
 {
-  eDensityChanged = 0x1,
-  eScrollChart    = 0x2,
-  eMouseMove      = 0x4,
-  eShowYScale     = 0x8
+  eDensityChanged = 0x01,
+  eScrollChart    = 0x02,
+  eMouseMove      = 0x04,
+  eShowYScale     = 0x08,
+  eSyncReq        = 0x10,   // Request
+  eSyncDec        = 0x20    // Decree
 };
 
 //typedef struct
@@ -46,6 +48,7 @@ class MyMouseEvent
 {
   public:
   QObject* sender;
+  QVariant val1;
   int      type;
   float    density;
   int      place4Bars;

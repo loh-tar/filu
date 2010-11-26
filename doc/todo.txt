@@ -118,6 +118,8 @@ L: add as option that buttons turns 90° when tool bar is placed left or right
 
 PlotSheet/Painter
 ===================
+M: rethink MyMouseEvent. Use QVariant or a union to be more flexible. Rename to
+   MyEvent or MyMessage
 L: logarithmic Y-Scaling
 L: paint the grid independent of the scale
 

@@ -257,6 +257,33 @@ void PlotSheet::mouseSlot(MyMouseEvent* mme)
     mActShowYScale->setChecked(mme->place4Bars);
     //update();
   }
+
+  if(mme->type == eSyncReq)
+  {
+    mMouseEvent.type = eSyncDec;
+    mMouseEvent.val1 = (int)mme->sender;  // Set val1 to the addressee which is the SyncRequester
+    mMouseEvent.mousePos.setX(mPainter->mMouseXPos);
+    mMouseEvent.density        = mPainter->mDensity;
+    mMouseEvent.place4Bars     = mPainter->mPlace4Bars;
+    mMouseEvent.firstBarToShow = mPainter->mFirstBarToShow;
+
+    delete mme;
+    emit mouse(&mMouseEvent);
+  }
+
+  if((mme->type == eSyncDec) and (mme->val1.toInt() == (int)this))
+  {
+    mPainter->mMouseXPos      = mme->mousePos.x();
+    mPainter->mDensity        = mme->density;
+    mPainter->mPlace4Bars     = mme->place4Bars;
+    mPainter->mFirstBarToShow = mme->firstBarToShow;
+
+    if(mBars)
+    {
+      mBars->rewind(mme->firstBarToShow + mme->mousePos.x());
+      mPainter->mMouseDate = mBars->date();
+    }
+  }
 }
 void PlotSheet::useFont(const QFont& font)
 {
