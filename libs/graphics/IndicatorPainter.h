@@ -34,8 +34,8 @@ class Grip;
 
 /***********************************************************************
 *
-* What else than paint a chart is his task,
-* He paint what we want to see on the screen or printer
+*   What else than paint a chart is his task,
+*   He paint what we want to see on the screen or printer
 *
 ************************************************************************/
 
@@ -96,7 +96,7 @@ class IndicatorPainter : public FWidget
     QPixmap*         mVolatileSheet;     // for paint the cursor etc
     bool             mUpdateStaticSheet;
     QRect            mChartArea;         // available for the chart itself (-scale area)
-    Scaler* mScaler;
+    Scaler*          mScaler;
     float            mDensity;           // like qtstalkers "pixelspace"
     int              mPlace4Bars;        // how many bars can be displayed
     int              mFirstBarToShow;    // index number

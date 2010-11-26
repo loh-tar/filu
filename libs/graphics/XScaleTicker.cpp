@@ -23,9 +23,16 @@
 #include "Scaler.h"
 
 XScaleTicker::XScaleTicker(IndicatorPainter* painter)
-{
-  mP = painter;
-}
+            : mP(painter)
+            , mPaintText(false)
+            , mPaintGrid(false)
+            , mLastYear(0)
+            , mLastQuarter(0)
+            , mLastMonth(0)
+            , mLastWeek(0)
+            , mLastDay(0)
+
+{}
 
 XScaleTicker::~XScaleTicker()
 {}
@@ -36,7 +43,9 @@ void XScaleTicker::prepare()
 
   mI = -1;
   mLastYear = 0;
+  mLastQuarter = 0;
   mLastMonth = 0;
+  mLastWeek = 0;
   mLastDay = 0;
   mLastTextWriter = -1;
   mDensity = mP->mDensity * 100.0;

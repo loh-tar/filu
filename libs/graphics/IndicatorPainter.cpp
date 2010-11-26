@@ -32,22 +32,31 @@
 
 IndicatorPainter::IndicatorPainter(PlotSheet* parent)
                 : FWidget(parent)
+                , mIndicator(0)
+                , mPlotType(0)
+                , mPrepareError(false)
                 , mCOInProcess(0)
+                , mBars(0)
+                , mData(0)
+                , mSheet(0)
+                , mStaticSheet(0)
+                , mVolatileSheet(0)
+                , mUpdateStaticSheet(true)
+                , mScaler(0)
+                , mDensity(0.0)
+                , mPlace4Bars(0)
+                , mFirstBarToShow(0)
+                , mMouseXPos(0)
+                , mMouseYValue(0.0)
+                , mXSTicker(0)
+                , mShowXScale(true)
+                , mShowYScale(true)
+                , mScaleToScreen(5)
+                , mShowGrid(true)
+                , mShowPercentScale(false)
 {
-  mData = 0;
-  mBars = 0;
-  mShowXScale = true;
-  mShowYScale = true;
-  mScaleToScreen = 5;
-  mShowGrid = true;
-  mShowPercentScale = false;
-  mXSTicker = 0;
-  mPlotType = new PlotType();
-  mScaler   = new Scaler(this);
-
-  mStaticSheet   = 0;
-  mVolatileSheet = 0;
-
+  mPlotType  = new PlotType();
+  mScaler    = new Scaler(this);
   mIndicator = new Indicator(this);
   mIndicator->ignorePlot(false);
 
