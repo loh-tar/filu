@@ -147,7 +147,6 @@ L: change from treeview to "something better"
 
 COType/COLine
 ===============
-H: setting the anchor value in the edit window don't work properly
 
 
 Exporter

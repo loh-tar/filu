@@ -167,14 +167,13 @@ void COLine::readAttributes(bool firstCall/* = false*/)
 
   if(mAttribute.value("Horizontal").value<bool>())
   {
-    double anchorY = mAnchor->pos().y();
+    double anchorVal = mAnchor->value();
 
     Grip* grip;
     foreach(grip, mGrip)
     {
-      QPointF pos = grip->pos();
-      pos.setY(anchorY);
-      grip->set(pos);
+      QDate date = grip->date();
+      grip->set(date, anchorVal);
     }
   }
 }

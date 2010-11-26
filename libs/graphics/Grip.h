@@ -62,7 +62,9 @@ class Grip : public QRectF
 
     virtual    ~Grip();
 
-    QPoint      pos() { return center().toPoint(); };
+    QPoint      pos() const { return center().toPoint(); };
+    QDate       date() const { return mDate; };
+    double      value() const { return mValue; };
     void        update();
     void        set(const QPointF& pos);
     void        set(const QDate& date, const double value);

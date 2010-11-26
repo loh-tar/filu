@@ -386,7 +386,7 @@ void COType::showEditWindow()
 
     ++i;
   }
-qDebug() << mAttribute;
+//qDebug() << mAttribute;
   readAttributes();
 }
 
