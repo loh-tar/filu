@@ -79,10 +79,10 @@ void IndiWidgetSimple::sync()
 {
   if("1" != mName)  // Don't ask for a sync if you are the No.1
   {
-    MyMouseEvent* e = new MyMouseEvent;
-    e->sender = mSheet;
-    e->type   = eSyncReq;
-    emit mouse(e);
+    MyMouseEvent e;
+    e.sender = mSheet;
+    e.type   = eSyncReq;
+    emit mouse(&e);
   }
 }
 

@@ -267,7 +267,6 @@ void PlotSheet::mouseSlot(MyMouseEvent* mme)
     mMouseEvent.place4Bars     = mPainter->mPlace4Bars;
     mMouseEvent.firstBarToShow = mPainter->mFirstBarToShow;
 
-    delete mme;
     emit mouse(&mMouseEvent);
   }
 
