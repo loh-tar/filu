@@ -571,7 +571,7 @@ void COType::prepare(const QHash<QString, QString> &keyValue)
   setAttribute("Color"
               , QColor(keyValue.value("Color")));
 
-  readAttributes(true);
+  COType::readAttributes(true);
 }
 
 void COType::readAttributes(bool firstCall/* = false*/)
@@ -843,6 +843,12 @@ void COType::setAttribute( const QString& name
 
 Grip* COType::createNewGrip(Grip::Type type, const QPointF& pos/* = QPoint(-1, -1)*/)
 {
+  // Don't create a grip twice
+  // Qt doku says if value not exist 0 is returned.
+  Grip* existGrip = mGrip.value(type);
+
+  if(existGrip) return existGrip;
+
   Grip* newGrip = new Grip(mP, type, pos);
 
   mGrip.insert(type, newGrip);
