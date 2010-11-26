@@ -254,6 +254,8 @@ bool IndicatorPainter::calculate()
       COType* newCO = COType::createNew(co, this);
       mCObjects.insert(newCO);
     }
+
+    delete co;
   }
 
   return true;
