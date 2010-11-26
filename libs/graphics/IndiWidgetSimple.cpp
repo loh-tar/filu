@@ -75,6 +75,17 @@ void IndiWidgetSimple::loadSetup(const QString& name, const int number)
   readSettings();
 }
 
+void IndiWidgetSimple::sync()
+{
+  if("1" != mName)  // Don't ask for a sync if you are the No.1
+  {
+    MyMouseEvent* e = new MyMouseEvent;
+    e->sender = mSheet;
+    e->type   = eSyncReq;
+    emit mouse(e);
+  }
+}
+
 void IndiWidgetSimple::useIndicator(const QString& file)
 {
   mSheet->useIndicator(file);
@@ -132,6 +143,7 @@ void IndiWidgetSimple::saveSettings()
 
 void IndiWidgetSimple::mouseSlot(MyMouseEvent* event)
 {
+  if((event->type == eSyncReq) and ("1" != mName)) return; // Block eSyncReq if you are not No.1
   mSheet->mouseSlot(event);
 }
 

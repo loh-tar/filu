@@ -95,6 +95,8 @@ void IndiWidgetGroup::addWindow()
     connect(indi, SIGNAL(mouse(MyMouseEvent*)), this, SLOT(mouseSlot(MyMouseEvent*)));
 
     mSplitter->addWidget(indi);
+
+    indi->sync();
 }
 
 void IndiWidgetGroup::removeWindow()

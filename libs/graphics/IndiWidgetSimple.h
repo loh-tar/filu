@@ -44,6 +44,7 @@ class IndiWidgetSimple : public FWidget
 
     void          setName(const QString& name);
     void          loadSetup(const QString& name, const int number);
+    void          sync();
 
     signals:
     void          mouse(MyMouseEvent*);
