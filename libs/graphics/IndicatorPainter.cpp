@@ -492,7 +492,7 @@ bool IndicatorPainter::paint()
 
 void IndicatorPainter::paintXScale()
 {
-  if(!mShowXScale) return;
+  if(!mShowXScale and !mShowGrid) return;
   if(!mXSTicker) mXSTicker = new XScaleTicker(this);
 
   QPen scalePen(mScaleColor);
@@ -511,7 +511,7 @@ void IndicatorPainter::paintXScale()
   painter.translate(0, 2);
 
   // and draw the base line over the whole width
-  painter.drawLine(0, 0, mChartArea.right(), 0);
+  if(mShowXScale) painter.drawLine(0, 0, mChartArea.right(), 0);
 
   // draw the ticks in the scale with some descriptive text
   int x = 0;  // the x value in pixel
@@ -556,7 +556,7 @@ void IndicatorPainter::paintXScale()
 
 void IndicatorPainter::paintYScale()
 {
-  if(!mShowYScale) return;
+  if(!mShowYScale and !mShowGrid) return;
 
   QPen scalePen(mScaleColor);
   scalePen.setStyle(Qt::SolidLine);
@@ -574,7 +574,7 @@ void IndicatorPainter::paintYScale()
  // painter.translate(0, 2);
 
   // and draw the base line
-  painter.drawLine(0, 0, 0, mScaler->topEdge());
+  if(mShowYScale) painter.drawLine(0, 0, 0, mScaler->topEdge());
 
   // draw the ticks in the scale with some descriptive text
   if(!mScaler->beginYTicking())
@@ -584,14 +584,17 @@ void IndicatorPainter::paintYScale()
   int y;
   while(mScaler->nextYTick(y, text))
   {
-    painter.drawLine(0, y, 4, y);
+    if(mShowYScale)
+    {
+      painter.drawLine(0, y, 4, y);
 
-    QRectF rect;
-    rect = painter.boundingRect(rect, Qt::AlignLeft, text);
-    rect.moveCenter(QPoint(0, y));
-    rect.moveLeft(0 + 8);
+      QRectF rect;
+      rect = painter.boundingRect(rect, Qt::AlignLeft, text);
+      rect.moveCenter(QPoint(0, y));
+      rect.moveLeft(0 + 8);
 
-    painter.drawText(rect, Qt::AlignLeft, text);
+      painter.drawText(rect, Qt::AlignLeft, text);
+    }
 
     if(mShowGrid)
     {
@@ -604,6 +607,8 @@ void IndicatorPainter::paintYScale()
 
 void IndicatorPainter::paintCrosshair()
 {
+  if(!mShowXScale and !mShowYScale) return;
+
   QColor color("yellow");
   QPen crossPen(color);
   crossPen.setStyle(Qt::SolidLine);
@@ -614,85 +619,92 @@ void IndicatorPainter::paintCrosshair()
   painter.setBrush(QBrush(mSheetColor));
   painter.setBackground(QBrush(mSheetColor));
 
+  QString text;
+  QRectF rect, box;
+  double boxOverSizeX = 8.0;
+
   //
   // paint x-scale hair
+  if(mShowXScale)
+  {
+    // calculate the vertical position of the scale...
+    painter.translate(mChartArea.bottomLeft());
+    // ...and the 2 points more
+    painter.translate(0, 2);
 
-  // calculate the vertical position of the scale...
-  painter.translate(mChartArea.bottomLeft());
-  // ...and the 2 points more
-  painter.translate(0, 2);
+    QPoint p;
+    mScaler->valueToPixel(mMouseXPos, mMouseYValue, p);
 
-  QPoint p;
-  mScaler->valueToPixel(mMouseXPos, mMouseYValue, p);
+    // cross hair type, simple arrow
+    painter.drawLine(p.x(), 0, p.x() - 4, 4);
+    painter.drawLine(p.x(), 0, p.x() + 4, 4);
 
-  // cross hair type, simple arrow
-  painter.drawLine(p.x(), 0, p.x() - 4, 4);
-  painter.drawLine(p.x(), 0, p.x() + 4, 4);
+    // cross hair type, little tick
+    //painter.drawLine(p.x(), 0, p.x(), 4);
 
-  // cross hair type, little tick
-  //painter.drawLine(p.x(), 0, p.x(), 4);
+    text = mMouseDate.toString(Qt::SystemLocaleDate);
 
-  QString text = mMouseDate.toString(Qt::SystemLocaleDate);
+    rect = painter.boundingRect(rect, Qt::AlignCenter, text);
+    box  = rect;
 
-  QRectF rect, box;
-  rect = painter.boundingRect(rect, Qt::AlignCenter, text);
-  box  = rect;
+    // paint a box around the text...
+    box.adjust(0, 0, boxOverSizeX, 1);
+    box.moveCenter(QPointF(p.x(), 0));
+    if(box.left() < 0.0) box.moveLeft(0.0);
+    box.moveBottom(box.height() + 7);
+    //painter.drawRect(box); // ...or not
+    painter.eraseRect(box);
 
-  // paint a box around the text...
-  double boxOverSizeX = 8.0;
-  box.adjust(0, 0, boxOverSizeX, 1);
-  box.moveCenter(QPointF(p.x(), 0));
-  if(box.left() < 0.0) box.moveLeft(0.0);
-  box.moveBottom(box.height() + 7);
-  //painter.drawRect(box); // ...or not
-  painter.eraseRect(box);
-
-  // paint the text
-  rect.moveCenter(QPointF(p.x(), 0));
-  if(rect.left() < (boxOverSizeX / 2)) rect.moveLeft(boxOverSizeX / 2);
-  rect.moveBottom(rect.height() + 8);
-  painter.drawText(rect, Qt::AlignCenter, text);
+    // paint the text
+    rect.moveCenter(QPointF(p.x(), 0));
+    if(rect.left() < (boxOverSizeX / 2)) rect.moveLeft(boxOverSizeX / 2);
+    rect.moveBottom(rect.height() + 8);
+    painter.drawText(rect, Qt::AlignCenter, text);
+  }
 
   //
   // paint y-scale hair
-  painter.resetTransform();
-  painter.translate(mChartArea.bottomRight());
-
-  mScaler->beginYPercentTicking();
-
-  bool paintBox = mShowPercentScale;
-  int y;
-  while(mScaler->nextYPercentTick(y, text))
+  if(mShowYScale)
   {
-    painter.drawLine(0, y, 4, y);
+    painter.resetTransform();
+    painter.translate(mChartArea.bottomRight());
 
-    rect = painter.boundingRect(rect, Qt::AlignLeft, text);
-    box  = rect;
+    mScaler->beginYPercentTicking();
 
-    // once more, paint a box...
-    box.adjust(0, 0, boxOverSizeX, 1);
-    box.moveCenter(QPoint(0, y));
-    box.moveLeft(-3 + 8);
-
-    if(box.top() < -mChartArea.height() + 1) box.moveTop(-mChartArea.height() + 1);
-    if(box.bottom() > -1) box.moveBottom(-1);
-
-    if(paintBox)
+    bool paintBox = mShowPercentScale;
+    int y;
+    while(mScaler->nextYPercentTick(y, text))
     {
-      paintBox = false;      // Paint only around the first value (mouse position) a box
-      painter.drawRect(box);
-    }
-    else
-    {
-      painter.eraseRect(box);
-    }
+      painter.drawLine(0, y, 4, y);
 
-    // and paint the text
-    rect.moveCenter(QPoint(0, y));
-    if(rect.top() < -mChartArea.height() + 2) rect.moveTop(-mChartArea.height() + 2);
-    if(rect.bottom() > -1) rect.moveBottom(-1);
-    rect.moveLeft(0 + 8);
-    painter.drawText(rect, Qt::AlignLeft, text);
+      rect = painter.boundingRect(rect, Qt::AlignLeft, text);
+      box  = rect;
+
+      // once more, paint a box...
+      box.adjust(0, 0, boxOverSizeX, 1);
+      box.moveCenter(QPoint(0, y));
+      box.moveLeft(-3 + 8);
+
+      if(box.top() < -mChartArea.height() + 1) box.moveTop(-mChartArea.height() + 1);
+      if(box.bottom() > -1) box.moveBottom(-1);
+
+      if(paintBox)
+      {
+        paintBox = false;      // Paint only around the first value (mouse position) a box
+        painter.drawRect(box);
+      }
+      else
+      {
+        painter.eraseRect(box);
+      }
+
+      // and paint the text
+      rect.moveCenter(QPoint(0, y));
+      if(rect.top() < -mChartArea.height() + 2) rect.moveTop(-mChartArea.height() + 2);
+      if(rect.bottom() > -1) rect.moveBottom(-1);
+      rect.moveLeft(0 + 8);
+      painter.drawText(rect, Qt::AlignLeft, text);
+    }
   }
 }
 

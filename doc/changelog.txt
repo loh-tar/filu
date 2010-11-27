@@ -1,8 +1,26 @@
+2010-11-27
+============
+General
+---------
+ - Some memory leaks closed and bugs poisoned. Thanks to Valgrind.
+
+Indicator Widget
+------------------
+ - Improve to keep the cursor at the last date position when a new set was load.
+ - Place the cursor at the correct position when add a new IndicatorWindow.
+ - Paint the grid independent of the scale.
+
+Chart Objects
+---------------
+ - Fix: Setting the anchor value in the edit window now work properly.
+
+
 2010-11-25
 ============
 Indicator Widget
 ------------------
- - Move settings key 'ShowYScale' from individual group [n] to [General].
+ - Move settings key 'ShowYScale' from individual group [n] to [General]. If
+   you had make an update may your usual YScale setting therefore differ.
 
 
 2010-11-24

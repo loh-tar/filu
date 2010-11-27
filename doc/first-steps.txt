@@ -155,9 +155,7 @@ Not only the chart painting tool of Filu.
 Indicator Look
 ----------------
 With the RightMouseBtn comes up a menu where you can adjust the count of
-indicator screens and toggle scale and grid painting on/off. The grid can
-currently only switch off, which means it can't be shown without the
-scale.
+indicator screens and toggle scale and grid painting on/off.
 Press/Click the MiddleMouseBtn displays temporary a percent scale, but only when
 the Y-Scale is not disabled.
 

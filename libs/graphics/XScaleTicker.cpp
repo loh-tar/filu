@@ -98,7 +98,7 @@ bool XScaleTicker::paintDayTick(int& x, int& y)
 
     if(mDensity > eDayGrid) mPaintGrid = true;
 
-    return true;
+    if(mP->mShowXScale) return true;
   }
 
   return false;
@@ -124,7 +124,7 @@ bool XScaleTicker::paintWeekTick(int& x, int& y)
 
     if( (mDensity > eWeekGrid) and (mDensity < eDayGrid) ) mPaintGrid = true;
 
-    return true;
+    if(mP->mShowXScale) return true;
   }
 
   return false;
@@ -148,7 +148,7 @@ bool XScaleTicker::paintMonthTick(int& x, int& y)
 
     if( (mDensity > eMonthGrid) and (mDensity < eWeekGrid) ) mPaintGrid = true;
 
-    return true;
+    if(mP->mShowXScale) return true;
   }
 
   return false;
@@ -173,7 +173,7 @@ bool XScaleTicker::paintQuarterTick(int& x, int& y)
 
     if( (mDensity > eQuarterGrid) and (mDensity < eMonthGrid) ) mPaintGrid = true;
 
-    return true;
+    if(mP->mShowXScale) return true;
   }
 
   return false;
@@ -197,7 +197,7 @@ bool XScaleTicker::paintYearTick(int& x, int& y)
 
     if( (mDensity > eYearGrid) and (mDensity < eQuarterGrid) ) mPaintGrid = true;
 
-    return true;
+    if(mP->mShowXScale) return true;
   }
 
   return false;
@@ -205,9 +205,11 @@ bool XScaleTicker::paintYearTick(int& x, int& y)
 
 bool XScaleTicker::paintTickText(QString& text)
 {
+  if(!mP->mShowXScale) return false;
   if(mText.isEmpty()) return false;
 
   text = mText;
+
   return true;
 }
 
