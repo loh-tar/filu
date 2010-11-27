@@ -44,7 +44,7 @@ int IndiSetPad::loadSettings()
 
   if((1 == count) and ("Dummy" == mButtons.button(0)->text()))
   {
-    setButtonName(mButtons.button(0), "DefaultSet");
+    setButtonName(mButtons.button(0), "Default");
   }
 
   // Remove buttons where the SetFile was deleted
