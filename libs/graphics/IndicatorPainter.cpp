@@ -524,7 +524,8 @@ void IndicatorPainter::paintXScale()
   painter.translate(0, 2);
 
   // and draw the base line over the whole width
-  if(mShowXScale) painter.drawLine(0, 0, mChartArea.right(), 0);
+  // ...don't forget the 2 points more from the Y-Scale
+  if(mShowXScale) painter.drawLine(0, 0, mChartArea.right() + 2, 0);
 
   // draw the ticks in the scale with some descriptive text
   int x = 0;  // the x value in pixel
@@ -583,11 +584,12 @@ void IndicatorPainter::paintYScale()
 
   // calculate the vertical position of the scale...
   painter.translate(mChartArea.bottomRight());
-  // ...and 2 points more
- // painter.translate(0, 2);
+  // 2 points more, to avoid overwriting the base line later
+  painter.translate(2, 0);
 
   // and draw the base line
-  if(mShowYScale) painter.drawLine(0, 0, 0, mScaler->topEdge());
+  // ...don't forget the 2 points more from the X-Scale
+  if(mShowYScale) painter.drawLine(0, 2, 0, mScaler->topEdge());
 
   // draw the ticks in the scale with some descriptive text
   if(!mScaler->beginYTicking())
@@ -695,6 +697,8 @@ void IndicatorPainter::paintCrosshair()
   {
     painter.resetTransform();
     painter.translate(mChartArea.bottomRight());
+    // ...and the 2 points more
+    painter.translate(2, 0);
 
     mScaler->beginYPercentTicking();
 

@@ -14,6 +14,8 @@ Indicator Widget
    at the PRIMARY() value.
  - Try to keep the X-Scale cursor at the last date position while scrolling.
  - Don't paint the cursor date right from the chart area.
+ - Close the small gap at the X/Y-Scale junction.
+ - Avoid Y-Scale overwrite.
 
 Chart Objects
 ---------------
