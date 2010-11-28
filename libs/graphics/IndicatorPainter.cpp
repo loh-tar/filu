@@ -676,6 +676,7 @@ void IndicatorPainter::paintCrosshair()
     box.adjust(0, 0, boxOverSizeX, 1);
     box.moveCenter(QPointF(p.x(), 0));
     if(box.left() < 0.0) box.moveLeft(0.0);
+    if(box.right() > mChartArea.right()) box.moveRight(mChartArea.right());
     box.moveBottom(box.height() + 7);
     //painter.drawRect(box); // ...or not
     painter.eraseRect(box);
@@ -683,6 +684,7 @@ void IndicatorPainter::paintCrosshair()
     // paint the text
     rect.moveCenter(QPointF(p.x(), 0));
     if(rect.left() < (boxOverSizeX / 2)) rect.moveLeft(boxOverSizeX / 2);
+    if(rect.right() > mChartArea.right() - (boxOverSizeX / 2)) rect.moveRight(mChartArea.right() - (boxOverSizeX / 2));
     rect.moveBottom(rect.height() + 8);
     painter.drawText(rect, Qt::AlignCenter, text);
   }

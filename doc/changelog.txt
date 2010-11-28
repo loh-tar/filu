@@ -13,6 +13,7 @@ Indicator Widget
  - Paint a tiny marker, like a cross hair, into the chart. The marker is placed
    at the PRIMARY() value.
  - Try to keep the X-Scale cursor at the last date position while scrolling.
+ - Don't paint the cursor date right from the chart area.
 
 Chart Objects
 ---------------
