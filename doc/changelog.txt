@@ -1,4 +1,4 @@
-2010-11-27
+2010-11-28
 ============
 General
 ---------
@@ -6,9 +6,12 @@ General
 
 Indicator Widget
 ------------------
- - Improve to keep the cursor at the last date position when a new set was load.
+ - Improve to keep the X-Scale cursor at the last date position when a new set
+   was load.
  - Place the cursor at the correct position when add a new IndicatorWindow.
  - Paint the grid independent of the scale.
+ - Paint a tiny marker, like a cross hair, into the chart. The marker is placed
+   at the PRIMARY() value.
 
 Chart Objects
 ---------------

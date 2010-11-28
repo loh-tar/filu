@@ -620,7 +620,7 @@ void IndicatorPainter::paintYScale()
 
 void IndicatorPainter::paintCrosshair()
 {
-  if(!mShowXScale and !mShowYScale) return;
+  //if(!mShowXScale and !mShowYScale) return;
 
   QColor color("yellow");
   QPen crossPen(color);
@@ -632,6 +632,17 @@ void IndicatorPainter::paintCrosshair()
   painter.setBrush(QBrush(mSheetColor));
   painter.setBackground(QBrush(mSheetColor));
 
+  //
+  // Paint the cursor into the chart
+  double value;
+  QPoint p;
+  mData->rewind(mFirstBarToShow + mMouseXPos);
+  mData->getValue(mPrimaryValue, value);
+  mScaler->valueToPixel(mMouseXPos, value, p);
+  painter.translate(mChartArea.bottomLeft());
+  // Tiny line as cursor
+  painter.drawLine(p.x() - 1, p.y(), p.x() +1, p.y());
+
   QString text;
   QRectF rect, box;
   double boxOverSizeX = 8.0;
@@ -641,6 +652,7 @@ void IndicatorPainter::paintCrosshair()
   if(mShowXScale)
   {
     // calculate the vertical position of the scale...
+    painter.resetTransform();
     painter.translate(mChartArea.bottomLeft());
     // ...and the 2 points more
     painter.translate(0, 2);
