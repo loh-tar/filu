@@ -92,15 +92,6 @@ bool PlotSheet::useIndicator(const QString& file)
 
   if(mPainter->useIndicatorFile(file))
   {
-    // Try to keep the cursor at the last date position
-    mPainter->mMouseXPos = mBars->findDate(mPainter->mMouseDate) - mPainter->mFirstBarToShow;
-    if(mPainter->mMouseXPos < 1)
-    {
-      mPainter->mMouseXPos = 1;
-      mBars->rewind(mPainter->mFirstBarToShow + 1);
-      mPainter->mMouseDate = mBars->date();
-    }
-
     emit newIndicator(file);
     update();
     return true;

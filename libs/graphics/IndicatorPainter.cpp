@@ -288,9 +288,6 @@ void IndicatorPainter::calcSizes()
   mFirstBarToShow = lastBarShowing - mPlace4Bars;
   if(mFirstBarToShow < 0) mFirstBarToShow = 0;
 
-  if(mMouseXPos > mPlace4Bars) mMouseXPos =  mPlace4Bars;
-  if(mMouseXPos < 0) mMouseXPos = 0;
-
   if(mStaticSheet)   delete mStaticSheet;
   mStaticSheet = new QPixmap(mSheet->width(), mSheet->height());
 
@@ -322,6 +319,22 @@ void IndicatorPainter::calcSizes()
   mScaler->setHighLow(maxHigh, minLow);
 
   mUpdateStaticSheet = true;
+
+  // Try to keep the cursor at the last date position
+  mMouseXPos = mBars->findDate(mMouseDate) - mFirstBarToShow;
+  if(mMouseXPos < 1)
+  {
+    mMouseXPos = 1;
+    mBars->rewind(mFirstBarToShow + 1);
+    mMouseDate = mBars->date();
+  }
+  else if(mMouseXPos > mPlace4Bars)
+  {
+    mMouseXPos =  mPlace4Bars;
+    mBars->rewind(mFirstBarToShow + mPlace4Bars);
+    mMouseDate = mBars->date();
+  }
+
 }
 
 bool IndicatorPainter::densityChanged(int step)
