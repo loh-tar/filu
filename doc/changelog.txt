@@ -17,6 +17,7 @@ Indicator Widget
  - Close the small gap at the X/Y-Scale junction.
  - Avoid Y-Scale overwrite.
  - Don't let the grid nibble at the base line anymore.
+ - Chart X-Adjustment fine tuned
 
 Chart Objects
 ---------------

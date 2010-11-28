@@ -49,8 +49,7 @@ void Scaler::setHighLow(const double maxHigh, const double minLow)
     mIndicatingRange = mMaxHigh - mMinLow;
   }
 
-  mXAdjustment = mP->mChartArea.size().width() - (int)(mP->mPlace4Bars * mP->mDensity);
-  mXAdjustment -= intDensity();
+  mXAdjustment = mP->mChartArea.size().width() - (int)((mP->mPlace4Bars * mP->mDensity) + (mP->mDensity/2));
 
   mFactor = mP->mChartArea.size().height() / mIndicatingRange;
 }
