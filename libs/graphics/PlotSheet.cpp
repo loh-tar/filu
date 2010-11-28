@@ -185,7 +185,7 @@ void PlotSheet::scrollChart(QPoint mousePos, int modifiers)
     mOldMouseXPos = mouseXPos;
 
     mMouseEvent.type = mMouseEvent.type | eScrollChart;
-    mMouseEvent.type = mMouseEvent.type | eMouseMove;
+    //mMouseEvent.type = mMouseEvent.type | eMouseMove;
     mMouseEvent.firstBarToShow = mPainter->mFirstBarToShow;
     mMouseEvent.mousePos = mousePos;
     emit mouse(&mMouseEvent);
@@ -362,7 +362,7 @@ bool PlotSheet::event(QEvent* event)
 
     if(qme->buttons() & Qt::LeftButton)
     {
-      mPainter->setMousePos(pos);
+      //mPainter->setMousePos(pos);
       scrollChart(pos, qme->modifiers());
 
       return true;
