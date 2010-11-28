@@ -393,7 +393,7 @@ bool IndicatorPainter::setMousePos(const QPoint& pos)
   {
     if(newMouseXPos > mPlace4Bars) newMouseXPos =  mPlace4Bars;
     else if(newMouseXPos > (mBars->count() - 1)) newMouseXPos = mBars->count() - 1;
-    else if(newMouseXPos < 0) newMouseXPos = 0;
+    else if(newMouseXPos < 1) newMouseXPos = 1;
   }
 
   if(valid & Scaler::eYValid)

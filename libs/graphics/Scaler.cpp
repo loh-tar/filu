@@ -84,8 +84,8 @@ int Scaler::valueToPixel(int i, const double& val, QPoint& pos)
 
 int Scaler::pixelToValue(const QPoint& pos, int& idx, double& value, QDate& date)
 {
-  // Returns true/fals as bit-flag if idx/value is in a valid range.
-  // Does* not* correct these values because its needed by CO/Grip.
+  // Returns true/false as bit-flag if idx/value is in a valid range.
+  // Does *not* correct these values because its needed by CO/Grip.
   // Only date is adjusted to a valid value.
 
   // FIXME: The case xValid=false needs improvements -> date/idx is wrong.
@@ -108,10 +108,10 @@ int Scaler::pixelToValue(const QPoint& pos, int& idx, double& value, QDate& date
     valid ^= eXValid;
     //idx = mP->mBars->count() - 1;
   }
-  else if(idx < 0)
+  else if(idx < 1)
   {
     valid ^= eXValid;
-    //idx = 0;
+    //idx = 1;
   }
 
   // calc the relating value but notice if the result is visible
@@ -132,7 +132,7 @@ int Scaler::pixelToValue(const QPoint& pos, int& idx, double& value, QDate& date
   // and last, fetch the date but take care we are not out of available data
   int i = mP->mFirstBarToShow + idx;
   if(i > (mP->mBars->count() - 1)) i = mP->mBars->count() - 1;
-  if(i < 0) i = 0;
+  if(i < 1) i = 1;
 
   mP->mBars->rewind(i);
   date = mP->mBars->date();
