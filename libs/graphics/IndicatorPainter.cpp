@@ -523,10 +523,6 @@ void IndicatorPainter::paintXScale()
   // 2 points more, to avoid overwriting the base line later
   painter.translate(0, 2);
 
-  // and draw the base line over the whole width
-  // ...don't forget the 2 points more from the Y-Scale
-  if(mShowXScale) painter.drawLine(0, 0, mChartArea.right() + 2, 0);
-
   // draw the ticks in the scale with some descriptive text
   int x = 0;  // the x value in pixel
   int y = 0;  // the y value in pixel
@@ -566,6 +562,11 @@ void IndicatorPainter::paintXScale()
       painter.setPen(scalePen);
     }
   }
+
+  // and draw the base line over the whole width
+  // ...don't forget the 2 points more from the Y-Scale
+  if(mShowXScale) painter.drawLine(0, 0, mChartArea.right() + 2, 0);
+
 }
 
 void IndicatorPainter::paintYScale()
@@ -587,13 +588,14 @@ void IndicatorPainter::paintYScale()
   // 2 points more, to avoid overwriting the base line later
   painter.translate(2, 0);
 
-  // and draw the base line
-  // ...don't forget the 2 points more from the X-Scale
-  if(mShowYScale) painter.drawLine(0, 2, 0, mScaler->topEdge());
-
   // draw the ticks in the scale with some descriptive text
   if(!mScaler->beginYTicking())
-    return; // something wrong with data to plot a y scale
+  {
+    // something wrong with data to plot a y scale
+    // but paint anyway the base line
+    if(mShowYScale) painter.drawLine(0, 2, 0, mScaler->topEdge());
+    return;
+  }
 
   QString text;
   int y;
@@ -618,6 +620,11 @@ void IndicatorPainter::paintYScale()
       painter.setPen(scalePen);
     }
   }
+
+  // Draw the base line
+  // ...don't forget the 2 points more from the X-Scale
+  if(mShowYScale) painter.drawLine(0, 2, 0, mScaler->topEdge());
+
 }
 
 void IndicatorPainter::paintCrosshair()
