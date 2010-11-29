@@ -72,7 +72,7 @@ PerformerF::PerformerF()
   act->setIcon(icon);
   tb->addAction(act);
 
-  addDockWidget(Qt::RightDockWidgetArea, dw);
+  addDockWidget(Qt::LeftDockWidgetArea, dw);
 
   //
   // Create the FI group dock
@@ -128,7 +128,7 @@ PerformerF::PerformerF()
   act->setIcon(icon);
   tb->addAction(act);
 
-  addDockWidget(Qt::RightDockWidgetArea, dw);
+  addDockWidget(Qt::LeftDockWidgetArea, dw);
 
   //
   // Create the LaunchPad with an own tool bar
