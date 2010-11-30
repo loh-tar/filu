@@ -14,8 +14,15 @@ Index
 =================
 To become Filu working follow these steps recursive from top to down.
 
-If you want to update your Filu installation from a snapshot release take a look
-at doc/changelog.txt for things which must be considered.
+If you want to update your existing Filu installation to a new snapshot take a
+look at doc/changelog.txt for things which must be considered. In general it is
+a good idea to uninstall your old installation which means *only* to uninstall
+the Filu progs. cd into your old FiluSource-YYYY-MM-DD/build directory and do:
+  sudo xargs rm < install_manifest.txt
+
+After that you have only to compile the new progs as described in chapter 1-2-2
+without to follow chapter 5, that's all. And *don't* touch your database except
+the changelog says something else.
 
 
 1-1- Install The Database
