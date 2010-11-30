@@ -392,7 +392,7 @@ void COType::showEditWindow()
 
 COType::Status COType::handleEvent(QEvent* event)
 {
-  // before we go ahead check if it's a mouse event,
+  // Before we go ahead check if it's a mouse event,
   // if yes examine pos, buttons and keys
   QPoint pos;
   int    btn;
@@ -401,6 +401,22 @@ COType::Status COType::handleEvent(QEvent* event)
 
   switch(event->type())
   {
+    case QEvent::ContextMenu:
+      pos  = static_cast<QContextMenuEvent*>(event)->pos();
+      break;
+
+    case QEvent::KeyPress:
+      //case QEvent::KeyRelease:
+      if(static_cast<QKeyEvent*>(event)->key() == Qt::Key_Delete)
+      {
+        erase();
+        mStatus = eToKill;
+        event->accept();
+        return mStatus;
+      }
+      return mStatus;
+      break;
+
     case QEvent::MouseMove:
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
@@ -408,26 +424,31 @@ COType::Status COType::handleEvent(QEvent* event)
       btn  = static_cast<QMouseEvent*>(event)->button();
       btns = static_cast<QMouseEvent*>(event)->buttons();
       mods = static_cast<QMouseEvent*>(event)->modifiers();
-      if(!mP->mChartArea.contains(pos))
-      {
-        // hm, mouse event. but not in the interesting area
-        event->ignore();
-        return mStatus;
-      }
-
-      // transform the position to match the needs
-      pos.setY((mP->mChartArea.bottom() - pos.y()) * -1);
       break;
 
     default:
+      return mStatus;
       break;
+  }
+
+  if(!mP->mChartArea.contains(pos))
+  {
+    // Mouse event, but not in the interesting area
+    return mStatus;
   }
 
   event->accept();
 
-  // examine the event in detail
+  // Transform the position to match the needs
+  pos.setY((mP->mChartArea.bottom() - pos.y()) * -1);
+
+  // Examine the event in detail
   switch(event->type())
   {
+    case QEvent::ContextMenu:
+      event->setAccepted(rightButtonPressed(pos));
+      break;
+
     case QEvent::MouseMove:
       mP->setMousePos(pos);
       event->setAccepted(mouseMoved(pos, btns, mods));
@@ -445,22 +466,12 @@ COType::Status COType::handleEvent(QEvent* event)
           event->setAccepted(false);
         }
       }
-      else if(btn == Qt::RightButton) event->setAccepted(rightButtonPressed(pos));
       else event->ignore();
       break;
 
     case QEvent::MouseButtonRelease:
       if(btn == Qt::LeftButton) event->setAccepted(leftButtonReleased(pos));
       else event->ignore();
-      break;
-
-    case QEvent::KeyPress:
-    //case QEvent::KeyRelease:
-      if(static_cast<QKeyEvent*>(event)->key() == Qt::Key_Delete)
-      {
-        erase();
-        mStatus = eToKill;
-      }
       break;
 
     default :

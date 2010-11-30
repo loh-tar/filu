@@ -432,7 +432,7 @@ bool PlotSheet::event(QEvent* event)
 
   if(event->type() == QEvent::ContextMenu)
   {
-    if(mPainter->mCOInProcess) return true;
+    if(checkForCO(event)) return true;
   }
 
   if(event->type() == QEvent::Wheel)
