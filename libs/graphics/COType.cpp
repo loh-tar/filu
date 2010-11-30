@@ -544,7 +544,7 @@ void COType::editWindowChanged()
   QWidget* widget = static_cast<QWidget*>(sender());
   QString  name   = widget->objectName();
 
-  qDebug() << "COType::editWindowChanged()" << widget << name;
+  //qDebug() << "COType::editWindowChanged()" << widget << name;
 }
 
 /***********************************************************************
@@ -768,7 +768,7 @@ bool COType::paintObject()
 
 void COType::paintHoverInfo()
 {
- qDebug() << "COType::paintHoverInfo:" << mAttribute.value("Type").toString();
+ //qDebug() << "COType::paintHoverInfo:" << mAttribute.value("Type").toString();
 }
 
 void COType::paintBoundingBox()
@@ -931,7 +931,7 @@ bool COType::mouseMoved(const QPoint& pos
     case eSelected:
       if(btns & Qt::LeftButton)
       {
-       qDebug() << "COType::mouseMoved:case eSelected:if(btns & Qt::LeftButton)";
+       //qDebug() << "COType::mouseMoved:case eSelected:if(btns & Qt::LeftButton)";
         //mP->mUpdateStaticSheet = true;
         return true;
         //return false;

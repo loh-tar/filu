@@ -401,7 +401,7 @@ bool PlotSheet::event(QEvent* event)
         }
         else
         {
-          qDebug() <<"PlotSheet::event() new";
+          //qDebug() <<"PlotSheet::event() new";
           checkForCO(event);
         }
       }
