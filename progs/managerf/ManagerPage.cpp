@@ -18,14 +18,9 @@
 //
 
 #include "ManagerPage.h"
+#include "ManagerF.h"
 
-ManagerPage::ManagerPage(ManagerF* parent)
-           : FWidget((FWidget*)parent)
-{
-  //createPage();
-}
-
-ManagerPage::ManagerPage(FWidget* parent)
+ManagerPage::ManagerPage(FClass* parent)
            : FWidget(parent)
 {
   //createPage();

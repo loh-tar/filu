@@ -19,23 +19,18 @@
 
 #include "FiPage.h"
 
-#include <QtGui>
-#include <QDebug>
-
 #include "IndicatorWidget.h"
 #include "SearchField.h"
 
-FiPage::FiPage(ManagerF* parent) : ManagerPage(parent)
+FiPage::FiPage(FClass* parent)
+      : ManagerPage(parent)
+      , mSymbols(0)
+      , mSymbolView(0)
+      , mFi(0)
+      , mFiView(0)
+      , mPlotSheet(0)
+      , mBars(0)
 {
-  mBars = 0;
-  mIcon = QIcon(":/icons/chart.xpm");
-  mIconText = tr("FI Details");
-  createPage();
-}
-
-FiPage::FiPage(FWidget* parent) : ManagerPage(parent)
-{
-  mBars = 0;
   mIcon = QIcon(":/icons/chart.xpm");
   mIconText = tr("FI Details");
   createPage();
@@ -56,17 +51,15 @@ void FiPage::createPage()
   mLook4Edit = new SearchField(this);
   connect(mLook4Edit, SIGNAL(textChanged()), this, SLOT(search()));
 
-  mSymbols = 0;
   mSymbolView = new SymbolTableView(mSymbols);
   connect(mSymbolView, SIGNAL(clicked(const QModelIndex &)),
           this, SLOT(symbolClicked(const QModelIndex &)));
 
-  mFi = 0;
   mFiView = new FiTableView(mFi);
   connect(mFiView, SIGNAL(clicked(const QModelIndex &)),
           this, SLOT(fiClicked(const QModelIndex &)));
 
-  mPlotSheet = new IndicatorWidget("FiPage", (FWidget*)this);
+  mPlotSheet = new IndicatorWidget("FiPage", this);
 
   QGridLayout* gridLayout = new QGridLayout;
   int i = 0; // "count" rows
@@ -76,18 +69,18 @@ void FiPage::createPage()
   gridLayout->setColumnStretch(1, 1);
   gridLayout->setColumnStretch(2, 1);
 
-    QHBoxLayout* hbox = new QHBoxLayout;
-    hbox->setMargin(0);
-    hbox->addWidget(mFiView);
-    hbox->addWidget(mSymbolView);
+  QHBoxLayout* hbox = new QHBoxLayout;
+  hbox->setMargin(0);
+  hbox->addWidget(mFiView);
+  hbox->addWidget(mSymbolView);
 
-    QWidget* hboxwid = new QWidget;
+  QWidget* hboxwid = new QWidget;
 
-    hboxwid->setLayout(hbox);
+  hboxwid->setLayout(hbox);
 
-    QSplitter* splitt1 = new QSplitter(Qt::Vertical);
-    splitt1->addWidget(hboxwid);
-    splitt1->addWidget(mPlotSheet);
+  QSplitter* splitt1 = new QSplitter(Qt::Vertical);
+  splitt1->addWidget(hboxwid);
+  splitt1->addWidget(mPlotSheet);
 
   gridLayout->addWidget(splitt1, ++i, 0, 1, 4);
 

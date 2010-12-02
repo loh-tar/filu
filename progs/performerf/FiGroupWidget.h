@@ -21,17 +21,21 @@
 #define FIGROUPWIDGET_HPP
 
 #include "FWidget.h"
-#include "RcFile.h"
 
 class MyTableWidget;
 
+/***********************************************************************
+*
+*
+*
+************************************************************************/
 class FiGroupWidget : public FWidget
 {
   Q_OBJECT
 
   public:
-     FiGroupWidget(FWidget* parent);
-    ~FiGroupWidget();
+                    FiGroupWidget(FClass* parent);
+    virtual        ~FiGroupWidget();
 
     void loadSettings();
     void saveSettings();
@@ -72,16 +76,21 @@ class FiGroupWidget : public FWidget
     bool            mEditing;
 };
 
+/***********************************************************************
+*
+*
+*
+************************************************************************/
 class MyTableWidget : public QTableWidget
 {
   Q_OBJECT
 
   public:
-     MyTableWidget(QWidget* parent = 0);
-    ~MyTableWidget();
+                    MyTableWidget(QWidget* parent = 0);
+    virtual        ~MyTableWidget();
 
     void erase();
-    
+
   signals:
     void dragInFromTableView(QTableView*);
     void dragToNirvana();
@@ -94,14 +103,14 @@ class MyTableWidget : public QTableWidget
     void dragEnterEvent(QDragEnterEvent* pEvent);
     void dragMoveEvent(QDragMoveEvent* pEvent);
     void startDrag();
-    
+
     QPoint mDragStartPosition;
     int    mCurrentRow;
-    
+
   protected slots:
-    void currentItemChangedSlot(QTableWidgetItem *, QTableWidgetItem *);
-    void itemClickedSlot(QTableWidgetItem *);
-    void itemDoubleClickedSlot(QTableWidgetItem *);
+    void currentItemChangedSlot(QTableWidgetItem*, QTableWidgetItem*);
+    void itemClickedSlot(QTableWidgetItem*);
+    void itemDoubleClickedSlot(QTableWidgetItem*);
 };
 
 #endif

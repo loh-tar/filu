@@ -39,7 +39,7 @@ void Scaler::setHighLow(const double maxHigh, const double minLow)
   double average = (fabs(maxHigh) + fabs(minLow)) / 2.0;
   mIndicatingRange = fabs(maxHigh - minLow);
 
-  // adjust high/low to fit mScaleToScreen minumum
+  // Adjust high/low to fit mScaleToScreen minumum
   double  percentRange = (mIndicatingRange / average) * 100.0;
   if(percentRange < mP->mScaleToScreen)
   {
@@ -49,7 +49,7 @@ void Scaler::setHighLow(const double maxHigh, const double minLow)
     mIndicatingRange = mMaxHigh - mMinLow;
   }
 
-  mXAdjustment = mP->mChartArea.size().width() - (int)((mP->mPlace4Bars * mP->mDensity) + (mP->mDensity/2));
+  mXAdjustment = mP->mChartArea.size().width() - static_cast<int>((mP->mPlace4Bars * mP->mDensity) + (mP->mDensity/2));
 
   mFactor = mP->mChartArea.size().height() / mIndicatingRange;
 }
@@ -75,7 +75,7 @@ int Scaler::valueToPixel(int i, const double& val, QPoint& pos)
     //i = 0;
   }
 
-  pos.setX((int)((i * mP->mDensity) + mXAdjustment));
+  pos.setX(static_cast<int>((i * mP->mDensity) + mXAdjustment));
   pos.setY(calcToPixel(val));
 
   return quality;
@@ -91,15 +91,15 @@ int Scaler::pixelToValue(const QPoint& pos, int& idx, double& value, QDate& date
   //        Calc the intersection to last available date/idx.
   //        hm, is that all still valid?
 
-  int valid = eXValid | eYValid; // set x and y to valid
+  int valid = eXValid | eYValid; // Set x and y to valid
 
-  // calc the relating data index number
-  idx = (int)((pos.x() + (mP->mDensity / 2.0) - mXAdjustment) / mP->mDensity);
+  // Calc the relating data index number
+  idx = static_cast<int>((pos.x() + (mP->mDensity / 2.0) - mXAdjustment) / mP->mDensity);
 
-  // and check if the result is in the visible area
+  // And check if the result is in the visible area
   if(idx > mP->mPlace4Bars)
   {
-    valid ^= eXValid; // set x to not valid
+    valid ^= eXValid; // Set x to not valid
     //idx =  mP->mPlace4Bars;
   }
   else if(idx > (mP->mBars->count() - 1))
@@ -113,11 +113,11 @@ int Scaler::pixelToValue(const QPoint& pos, int& idx, double& value, QDate& date
     //idx = 1;
   }
 
-  // calc the relating value but notice if the result is visible
+  // Calc the relating value but notice if the result is visible
   int y = pos.y();
   if(-y < 0)
   {
-    valid ^= eYValid; // set y to not valid
+    valid ^= eYValid; // Set y to not valid
     //y = 0;
   }
   if(-y > mP->mChartArea.height() - 1)
@@ -128,7 +128,7 @@ int Scaler::pixelToValue(const QPoint& pos, int& idx, double& value, QDate& date
 
   value = calcToValue(y);
 
-  // and last, fetch the date but take care we are not out of available data
+  // And last, fetch the date but take care we are not out of available data
   int i = mP->mFirstBarToShow + idx;
   if(i > (mP->mBars->count() - 1)) i = mP->mBars->count() - 1;
   if(i < 1) i = 1;
@@ -171,7 +171,7 @@ double Scaler::calcToValue(const int& y)
 
 bool Scaler::beginYTicking()
 {
-  if(mMaxHigh < mMinLow) return false; // hm, only unvalid data, nothing to plot
+  if(mMaxHigh < mMinLow) return false; // Hm, only unvalid data, nothing to plot
 
   int tickDensity = 50;
   //int tickCount = mP->mChartArea.height() / tickDensity;
@@ -206,8 +206,8 @@ bool Scaler::beginYTicking()
 
   mValuePerTick = mValuePerTick * pow(10, power - 2);
 
-  // calc first tick value
-  mTickValue = ((int)(mMinLow / mValuePerTick) -1) * mValuePerTick;
+  // Calc first tick value
+  mTickValue = (static_cast<int>(mMinLow / mValuePerTick) -1) * mValuePerTick;
   if(mTickValue < mMinLow) mTickValue += mValuePerTick;
 
   return true;

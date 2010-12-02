@@ -22,11 +22,9 @@
 
 #include "FClass.h"
 
-//class FWidget;
-
 /***********************************************************************
 *
-* The base of all QObjects which use Filu
+*   The base of all QObjects which use Filu
 *
 ************************************************************************/
 
@@ -35,9 +33,7 @@ class FObject : public QObject, public FClass
   public:
               FObject(FClass* parent);
               FObject(FObject* parent);
-              //FObject(FWidget* parent);
               FObject(const QString& connectionName, QObject* parent = 0);
-              //FObject(const QString& connectionName, QWidget* parent = 0);
     virtual  ~FObject();
 
   protected:

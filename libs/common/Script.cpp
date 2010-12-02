@@ -27,12 +27,6 @@ Script::Script(FClass* parent)
       , mProc(0)
 {}
 
-// Script::Script(FObject* parent)
-//       : FObject(parent)
-//       , mProviderPath(mRcFile->getST("ProviderPath"))
-//       , mShowWaitWindow(false)
-// {}
-
 Script::~Script()
 {
   if(mProc) delete mProc;
@@ -98,7 +92,7 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     mResult = new QStringList;
 
-    // read the beef
+    // Read the beef
     readStdOut();
     emit finished();
     return mResult;
@@ -139,10 +133,10 @@ QString Script::locateProviderScript(const QString& provider, const QString& fun
 {
   static QString oldProvider, oldFunction, oldFullPath;
 
-  // don't waste time
+  // Don't waste time
   if((provider == oldProvider) and (function == oldFunction)) return oldFullPath;
 
-  // build the fullpath to the provider script
+  // Build the fullpath to the provider script
   QString fullPath(mProviderPath + provider + "/");
 
   mWorkingDir = fullPath;
@@ -177,7 +171,7 @@ void Script::readStdOut()
     line.trimmed();
     if(line.startsWith("*")) continue;
 
-    line.chop(1); // remove newline char at the end
+    line.chop(1); // Remove newline char at the end
     if(line.isEmpty()) continue;
 
     mResult->append(line);

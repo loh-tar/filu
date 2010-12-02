@@ -64,10 +64,10 @@ void IndicatorDataView::mouseSlot(MyMouseEvent* me)
   {
     if(!this->size().width() or !this->size().height())
     {
-      return; // not visible, no update needed
+      return; // Not visible, no update needed
     }
 
-    // update data view
+    // Update data view
     DataTupleSet* data = mPainter->mData;
 
     if(!data) return;
@@ -121,9 +121,9 @@ void IndicatorDataView::initView(const QString& indicator)
 
   mIndicator = indicator;
 
-  // delete old entries
+  // Delete old entries
 
-  // insert new entries
+  // Insert new entries
   QStringList var;
   //mPainter->mData->getVariableNames(var);
   QSet<QString> varList;
@@ -131,7 +131,7 @@ void IndicatorDataView::initView(const QString& indicator)
   var = varList.values();
   //qDebug() << "IndicatorDataView::initView()" << var << varList.size();
 
-  // sort the variable list, but place the bardata as block in front
+  // Sort the variable list, but place the bardata as block in front
   var.removeAt(var.indexOf("OPEN"));
   var.removeAt(var.indexOf("HIGH"));
   var.removeAt(var.indexOf("LOW"));
@@ -145,9 +145,9 @@ void IndicatorDataView::initView(const QString& indicator)
   var.prepend("LOW");
   var.prepend("HIGH");
   var.prepend("OPEN");
-  var.prepend("Date"); // should not be a variable but is also interesting
+  var.prepend("Date"); // Should not be a variable but is also interesting
 
-  // and now insert entries
+  // And now insert entries
   int row = 0;
   QString name;
   QCheckBox* cb;
@@ -155,7 +155,7 @@ void IndicatorDataView::initView(const QString& indicator)
   mFilterView.setColumnCount(1);
   mFilterView.setRowCount(var.size());
 
-  // restore saved settings, if some
+  // Restore saved settings, if some
   QString filterPath;
   filterPath = mRcFile->getST("FiluHome");
   filterPath.append("IndicatorFilterSettings/");
@@ -193,17 +193,17 @@ void IndicatorDataView::tabChanged(int index)
   {
     mFilterChanged = false;
 
-    // and save the settings
+    // And save the settings
     QString filterPath;
     filterPath = mRcFile->getST("FiluHome");
     filterPath.append("IndicatorFilterSettings/");
     QSettings settings(filterPath + mIndicator,  QSettings::IniFormat);
 
-    // delete old view
+    // Delete old view
     mDataView.setRowCount(0);
     mDataView.setColumnCount(2);
 
-    // rebulid view
+    // Rebulid view
     QTableWidgetItem* item;
     QString varName;
     for(int row = 0; row < mFilterView.rowCount(); ++row)

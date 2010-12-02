@@ -22,7 +22,7 @@
 #include "Indicator.h"
 #include "COType.h"
 
-PlotSheet::PlotSheet(FWidget* parent)
+PlotSheet::PlotSheet(FClass* parent)
          : FWidget(parent)
 {
   init();
@@ -139,7 +139,7 @@ void PlotSheet::paintEvent(QPaintEvent * /*event*/)
   mPainter->paint();
   addErrorText(mPainter->errorText());
 
-  printError(); // only if some happend
+  printError(); // Only if some happend
   return;
 }
 
@@ -354,10 +354,10 @@ bool PlotSheet::event(QEvent* event)
   {
     if(checkForCO(event)) return true;
 
-    QMouseEvent* qme = (QMouseEvent*)event;
+    QMouseEvent* qme = static_cast<QMouseEvent*>(event);
     QPoint pos = qme->pos();
 
-    // transform the position to match the needs
+    // Transform the position to match the needs
     pos.setY((mPainter->mChartArea.bottom() - pos.y()) * -1);
 
     if(qme->buttons() & Qt::LeftButton)
@@ -372,7 +372,7 @@ bool PlotSheet::event(QEvent* event)
     {
       mMouseEvent.type = mMouseEvent.type | eMouseMove;
       mMouseEvent.mousePos = pos;
-      mMouseEvent.mousePos.setY(1); // mark as unvalid, valid values are all negative!
+      mMouseEvent.mousePos.setY(1); // Mark as unvalid, valid values are all negative!
       emit mouse(&mMouseEvent);
     }
 
@@ -385,18 +385,18 @@ bool PlotSheet::event(QEvent* event)
   {
     if(checkForCO(event)) return true;
 
-    QMouseEvent* qme = (QMouseEvent*)event;
+    QMouseEvent* qme = static_cast<QMouseEvent*>(event);
 
     if(qme->button() == Qt::LeftButton)
     {
-      // check if a new chart object has to be placed
+      // Check if a new chart object has to be placed
       if(!mNewCOType.isEmpty() and mBars and !mPainter->mCOInProcess)
       {
         mPainter->mCOInProcess = COType::createNew(mNewCOType, mPainter);
 
         if(!mPainter->mCOInProcess)
         {
-          // you should never read this
+          // You should never read this
          qDebug() << "PlotSheet::event: New chart object type" << mNewCOType << "unknown";
         }
         else
@@ -437,7 +437,7 @@ bool PlotSheet::event(QEvent* event)
 
   if(event->type() == QEvent::Wheel)
   {
-    QWheelEvent* qwe = (QWheelEvent*)event;
+    QWheelEvent* qwe = static_cast<QWheelEvent*>(event);
     densityChanged(qwe->delta() / 120);
 
     return true;
@@ -474,7 +474,7 @@ bool PlotSheet::checkForCO(QEvent* event)
 
     if(status == COType::eToKill)
     {
-      // remove chart object from list
+      // Remove chart object from list
       mPainter->mCObjects.remove(mPainter->mCOInProcess);
       delete mPainter->mCOInProcess;
       mPainter->mCOInProcess = 0;
@@ -482,7 +482,7 @@ bool PlotSheet::checkForCO(QEvent* event)
     }
     else if(status == COType::eNormal)
     {
-      mPainter->mCObjects.insert(mPainter->mCOInProcess);  // no need to check if already inside
+      mPainter->mCObjects.insert(mPainter->mCOInProcess);  // No need to check if already inside
       mPainter->mCOInProcess = 0;
       mPainter->mUpdateStaticSheet = true;
       mOldMouseXPos = -1;
@@ -502,10 +502,10 @@ bool PlotSheet::checkForCO(QEvent* event)
   {
     QPoint pos = static_cast<QMouseEvent*>(event)->pos();
 
-    // transform the position to match the needs
+    // Transform the position to match the needs
     pos.setY((mPainter->mChartArea.bottom() - pos.y()) * -1);
 
-    // find a chart object who ansers "yes, it's me"
+    // Find a chart object who ansers "yes, it's me"
     COType* co = 0;
     foreach(co, mPainter->mCObjects)
     {

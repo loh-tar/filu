@@ -20,25 +20,16 @@
 #ifndef MANAGERPAGE_H
 #define MANAGERPAGE_H
 
-#include <QtGui>
-#include <QDebug>
-
-//#include "FClass.h"
 #include "FWidget.h"
-// FIXME: why is include needed and class not enough???
-// it compiles well but cause an segfault at runtime when accessing Filu
-//#include "ManagerF.h"
-class ManagerF;
 
-//class FWidget;
+class ManagerF;
 
 class ManagerPage : public FWidget
 {
   Q_OBJECT
 
   public:
-                  ManagerPage(ManagerF* parent);
-                  ManagerPage(FWidget* parent);
+                  ManagerPage(FClass* parent);
     virtual      ~ManagerPage();
 
     virtual void  loadSettings();

@@ -28,11 +28,11 @@
 
 /***********************************************************************
 *
-* This class holds only one value (well two, value and color) of data.
-* They is used to plot a line and is also the base of each indicator
-* file variable.
+*   This class holds only one value (well two, value and color) of data.
+*   They is used to plot a line and is also the base of each indicator
+*   file variable.
 *
-* Take a look at http://ta-lib.org/d_api/d_api.html for some info
+*   Take a look at http://ta-lib.org/d_api/d_api.html for some info
 *
 ************************************************************************/
 
@@ -49,7 +49,7 @@ class DataTuple
     void rewind();
     int  size();
 
-    // both returns false if try to read an unvalid value
+    // Both returns false if try to read an unvalid value
     bool getValue(double& value);
     bool getColor(QColor& color);
 
@@ -62,26 +62,26 @@ class DataTuple
 
     void quitAutonomy(DataTupleSet* dts);
 
-    QString Name;     // variable name, "open", "high" etc
-    QString Label;    // used for the name on the chart
+    QString Name;     // Variable name, "open", "high" etc
+    QString Label;    // Used for the name on the chart
 
     double* Value;
     QColor* Color;
     
-    int mNeedsBars;   // the amound of bars needed to calc the result
+    int mNeedsBars;   // The amound of bars needed to calc the result
     int firstValid;   // ta-libs "outBeg"
     int countValid;   // ta-libs "outNbElement"
 
   protected:
     int MaxIndex;
     
-    double mMaxHigh;  // holds the min/max values
+    double mMaxHigh;  // Holds the min/max values
     double mMinLow;   // of the RangeFrom/RangeTo
     
     int* Index;
-    int* RangeFrom;  // used for the section shown on the chart
-    int* RangeTo;    // used for the section shown on the chart
-    int  mOldRangeFrom;  // used for check if MaxHigh/Low are still valid
+    int* RangeFrom;  // Used for the section shown on the chart
+    int* RangeTo;    // Used for the section shown on the chart
+    int  mOldRangeFrom;  // Used for check if MaxHigh/Low are still valid
     int  mOldRangeTo;
     
     bool mIsAutonom;

@@ -19,7 +19,8 @@
 
 #include "CalcSetColor.h"
 
-CalcSetColor::CalcSetColor(Indicator* parent) : CalcType(parent)
+CalcSetColor::CalcSetColor(Indicator* parent)
+            : CalcType(parent)
 {
   mType = "SetColor";
 }
@@ -34,7 +35,7 @@ bool CalcSetColor::prepare(CalcParms& parms)
 
   if(1 == mIns.size())
   {
-    // check format "<foo> = SETCOLOR(<color>)"
+    // Check format "<foo> = SETCOLOR(<color>)"
     // mIns look like: "red"
     QColor c;
     c.setNamedColor(mIns.at(0));
@@ -45,7 +46,7 @@ bool CalcSetColor::prepare(CalcParms& parms)
   }
   else if(3 == mIns.size())
   {
-    // check format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
+    // Check format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
     // mIns look like: "winday", "green", "red"
 
     checkInputVariable(0);
@@ -82,7 +83,7 @@ bool CalcSetColor::calc()
   mData->rewind();
   if(1 == mIns.size())
   {
-    // format "<foo> = SETCOLOR(<color>)"
+    // Format "<foo> = SETCOLOR(<color>)"
     while(mData->next())
     {
       mData->setColor(mOuts.at(0), mIns.at(0));
@@ -90,7 +91,7 @@ bool CalcSetColor::calc()
   }
   else
   {
-    // format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
+    // Format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
     double var;
     while(mData->next())
     {

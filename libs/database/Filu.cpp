@@ -24,10 +24,9 @@
 Filu::Filu(const QString& cn, RcFile* rcFile)
     : mRcFile(rcFile)
     , mConnectionName(cn)
+    , mHasError(false)
 {
-  mHasError = false;
-  mLastError.clear();
-  mToDate = QDate::currentDate().toString(Qt::ISODate); // in case someone forget to set it...
+  mToDate = QDate::currentDate().toString(Qt::ISODate); // In case someone forget to set it...
   openDB();
 }
 
@@ -35,16 +34,6 @@ Filu::~Filu()
 {
   closeDB();
 }
-
-//
-//
-//                      public stuff
-//
-//
-
-//
-//      set functions
-//
 
 void Filu::setFiName(const QString& name)
 {
@@ -75,9 +64,9 @@ bool Filu::setIdsByNameSettings()
   mFiId = symbol->fiId();
   mMarketId = symbol->marketId();
   */
-  mFiId = -1; // mark as unvalid
+  mFiId = -1; // Mark as unvalid
   //QString save = mMarketName;
-  //mMarketName = "";  // mark as unset, we want fi
+  //mMarketName = "";  // Mark as unset, we want fi
   FiTuple* fi = getFi();
   //mMarketName = save;
 
@@ -232,12 +221,9 @@ void Filu::setDaysToFetchIfNoData(int days)
   mDaysToFetchIfNoData = days;
 }
 
-//
-//      get functions
-//
 BarTuple* Filu::getBars(const QString& symbol, const QString& market)
 {
-  // symbol and market looks like "AAPL" and "NYSE"
+  // Symbol and market looks like "AAPL" and "NYSE"
 
 //  setFiIdBySymbol(symbol);
 //  setMarketIdByName(market);
@@ -297,7 +283,7 @@ BarTuple* Filu::getBars()
     QSqlQuery* query = mSQLs.value("GetBars");
 
     query->bindValue(":fiId", mFiId);
- //   query->bindValue(":fiId", "abc");  // to force an error
+ //   query->bindValue(":fiId", "abc");  // To force an error
     query->bindValue(":marketId", mMarketId);
     query->bindValue(":fromDate", mFromDate);
     query->bindValue(":toDate", mToDate);
@@ -325,7 +311,7 @@ SymbolTuple* Filu::getSymbols()
 
   if(result < eData) return 0;
 
-  // fill the object to be returned to client
+  // Fill the object to be returned to client
   SymbolTuple* symbol= new SymbolTuple(query->size());
   while(symbol->next())
   {
@@ -389,7 +375,7 @@ MarketTuple* Filu::getMarket()
 
   if(mMarketId < 1)
   {
-    // aha, no marketId set, we have to use the marketName
+    // Aha, no marketId set, we have to use the marketName
     query->bindValue(":market", mMarketName);
     int result = execute(query);
     if(result <= eError) return 0;
@@ -402,7 +388,7 @@ MarketTuple* Filu::getMarket()
 
   int count = tuple->size();
 
-  // fill the object to be returned to client
+  // Fill the object to be returned to client
   MarketTuple* market = new MarketTuple(count);
   while(market->next())
   {
@@ -421,7 +407,7 @@ MarketTuple* Filu::getMarket()
 
 FiTuple* Filu::getFi(const int fiId)
 {
-  // not yet used, but soon...i hope
+  // Not yet used, but soon...I hope
   mFiId = fiId;
   return getFi();
 }
@@ -430,7 +416,7 @@ FiTuple* Filu::getFi(const bool fuzzy/* = false*/)
 {
   if(mFiId < 0)
   {
-    // no FiId set, we have to use the symbol
+    // No FiId set, we have to use the symbol
     return getFi(mSymbolCaption);
   }
   else
@@ -501,13 +487,13 @@ int Filu::getEODBarDateRange(DateRange& dateRange
   // Returns false if no data in table or any other problem occured
   // and true if data was found
 
-  // if no data in table we want fetch from these date on
+  // If no data in table we want fetch from these date on
   dateRange.insert("first", QDate::currentDate().addDays(mDaysToFetchIfNoData * -1));
   dateRange.insert("last", QDate::currentDate().addDays(mDaysToFetchIfNoData * -1));
 
   if(!symbol.isEmpty() && !market.isEmpty())
   {
-    // function was called with parameters
+    // Function was called with parameters
     mMarketName = market;
     mSymbolCaption = symbol;
     if(!setIdsByNameSettings()) return eError;
@@ -581,8 +567,7 @@ int Filu::getIndicatorInfo(KeyVal* info, const QString& name)
 
   // Extract all indicator attributes out of column "source"
   QStringList source = query->value(4).toString().split("\n");
-  QString line;
-  foreach(line, source)
+  foreach(QString line, source)
   {
     line = line.trimmed();
     if(line.startsWith("BEGIN", Qt::CaseInsensitive)) break;
@@ -622,7 +607,7 @@ int Filu::prepareIndicator(const QString& name, const QString& call /* = "" */)
   }
 
   QString sql = call;
-  StringSet parameters; // collect the parameter of the SQL
+  StringSet parameters; // Collect the parameter of the SQL
 
   if(sql.isEmpty())
   {
@@ -680,7 +665,7 @@ QSqlQuery* Filu::execSql(const QString& name)
 
   QSqlQuery* query = mSQLs.value(name);
 
-  // set the parameter for the SQL, if some
+  // Set the parameter for the SQL, if some
   QSetIterator<QString> i(mSqlParmNames.value(name));
   while (i.hasNext())
   {
@@ -727,17 +712,12 @@ int Filu::searchCaption(const QString& table, const QString& caption)
   return query->value(0).toInt();
 }
 
-/******************************************************************
-*
-*         update functions, here will be written into the DB
-*
-*******************************************************************/
 int Filu::addSymbolType(const QString& type
                        , const int& seq
                        , const bool isProvider
                        , const int& id/* = 0*/)
 {
-  // add or update a symbol type
+  // Add or update a symbol type
   if(!initQuery("AddSymbolType")) return eInitError;
 
   QSqlQuery* query = mSQLs.value("AddSymbolType");
@@ -806,9 +786,9 @@ int Filu::addEODBarData(const QStringList* data)
 
   QStringList header = data->at(0).split(";");
 
-  // save the indexes of the data
+  // Save the indexes of the data
   int iD  = header.indexOf("Date");
-  if(iD == -1) return eError; // without a date we can't do anything
+  if(iD == -1) return eError; // Without a date we can't do anything
 
   int iO  = header.indexOf("Open");
   int iH  = header.indexOf("High");
@@ -819,20 +799,20 @@ int Filu::addEODBarData(const QStringList* data)
   int iQ  = header.indexOf("Quality");
 
   QSqlDatabase::database(mConnectionName).transaction();
-  // add a list of bars to the DB
+  // Add a list of bars to the DB
   if(!initQuery("AddBars")) return eInitError;
 
   QSqlQuery* query = mSQLs.value("AddBars");
 
   query->bindValue(":fiId", mFiId);
   query->bindValue(":marketId", mMarketId);
-  int barCount = 0;         // let's count really committed bars
-  int sqlExecCounter = 0;   // to compare with commitBlockSize aka 'commitFreq'
+  int barCount = 0;         // Let's count really committed bars
+  int sqlExecCounter = 0;   // To compare with commitBlockSize aka 'commitFreq'
   int increment = 1;
   int j = 1;
   if(data->size() > 2)
   {
-    // not really necessary: we check the order of the data in the list and
+    // Not really necessary: we check the order of the data in the list and
     // align the counter j in the loop below
     QDate date1 = QDate::fromString(data->at(1).split(";")[iD], Qt::ISODate);
     QDate date2 = QDate::fromString(data->at(2).split(";")[iD], Qt::ISODate);
@@ -845,7 +825,7 @@ int Filu::addEODBarData(const QStringList* data)
 
   for(int i = 1; i < data->size(); i++)
   {
-    // extract the data
+    // Extract the data
     QStringList values = data->at(j).split(";");
     query->bindValue(":date", values[iD]);
 
@@ -867,7 +847,7 @@ int Filu::addEODBarData(const QStringList* data)
     v = (iOI == -1) ? "" : values.at(iOI);
     query->bindValue(":oi", v.isEmpty() ? NULL : v);
 
-    v = (iQ == -1) ? "1" : values.at(iQ); // if not exist we assume the data are final
+    v = (iQ == -1) ? "1" : values.at(iQ); // If not exist we assume the data are final
     query->bindValue(":status", v.isEmpty() ? NULL : v);
 
     int result = execute(query);
@@ -909,11 +889,11 @@ int Filu::addFiCareful(FiTuple& fi)
   // To be sure, test each given Symbol if it is already known.
   // Test the FI name with FiType if it is already known.
 
-  // make sure is set on first entry
+  // Make sure is set on first entry
   fi.rewind(0);
   if(fi.isInvalid())
   {
-    qDebug("Filu::addFiCareful: fi unvalid"); // you should never read this
+    qDebug("Filu::addFiCareful: fi unvalid"); // You should never read this
     return eError;
   }
 
@@ -924,8 +904,8 @@ int Filu::addFiCareful(FiTuple& fi)
     return eError;
   }
 
-  symbol->rewind();         // make sure its placed at the beginning
-  // before we add anything,
+  symbol->rewind();         // Make sure its placed at the beginning
+  // Before we add anything,
   // we check each symbol until we found a known one
   int retVal = 0;
   while (symbol->next())
@@ -941,7 +921,7 @@ int Filu::addFiCareful(FiTuple& fi)
     }
   }
 
-  //if(retVal == -2) return; // we check already if empty
+  //if(retVal == -2) return; // We check already if empty
 
   if(retVal > 0)
   {
@@ -978,16 +958,16 @@ int Filu::addFiCareful(FiTuple& fi)
 
     fi.setId(retVal);
 
-    // add new added fi to users group "New FIs"
+    // Add new added fi to users group "New FIs"
     // FIXME: not possible, because groups are handled by FiluU :-/
   }
 
-  // add all symbols to the FI
+  // Add all symbols to the FI
   int count = 0;
   symbol->rewind();
   while (symbol->next())
   {
-    // add only full set Symbols
+    // Add only full set Symbols
     if(symbol->caption().isEmpty()) continue;
     if(symbol->market().isEmpty()) continue;
     if(symbol->owner().isEmpty()) continue;
@@ -1254,12 +1234,6 @@ void Filu::deleteRecord(const QString& schema, const QString& table, int id /*= 
   query.exec();
 }
 
-/********************************************************************
-*
-*                           private stuff
-*
-*********************************************************************/
-
 int Filu::getNextId(const QString& schema, const QString& table)
 {
   QString sql;
@@ -1316,7 +1290,7 @@ BarTuple* Filu::fillQuoteTuple(QSqlQuery* tuple)
   int count = tuple->size();
   if(!count) return 0;
 
-  // fill the object to be returned to client
+  // Fill the object to be returned to client
   BarTuple* bars = new BarTuple(count);
   while(bars->next())
   {
@@ -1345,7 +1319,7 @@ FiTuple* Filu::fillFiTuple(QSqlQuery* tuple)
   int count = tuple->size();
   if(!count) return 0;
 
-  // fill the object to be returned to client
+  // Fill the object to be returned to client
   FiTuple* fi = new FiTuple(count);
   while(fi->next())
   {
@@ -1360,7 +1334,7 @@ FiTuple* Filu::fillFiTuple(QSqlQuery* tuple)
     //    fi->IssueDate[i] = tuple->value(3).toString();
     //    fi->MaturityDate[i] = tuple->value(3).toString();
 
-    // save FiId global, when getFi(symbolCaption) only used to set the FiId
+    // Save FiId global, when getFi(symbolCaption) only used to set the FiId
     mFiId = tuple->value(0).toInt();
   }
 
@@ -1397,11 +1371,11 @@ bool Filu::initQuery(const QString& name)
 
 bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
 {
-  // build the fulpath to the file where the sql is stored
+  // Build the fulpath to the file where the sql is stored
   QString fileName(mSqlPath);
   fileName.append(name + ".sql");
 
-  // make sure we have no garbage in the statement
+  // Make sure we have no garbage in the statement
   sqlStatement.clear();
 
   QFile file(fileName);
@@ -1411,29 +1385,29 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
     return false;
   }
 
-  // read/fill the statement
+  // Read/fill the statement
   QTextStream in(&file);
-  StringSet parameters; // collect the parameter of the SQL
+  StringSet parameters; // Collect the parameter of the SQL
   while (!in.atEnd())
   {
     QString line = in.readLine();
 
-    // remove obsolet spaces
+    // Remove obsolet spaces
     line = line.trimmed();
 
-    if(line.startsWith("*")) continue; // ignore remarks
+    if(line.startsWith("*")) continue; // Ignore remarks
     if(line.isEmpty()) continue;
 
-    // make sure it ends with a whitespace
+    // Make sure it ends with a whitespace
     line.append("\n");
 
-    if(line.startsWith("--")) line.replace(":", " "); // oh dear, could make nice trouble
+    if(line.startsWith("--")) line.replace(":", " "); // Oh dear, could make nice trouble
 
-    // fix the schema and client place holder
+    // Fix the schema and client place holder
     line.replace(":filu", mFiluSchema);
     line.replace(":user", mUserSchema);
 
-    // extract all parameter ":foo" of the SQL
+    // Extract all parameter ":foo" of the SQL
     QRegExp rx("(:\\w+)");
     int pos = 0;
     while ((pos = rx.indexIn(line, pos)) != -1)
@@ -1466,16 +1440,15 @@ void Filu::addErrorText(const QString& errorText, int type/* = eNotice*/)
 
 int Filu::execute(QSqlQuery* query)
 {
-
   query->exec();
 
-  // save the query statement, anyway if error or not
+  // Save the query statement, anyway if error or not
   mLastQuery = query->executedQuery();
   mLastError = query->lastError().databaseText();
   //mHasError = query->lastError().type();
   mHasError = !query->isActive();
 
-  if(mSqlDebugLevel == 2) // for heavy debuging print each sql
+  if(mSqlDebugLevel == 2) // For heavy debuging print each sql
   {
     qDebug() << "ExecutedQuery:" << mLastQuery;
     qDebug() << "DatabaseText:" << query->lastError().databaseText();

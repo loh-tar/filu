@@ -20,14 +20,14 @@
 #ifndef INSPECTORF_HPP
 #define INSPECTORF_HPP
 
-#include <QDialog>
-
 //#include "FClass.h"
 #include "FWidget.h"
-#include "Trader.h"
-#include "BackTester.h"
+
 #include "SqlTableView.h"
 #include "StrategyEditor.h"
+
+class Trader;
+class BackTester;
 
 class InspectorF : public QMainWindow, public FClass
 {
@@ -41,7 +41,7 @@ class InspectorF : public QMainWindow, public FClass
 
   public:
                     InspectorF();
-                   ~InspectorF();
+    virtual        ~InspectorF();
 
   protected slots:
     void            runTest();
@@ -100,11 +100,10 @@ class InspectorF : public QMainWindow, public FClass
     QString         mSelectedStrategyId;
     QString         mShowingStrategyId;
 
-    QHash<const QString, bool> mNewData; // saves for each result tab if he have to load new data
+    QHash<const QString, bool> mNewData; // Saves for each result tab if he have to load new data
 
     QString         mTradingRulePath;
     QString         mIndicatorPath;
 };
 
 #endif
-

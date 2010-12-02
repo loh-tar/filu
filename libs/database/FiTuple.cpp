@@ -37,7 +37,7 @@ FiTuple::~FiTuple()
   delete []TypeId;
   delete []Type;
   delete []Name;
-  // clean up Symbols
+  // Clean up Symbols
   for (int i = 0; i < MaxIndex ; i++) delete []Symbol[i] ;
   delete [] Symbol;
   //delete []Symbol;
@@ -195,14 +195,14 @@ QVariant FiTableModel::headerData(
         return QSize(50,0);
       case 2:
         {
-          QFont font = ((QTableView*)((QObject*)this)->parent())->font();
+          QFont font = ((QTableView*)(static_cast<QObject*>(this))->parent())->font();
           QFontMetrics fm(font);
           qDebug() << "fm" << fm.size(0, QString(30,'X'));
           return fm.size(0,QString(30,'X'));
         }
       case 3:
         {
-          QFont font = ((QTableView*)((QObject*)this)->parent())->font();
+          QFont font = ((QTableView*)(static_cast<QObject*>(this))->parent())->font();
           QFontMetrics fm(font);
           qDebug() << "fm" << fm.size(0, QString(10,'X'));
           return fm.size(0,QString(10,'X'));

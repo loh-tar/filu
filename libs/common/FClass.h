@@ -25,15 +25,11 @@
 #include "FiluU.h"
 #include "RcFile.h"
 
-// class FiluU;
-// class RcFile;
-
 /***********************************************************************
 *
-* The base of all classes which use Filu
+*   The base of all classes which use Filu
 *
 ************************************************************************/
-
 
 class FClass
 {
@@ -58,7 +54,7 @@ class FClass
     void           addErrorText(const QStringList& errorMessage, int type = eNotice);
     void           addErrorText(const QString& errorMessage, int type = eNotice);
     void           removeErrorText(const QString& errorMessage);
-    bool           check4FiluError(const QString& errMessage);  // true if error
+    bool           check4FiluError(const QString& errMessage);  // True if error
     void           clearErrors();
 
     RcFile*        mRcFile;

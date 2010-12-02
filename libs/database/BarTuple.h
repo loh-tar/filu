@@ -38,7 +38,7 @@ class BarTuple : public Tuple
     double      close();
     double      volume();
 
-    // holds the beef
+    // Holds the beef
     QDate*      mDate;
     QTime*      mTime;
     double*     mOpen;

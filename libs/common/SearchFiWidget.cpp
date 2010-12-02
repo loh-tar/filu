@@ -27,12 +27,7 @@
 *
 *
 ************************************************************************/
-SearchFiWidget::SearchFiWidget(FWidget* parent) : FWidget(parent)
-{
-  init();
-}
-
-SearchFiWidget::SearchFiWidget(FMainWindow* parent) : FWidget(parent)
+SearchFiWidget::SearchFiWidget(FClass* parent) : FWidget(parent)
 {
   init();
 }
@@ -145,8 +140,8 @@ bool SearchFiWidget::eventFilter(QObject* pFilterObj, QEvent* event)
 *
 *
 ************************************************************************/
-FiTypeSelBtn::FiTypeSelBtn(FWidget* parent)
-             : QToolButton(parent)
+FiTypeSelBtn::FiTypeSelBtn(FClass* parent)
+             : QToolButton(0)
              , FClass(parent)
              , mType("")
 {

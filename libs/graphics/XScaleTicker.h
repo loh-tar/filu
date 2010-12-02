@@ -26,7 +26,7 @@ class IndicatorPainter;
 
 /***********************************************************************
 *
-* He calculate if ticks should be plottet an delivers the scale text
+*   He calculate if ticks should be plottet an delivers the scale text
 *
 ************************************************************************/
 
@@ -90,8 +90,8 @@ class XScaleTicker
     int         mLastWeek;
     int         mLastDay;
 
-    int         mI;                   // index counter
-    int         mX;                   // x position in pixel
+    int         mI;                   // Index counter
+    int         mX;                   // X position in pixel
     int         mLastTextRightEdge;   // ...in pixel
 
     int         mLastTextWriter;

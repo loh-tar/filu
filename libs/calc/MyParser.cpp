@@ -30,7 +30,7 @@ static mu::value_type* MyAddVariable(const mu::char_type */*a_szName*/, void * /
 
   //qDebug() << "MyAddVariable() added" << a_szName;
 
-  return& dummy;
+  return &dummy;
 }
 
 MyParser::MyParser()
@@ -55,7 +55,7 @@ bool MyParser::setExp(const QString& expr)
 {
   mParser.SetExpr(expr.toStdString());
 
-  // call .Eval() to forces mu::Parser to parse the formula
+  // Call .Eval() to forces mu::Parser to parse the formula
   //  and create the needed variables, dummy variables
   // in our case
   try
@@ -79,20 +79,19 @@ bool MyParser::setExp(const QString& expr)
     return false;
   }
 
-  // ask mu::Parser for the variables names
+  // Ask mu::Parser for the variables names
   QSet<QString> usedVariables;
   appendUsedVariables(usedVariables);
 
-  // create mVariables if not set from outside
+  // Create mVariables if not set from outside
   if(!mVariables)
   {
     mVariables   = new QHash<const QString, double>;
     mMyVariables = true;
   }
 
-  // and set the real needed variables...well, ist a crook again :-/
-  QString name;
-  foreach(name, usedVariables)
+  // ...and set the real needed variables. Well, its a crook again :-/
+  foreach(const QString& name, usedVariables)
   {
     // 0.0 is only a dummy, replaced later
     QHash<const QString, double>::iterator it = mVariables->insert(name, 0.0);
@@ -107,7 +106,7 @@ QString MyParser::getExp()
   return mParser.GetExpr().data();
 }
 
-void MyParser::useVariables(QHash<const QString, double> *variables)
+void MyParser::useVariables(QHash<const QString, double>* variables)
 {
   mVariables = variables;
 }
@@ -125,15 +124,15 @@ void MyParser::useData(DataTupleSet* data)
   mData->getVariableNames(mdataNames);
 
   appendUsedVariables(usedNames);
-  QString name;
-  foreach(name, usedNames)
+
+  foreach(const QString& name, usedNames)
   {
     if(mdataNames.contains(name)) mUsedMData->insert(name);
   }
   //qDebug() << "MyParser::useData() mData variables" << *mUsedMData;
 }
 
-void MyParser::appendUsedVariables(QSet<QString> &list)
+void MyParser::appendUsedVariables(QSet<QString>& list)
 {
   // Get the map with the variables
   mu::varmap_type variables = mParser.GetVar();
@@ -149,14 +148,13 @@ void MyParser::appendUsedVariables(QSet<QString> &list)
 
 int MyParser::calc(double& result)
 {
-  // returns
+  // Returns
   //    0 if all is ok
   //    1 if no data from mData
   //    2 if error while mu::Parser.Eval()
 
-  // fill mVariables with values from mData
-  QString name;
-  foreach(name, *mUsedMData)
+  // Fill mVariables with values from mData
+  foreach(const QString& name, *mUsedMData)
   {
     double value;
     if(!mData->getValue(name, value)) return 1;
@@ -188,4 +186,3 @@ int MyParser::calc(double& result)
   }
 
 }
-

@@ -19,7 +19,8 @@
 
 #include "CalcRef.h"
 
-CalcRef::CalcRef(Indicator* parent) : CalcType(parent)
+CalcRef::CalcRef(Indicator* parent)
+       : CalcType(parent)
 {
   mType = "Ref";
 }
@@ -57,7 +58,7 @@ bool CalcRef::calc()
 
   getIndicatorVariables();
 
-  // create our output variable
+  // Create our output variable
   addToDataSet(mOuts.at(0));
 
   int outBegIdx = 0;

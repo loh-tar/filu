@@ -28,7 +28,7 @@
 
 /***********************************************************************
 *
-* This is the base class of all kind of PLOT(....) objects
+*   This is the base class of all kind of PLOT(....) objects
 *
 ************************************************************************/
 

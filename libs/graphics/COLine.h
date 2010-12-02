@@ -24,7 +24,7 @@
 
 /***********************************************************************
 *
-* Yes, a line chart object
+*   Yes, a line chart object
 *
 ************************************************************************/
 
@@ -40,7 +40,7 @@ class COLine : public COType
     void        editWindowChanged();
 
   protected:
-    void        prepare(const QHash<QString, QString> &keyValue);
+    void        prepare(const QHash<QString, QString>& keyValue);
     void        readAttributes(bool firstCall = false);
     void        writeAttributes();
     bool        paintObject();
@@ -50,7 +50,7 @@ class COLine : public COType
                          , const int deltaIdx
                          , const double deltaValue);
 
-    QLineF      mLine;  // hold the line as they was painted
-    QLineF      mHelp;  // a tiny perpendicular line to our painted line, used at isInvolved()
+    QLineF      mLine;  // Hold the line as they was painted
+    QLineF      mHelp;  // A tiny perpendicular line to our painted line, used at isInvolved()
 };
 #endif

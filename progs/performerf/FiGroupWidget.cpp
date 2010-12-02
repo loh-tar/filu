@@ -19,18 +19,14 @@
 
 #include "FiGroupWidget.h"
 
-/***********************************************************************
-*
-*
-*
-************************************************************************/
-FiGroupWidget::FiGroupWidget(FWidget* parent) : FWidget(parent)
+FiGroupWidget::FiGroupWidget(FClass* parent)
+             : FWidget(parent)
 {
   mEditing = false;
 
   QPixmap icon(10, 10);
 
-  mGroupView = new MyTableWidget(parent);
+  mGroupView = new MyTableWidget(this);
   //mGroupView->setDragEnabled(false);
   //mGroupView->setAcceptDrops(false);
   mGroupView->setEditTriggers(QAbstractItemView::EditKeyPressed);
@@ -197,11 +193,11 @@ void FiGroupWidget::memberClicked(int row, int)
 void FiGroupWidget::memberRowChanged(int row)
 {
   //qDebug() << "FiGroupWidget::memberRowChanged()" << row;
-  emit selected(mMemberView->item(row, 2)->text()           // symbol
-              , mMemberView->item(row, 3)->text());         // market
+  emit selected(mMemberView->item(row, 2)->text()           // Symbol
+              , mMemberView->item(row, 3)->text());         // Market
 
-  emit selected(mMemberView->item(row, 1)->text().toInt()   // fiId
-              , mMemberView->item(row, 4)->text().toInt()); // marketId
+  emit selected(mMemberView->item(row, 1)->text().toInt()   // FiId
+              , mMemberView->item(row, 4)->text().toInt()); // MarketId
 }
 
 void FiGroupWidget::getGroups(int groupId)
@@ -365,13 +361,8 @@ void FiGroupWidget::removeGroup()
   else getGroups(mMotherIds.top());
 }
 
-/***********************************************************************
-*
-*
-*
-************************************************************************/
-
-MyTableWidget::MyTableWidget(QWidget* parent) : QTableWidget(parent)
+MyTableWidget::MyTableWidget(QWidget* parent)
+             : QTableWidget(parent)
 {
   setDragEnabled(true);
   setAcceptDrops(true);
@@ -402,11 +393,10 @@ void MyTableWidget::erase()
 
   while(rowCount()) removeRow(0);
 
-  mCurrentRow = -1; // mark as unvalid
+  mCurrentRow = -1; // Mark as unvalid
 
   connect(this, SIGNAL(currentItemChanged(QTableWidgetItem *, QTableWidgetItem *))
   , this, SLOT(currentItemChangedSlot(QTableWidgetItem *, QTableWidgetItem *)));
-
 }
 
 void MyTableWidget::mousePressEvent(QMouseEvent* event)
@@ -457,9 +447,9 @@ void MyTableWidget::dropEvent( QDropEvent* event )
     //event->setDropAction( Qt::CopyAction );
     event->accept();
     //event->acceptProposedAction();
-    //qDebug() << ":" << ((QTableView*)event->source())->model()->headerData(0, Qt::Horizontal);
+    //qDebug() << ":" << (static_cast<QTableView*>(event->source()))->model()->headerData(0, Qt::Horizontal);
     //qDebug() << "event->dropAction() =" << event->dropAction();
-    if(event->source() != this) emit dragInFromTableView((QTableView*)event->source());
+    if(event->source() != this) emit dragInFromTableView(static_cast<QTableView*>(event->source()));
   }
   else
   {
@@ -484,7 +474,6 @@ void MyTableWidget::dragEnterEvent(QDragEnterEvent* event)
     event->ignore();
   }
 }
-
 
 void MyTableWidget::dragMoveEvent(QDragMoveEvent* event)
 {

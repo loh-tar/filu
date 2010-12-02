@@ -27,9 +27,9 @@ class MyMouseEvent;
 
 /***********************************************************************
 *
-*  This class is something like a wrapper for the PlotSheet class.
-*  He save and restore all settings PlotSheet need. To do the job he
-*  has to forward all mouse events to PlotSheet.
+*   This class is something like a wrapper for the PlotSheet class.
+*   He save and restore all settings PlotSheet need. To do the job he
+*   has to forward all mouse events to PlotSheet.
 *
 ************************************************************************/
 
@@ -38,8 +38,8 @@ class IndiWidgetSimple : public FWidget
   Q_OBJECT
 
   public:
-                  IndiWidgetSimple(const QString& name, FWidget* parent);
-                  IndiWidgetSimple(const QString& name, const int number, FWidget* parent);
+                  IndiWidgetSimple(const QString& name, FClass* parent);
+                  IndiWidgetSimple(const QString& name, const int number, FClass* parent);
     virtual      ~IndiWidgetSimple();
 
     void          setName(const QString& name);

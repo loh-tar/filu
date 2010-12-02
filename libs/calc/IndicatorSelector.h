@@ -31,33 +31,34 @@ class IndicatorSelector : public QWidget
   Q_OBJECT
 
   public:
-                IndicatorSelector(QWidget* parent = 0);
+                    IndicatorSelector(QWidget* parent = 0);
+                   ~IndicatorSelector();
 
   signals:
-    void        addText(const QString* txt);
+    void            addText(const QString* txt);
 
   protected slots:
-    void        refreshFunctionList();
-    void        getFunctionInfo(QListWidgetItem* item);
-    void        checkInfoSelection(int r);
+    void            refreshFunctionList();
+    void            getFunctionInfo(QListWidgetItem* item);
+    void            checkInfoSelection(int r);
 
-    void        addToIndicator();
-    void        inclToIndicator();
+    void            addToIndicator();
+    void            inclToIndicator();
 
   protected:
-    void        createPage();
-    void        showEvent(QShowEvent * /*event*/);
+    void            createPage();
+    void            showEvent(QShowEvent* /*event*/);
 
-    SearchField* mSF;
-    QListWidget* mInfoList;
-    QListWidget* mFunctionList;
-    QPushButton* mAddBtn;
-    QPushButton* mInclBtn;
+    SearchField*    mSF;
+    QListWidget*    mInfoList;
+    QListWidget*    mFunctionList;
+    QPushButton*    mAddBtn;
+    QPushButton*    mInclBtn;
 
-    QStringList  mAllFunctions;
-    QStringList  mTheIndicator;
+    QStringList     mAllFunctions;
+    QStringList     mTheIndicator;
 
-    TALib        mTALib;
+    TALib           mTALib;
 };
 
 #endif

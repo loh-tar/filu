@@ -17,16 +17,10 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-//#include <QtGui>
-
 #include "LogBookPage.h"
 
-LogBookPage::LogBookPage(ManagerF* parent) : ManagerPage(parent)
-{
-  createPage();
-}
-
-LogBookPage::LogBookPage(FWidget* parent) : ManagerPage(parent)
+LogBookPage::LogBookPage(FClass* parent)
+           : ManagerPage(parent)
 {
   createPage();
 }

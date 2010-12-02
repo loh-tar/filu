@@ -37,7 +37,7 @@ class SqlTableView : public QTableView
     virtual    ~SqlTableView();
 
   signals:
-    void        newSelection(const QModelIndex &);
+    void        newSelection(const QModelIndex&);
 
   protected:
     void        mousePressEvent(QMouseEvent* pEvent);

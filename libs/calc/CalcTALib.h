@@ -26,7 +26,7 @@
 
 /***********************************************************************
 *
-* Yes, calculate TA-Lib functions
+*   Yes, calculate TA-Lib functions
 *
 ************************************************************************/
 
@@ -41,8 +41,8 @@ class CalcTALib : public CalcType
     virtual int   barsNeeded(DataTupleSet* data);
 
   protected:
-    bool          initTALib(TA_ParamHolder **parmHolder);
-    void          freesParmHolder(TA_ParamHolder *parmHolder);
+    bool          initTALib(TA_ParamHolder** parmHolder);
+    void          freesParmHolder(TA_ParamHolder* parmHolder);
     void          setFirstValid();
     TA_Real*      valueArray(const QString& key);
 

@@ -38,8 +38,7 @@ Trader::Trader(FClass* parent)
 Trader::~Trader()
 {
   if(mIndicator) delete mIndicator;
-  Rule rule;
-  foreach(rule, mRules) delete rule.first; // delete the parser
+  foreach(Rule rule, mRules) delete rule.first; // Delete the parser
   mRules.clear();
 }
 
@@ -57,7 +56,7 @@ bool Trader::useRuleFile(const QString& fileName)
   QTime time;
   time.start();
 
-  // read/fill the TradingRule
+  // Read/fill the TradingRule
   QTextStream fileStream(&file);
   mOrigRule.clear();
 
@@ -156,7 +155,7 @@ bool Trader::nextLine(bool nextBlock/* = false*/)
       }
     }
 
-    if(mLine.startsWith("*")) continue; // ignore remarks
+    if(mLine.startsWith("*")) continue; // Ignore remarks
     if(mLine.isEmpty()) continue;
 
     return true;
@@ -190,7 +189,7 @@ void Trader::readSettings()
       continue;
     }
 
-    mLine.remove(" "); // not at nextLine(), because muParser needs sometimes a blank
+    mLine.remove(" "); // Not at nextLine(), because muParser needs sometimes a blank
     QStringList setting = mLine.split("=");
     if(setting.size() < 2)
     {
@@ -209,7 +208,7 @@ void Trader::readSettings()
     mSettings.insert(setting.at(0),setting.at(1));
   }//while(nextLine());
 
-  // load the indicator...or not
+  // Load the indicator...or not
   if(mAutoLoadIndicator)
   {
     if(!mIndicator)
@@ -240,9 +239,8 @@ void Trader::readRules()
 {
   mOkRules = true;
 
-  // clear rule if it's not the first run
-  Rule rule;
-  foreach(rule, mRules) delete rule.first; // delete the parser
+  // Clear rule if it's not the first run
+  foreach(Rule rule, mRules) delete rule.first; // Delete the parser
   mRules.clear();
 
   while(nextLine())
@@ -262,16 +260,16 @@ void Trader::readRules()
       continue;
     }
 
-    mRules.append(Rule());                    // append an empty new rule
+    mRules.append(Rule());                    // Append an empty new rule
     MyParser* parser = new MyParser;
     parser->useVariables(&mVariable);
     parser->setExp(rule.at(0).trimmed());
 
     rule[1].replace("(",",");
     rule[1].remove(")");
-    rule[1].remove(" ");                      // looks now "BUY,Long,100%;"
+    rule[1].remove(" ");                      // Looks now "BUY,Long,100%;"
 
-    // more than one action per condition is supported
+    // More than one action per condition is supported
     if(rule.at(1).endsWith(";")) rule[1].chop(1);
     QList<QStringList> actions;
     QStringList actionList = rule.at(1).split(";");
@@ -279,7 +277,7 @@ void Trader::readRules()
     knownActions << "BUY" << "SELL";
     for(int i = 0; i < actionList.size(); ++i)
     {
-      // full format is BUY(<type>, <size>, <limit>, <validity>)
+      // Full format is BUY(<type>, <size>, <limit>, <validity>)
       QStringList action = actionList.at(i).split(",");
 
       if(!knownActions.contains(action.at(0)))
@@ -298,14 +296,14 @@ void Trader::readRules()
         continue;
       }
       action[2].remove("%");
-      // append the condition. So it's later easier to understand
+      // Append the condition. So it's later easier to understand
       // why the trader does something
       action.append(rule.at(0).trimmed());
       actions.append(action);
     }
 
-    mRules.last().first = parser;             // set the parser
-    mRules.last().second = actions;           // set the actions
+    mRules.last().first = parser;             // Set the parser
+    mRules.last().second = actions;           // Set the actions
   }//while(nextLine());
 
 //   for(int i = 0; i < mRules.size(); ++i)
@@ -318,7 +316,7 @@ void Trader::readRules()
 
 void Trader::appendMData()
 {
-  // add trading calculation variables to mData
+  // Add trading calculation variables to mData,
   // uncomment some or add more if you like
   appendToMData("Cash");
   appendToMData("TotalBalance");
@@ -361,7 +359,7 @@ bool Trader::simulate(DataTupleSet* data)
   mReport.clear();
   mDataAdded.clear();
 
-  // we can't call mVariable.clear() because mu::Parser had register
+  // We can't call mVariable.clear() because mu::Parser had register
   // the addresses of the hash variables. But we mußt erease the variables
   // used by mu::Parser if this is not the first run of simulate()
   for(int i = 0; i < mDataAdded.size(); ++i)
@@ -371,7 +369,7 @@ bool Trader::simulate(DataTupleSet* data)
 
   //qDebug() << "Trader::simulate: indicator calculated in" << time.restart() << "milliseconds";
 
-  // give each Parser at this point mData. Here includes mData only
+  // Give each Parser at this point mData. Here includes mData only
   // indicator variables. So the Parser can check which of the variables
   // he use he have to read out of mData. This is important because
   // the Parser can only use mVariable to do the job. So if he have to
@@ -384,10 +382,10 @@ bool Trader::simulate(DataTupleSet* data)
     mRules.at(i).first->useData(mData);
   }
 
-  // ok, let's begin
+  // Ok, let's begin
   appendMData();
 
-  // set status variables
+  // Set status variables
   setTo("CommissionFix", mSettings.value("CommissionFix").toDouble());
   setTo("CommissionPercentage", mSettings.value("CommissionPercentage").toDouble());
   setTo("Cash", mSettings.value("InitialCash").toDouble());
@@ -438,18 +436,18 @@ bool Trader::simulate(DataTupleSet* data)
   mData->rewind(mBarsNeeded - 2);
   while(mData->next())
   {
-    // first, calculate our status
+    // First, calculate our status
     calcGain();
 
-    // second, check open orders...
+    // Second, check open orders...
     checkOpenOrders();
 
-    // third, check each rule
+    // Third, check each rule
     for(int i = 0; i < mRules.size(); ++i)
     {
       double condition;
       int ret = mRules.at(i).first->calc(condition);
-      if(ret == 1) continue; // no valid value in mData
+      if(ret == 1) continue; // No valid value in mData
       else if(ret == 2)
       {
         qDebug() << "Trader::simulate() bad value from mu::Parser";
@@ -459,11 +457,11 @@ bool Trader::simulate(DataTupleSet* data)
       if(condition > 0.0) takeActions(mRules.at(i).second);
     }
 
-    // fourth, sync mData with mVariable
+    // Fourth, sync mData with mVariable
     for(int i = 0; i < mDataAdded.size(); ++i)
       mData->setValue(mDataAdded.at(i), mVariable.value(mDataAdded.at(i)));
 
-    // fifth, ...play it again Sam
+    // Fifth, ...play it again Sam
   }
 
   mData->rewind(data->dataTupleSize() - 1);
@@ -578,7 +576,7 @@ bool Trader::simulate(DataTupleSet* data)
 
 int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 {
-  // we do here two jobs:
+  // We do here two jobs:
   // 1st, and that's the major task, adjust the fromDate
   // 2nd, return the amound of Fi in the group to use for a forcast
   //      of the needet run time
@@ -624,8 +622,8 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
     return -1;
   }
 
-  // adjust the fromDate. we want start with the simulation at fromDate.
-  // but because the indicator needs a minumum amount of bars to produce
+  // Adjust the fromDate. we want start with the simulation at fromDate.
+  // But because the indicator needs a minumum amount of bars to produce
   // a result, we have to sub a fitting count of days...
   // FIXME: (7 days a week, 5days open markets) you know a better formula?
   mFromDate = fromDate.addDays(mBarsNeeded * -1.4);
@@ -636,7 +634,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
 int Trader::simulateNext()
 {
-  // returns
+  // Returns
   //   0 if no more Fi left to simulate
   //   1 all looks fine
   //   2 any problem while simulation
@@ -659,7 +657,7 @@ int Trader::simulateNext()
   if(!bars)
   {
    qDebug() << "Trader::simulateNext: No bars for:" << mFi->value(2).toString() << mFi->value(3).toString();
-    return 2; // don't break complete simulation
+    return 2; // Don't break complete simulation
   }
 
   DataTupleSet* data = new DataTupleSet();
@@ -678,17 +676,17 @@ int Trader::simulateNext()
   return 1;
 }
 
-void Trader::getOrders(QList<QStringList> &orders)
+void Trader::getOrders(QList<QStringList>& orders)
 {
   orders = mOrders;
 }
 
-void Trader::getReport(QList<QStringList> &report)
+void Trader::getReport(QList<QStringList>& report)
 {
   report = mReport;
 }
 
-void Trader::getVariablesList(QSet<QString> *list)
+void Trader::getVariablesList(QSet<QString>* list)
 {
   mIndicator->getVariableNames(list);
 
@@ -711,7 +709,7 @@ void Trader::getVariablesList(QSet<QString> *list)
   for(int i = 0; i < mDataAdded.size(); ++i) list->insert(mDataAdded.at(i));
 }
 
-void Trader::takeActions(const QList<QStringList> &actions)
+void Trader::takeActions(const QList<QStringList>& actions)
 {
   for(int i = 0; i < actions.size(); ++i)
   {
@@ -732,34 +730,34 @@ void Trader::actionBuy(const QStringList& action)
 
   if(action.at(1) == "Long")
   {
-    // copy, because we add some comment to newOrder
+    // Copy, because we add some comment to newOrder
     QStringList newOrder = action;
 
-    // get some needed values
+    // Get some needed values
     double orderSize, limit;
     orderSize = action[2].toDouble();
-    if(orderSize > 100.0) orderSize = 100.0; // no jokes
+    if(orderSize > 100.0) orderSize = 100.0; // No jokes
     mData->getValue(action.at(3), limit);
 
     double cash = mVariable.value("Cash");
     double openVolume = mVariable.value("OpenVolume");
     double availableCash = cash - openVolume;
-    if(availableCash < mVariable.value("MinPositionSize")) return; // not enough cash left
+    if(availableCash < mVariable.value("MinPositionSize")) return; // Not enough cash left
 
-    // desired order volume is...
-    // and take care it's enough cash left in the future
-    int pieces = (int)((availableCash * orderSize / 100) / limit);
+    // Desired order volume is...
+    // And take care it's enough cash left in the future
+    int pieces = static_cast<int>((availableCash * orderSize / 100) / limit);
     double orderVolume = pieces * limit;
     if(orderVolume < mVariable.value("MinPositionSize"))
     {
-      pieces = (int)(mVariable.value("MinPositionSize") / limit);
+      pieces = static_cast<int>(mVariable.value("MinPositionSize") / limit);
 
       QString txt = "order size too small, buy more";
 
       if(pieces == 0)
       {
-        pieces = (int)(availableCash / limit);
-        if(pieces == 0) return; // not enough money left
+        pieces = static_cast<int>(availableCash / limit);
+        if(pieces == 0) return; // Not enough money left
         txt = "order size too small, buy for all money left";
       }
 
@@ -775,19 +773,19 @@ void Trader::actionBuy(const QStringList& action)
 //     else
 //     {
 
-      // update some status variables
+      // Update some status variables
       addTo("OpenVolume", orderVolume);
       addTo("OOLongBuy", 1.0);
       addTo("OpenLongBuy", (double)pieces);
 
       newOrder.replace(2, QString::number(pieces));
 
-      // in case of OPEN set limit to a very big value FIXME: uses a c++ foobar
+      // In case of OPEN set limit to a very big value FIXME: uses a c++ foobar
       if(action.at(3) == "OPEN")
       {
         newOrder.replace(3, QString::number(1000000.00));
         mOpenOrders.append(newOrder);
-        // change once more for real uses
+        // Change once more for real uses
         newOrder.replace(3, "Best");
         newOrder.prepend(dateString);
         mOrders.append(newOrder);
@@ -822,24 +820,24 @@ void Trader::actionSell(const QStringList& action)
 
   if(action.at(1) == "Long")
   {
-    // check if it's something in depot to sell...
+    // Check if it's something in depot to sell...
     if( (mVariable.value("Long") -  mVariable.value("OpenLongSell")) < 1 )
     {
       return;
     }
 
-    // copy, because we add some comment to newOrder
+    // Copy, because we add some comment to newOrder
     QStringList newOrder = action;
 
-    // get some needed values
+    // Get some needed values
     double orderSize, limit;
     orderSize = action[2].toDouble();
-    if(orderSize > 100.0) orderSize = 100.0; // no jokes
+    if(orderSize > 100.0) orderSize = 100.0; // No jokes
     mData->getValue(action.at(3), limit);
 
-    // calc orderSize to pieces...
-    int inDepot = (int)mVariable.value("Long");
-    int pieces  = (int)(inDepot * orderSize / 100);
+    // Calc orderSize to pieces...
+    int inDepot = static_cast<int>(mVariable.value("Long"));
+    int pieces  = static_cast<int>(inDepot * orderSize / 100);
 
     double orderVolume = limit * pieces;
 
@@ -847,7 +845,7 @@ void Trader::actionSell(const QStringList& action)
     {
       QString txt = "order volume to small, sell more";
 
-      pieces = (int)(mVariable.value("MinPositionSize") / limit) + 1;
+      pieces = static_cast<int>(mVariable.value("MinPositionSize") / limit) + 1;
       if(pieces > inDepot) pieces = inDepot;
 
       orderVolume = limit * pieces;
@@ -867,12 +865,12 @@ void Trader::actionSell(const QStringList& action)
 
     newOrder.replace(2, QString::number(pieces));
 
-    // in case of OPEN set limit to a very tiny value FIXME: uses a c++ foobar
+    // In case of OPEN set limit to a very tiny value FIXME: uses a c++ foobar
     if(action.at(3) == "OPEN")
     {
       newOrder.replace(3, QString::number(0.0000001));
       mOpenOrders.append(newOrder);
-      // change once more for real uses
+      // Change once more for real uses
       newOrder.replace(3, "Best");
       newOrder.prepend(dateString);
       mOrders.append(newOrder);
@@ -901,7 +899,7 @@ void Trader::checkOpenOrders()
   // mOpenOrders is a QList<QStringList>. One order entry looks like
   // <BUY/SELL>, <Long/Short>, <size in piece>, <limit>, <validity>, <condition>
   // BUY, Long, 97, OPEN, 5, SCAN4
-  // see also doc/trading-rule-file-format.txt
+  // See also doc/trading-rule-file-format.txt
 
   int i = 0;
   while(i < mOpenOrders.size())
@@ -992,7 +990,7 @@ void Trader::checkOpenBuyOrder(QStringList& order)
     if(mVariable.value("OOLongBuy") + mVariable.value("OOShortBuy") == 0)  setTo("OpenVolume", 0.0);
     else
     {
-      // calculate a circa open order volume
+      // Calculate a circa open order volume
       orderSize = order.at(2).toDouble();
       mData->getValue("OPEN", price);
       orderVolume = orderSize * price;
@@ -1041,7 +1039,7 @@ void Trader::checkOpenSellOrder(QStringList& order)
       //double percentGain = 100 * (executedPrice - rAvgLong) / rAvgLong;
       double percentGain = 100 * ((mVariable.value("TotalBalance") / mVariable.value("EntryBalanceLong")) - 1);
 
-      // check if was a win or a lost trade
+      // Check if was a win or a lost trade
       if(executedPrice > rAvgLong)
       {
         addTo("WonL", 1.0);
@@ -1158,14 +1156,14 @@ void Trader::calcGain()
 void Trader::setTo(const QString& name, double v)
 {
   mVariable.insert(name, v);
-  //mData->setValue(name, v);  // in case of mData don't know name, nothing happens
+  //mData->setValue(name, v);  // In case of mData don't know name, nothing happens
 }
 
 void Trader::addTo(const QString& name, double v)
 {
   double newValue = mVariable.value(name) + v;
   mVariable.insert(name, newValue);
-  //mData->setValue(name, newValue);  // in case of mData don't know name, nothing happens
+  //mData->setValue(name, newValue);  // In case of mData don't know name, nothing happens
 }
 
 void Trader::appendToMData(const QString& name)

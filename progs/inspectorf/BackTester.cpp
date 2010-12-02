@@ -17,14 +17,18 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtCore>
-#include <QDebug>
-
 #include "BackTester.h"
+
+#include "Indicator.h"
+#include "Trader.h"
 
 BackTester::BackTester()
           : QThread()
           , FClass("BackTester")
+          , mNewJob(false)
+          , mRun(false)
+          , mGoAndDie(false)
+          , mTrader(0)
 {
   init();
 }
@@ -47,15 +51,11 @@ BackTester::~BackTester()
 void BackTester::init()
 {
   //qDebug() << "BackTester::init()";
-
   mTrader = new Trader(this);
 
   mConstMatcher.setPattern("(\\b\\d+\\.?\\d*)");
   mEditedMatcher.setPattern("\\{([\\d\\.\\-\\i\\;\\s]+)\\}");
   //mErrorMatcher.setPattern();
-  mNewJob   = false;
-  mRun      = false;
-  mGoAndDie = false;
 }
 
 void BackTester::prepare(const QString& rule,
@@ -147,7 +147,6 @@ void BackTester::run()
     }
 
     //qDebug() << "BackTester::run() end of forever";
-
   }
 
 }
@@ -156,7 +155,7 @@ bool BackTester::backtest()
 {
   clearErrors();
 
-  // init our control variables to start from first combination
+  // Init our control variables to start from first combination
   mIdx.clear();
   mOneMoreLoop.clear();
   for(int i = 0; i < mConst.size(); ++i)
@@ -193,9 +192,8 @@ bool BackTester::backtest()
       return false;
     }
 
-
     //
-    // run the simulation for each Fi in the group used by rule file
+    // Run the simulation for each Fi in the group used by rule file
     int fiCount = mTrader->prepare(mFromDate, mToDate);
 
     if(fiCount == -1)
@@ -208,9 +206,9 @@ bool BackTester::backtest()
 
     mMutex.unlock();
 
-     //int totalLoopsNeeded = mLoopsNeeded * fiCount;
+    //int totalLoopsNeeded = mLoopsNeeded * fiCount;
 
-    // here is the beef
+    // Here is the beef
     while(int ret = mTrader->simulateNext())
     {
       ++loop;
@@ -218,7 +216,7 @@ bool BackTester::backtest()
       {
         addErrorText(mTrader->errorText());
         emit loopDone(loop);
-        continue; // any problem while simulation, but go ahead
+        continue; // Any problem while simulation, but go ahead
       }
 
       QList<QStringList> report;
@@ -229,7 +227,7 @@ bool BackTester::backtest()
 
     emit strategyDone();
 
-    // move the pointers
+    // Move the pointers
     for(int i = 0; i < mConst.size(); ++i)
     {
       ++mIdx[i];
@@ -253,7 +251,6 @@ bool BackTester::backtest()
   return true;
 }
 
-
 bool BackTester::detectConstants()
 {
   mMutex.lock();
@@ -263,13 +260,13 @@ bool BackTester::detectConstants()
   clearErrors();
 
   //
-  // detect the changing constants
+  // Detect the changing constants
 
   mConst.clear();
   mCPos.clear();
   mCType.clear();
 
-  // we start with the rule file
+  // We start with the rule file
   int pos = 0;
   while ((pos = mEditedMatcher.indexIn(mOrigRule, pos)) != -1)
   {
@@ -284,7 +281,7 @@ bool BackTester::detectConstants()
     mCType.append(eRule);
   }
 
-  // all again for the indicator file
+  // All again for the indicator file
   pos = 0;
   while ((pos = mEditedMatcher.indexIn(mOrigIndicator, pos)) != -1)
   {
@@ -295,7 +292,7 @@ bool BackTester::detectConstants()
     mConst.append(cl);
     mCType.append(eIndicator);
   }
- qDebug() << "BackTester::detectConstants: constants to change" << mConst;
+  qDebug() << "BackTester::detectConstants: constants to change" << mConst;
 
   mLoopsNeeded = 1;
   for(int i = 0; i < mConst.size(); ++i)
@@ -386,21 +383,21 @@ void BackTester::buildConstants(const QString& constExp, QStringList& constList)
 
 void BackTester::buildFiles()
 {
-  // create the rule und indicator files with a new combination
+  // Create the rule und indicator files with a new combination
   // of constant setting
 
-  // take a fresh copy of the prepared files
+  // Take a fresh copy of the prepared files
   QString rule = mOrigRule;
   QString indi = mOrigIndicator;
 
-  // because by the replacements the positions of the constants
+  // Because by the replacements the positions of the constants
   // are moving, we have have to pay attention of these
   int adjustRule = 0;
   int adjustIndi = 0;
 
   for(int i = 0; i < mConst.size(); ++i)
   {
-    // replace in the files the constants
+    // Replace in the files the constants
     if(mCType.at(i) == eRule)
     {
       int pos = mEditedMatcher.indexIn(rule, mCPos.at(i) - adjustRule);
@@ -447,17 +444,17 @@ void BackTester::buildStrategyId()
   //qDebug() << "BackTester::buildStrategyId() " << mStrategyId;
 }
 
-void BackTester::buildReport(QList<QStringList> &report)
+void BackTester::buildReport(QList<QStringList>& report)
 {
   int i = 0;
-  // fast forward to the score board, skip the order part
+  // Fast forward to the score board, skip the order part
   for(; i < report.size(); ++i)
   {
     if(report.at(i).at(0) == ("[Score]")) break;
   }
-  ++i; // skip the "[Score]" line
+  ++i; // Skip the "[Score]" line
 
-  // fetch the points who are interesting
+  // Fetch the points who are interesting
   int fiId, marketId;
   double score, pWL, pLL, pAGL, pALL, pTP;
   for(; i < report.size(); ++i)
@@ -473,6 +470,6 @@ void BackTester::buildReport(QList<QStringList> &report)
     //if(report.at(i).at(2) == (""))  = report.at(i).at(1).toDouble();
   }
 
-  // write to the DB
+  // Write to the DB
   mFilu->addTradingResult(mTsId, fiId, marketId, pWL, pLL, pAGL, pALL, pTP, score);
 }

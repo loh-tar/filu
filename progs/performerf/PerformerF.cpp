@@ -41,7 +41,7 @@ PerformerF::PerformerF()
   QAction*      act;
 
   //
-  // Create the main tool bar
+  // Create the Main Tool Bar
   tb = new FToolBar("Main Tool Bar", this);
   addToolBar(tb);
   tb->setObjectName("MainToolBar");
@@ -49,12 +49,12 @@ PerformerF::PerformerF()
   tb->setIconSize(QSize(10, 10));
 
   //
-  // Create the beef-widget withn all action-connections
-  mIndiGroup = new IndiWidgetGroup((FWidget*)this);
+  // Create the Beef-Widget withn all action-connections
+  mIndiGroup = new IndiWidgetGroup(this);
   setCentralWidget(mIndiGroup);
 
   //
-  // Create the FI search dock
+  // Create the FI Search Dock
   SearchFiWidget* searchFi = new SearchFiWidget(this);
   connect(searchFi, SIGNAL(selected(const QString &, const QString &))
         , this, SLOT(showWindowTitle(const QString &, const QString &)));
@@ -75,8 +75,8 @@ PerformerF::PerformerF()
   addDockWidget(Qt::LeftDockWidgetArea, dw);
 
   //
-  // Create the FI group dock
-  mGroupNavi = new FiGroupWidget((FWidget*)this);
+  // Create the FI Group Dock
+  mGroupNavi = new FiGroupWidget(this);
   connect(mGroupNavi, SIGNAL(selected(const QString &, const QString &))
         , this, SLOT(showWindowTitle(const QString &, const QString &)));
   connect(mGroupNavi, SIGNAL(selected(int, int))
@@ -96,8 +96,8 @@ PerformerF::PerformerF()
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
   //
-  // Create the FI group dock 2
-  mGroupNavi2 = new FiGroupWidget((FWidget*)this);
+  // Create the FI Group Dock 2
+  mGroupNavi2 = new FiGroupWidget(this);
   connect(mGroupNavi2, SIGNAL(selected(const QString &, const QString &))
         , this, SLOT(showWindowTitle(const QString &, const QString &)));
   connect(mGroupNavi2, SIGNAL(selected(int, int))
@@ -116,8 +116,8 @@ PerformerF::PerformerF()
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
   //
-  // Create the ZoomOut dock
-  mZoomOutWidget = new IndiWidgetSimple("ZoomOutWidget", (FWidget*)this);
+  // Create the ZoomOut Dock
+  mZoomOutWidget = new IndiWidgetSimple("ZoomOutWidget", this);
   dw = new QDockWidget(tr("Zoom Out View"), this);
   dw->setObjectName("ZoomOutView");
   dw->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -169,7 +169,7 @@ PerformerF::PerformerF()
   act = new QAction(actGrp);
   act->setIconText("X");
   act->setObjectName("Act" + act->text());
-  act->setData(""); // set to "no type"
+  act->setData(""); // Set to "no type"
   act->setCheckable(true);
   act->setChecked(true);
   foreach(QString type, coTypes)
@@ -217,7 +217,7 @@ PerformerF::PerformerF()
   isp->setCurrentSetup(indiSet);
 
 //   FIXME: Doesn't work, see doc/todo.txt
-//   // Set a short cut to bring up the toolbars/dock widget menue
+//   // Set a short cut to bring up the toolbars/dock widget menu
 //   // which appears by right click on a toolbar/docwidget
 //   act = createPopupMenu()->menuAction();
 //   act->setShortcut(QKeySequence(QKeySequence::HelpContents));

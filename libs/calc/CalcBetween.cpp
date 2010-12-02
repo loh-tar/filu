@@ -19,7 +19,8 @@
 
 #include "CalcBetween.h"
 
-CalcBetween::CalcBetween(Indicator* parent) : CalcType(parent)
+CalcBetween::CalcBetween(Indicator* parent)
+           : CalcType(parent)
 {
   mType = "Between";
 }
@@ -56,7 +57,7 @@ bool CalcBetween::calc()
 
   getIndicatorVariables();
 
-  // check if all operant variables exist. This should every time happens.
+  // Check if all operant variables exist. This should every time happens.
   // But in case of an operand is a constant, we have probably to add
   // a new variable, but not if the same konstant exist already
 
@@ -81,7 +82,7 @@ bool CalcBetween::calc()
     }
   }
 
-  // create our output variable
+  // Create our output variable
   addToDataSet(mOuts.at(0));
 
   int outBegIdx = 0;
@@ -94,10 +95,9 @@ bool CalcBetween::calc()
   }
 
   mData->setValidRange(mOuts.at(0), firstValid + 1, mData->dataTupleSize() - firstValid);
-
   mData->setRange(firstValid, mData->dataTupleSize());
 
-  // prepare for battle...
+  // Prepare for battle...
   double lowBorder, highBorder, value, result;
 
   //...and rock 'n' roll...
@@ -120,8 +120,6 @@ bool CalcBetween::calc()
     mData->setValue(mOuts.at(0), result);
   }
 
-
   mData->setRange();
   return true;
 }
-

@@ -72,9 +72,9 @@ bool CalcFilu::prepare(CalcParms& parms)
   checkOutputCount(mOutputCount);
 
   // Get input parameters
-  int idx = 1;       // index pointer to mIns, looks like: "CCP", "FI", "(", ")", "foo"
-  QStringList ins;   // collect cleaned mIns
-  ins << mIns.at(0); // save the function name
+  int idx = 1;       // Index pointer to mIns, looks like: "CCP", "FI", "(", ")", "foo"
+  QStringList ins;   // Collect cleaned mIns
+  ins << mIns.at(0); // Save the function name
   mInput.clear();
   for(int i = 1; ; ++i)
   {
@@ -88,7 +88,7 @@ bool CalcFilu::prepare(CalcParms& parms)
       addErrorText("CalcFilu::prepare: Too less input parameters.");
       return false;
     }
-    // veryfy if the call is correct filled
+    // Veryfy if the call is correct filled
     if(in.startsWith("FiRef"))
     {
       if(!(mIns.at(idx) == "FI"))
@@ -146,15 +146,15 @@ bool CalcFilu::calc()
   clearErrors();
   getIndicatorVariables();
 
-  // create our output variables
+  // Create our output variables
   for(int i = 0; i < mOuts.size(); ++i)
   {
-      addToDataSet(mOuts.at(i));
+    addToDataSet(mOuts.at(i));
   }
 
   // Set all input parameter
-  int j = 0; // count FiRefs
-  int k = 1; // count all other input variables
+  int j = 0; // Count FiRefs
+  int k = 1; // Count all other input variables
   for(int i = 0; i < mInput.size(); ++i)
   {
     if(mInput.at(i).startsWith("FiRef"))
@@ -205,7 +205,7 @@ bool CalcFilu::calc()
     return false;
   }
 
-  // check if indicator returns an error
+  // Check if indicator returns an error
   query->next();
   if(query->value(0).toDate() == QDate(1000,1,1))
   {

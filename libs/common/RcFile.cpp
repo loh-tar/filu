@@ -22,7 +22,7 @@
 RcFile::RcFile() : QSettings("Filu")
                  , mConsole(stdout)
 {
-  // global stuff
+  // Global stuff
   mDefault.insert("InstallPath",       "/usr/local/lib/Filu/");
   mDefault.insert("ProviderPath",      "provider/");
   mDefault.insert("FiluHome",          "Filu/");
@@ -43,18 +43,18 @@ RcFile::RcFile() : QSettings("Filu")
   mDefault.insert("DaysToFetchIfNoData",    365);
   mDefault.insert("SqlDebugLevel",      1);
 
-  // agent stuff
+  // Agent stuff
   mDefault.insert("MaxClones",         5);
   mDefault.insert("LogFile",           "~/agentf.log");
   mDefault.insert("DebugLevel",        0);
 
-  // performer stuff
+  // Performer stuff
   mDefault.insert("PerformerSize",     QSize(832,512));
   mDefault.insert("PerformerPosition", "");
   mDefault.insert("PerformerState",    "");
   mDefault.insert("PerformerIndiSet",  "Default");
 
-  // inspetor stuff
+  // Inspetor stuff
   mDefault.insert("InspectorSize",     QSize(832,512));
   mDefault.insert("InspectorPosition", "");
   mDefault.insert("InspectorState",    "");
@@ -141,15 +141,15 @@ double RcFile::getDB(const QString& key)
 
 /***********************************************************************
 *
-*                             protected stuff
+*                             Protected  Stuff
 *
 ************************************************************************/
 void RcFile::checkFiluHome()
 {
   QString filuHome = getST("FiluHome");
 
-  // in case of first run is filuHome = ".Filu/"
-  // in case of any run is filuHome = "/home/steve/.Filu/"
+  // In case of first run is filuHome = ".Filu/"
+  // In case of any run is filuHome = "/home/steve/.Filu/"
   if(!filuHome.startsWith('/') or !QDir().exists(filuHome))
   {
     mConsole << "RcFile::checkFiluHome() ..." << endl;
@@ -158,21 +158,21 @@ void RcFile::checkFiluHome()
     if(!filuHome.startsWith('/')) // ".Filu/" ?
     {
       dir = QDir::homePath();
-      dir.append("/" + filuHome); // now: "/home/steve/.Filu/"
+      dir.append("/" + filuHome); // Now: "/home/steve/.Filu/"
     }
     else
     {
-      // an other filuHome was given in config file
+      // An other filuHome was given in config file
       dir = filuHome;
     }
 
     if(!createDir(dir)) return;
 
-    set("FiluHome", dir); // write to config file
+    set("FiluHome", dir); // Write to config file
 
     FTool::copyDir(getST("InstallPath") + "userfiles/", dir);
 
-    // write all relevant keys to the (still empty) config file
+    // Write all relevant keys to the (still empty) config file
     setValue("InstallPath", getST("InstallPath"));
 
     setFullPath("InstallPath", "ProviderPath");

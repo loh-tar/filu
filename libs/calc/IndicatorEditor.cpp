@@ -19,7 +19,7 @@
 
 #include "IndicatorEditor.h"
 
-IndicatorEditor::IndicatorEditor(FWidget* parent)
+IndicatorEditor::IndicatorEditor(FClass* parent)
                 : FWidget(parent)
 {
   mButton = new QToolButton;
@@ -64,7 +64,7 @@ void IndicatorEditor::includeText(const QString& txt)
 
 /***********************************************************************
 *
-*                           private stuff
+*                           Private  Stuff
 *
 ************************************************************************/
 void IndicatorEditor::loadFile()
@@ -80,7 +80,7 @@ void IndicatorEditor::loadFile()
     return;
   }
 
-  // read the indicator
+  // Read the indicator
   QStringList indicator;
   QTextStream in(&file);
   while (!in.atEnd())
@@ -152,7 +152,7 @@ void IndicatorEditor::editorLostFocus()
   mEditor->setTextCursor(cur);
 }
 
-// code found at qtforum.de, thanks guys
+// Code found at qtforum.de, thanks guys
 bool IndicatorEditor::eventFilter(QObject* pFilterObj, QEvent* pEvent)
 {
   if((pFilterObj == mEditor) && (pEvent->type() == QEvent::FocusOut))

@@ -39,7 +39,7 @@ class CalcFilu : public CalcType
     virtual int   barsNeeded(DataTupleSet* data);
 
   protected:
-    QStringList   mInput;          // holds the input variable names used by the function
+    QStringList   mInput;          // Holds the input variable names used by the function
     QStringList   mFiRefAlias;
     int           mOutputCount;
     QStringList   mIndiErrorText;

@@ -47,12 +47,12 @@ bool PlotCandle::prepare(QStringList& command, QStringList& plotDataKeys)
   QString help = mCommand.at(1);
   help.remove(QRegExp("^FI\\(.*"));
   if(help.isEmpty()) replaceFI();
-  // now it looks like the 2nd one
+  // Now it looks like the 2nd one
 
   plotDataKeys.append(mCommand.at(2));  // HIGH
   plotDataKeys.append(mCommand.at(3));  // LOW
 
-  // add CLOSE here only that we can set mMouseYValue
+  // Add CLOSE here only that we can set mMouseYValue
   // in IndicatorPainter::useData(...)
   plotDataKeys.append(mCommand.at(4));
 
@@ -74,10 +74,10 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
   QPoint topLeft, bottomRight;
   double open, high, low, close, volume, previousClose;
   QColor openC, highC, lowC, closeC, /*volumeC,*/ bodyColor, lineColor;
-  int cdlWidth; // candle width
+  int cdlWidth; // Candle width
 
   data->rewind();
-  // take the first close to check if the first painted candle
+  // Take the first close to check if the first painted candle
   // is a win-candle
   int i = -1;
   while(data->next())
@@ -87,7 +87,7 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
     break;
   }
 
-  // find out how width we should paint a candle
+  // Find out how width we should paint a candle
   cdlWidth = scaler->intDensity() / 2;
 
   while(data->next())
@@ -108,7 +108,7 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
 
     if(!data->getValue(mCommand.at(4), close)) continue;
     if(!data->getColor(mCommand.at(4), closeC))
-      closeC = QColor(); // set to an invalid color!
+      closeC = QColor(); // Set to an invalid color!
 
     if(!data->getValue(mCommand.at(5), volume)) continue;
 //    if(!data->getColor(mCommand.at(5), volumeC))
@@ -116,7 +116,7 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
 
     if(!closeC.isValid())
     {
-      // normal mode
+      // Normal mode
       if(close < previousClose) lineColor = lowC;
       else lineColor = highC;
 
@@ -125,7 +125,7 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
     }
     else
     {
-      // special mode
+      // Special mode
       if(close < previousClose) lineColor = lowC;
       else lineColor = highC;
 
@@ -160,13 +160,13 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
 
 void PlotCandle::replaceFI()
 {
-  // we replace FI(<foo>) with foo.OPEN, foo.HIGH...
+  // We replace FI(<foo>) with foo.OPEN, foo.HIGH...
   QString fi = mCommand.at(1);
   fi.remove("FI(");
   fi.remove(")");
   if(!fi.isEmpty()) fi.append(".");
 
-  mCommand.removeAt(1);  // the old FI(foo)
+  mCommand.removeAt(1);  // The old FI(foo)
   mCommand.insert(1, fi + "OPEN");
   mCommand.insert(2, fi + "HIGH");
   mCommand.insert(3, fi + "LOW");

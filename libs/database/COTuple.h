@@ -39,10 +39,10 @@ class COTuple : public Tuple
     void      setId(int);
     void      setFiId(int);
     void      setMarketId(int);
-    void      setViewName(const QString &);
-    void      setAnchorDate(const QDate &);
-    void      setType(const QString &);
-    void      setAttributes(const QString &);
+    void      setViewName(const QString&);
+    void      setAnchorDate(const QDate&);
+    void      setType(const QString&);
+    void      setAttributes(const QString&);
 
     friend class FiluU;
 

@@ -90,7 +90,7 @@ void IndicatorWidget::splitterMoved()
   emit newSize(&size);
 }
 
-void IndicatorWidget::setSize(QList<int> &size)
+void IndicatorWidget::setSize(QList<int>& size)
 {
   mSplitter->setSizes(size);
 }

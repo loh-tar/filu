@@ -20,9 +20,9 @@
 #include "IndicatorPicker.h"
 #include "FWidget.h"
 
-IndicatorPicker::IndicatorPicker(FWidget* parent)
-               : QTreeWidget((QWidget*)parent)
-               , FClass((FClass*)parent)
+IndicatorPicker::IndicatorPicker(FClass* parent)
+               : QTreeWidget(0)
+               , FClass(parent)
 {
   setColumnCount(1);
   readSettings();
@@ -70,7 +70,7 @@ void IndicatorPicker::raiseTree()
       continue;
     }
 
-    // read the indicator
+    // Read the indicator
     QTextStream in(&file);
     while (!in.atEnd())
     {

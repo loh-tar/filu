@@ -42,11 +42,11 @@ class SymbolTuple : public Tuple
 
     void        setFiId(const int id);
     void        setMarketId(const int id);
-    void        setCaption(const QString &);
-    void        setMarket(const QString &);
-    void        setOwner(const QString &);
+    void        setCaption(const QString&);
+    void        setMarket(const QString&);
+    void        setOwner(const QString&);
 
-    // holds the beef
+    // Holds the beef
 //    int* SymbolId;
 //    int* StypeId;
     int*        FiId;

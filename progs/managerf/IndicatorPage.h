@@ -31,16 +31,15 @@ class IndicatorPage : public ManagerPage
   Q_OBJECT
 
   public:
-                IndicatorPage(ManagerF* parent);
-                IndicatorPage(FWidget* parent);
+                IndicatorPage(FClass* parent);
     virtual    ~IndicatorPage();
 
   protected slots:
-    void        addToIndicator(const QString *);
+    void        addToIndicator(const QString*);
 
   protected:
     void        createPage();
-   // void showEvent(QShowEvent * /*event*/);
+   // void showEvent(QShowEvent* /*event*/);
 
     IndicatorEditor*   mEditor;
     IndicatorSelector* mIndiSelector;

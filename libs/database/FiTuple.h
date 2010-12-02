@@ -50,7 +50,7 @@ class FiTuple : public Tuple
     friend class  FiTableModel;
 
   private:
-    // holds the beef
+    // Holds the beef
     int*          Id;
     int*          TypeId;
     QString*      Type;

@@ -36,8 +36,8 @@ class IndiWidgetGroup : public FWidget
   Q_OBJECT
 
   public:
-                  IndiWidgetGroup(FWidget* parent);
-                  IndiWidgetGroup(const QString& name, FWidget* parent);
+                  IndiWidgetGroup(FClass* parent);
+                  IndiWidgetGroup(const QString& name, FClass* parent);
     virtual      ~IndiWidgetGroup();
 
     const QString&  indiSetName() { return mSetName; } ;
@@ -47,8 +47,8 @@ class IndiWidgetGroup : public FWidget
     void          removeWindow();
     void          loadSetup(const QString& setup);
     void          showBarData(BarTuple* bars);
-    void          childSplitterMoved(QList<int> *size);
-    void          mouseSlot(MyMouseEvent *);
+    void          childSplitterMoved(QList<int>* size);
+    void          mouseSlot(MyMouseEvent*);
     void          chartObjectChosen(QAction* action);
     void          changeWindowCount(QAction* action);
 

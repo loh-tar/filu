@@ -62,10 +62,10 @@ bool PlotHistogramBar::paint(QPaintDevice* sheet, QRect& chartArea,
   QColor color;
   int barWidth;
 
-  // find out how width we should paint a bar
+  // Find out how width we should paint a bar
   barWidth = scaler->intDensity() / 2;
 
-  // check if the zero-line is visible
+  // Check if the zero-line is visible
   scaler->getHighLow(maxHigh, minLow);
   scaler->valueToPixel(1, 0.0, bottomRight);
   if(minLow  > 0) scaler->valueToPixel(1, minLow, bottomRight);
@@ -74,7 +74,7 @@ bool PlotHistogramBar::paint(QPaintDevice* sheet, QRect& chartArea,
 
   int i = -1;
   data->rewind();
-  // paint the chart
+  // Paint the chart
   while(data->next())
   {
     ++i;

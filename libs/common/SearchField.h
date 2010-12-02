@@ -24,7 +24,7 @@
 
 /***********************************************************************
 *
-* Yes, it's a search field, used at several places
+*   Yes, it's a search field, used at several places
 *
 ************************************************************************/
 
@@ -41,7 +41,7 @@ class SearchField : public QWidget
 
     signals:
     void          textChanged();
-    void          newtext(const QString &);
+    void          newtext(const QString&);
     void          returnPressed();
 
   public slots:

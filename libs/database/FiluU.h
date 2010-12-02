@@ -43,7 +43,7 @@ class FiluU : public Filu
     void        putGroup(int groupId, const QString& name, int motherId);
 
     COTuple*    getCOs();
-    bool        putCOs(COTuple &);
+    bool        putCOs(COTuple&);
 
     void        putBacktest(int& backtestId, const QDate& fromDate, const QDate& toDate
                           , double gain, const QString rule, const QString indicator
@@ -52,7 +52,7 @@ class FiluU : public Filu
     QSqlQuery*  getBacktest();
 
     void        putBTLog(int backtestId, int fiId, int marketId, const QDate& date
-                        , const QString& event, int amount, double money);
+                       , const QString& event, int amount, double money);
 
     QSqlQuery*  getBTLog(int backtestId, int fiId, int marketId);
 

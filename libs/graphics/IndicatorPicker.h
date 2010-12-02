@@ -28,7 +28,7 @@ class FWidget;
 
 /***********************************************************************
 *
-* This class
+*   This class
 *
 ************************************************************************/
 
@@ -37,14 +37,14 @@ class IndicatorPicker : public QTreeWidget, public FClass
   Q_OBJECT
 
   public:
-                  IndicatorPicker(FWidget* parent);
+                  IndicatorPicker(FClass* parent);
     virtual      ~IndicatorPicker();
 
     signals:
       void        changed(QString);
 
   protected slots:
-    void          clicked(QTreeWidgetItem * item, int);
+    void          clicked(QTreeWidgetItem* item, int);
 
   protected:
     void          readSettings();

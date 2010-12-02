@@ -30,8 +30,7 @@ class AddFiPage : public ManagerPage
   Q_OBJECT
 
   public:
-                  AddFiPage(ManagerF* parent);
-                  AddFiPage(FWidget* parent);
+                  AddFiPage(FClass* parent);
     virtual      ~AddFiPage();
 
     void          loadSettings();
@@ -48,7 +47,7 @@ class AddFiPage : public ManagerPage
 
   protected:
     void          createPage();
-    void          showEvent(QShowEvent * /*event*/);
+    void          showEvent(QShowEvent* /*event*/);
 
 
     void          searchFi();

@@ -50,14 +50,14 @@ void TALib::getFunctionInfo(const QString& function, FunctionInfo& info)
   retCode = TA_GetFuncHandle(function.toAscii(), &handle);
   if(!retCode == TA_SUCCESS )
   {
-    // error
+    // Error
     return;
   }
 
   retCode = TA_GetFuncInfo( handle, &theInfo );
   if(!retCode == TA_SUCCESS )
   {
-    // error
+    // Error
     return;
   }
 
@@ -70,7 +70,7 @@ void TALib::getFunctionInfo(const QString& function, FunctionInfo& info)
   info.insert("nbOutput", theInfo->nbOutput);
   info.insert("Flags", theInfo->flags);
 
-  // get all input parameters
+  // Get all input parameters
   QString key;
   QStringList inputParms;
   unsigned int i;
@@ -137,7 +137,7 @@ void TALib::getFunctionInfo(const QString& function, FunctionInfo& info)
   }
   info.insert("Input", inputParms.join(", "));
 
-  // get all optional input parameters
+  // Get all optional input parameters
   QStringList optInputParms;
   QString def; // def=default
   const TA_OptInputParameterInfo* optParmInfo;
@@ -166,7 +166,7 @@ void TALib::getFunctionInfo(const QString& function, FunctionInfo& info)
   if(optInputParms.size() > 0)
     info.insert("OptInput", optInputParms.join(", "));
 
-  // get all output names
+  // Get all output names
   const TA_OutputParameterInfo* outInfo;
   for( i=0; i < theInfo->nbOutput; i++ )
   {
@@ -218,7 +218,7 @@ bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
   // inclCmd looks like "INCLTALIB(<func>, <parm1>[,...<parmN>])"
   QStringList parms = inclCmd.split(",");
   parms[0] = parms[0].remove("INCLTALIB(");
-  parms[parms.size() - 1].chop(1); // remove last brace
+  parms[parms.size() - 1].chop(1); // Remove last brace
 
   if(!mFunctionNames.contains(parms.at(0)))
   {
@@ -229,16 +229,16 @@ bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
   FunctionInfo info;
   getFunctionInfo(parms.at(0), info);
 
-  // build the output variables
-  QStringList hl;  // help list, filled with output variables
-  QString hs;      // help string
+  // Build the output variables
+  QStringList hl;  // Help list, filled with output variables
+  QString hs;      // Help string
   int n = info.value("nbOutput").toInt();
   for(int i = 0; i < n; ++i)
   {
     hl.append(info.value("OutName" + QString::number(i + 1)).toString());
   }
 
-  // build plot commands
+  // Build plot commands
   for(int i = 0; i < n; ++i)
   {
     QString pt = info.value("PlotType" + QString::number(i + 1)).toString();
@@ -247,7 +247,7 @@ bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
     else indicator.append(hs);
   }
 
-  // build set color commands
+  // Build set color commands
   QString color[] = {"red", "green", "yellow", "blue", "white"};
   for(int i = 0; i < n; ++i)
   {
@@ -255,7 +255,7 @@ bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
     indicator.prepend(hs);
   }
 
-  // build the function call
+  // Build the function call
   hs = hl.join(", ");
   hs.append(" = TALIB(");
   hs.append(parms.join(", ") + ")");
@@ -266,13 +266,13 @@ bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
 
 /***********************************************************************
 *
-*                              private stuff
+*                              Private  Stuff
 *
 ************************************************************************/
 
 void TALib::getFunctionUsage(FunctionInfo& info)
 {
-  // build all INCLTALIB(...) possibilities
+  // Build all INCLTALIB(...) possibilities
   if(info.value("InputType1") == "EODBAR")
   {
     info.insert("Include1","INCLTALIB("
@@ -305,7 +305,7 @@ void TALib::getFunctionUsage(FunctionInfo& info)
     }
   }
 
-  // build all <foo> = TALIB(...) possibilities
+  // Build all <foo> = TALIB(...) possibilities
   QStringList list;
   for(int i = 0; i < info.value("nbOutput").toInt(); ++i)
   {
@@ -358,11 +358,11 @@ void  TALib::readSettings()
 
 void  TALib::init()
 {
-  // the goal: get all available function names
+  // The goal: Get all available function names
 
   mFunctionNames.clear();
 
-  // to got they we have to get all groups previous
+  // To got they we have to get all groups previous
   TA_StringTable* table;
   TA_RetCode retCode;
 
@@ -373,7 +373,7 @@ void  TALib::init()
     unsigned int i;
     for(i = 0; i < table->size; ++i)
     {
-      // and now get each function name in the group
+      // And now get each function name in the group
       TA_StringTable* table2;
       retCode = TA_FuncTableAlloc(table->string[i], &table2);
 

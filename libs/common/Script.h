@@ -30,7 +30,6 @@ class Script : public FObject
 
   public:
                   Script(FClass* parent);
-                  //Script(FObject* parent);
     virtual      ~Script();
 
     QStringList*  execute(const QString& script, const QStringList& parameters);
@@ -41,10 +40,10 @@ class Script : public FObject
 
     void          showWaitWindow(bool yes = true);
     void          stopRunning();
-    void          getErrorMessage(QStringList &);
+    void          getErrorMessage(QStringList&);
 
     signals:
-    void          newData(QStringList *);
+    void          newData(QStringList*);
     void          finished();
 
   protected slots:

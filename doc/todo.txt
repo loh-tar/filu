@@ -163,3 +163,7 @@ H: add [Include]
 M: add [Skip], follow data will ignored until [UnSkip] or [Piks] ?
 M: add [Ignore]foo=bar, will ignore all data where key 'foo' has value 'bar'
 
+FooTuple
+==========
+M: move QTableView parts in own files
+M: review, there is eg. mID in many classes but is not part of base class

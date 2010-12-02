@@ -79,32 +79,32 @@ class IndicatorPainter : public FWidget
 
     Indicator*       mIndicator;
 
-    QList<PlotType*> mPlotCommands;      // rehashed plot statements, now objects
-    PlotType*        mPlotType;          // base type to create special types
-    QStringList      mPlotDataKeys;      // holds all names of plotted variables
+    QList<PlotType*> mPlotCommands;      // Rehashed plot statements, now objects
+    PlotType*        mPlotType;          // Base type to create special types
+    QStringList      mPlotDataKeys;      // Holds all names of plotted variables
     QString          mPrimaryValue;
     bool             mPrepareError;
 
-    QSet<COType*>    mCObjects;          // holds all chart objects
-    COType*          mCOInProcess;       // user is editing this
+    QSet<COType*>    mCObjects;          // Holds all chart objects
+    COType*          mCOInProcess;       // User is editing this
 
-    BarTuple*        mBars;              // never delete them
-    DataTupleSet*    mData;              // by the indicator calculated data
+    BarTuple*        mBars;              // Never delete them
+    DataTupleSet*    mData;              // By the indicator calculated data
 
-    QPaintDevice*    mSheet;             // where we will paint the result on
-    QPixmap*         mStaticSheet;       // for paint chart an scale
-    QPixmap*         mVolatileSheet;     // for paint the cursor etc
+    QPaintDevice*    mSheet;             // Where we will paint the result on
+    QPixmap*         mStaticSheet;       // For paint chart an scale
+    QPixmap*         mVolatileSheet;     // For paint the cursor etc
     bool             mUpdateStaticSheet;
-    QRect            mChartArea;         // available for the chart itself (-scale area)
+    QRect            mChartArea;         // Available for the chart itself (-scale area)
     Scaler*          mScaler;
-    float            mDensity;           // like qtstalkers "pixelspace"
-    int              mPlace4Bars;        // how many bars can be displayed
-    int              mFirstBarToShow;    // index number
-    int              mMouseXPos;         // holds an index number, not pixel
-    double           mMouseYValue;       // the value related to the mouse y position
-    QDate            mMouseDate;         // yes, the date related the mouse x position
+    float            mDensity;           // Like qtstalkers "pixelspace"
+    int              mPlace4Bars;        // How many bars can be displayed
+    int              mFirstBarToShow;    // Index number
+    int              mMouseXPos;         // Holds an index number, not pixel
+    double           mMouseYValue;       // The value related to the mouse y position
+    QDate            mMouseDate;         // Yes, the date related the mouse x position
 
-    XScaleTicker*    mXSTicker;          // calculate scale ticks and captions
+    XScaleTicker*    mXSTicker;          // Calculate scale ticks and captions
     bool             mShowXScale;
     bool             mShowYScale;
     int              mScaleToScreen;     // 0 == No, > 0 yes, minRange in %

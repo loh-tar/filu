@@ -39,20 +39,19 @@ class MyParser
 
     bool        setExp(const QString& expr);
     QString     getExp();
-    void        useVariables(QHash<const QString, double> *variables);
+    void        useVariables(QHash<const QString, double>* variables);
     void        useData(DataTupleSet* data);
-    void        appendUsedVariables(QSet<QString> &variables);
+    void        appendUsedVariables(QSet<QString>& variables);
     int         calc(double& result);
     const QStringList& errorText() const { return mErrorMessage; };
 
   protected:
-    QHash<const QString, double> *mVariables;
+    QHash<const QString, double>* mVariables;
 
     bool            mMyVariables;
     DataTupleSet*   mData;
-    QSet<QString>  *mUsedMData; // holds name of variables to be read from mData
+    QSet<QString>*  mUsedMData; // Holds name of variables to be read from mData
     mu::Parser      mParser;
     QStringList     mErrorMessage;
 };
 #endif
-

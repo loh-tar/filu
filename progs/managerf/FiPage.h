@@ -30,14 +30,13 @@ class FiPage : public ManagerPage
   Q_OBJECT
 
   public:
-                     FiPage(ManagerF* parent);
-                     FiPage(FWidget* parent);
+                     FiPage(FClass* parent);
     virtual         ~FiPage();
 
   protected:
     SearchField*     mLook4Edit;
     void             createPage();
-    void             showEvent(QShowEvent * /*event*/);
+    void             showEvent(QShowEvent* /*event*/);
 
     SymbolTuple*     mSymbols;
     SymbolTableView* mSymbolView;
@@ -48,8 +47,8 @@ class FiPage : public ManagerPage
 
   protected slots:
     void            search();
-    void            fiClicked(const QModelIndex &);
-    void            symbolClicked(const QModelIndex &);
+    void            fiClicked(const QModelIndex&);
+    void            symbolClicked(const QModelIndex&);
 };
 
 #endif

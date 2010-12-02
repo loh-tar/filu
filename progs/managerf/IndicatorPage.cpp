@@ -17,18 +17,12 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtGui>
-
 #include "IndicatorPage.h"
 #include "IndicatorEditor.h"
 #include "IndicatorSelector.h"
 
-IndicatorPage::IndicatorPage(ManagerF* parent) : ManagerPage(parent)
-{
-  createPage();
-}
-
-IndicatorPage::IndicatorPage(FWidget* parent) : ManagerPage(parent)
+IndicatorPage::IndicatorPage(FClass* parent)
+             : ManagerPage(parent)
 {
   createPage();
 }
@@ -43,7 +37,7 @@ void IndicatorPage::createPage()
 
   QGroupBox* pageGroup = new QGroupBox(tr("Indicators"));
 
-  mEditor = new IndicatorEditor((FWidget*)this);
+  mEditor = new IndicatorEditor(this);
 
   mIndiSelector = new IndicatorSelector;
   connect(mIndiSelector, SIGNAL(addText(const QString *))

@@ -61,14 +61,14 @@ bool PlotHistogram::paint(QPaintDevice* sheet, QRect& chartArea,
   QPoint oldPoint, newPoint;
   QColor color;
 
-  // check if the zero-line is visible
+  // Check if the zero-line is visible
   scaler->getHighLow(maxHigh, minLow);
   scaler->valueToPixel(1, 0.0, newPoint);
   if(minLow  > 0) scaler->valueToPixel(1, minLow, newPoint);
   if(maxHigh < 0) scaler->valueToPixel(1, maxHigh, newPoint);
   int zero = newPoint.y();
 
-  // find first valid value
+  // Find first valid value
   int i = 0;
   data->rewind();
   while(data->next())
@@ -78,7 +78,7 @@ bool PlotHistogram::paint(QPaintDevice* sheet, QRect& chartArea,
   }
   scaler->valueToPixel(i, value, oldPoint);
 
-  // paint the chart
+  // Paint the chart
   while(data->next())
   {
     ++i;

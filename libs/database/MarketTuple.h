@@ -35,7 +35,7 @@ class MarketTuple : public Tuple
     friend class Filu;
 
   private:
-    // holds the beef
+    // Holds the beef
     int*        Id;
     QString*    Name;
     QString*    Currency;

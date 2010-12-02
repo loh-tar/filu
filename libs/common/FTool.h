@@ -44,7 +44,7 @@ int           getParameter( const QStringList& cmdLine
                           , const QString& cmd
                           , QStringList& parm );
 
-// yes, it copy a whole dir tree
+// Yes, it copy a whole dir tree
 void          copyDir(const QString& src, const QString& dest);
 
 }

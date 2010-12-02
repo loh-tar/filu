@@ -29,9 +29,9 @@
 
 /***********************************************************************
 *
-* As the name implies hold this class a group/set of DataTuples.
-* This class is the output/result of an Indicator calculation and is used
-* by IndicatorPainter to paint something
+*   As the name implies hold this class a group/set of DataTuples.
+*   This class is the output/result of an Indicator calculation and is used
+*   by IndicatorPainter to paint something
 *
 ************************************************************************/
 
@@ -83,7 +83,7 @@ class DataTupleSet
 
     int  Index;
     int  MaxIndex;
-    int  RangeFrom;        // used for the section shown on the chart
+    int  RangeFrom;        // Used for the section shown on the chart
     int  RangeTo;
 
     BarTuple* mThisBars;

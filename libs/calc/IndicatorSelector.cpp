@@ -26,6 +26,9 @@ IndicatorSelector::IndicatorSelector(QWidget* parent) : QWidget(parent)
   createPage();
 }
 
+IndicatorSelector::~IndicatorSelector()
+{}
+
 void IndicatorSelector::createPage()
 {
   mSF = new SearchField;
@@ -44,8 +47,8 @@ void IndicatorSelector::createPage()
   QSplitter* splitt1 = new QSplitter(Qt::Vertical);
   splitt1->addWidget(mFunctionList);
   splitt1->addWidget(mInfoList);
-  splitt1->setStretchFactor(0, 1);  // the mFunctionList
-  splitt1->setStretchFactor(1, 2);  // the mInfoList
+  splitt1->setStretchFactor(0, 1);  // The mFunctionList
+  splitt1->setStretchFactor(1, 2);  // The mInfoList
 
   mAddBtn = new QPushButton;
   connect(mAddBtn, SIGNAL(clicked()), this, SLOT(addToIndicator()));
@@ -137,7 +140,7 @@ void IndicatorSelector::getFunctionInfo(QListWidgetItem* item)
   }
 
 /*
-  // testing only
+  // Testing only
   list.append("");
   FunctionInfoIterator fit(info);
   while (fit.hasNext())

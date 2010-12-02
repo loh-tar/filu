@@ -22,7 +22,7 @@
 #include "IndicatorWidget.h"
 #include "PlotSheet.h"
 
-IndiWidgetGroup::IndiWidgetGroup(FWidget* parent)
+IndiWidgetGroup::IndiWidgetGroup(FClass* parent)
                : FWidget(parent)
                , mSetName("")
                , mBars(0)
@@ -30,7 +30,7 @@ IndiWidgetGroup::IndiWidgetGroup(FWidget* parent)
   init();
 }
 
-IndiWidgetGroup::IndiWidgetGroup(const QString& name, FWidget* parent)
+IndiWidgetGroup::IndiWidgetGroup(const QString& name, FClass* parent)
                : FWidget(parent)
                , mSetName(name)
                , mBars(0)
@@ -101,7 +101,7 @@ void IndiWidgetGroup::addWindow()
 
 void IndiWidgetGroup::removeWindow()
 {
-  IndicatorWidget* indi = (IndicatorWidget*)mSplitter->widget(mSplitter->count() - 1);
+  IndicatorWidget* indi = static_cast<IndicatorWidget*>(mSplitter->widget(mSplitter->count() - 1));
   delete indi;
 }
 
@@ -135,7 +135,7 @@ void IndiWidgetGroup::showBarData(BarTuple* bars)
 
   for(int i = 0; i < mSplitter->count(); ++i)
   {
-    IndicatorWidget* indi = (IndicatorWidget*)mSplitter->widget(i);
+    IndicatorWidget* indi = static_cast<IndicatorWidget*>(mSplitter->widget(i));
     indi->showBarData(bars);
   }
 }
@@ -154,11 +154,11 @@ void IndiWidgetGroup::saveSetup()
 *
 *
 ************************************************************************/
-void IndiWidgetGroup::childSplitterMoved(QList<int> *size)
+void IndiWidgetGroup::childSplitterMoved(QList<int>* size)
 {
   for(int i = 0; i < mSplitter->count(); ++i)
   {
-    IndicatorWidget* indi = (IndicatorWidget*)mSplitter->widget(i);
+    IndicatorWidget* indi = static_cast<IndicatorWidget*>(mSplitter->widget(i));
     indi->setSize(*size);
   }
 }

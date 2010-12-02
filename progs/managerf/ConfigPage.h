@@ -20,14 +20,12 @@
 #ifndef CONFIGPAGE_H
 #define CONFIGPAGE_H
 
-
 #include "ManagerPage.h"
 
 class ConfigPage : public ManagerPage
 {
   public:
-    ConfigPage(ManagerF* parent);
-    ConfigPage(FWidget* parent);
+                ConfigPage(FClass* parent);
 
   protected:
     void        createPage();

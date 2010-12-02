@@ -24,7 +24,7 @@ DiggerF::DiggerF(QObject* parent)
 {
   mIndicator = 0;
 
-  QSqlQuery* groups = mFilu->getGroups(-1); // get all groups
+  QSqlQuery* groups = mFilu->getGroups(-1); // Get all groups
   mScannerGroupId = 0;
   while(groups->next())
   {
@@ -66,7 +66,7 @@ void DiggerF::printUsage()
 
 int DiggerF::execCmd(QStringList& parm)
 {
-  // look for each known command and call the related function
+  // Look for each known command and call the related function
   if(parm.contains("-ind"))
     if(!loadIndicator(parm)) return 1;
 
@@ -198,7 +198,7 @@ int DiggerF::scanGroup(QStringList& parm)
 
   if(parm.at(idx) == "all")
   {
-    // get all available provider symbols
+    // Get all available provider symbols
     mFilu->setMarketName("");
     mFilu->setSymbolCaption("");
     mFilu->setProviderName("");

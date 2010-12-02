@@ -27,13 +27,13 @@ class SymbolTuple;
 
 /***********************************************************************
 *
-*  Yes, he imports stuff into the DB.
-*  "Stuff" are FIs with symbols and index membership. The data is in an
-*  *.csv (semicolon as delimeter) format expected with header and some
-*  more optional tags.
+*   Yes, he imports stuff into the DB.
+*   "Stuff" are FIs with symbols and index membership. The data is in an
+*   *.csv (semicolon as delimeter) format expected with header and some
+*   more optional tags.
 *
-*  For details about the file format look at
-*  FiluSource/doc/import-file-format.txt
+*   For details about the file format look at
+*   FiluSource/doc/import-file-format.txt
 *
 ************************************************************************/
 
@@ -67,25 +67,25 @@ class Importer : public FClass
     void          addEODBar();
     void          addSplit();
 
-    // user data imports
+    // User data imports
     void          addCO();
     void          addGroup();
 
-    QString       mOrigData;           // copy of the data at import(), FIXME:unused
-    QStringList   mPendingData;        // collect data till committed
-    QHash<QString, QString> mData;     // the split mOrigData associated to the [Header]
-    QStringList   mHeader;             // must be a stringlist, we need the positions of header data
-    QSet<QString> mToDo;               // holds notes, which job is todo to avoid redundant if()
+    QString       mOrigData;           // Copy of the data at import(), FIXME:unused
+    QStringList   mPendingData;        // Collect data till committed
+    QHash<QString, QString> mData;     // The split mOrigData associated to the [Header]
+    QStringList   mHeader;             // Must be a stringlist, we need the positions of header data
+    QSet<QString> mToDo;               // Holds notes, which job is todo to avoid redundant if()
     bool          mPrepared;
 
     QString       mMustBeUnique;
-    QStringList   mAllSymbolTypes;     // all possible symbol types
+    QStringList   mAllSymbolTypes;     // All possible symbol types
     QStringList   mKnownSymbolTypes;
     QHash<QString, bool> mKnownSTisProvider; // SymbolType is...?
     int           mTotalSymbolCount;
-    QStringList   mUsedRefSymbols;     // reference symbols, don't install
-    QStringList   mUsedKnownSymbols;   // none provider symbols which has to be installed
-    int           mUsedSymbols;        // provider symbols which has to be installed
+    QStringList   mUsedRefSymbols;     // Reference symbols, don't install
+    QStringList   mUsedKnownSymbols;   // None provider symbols which has to be installed
+    int           mUsedSymbols;        // Provider symbols which has to be installed
     QStringList   mAllUsedSymbols;     // mUsedRefSymbols + mUsedKnownSymbols + mUsedSymbols
     FiTuple*      mFi;
     SymbolTuple*  mSymbol;

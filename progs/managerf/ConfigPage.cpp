@@ -17,22 +17,12 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtGui>
-
 #include "ConfigPage.h"
 
-ConfigPage::ConfigPage(ManagerF* parent) : ManagerPage(parent)
+ConfigPage::ConfigPage(FClass* parent)
+          : ManagerPage(parent)
 {
-//qDebug() << "ConfigPage::ConfigPage(FWidget* parent) : ManagerPage(parent)";
-  mIcon = QIcon(":/icons/configure.xpm");
-  //mIcon = QIcon("/usr/share/icons/crystalsvg/32x32/apps/agent.png");
-  mIconText = tr("Configuration");
-  createPage();
-}
-
-ConfigPage::ConfigPage(FWidget* parent) : ManagerPage(parent)
-{
-//qDebug() << "ConfigPage::ConfigPage(FWidget* parent) : ManagerPage(parent)";
+//qDebug() << "ConfigPage::ConfigPage(FClass* parent) : ManagerPage(parent)";
   mIcon = QIcon(":/icons/configure.xpm");
   mIconText = tr("Configuration");
   createPage();

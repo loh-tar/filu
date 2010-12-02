@@ -65,15 +65,14 @@ IndicatorPainter::IndicatorPainter(PlotSheet* parent)
 
 IndicatorPainter::~IndicatorPainter()
 {
-  // clean up mPlotCommands
+  // Clean up mPlotCommands
   for(int i = 0; i < mPlotCommands.size(); i++)
   {
     delete mPlotCommands[i];
   }
 
-  // delete old chart objects, if some
-  COType* oldCO;
-  foreach(oldCO, mCObjects)
+  // Delete old chart objects, if some
+  foreach(COType* oldCO, mCObjects)
   {
     delete oldCO;
   }
@@ -90,7 +89,7 @@ bool IndicatorPainter::useIndicatorFile(const QString& file)
 {
   clearErrors();
 
-  // only call mPlotCommands.clear() is not enough
+  // Only call mPlotCommands.clear() is not enough
   for(int i = 0; i < mPlotCommands.size(); i++)
   {
     delete mPlotCommands[i];
@@ -160,7 +159,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
 
   if(mPrimaryValue.isEmpty())
   {
-    // no PRIMARY set, create a default
+    // No PRIMARY set, create a default
     if(mPlotDataKeys.contains("CLOSE")) mPrimaryValue = "CLOSE";
     else if(mPlotDataKeys.contains("VOLUME")) mPrimaryValue = "VOLUME";
     else if(mPlotDataKeys.size() > 0) mPrimaryValue = mPlotDataKeys.at(0);
@@ -197,13 +196,13 @@ void IndicatorPainter::useData(BarTuple* bars)
 
   bool ok = calculate();
 
-  // set to last data
+  // Set to last data
   mMouseXPos = mPlace4Bars;
   mFirstBarToShow = mBars->count() - mPlace4Bars - 1;
 
   if(!ok) return;
 
-  // set mMouseYValue to the last close...or something similar
+  // Set mMouseYValue to the last close...or something similar
   mData->rewind(mBars->count() - 1);
   mData->getValue(mPrimaryValue, mMouseYValue);
   mData->getDate(mMouseDate);
@@ -211,9 +210,8 @@ void IndicatorPainter::useData(BarTuple* bars)
 
 bool IndicatorPainter::calculate()
 {
-  // delete old chart objects, if some
-  COType* oldCO;
-  foreach(oldCO, mCObjects)
+  // Delete old chart objects, if some
+  foreach(COType* oldCO, mCObjects)
   {
     delete oldCO;
   }
@@ -235,7 +233,7 @@ bool IndicatorPainter::calculate()
     return false;
   }
 
-  // load chart objects
+  // Load chart objects
   mFilu->setFiId(mBars->mFiId);
   mFilu->setMarketId(mBars->mMarketId);
   mBars->rewind(0);
@@ -284,7 +282,7 @@ void IndicatorPainter::calcSizes()
   }
 
   int lastBarShowing = mFirstBarToShow + mPlace4Bars;
-  mPlace4Bars = (int)(mChartArea.width() / mDensity);
+  mPlace4Bars = static_cast<int>(mChartArea.width() / mDensity);
   mFirstBarToShow = lastBarShowing - mPlace4Bars;
   if(mFirstBarToShow < 0) mFirstBarToShow = 0;
 
@@ -302,7 +300,7 @@ void IndicatorPainter::calcSizes()
 
   mData->setRange(mFirstBarToShow, mPlace4Bars);
 
-  // find the highest and lowest value
+  // Find the highest and lowest value
   double minLow  =  1000000000;//DBL_MAX;
   double maxHigh = -1000000000;//DBL_MIN;
   for(int i = 0; i < mPlotDataKeys.size(); ++i)
@@ -339,18 +337,18 @@ void IndicatorPainter::calcSizes()
 
 bool IndicatorPainter::densityChanged(int step)
 {
-  if(!mBars) return false; // no data, nothing to recalc
+  if(!mBars) return false; // No data, nothing to recalc
   //if(hasError()) return false;
 
   int lastBarToShow = mFirstBarToShow + mPlace4Bars;
   if(lastBarToShow > mBars->count() - 1) lastBarToShow = mBars->count() - 1;
 
-  // change the density by 10 percent
+  // Change the density by 10 percent
   if(step > 0) mDensity = mDensity * (1 + 0.1 * step);
   if(step < 0) mDensity = mDensity / (1 + 0.1 * -step);
   if(mDensity < 2 * FLT_EPSILON) mDensity = 2 * FLT_EPSILON;
 
-  mPlace4Bars = (int)(mChartArea.width() / mDensity);
+  mPlace4Bars = static_cast<int>(mChartArea.width() / mDensity);
   mFirstBarToShow = lastBarToShow - mPlace4Bars;// - 1;
 
   if(mFirstBarToShow < 0) mFirstBarToShow = 0;
@@ -367,7 +365,7 @@ bool IndicatorPainter::densityChanged(int step)
 
 bool IndicatorPainter::scrollHorizontal(int step)
 {
-  if(!mBars) return false; // no data, nothing to scroll
+  if(!mBars) return false; // No data, nothing to scroll
 
   double adjustedStep = step / mDensity;
 
@@ -391,8 +389,8 @@ bool IndicatorPainter::scrollHorizontal(int step)
 
 bool IndicatorPainter::setMousePos(const QPoint& pos)
 {
-  // set mMouseXPos
-  // returns true if mMouseXPos has changed and false if not
+  // Set mMouseXPos
+  // Returns true if mMouseXPos has changed and false if not
 
   if(!mBars) return false;
 
@@ -462,26 +460,25 @@ bool IndicatorPainter::paint()
 
     mStaticSheet->fill(mSheetColor);
 
-    // paint the scales
+    // Paint the scales
     paintXScale();
     paintYScale();
 
-    // paint the chart itself
+    // Paint the chart itself
     for(int i = 0; i < mPlotCommands.size(); i++)
     {
       mPlotCommands.at(i)->paint(mStaticSheet, mChartArea, mData, mScaler);
     }
 
-    // paint the chart objects
-    COType* co;
-    foreach(co, mCObjects)
+    // Paint the chart objects
+    foreach(COType* co, mCObjects)
     {
       if(co->status() != COType::eNormal) continue;
       co->paint(mStaticSheet);
     }
   }
 
-  // copy mStaticSheet into mVolatileSheet
+  // Copy mStaticSheet into mVolatileSheet.
   // I think this way is more effektive than simple mVolatileSheet = mStaticSheet
   // because then must be each time the whole memory new allocated (or I'm wrong?)
   QPainter painter;
@@ -496,7 +493,7 @@ bool IndicatorPainter::paint()
 
   paintCrosshair();
 
-  // paint the final chart onto the widget (or destination)
+  // Paint the final chart onto the widget (or destination)
   painter.begin(mSheet);
   painter.drawPixmap(0, 0, *mVolatileSheet);
 
@@ -518,14 +515,14 @@ void IndicatorPainter::paintXScale()
   painter.setFont(mPlotFont);
   painter.setPen(scalePen);
 
-  // calculate the vertical position of the scale
+  // Calculate the vertical position of the scale
   painter.translate(mChartArea.bottomLeft());
   // 2 points more, to avoid overwriting the base line later
   painter.translate(0, 2);
 
-  // draw the ticks in the scale with some descriptive text
-  int x = 0;  // the x value in pixel
-  int y = 0;  // the y value in pixel
+  // Draw the ticks in the scale with some descriptive text
+  int x = 0;  // The x value in pixel
+  int y = 0;  // The y value in pixel
   mXSTicker->prepare();
   while(mXSTicker->nextTick())
   {
@@ -543,7 +540,7 @@ void IndicatorPainter::paintXScale()
       rect.moveCenter(QPointF(x, 0));
       rect.moveBottom(rect.height() + 8);
 
-      // clear a piece left from the text
+      // Clear a piece left from the text
 //       rect.moveLeft(rect.left() - 3);
 //       painter.setPen(mSheetColor);
 //       painter.setBrush(QBrush(mSheetColor));
@@ -563,7 +560,7 @@ void IndicatorPainter::paintXScale()
     }
   }
 
-  // and draw the base line over the whole width
+  // And draw the base line over the whole width
   // ...don't forget the 2 points more from the Y-Scale
   if(mShowXScale) painter.drawLine(0, 0, mChartArea.right() + 2, 0);
 
@@ -583,15 +580,15 @@ void IndicatorPainter::paintYScale()
   painter.setFont(mPlotFont);
   painter.setPen(scalePen);
 
-  // calculate the vertical position of the scale...
+  // Calculate the vertical position of the scale...
   painter.translate(mChartArea.bottomRight());
   // 2 points more, to avoid overwriting the base line later
   painter.translate(2, 0);
 
-  // draw the ticks in the scale with some descriptive text
+  // Draw the ticks in the scale with some descriptive text
   if(!mScaler->beginYTicking())
   {
-    // something wrong with data to plot a y scale
+    // Something wrong with data to plot a y scale
     // but paint anyway the base line
     if(mShowYScale) painter.drawLine(0, 2, 0, mScaler->topEdge());
     return;
@@ -657,10 +654,10 @@ void IndicatorPainter::paintCrosshair()
   double boxOverSizeX = 8.0;
 
   //
-  // paint x-scale hair
+  // Paint x-scale hair
   if(mShowXScale)
   {
-    // calculate the vertical position of the scale...
+    // Calculate the vertical position of the scale...
     painter.resetTransform();
     painter.translate(mChartArea.bottomLeft());
     // ...and the 2 points more
@@ -669,11 +666,11 @@ void IndicatorPainter::paintCrosshair()
     QPoint p;
     mScaler->valueToPixel(mMouseXPos, mMouseYValue, p);
 
-    // cross hair type, simple arrow
+    // Cross hair type, simple arrow
     painter.drawLine(p.x(), 0, p.x() - 4, 4);
     painter.drawLine(p.x(), 0, p.x() + 4, 4);
 
-    // cross hair type, little tick
+    // Cross hair type, little tick
     //painter.drawLine(p.x(), 0, p.x(), 4);
 
     text = mMouseDate.toString(Qt::SystemLocaleDate);
@@ -681,7 +678,7 @@ void IndicatorPainter::paintCrosshair()
     rect = painter.boundingRect(rect, Qt::AlignCenter, text);
     box  = rect;
 
-    // paint a box around the text...
+    // Paint a box around the text...
     box.adjust(0, 0, boxOverSizeX, 1);
     box.moveCenter(QPointF(p.x(), 0));
     if(box.left() < 0.0) box.moveLeft(0.0);
@@ -690,7 +687,7 @@ void IndicatorPainter::paintCrosshair()
     //painter.drawRect(box); // ...or not
     painter.eraseRect(box);
 
-    // paint the text
+    // Paint the text
     rect.moveCenter(QPointF(p.x(), 0));
     if(rect.left() < (boxOverSizeX / 2)) rect.moveLeft(boxOverSizeX / 2);
     if(rect.right() > mChartArea.right() - (boxOverSizeX / 2)) rect.moveRight(mChartArea.right() - (boxOverSizeX / 2));
@@ -699,7 +696,7 @@ void IndicatorPainter::paintCrosshair()
   }
 
   //
-  // paint y-scale hair
+  // Paint y-scale hair
   if(mShowYScale)
   {
     painter.resetTransform();
@@ -718,7 +715,7 @@ void IndicatorPainter::paintCrosshair()
       rect = painter.boundingRect(rect, Qt::AlignLeft, text);
       box  = rect;
 
-      // once more, paint a box...
+      // Once more, paint a box...
       box.adjust(0, 0, boxOverSizeX, 1);
       box.moveCenter(QPoint(0, y));
       box.moveLeft(-3 + 8);
@@ -736,7 +733,7 @@ void IndicatorPainter::paintCrosshair()
         painter.eraseRect(box);
       }
 
-      // and paint the text
+      // And paint the text
       rect.moveCenter(QPoint(0, y));
       if(rect.top() < -mChartArea.height() + 2) rect.moveTop(-mChartArea.height() + 2);
       if(rect.bottom() > -1) rect.moveBottom(-1);
@@ -748,18 +745,18 @@ void IndicatorPainter::paintCrosshair()
 
 /***********************************************************************
 *
-*                              private stuff
+*                              Private  Stuff
 *
 ************************************************************************/
 
 bool IndicatorPainter::parse(const QStringList& indiFile)
 {
-  // unused (!?)
+  // Unused (!?)
   qDebug() << indiFile;
   return true;
 }
 
 void  IndicatorPainter::readSettings()
 {
-  // unused (!?)
+  // Unused (!?)
 }

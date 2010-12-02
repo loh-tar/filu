@@ -27,7 +27,7 @@
   Q_OBJECT
 
   public:
-                  IndicatorEditor(FWidget* parent);
+                  IndicatorEditor(FClass* parent);
    virtual       ~IndicatorEditor();
 
     void          includeText(const QString& txt);
@@ -41,7 +41,6 @@
 
     QString       mIndicatorPath;
     QStringList   mAllFiles;
-
 
     void          readDir();
     void          readSettings();

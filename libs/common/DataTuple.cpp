@@ -25,7 +25,7 @@
 DataTuple::DataTuple(int size, const QString& name)
 {
   Value = new double[size];
-  Color = 0;    // don't waste memory and time if no color is needed
+  Color = 0;    // Don't waste memory and time if no color is needed
   mNeedsBars = 1;
 
   Name  = name;
@@ -155,7 +155,7 @@ void DataTuple::setRange(int from /* = -1*/, int count /* = -1*/)
 {
   int to = count + from;
 
-  // check if new range setting or not
+  // Check if new range setting or not
   if( (from == *RangeFrom) and ( to == *RangeTo) ) return;
 
   if(from < 0 or from > MaxIndex) *RangeFrom = 0;

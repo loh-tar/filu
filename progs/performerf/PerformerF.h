@@ -38,7 +38,7 @@ class PerformerF : public FMainWindow
 
   public:
                     PerformerF();
-                   ~PerformerF();
+    virtual        ~PerformerF();
 
   public slots:
     void            showWindowTitle(const QString& symbol, const QString& market);

@@ -27,9 +27,9 @@ class COType;
 
 /***********************************************************************
 *
-* The name is not as well chosen.
-* He is almost an event handler. Takes (mouse) events and send them to
-* IndicatorPainter.cpp
+*   The name is not as well chosen.
+*   He is almost an event handler. Takes (mouse) events and send them to
+*   IndicatorPainter.cpp
 *
 ************************************************************************/
 
@@ -62,7 +62,7 @@ class PlotSheet : public FWidget
   Q_OBJECT
 
   public:
-                  PlotSheet(FWidget* parent);
+                  PlotSheet(FClass* parent);
                   PlotSheet(const QString& connectionName, QWidget* parent = 0);
     virtual      ~PlotSheet();
 
@@ -103,20 +103,20 @@ class PlotSheet : public FWidget
     void          printError();
     bool          checkForCO(QEvent* event);
 
-    // overloaded QWidget functions
+    // Overloaded QWidget functions
     virtual bool  event(QEvent* event);
 
     IndicatorPainter* mPainter;
 
-    QSize         mSheetSize;   // available for the chart itself
+    QSize         mSheetSize;   // Available for the chart itself
 
-    BarTuple*     mBars;        // for extern suplied bars, never delete them
-    BarTuple*     mMyBars;      // for self loaded bars, delete when no longer needed
+    BarTuple*     mBars;        // For extern suplied bars, never delete them
+    BarTuple*     mMyBars;      // For self loaded bars, delete when no longer needed
     QDate         mFromDate;
     QDate         mToDate;
 
     MyMouseEvent  mMouseEvent;
-    int           mOldMouseXPos; // holds a pixel value
+    int           mOldMouseXPos; // Holds a pixel value
 
     QString       mNewCOType;
 

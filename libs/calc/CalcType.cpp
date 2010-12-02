@@ -55,7 +55,7 @@ CalcType* CalcType::createNew(const QString& type)
 
   */
 
-  if(type.isEmpty()) return new CalcType(mIndicator); // needed???
+  if(type.isEmpty()) return new CalcType(mIndicator); // Needed???
 
   addErrorText("CalcType::createNewType: Type not found: " + type);
   return 0;
@@ -139,7 +139,7 @@ bool CalcType::checkOutputCount(int count)
   }
   else
   {
-    // register all output variable
+    // Register all output variable
     for(int i = 0; i < count; ++i) mUsedVariables->insert(mOuts.at(i));
   }
 

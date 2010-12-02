@@ -19,8 +19,6 @@
 
 #include "FObject.h"
 
-//#include "FWidget.h"
-
 FObject::FObject(FClass* parent)
        : QObject(0)
        , FClass(parent)
@@ -28,27 +26,16 @@ FObject::FObject(FClass* parent)
 {}
 
 FObject::FObject(FObject* parent)
-       : QObject((QObject*)parent)
-       , FClass((FClass*)parent)
+       : QObject(parent)
+       , FClass(parent)
 
 {}
-
-// FObject::FObject(FWidget* parent)
-//        : QObject(parent)
-//        , FClass((FClass*)parent)
-//
-// {}
 
 FObject::FObject(const QString& connectionName, QObject* parent)
        : QObject(parent)
        , FClass(connectionName)
 
 {}
-// FObject::FObject(const QString& connectionName, QWidget* parent)
-//        : QObject((QObject*)parent)
-//        , FClass(connectionName)
-//
-// {}
 
 FObject::~FObject()
 {}

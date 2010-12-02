@@ -25,12 +25,11 @@
 #include "IndicatorPainter.h"
 #include "Scaler.h"
 
-// all available types
+// All available types
 #include "COLine.h"
 
 COType::COType(IndicatorPainter* painter)
       : FObject(painter)
-      //, FClass(static_cast<FClass*>(painter))
       , mAnchor(0)
       , mStatus(eBrandNew)
       , mHover(false)
@@ -40,20 +39,15 @@ COType::COType(IndicatorPainter* painter)
   setAttribute("FiId",     mP->mBars->mFiId);
   setAttribute("MarketId", mP->mBars->mMarketId);
   setAttribute("ViewName", mP->mViewName);
-
-  setAttribute("AnchorValue", 0.0, tr("Anchor Value"));
-
-  setAttribute("AnchorDate", QDate(), tr("Anchor Date"));
-
+  setAttribute("AnchorValue", 0.0,     tr("Anchor Value"));
+  setAttribute("AnchorDate",  QDate(), tr("Anchor Date"));
   setAttribute("Type", "");
-
   setAttribute("Color", QColor("White"), tr("Color"));
 }
 
 COType::~COType()
 {
-  Grip* grip;
-  foreach(grip, mGrip)
+  foreach(Grip* grip, mGrip)
   {
     delete grip;
   }
@@ -61,12 +55,12 @@ COType::~COType()
 
 /***********************************************************************
 *
-*   static functions
+*   Static Functions
 *
 ************************************************************************/
 void COType::getAllTypes(QStringList& list)
 {
-  // extend these list when you add new fanzy chart object types
+  // Extend these list when you add new fanzy chart object types
   list << "Line";
   //list << "foo"
 }
@@ -84,23 +78,22 @@ COType* COType::createNew(const QString& type, IndicatorPainter* painter)
 {
   COType* newCO = 0;
 
-  // extend these if/else if tree when you add new fanzy chart object types
+  // Extend these if/else if tree when you add new fanzy chart object types
   if(!type.compare("Line")) newCO = new COLine(painter);
   //else if(type.compare("xxx")) newCO = new COxxx(painter);
   else
   {
-    // type unknown
+    // Type unknown
   }
 
   return newCO;
 }
 
-void  COType::strToAttributes(const QString& str, QHash<QString, QString> &attr)
+void  COType::strToAttributes(const QString& str, QHash<QString, QString>& attr)
 {
   QStringList keyValueList = str.split('\n');
 
-  QString keyValueStr;
-  foreach(keyValueStr, keyValueList)
+  foreach(QString keyValueStr, keyValueList)
   {
     int idx = keyValueStr.indexOf("=");
     QString name  = keyValueStr.left(idx);
@@ -116,14 +109,14 @@ void  COType::strToAttributes(const QString& str, QHash<QString, QString> &attr)
 
 /***********************************************************************
 *
-*   Other puplic functions
+*   Other Puplic Functions
 *
 ************************************************************************/
 void COType::erase()
 {
   int id = mAttribute.value("Id").toInt();
 
-  if(id < 1) return; // unvalid, not saved, no need to erase
+  if(id < 1) return; // Unvalid, not saved, no need to erase
 
   mFilu->deleteRecord(":user", "co", id);
 }
@@ -157,22 +150,22 @@ bool COType::isInvolved(const QPoint& pos)
 
 void COType::showEditWindow()
 {
-  // update mAttribute
+  // Update mAttribute
   writeAttributes();
 
-  // build the window automaticly by parsing attributes
+  // Build the window automaticly by parsing attributes
   QDialog window;
-  mEditWindow = &window;        // to access from editWindowChanged()
+  mEditWindow = &window;        // To access from editWindowChanged()
 
   QGridLayout layout(&window);
-  int       row = 0;            // count layout rows
+  int       row = 0;            // Count layout rows
   QString   name;
-  QWidget* widget;
-  QLabel* label;
+  QWidget*  widget;
+  QLabel*   label;
   QVariant  attribute;
   int       type;
 
-  // set the title bar of the dialog
+  // Set the title bar of the dialog
   name = tr("Edit : ") + mAttribute.value("Type").value<QString>();
   window.setWindowTitle(name);
 
@@ -185,7 +178,7 @@ void COType::showEditWindow()
 //   layout.addWidget(label, row, 0);
 //   layout.addWidget(widget, row++, 1);
 
-  // for easier access after window is closed,
+  // For easier access after window is closed,
   // we save detected types and names
   QList<int>       types;
   QStringList      names;
@@ -232,6 +225,7 @@ void COType::showEditWindow()
 
       case QVariant::DateTime:
         break;
+
       case QVariant::Double:
       {
         double val = attribute.value<double>();
@@ -293,7 +287,7 @@ void COType::showEditWindow()
       case QVariant::Time:
         break;
       default :
-        ;
+        break;
     }
 
     if(!widget)
@@ -381,12 +375,12 @@ void COType::showEditWindow()
       case QVariant::Time:
         break;
       default :
-        ;
+        break;
     }
 
     ++i;
   }
-//qDebug() << mAttribute;
+  //qDebug() << mAttribute;
   readAttributes();
 }
 
@@ -396,7 +390,7 @@ COType::Status COType::handleEvent(QEvent* event)
   // if yes examine pos, buttons and keys
   QPoint pos;
   int    btn;
-  Qt::MouseButtons btns;
+  Qt::MouseButtons      btns;
   Qt::KeyboardModifiers mods;
 
   switch(event->type())
@@ -488,8 +482,7 @@ void COType::paint(QPaintDevice* sheet)
   mChartArea = mP->mChartArea;
   mScaler    = mP->mScaler;
 
-  Grip* grip;
-  foreach(grip, mGrip)
+  foreach(Grip* grip, mGrip)
   {
     grip->update();
   }
@@ -513,7 +506,7 @@ void COType::paint(QPaintDevice* sheet)
 
 /***********************************************************************
 *
-*   protected slots
+*   Protected Slots
 *
 ************************************************************************/
 void COType::editWindowChanged()
@@ -541,15 +534,14 @@ void COType::editWindowChanged()
 
   //mEditWindow->setWindowModified(true);
 
-  QWidget* widget = static_cast<QWidget*>(sender());
-  QString  name   = widget->objectName();
-
+  //QWidget* widget = static_cast<QWidget*>(sender());
+  //QString  name   = widget->objectName();
   //qDebug() << "COType::editWindowChanged()" << widget << name;
 }
 
 /***********************************************************************
 *
-*   protected functions
+*   Protected Functions
 *
 ************************************************************************/
 void COType::prepare(COTuple* co)
@@ -572,10 +564,10 @@ void COType::prepare(COTuple* co)
   prepare(keyValue);
 }
 
-void COType::prepare(const QHash<QString, QString> &keyValue)
+void COType::prepare(const QHash<QString, QString>& keyValue)
 {
   //qDebug() << "COType::prepare(QHash<>)";
-  // here we have to add all spezial attributes
+  // Here we have to add all spezial attributes
   setAttribute("AnchorValue"
               , keyValue.value("AnchorValue").toDouble());
 
@@ -591,7 +583,7 @@ void COType::readAttributes(bool firstCall/* = false*/)
   // This function is also called after edit window was closed. Therefore
   // we have to take care for that case.
 
-  // create and set the anchor
+  // Create and set the anchor
   if(firstCall)
   {
     mAnchor = createNewGrip(Grip::eAnchor);
@@ -600,7 +592,7 @@ void COType::readAttributes(bool firstCall/* = false*/)
   }
   else
   {
-    // aha, after edit. check if the anchor was moved
+    // Aha, after edit. check if the anchor was moved
     Grip dummy(mP, Grip::eAnchor);
     dummy.set( mAttribute.value("AnchorDate").toDate()
              , mAttribute.value("AnchorValue").toDouble() );
@@ -608,7 +600,7 @@ void COType::readAttributes(bool firstCall/* = false*/)
     if(   (mAnchor->mDate  != dummy.mDate )
        or (mAnchor->mValue != dummy.mValue) )
     {
-      // yes, was moved. so move the object
+      // Yes, was moved. so move the object
       dummy.update();
       QPoint deltaPos   = dummy.pos() - mAnchor->pos();
       int    deltaIdx   = dummy.mIdxPos  - mAnchor->mIdxPos;
@@ -631,12 +623,12 @@ bool COType::save()
 {
   writeAttributes();
 
-  // don't add standard attributes to parameters
+  // Don't add standard attributes to parameters
   QSet<QString> toSkip;
   toSkip << "Id" << "FiId" << "MarketId" << "ViewName"
          << "AnchorDate" << "Type";
 
-  // but add them to a COTuple
+  // But add them to a COTuple
   COTuple co(1);
   co.next();
   co.setId(mAttribute.value("Id").value<int>());
@@ -663,33 +655,22 @@ bool COType::save()
     switch(type)
     {
       case QVariant::Bool:
-      {
         if(attribute.toBool() == true) value = attribute.toString();
-
         break;
-      }
 
       case QVariant::Color:
-      {
         value = attribute.value<QColor>().name();
-
         break;
-      }
 
       case QVariant::Date:
-      {
         value = attribute.value<QDate>().toString(Qt::ISODate);
-
         break;
-      }
 
       case QVariant::DateTime:
         break;
       case QVariant::Double:
-      {
         value = attribute.toString();
         break;
-      }
 
       case QVariant::Font:
         break;
@@ -700,15 +681,13 @@ bool COType::save()
       case QVariant::Size:
         break;
       case QVariant::String:
-      {
         value = attribute.toString();
         break;
-      }
 
       case QVariant::Time:
         break;
       default :
-        ;
+        break;
     }
 
     if(!value.isEmpty())
@@ -722,7 +701,7 @@ bool COType::save()
 
   co.setAttributes(parameters);
 
-  // write to DB
+  // Write to DB
   mFilu->putCOs(co);
 //   qDebug() << co.id();
 //   qDebug() << co.fiId();
@@ -731,7 +710,7 @@ bool COType::save()
 //   qDebug() << co.anchorDate();
 //   qDebug() << parameters;
 
-  // in case a brand new CO was first time saved fetch the ID
+  // In case a brand new CO was first time saved fetch the ID
   setAttribute("Id", co.id());
 
   return false;
@@ -773,8 +752,7 @@ void COType::paintHoverInfo()
 
 void COType::paintBoundingBox()
 {
-  Grip* grip;
-  foreach(grip, mGrip)
+  foreach(Grip* grip, mGrip)
   {
     grip->paint(mSheet, mChartArea.bottomLeft());
   }
@@ -821,8 +799,7 @@ void COType::objectMoved( const QPoint &/*deltaPos*/
   //   deltaIdx   = newPos.mIdxPos - mAnchor->mIdxPos
   //   deltaValue = newPos.mValue - mAnchor->mValue
 
-  Grip* grip;
-  foreach(grip, mGrip)
+  foreach(Grip* grip, mGrip)
   {
     grip->move(deltaIdx, deltaValue);
   }
@@ -881,8 +858,7 @@ Grip* COType::renameGrip(Grip* grip, const Grip::Type newType)
 
 Grip* COType::gripInvolved(const QPoint& pos)
 {
-  Grip* grip;
-  foreach(grip, mGrip)
+  foreach(Grip* grip, mGrip)
   {
     if(grip->contains(pos)) return grip;
   }
@@ -892,7 +868,7 @@ Grip* COType::gripInvolved(const QPoint& pos)
 
 /***********************************************************************
 *
-*   special event handler
+*   Special Event Handler
 *
 ************************************************************************/
 bool COType::mouseMoved(const QPoint& pos
@@ -904,7 +880,7 @@ bool COType::mouseMoved(const QPoint& pos
     case eBrandNew:
     case eMoving:
     {
-      // fetch values of new position
+      // Fetch values of new position
       Grip newPos(mP, Grip::eRight, pos);
       newPos.set(pos);
 
@@ -919,10 +895,9 @@ bool COType::mouseMoved(const QPoint& pos
     }
 
     case eNormal:
-
-      if(!mP->mCOInProcess) // only show hover when no other CO is in process
+      if(!mP->mCOInProcess) // Only show hover when no other CO is in process
       {
-//        qDebug() << "COType::mouseMoved:case eNormal(to hover)";
+        //qDebug() << "COType::mouseMoved:case eNormal(to hover)";
         mHover = true;
         mP->mCOInProcess = this;
       }
@@ -945,7 +920,7 @@ bool COType::mouseMoved(const QPoint& pos
 
 bool COType::leftButtonPressed(const QPoint& pos)
 {
-//   qDebug() << "COType::leftButtonPressed()" << pos << mStatus;
+  //qDebug() << "COType::leftButtonPressed()" << pos << mStatus;
   switch(mStatus)
   {
     case eBrandNew:
@@ -953,13 +928,11 @@ bool COType::leftButtonPressed(const QPoint& pos)
       if(!mMovingGrip)
       {
         mStatus = eSelected;
-        // call here edit window
-        //showEditWindow();
       }
       return true;
 
     case eNormal:
-      // no need to check isInvolved(pos),
+      // No need to check isInvolved(pos),
       // we are here because we are involded
       mStatus = eSelected;
       return true;
@@ -979,7 +952,7 @@ bool COType::leftButtonPressed(const QPoint& pos)
       }
       else
       {
-        // somewhere else but not the CO clicked
+        // Somewhere else but not the CO clicked
         mStatus = eNormal;
         save();
       }
@@ -1008,8 +981,7 @@ bool COType::rightButtonPressed(const QPoint& pos)
       return true;
 
     case eNormal:
-      // call here edit window
-      // no need to check isInvolved(pos),
+      // No need to check isInvolved(pos),
       // we are here because we are involded
       mStatus = eSelected;
       return true;
@@ -1017,7 +989,6 @@ bool COType::rightButtonPressed(const QPoint& pos)
     case eSelected:
       if(isInvolved(pos) or gripInvolved(pos))
       {
-        // call here edit window
         showEditWindow();
       }
       else

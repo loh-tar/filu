@@ -52,13 +52,13 @@ class Filu
       // Return values for functions returning an intenger, mostly an data Id
       // Do* not* use it for functions returning fooTuple
       // FIXME: Did you know how to solve this with usual && || operators?
-      eData        =      1,  // use it like if(retVal >= eData) ...
-      eSuccess     =      1,  // use it like if(retVal == eSuccess) ...
-      eNotFound    =      0,  // use it like if(id == eNotFound) ...
-      eNoSuccess   =      0,  // use it like if(retVal == eNoSuccess) ...
-      eNoData      =      0,  // use it like if(id == eNoData) ...
-      eError       =     -1,  // use it like if(id <= eError ) ...
-      eNotUnique   = -10000,  // use it like if(id == eNotUnique) ...
+      eData        =      1,  // Use it like if(retVal >= eData) ...
+      eSuccess     =      1,  // Use it like if(retVal == eSuccess) ...
+      eNotFound    =      0,  // Use it like if(id == eNotFound) ...
+      eNoSuccess   =      0,  // Use it like if(retVal == eNoSuccess) ...
+      eNoData      =      0,  // Use it like if(id == eNoData) ...
+      eError       =     -1,  // Use it like if(id <= eError ) ...
+      eNotUnique   = -10000,  // Use it like if(id == eNotUnique) ...
       eInitError   = -10001,
       eExecError   = -10002,
 
@@ -71,35 +71,35 @@ class Filu
     };
 
     // Set Functions
-    void setFiName(const QString& name);   // deprecated, only at FiPage.cpp:129
-    void setFiType(const QString& type);   // deprecated, only like mFilu->setFiType("");
+    void setFiName(const QString& name);   // Deprecated, only at FiPage.cpp:129
+    void setFiType(const QString& type);   // Deprecated, only like mFilu->setFiType("");
     void setFiId(int);
-    bool setIdsByNameSettings();           // deprecated, I hate it, only used intern
+    bool setIdsByNameSettings();           // Deprecated, I hate it, only used intern
     void setMarketId(int);
-    int  setMarketName(const QString&);    // returns marketId or < eError
-    int  setSymbolCaption(const QString&); // returns FiId to symbol or < eError
-    void setProviderId(int);               // unusued
-    void setProviderName(const QString&);  // deprecated, only like mFilu->setProviderName("");
-    void setOnlyProviderSymbols(bool);     // deprecated, make extra function getProviderSymbols
-    void setFromDate(const QString& = "1000-01-01");  // deprecated
-    void setToDate(const QString& = "3000-01-01");    // deprecated
+    int  setMarketName(const QString&);    // Returns marketId or < eError
+    int  setSymbolCaption(const QString&); // Returns FiId to symbol or < eError
+    void setProviderId(int);               // Unusued
+    void setProviderName(const QString&);  // Deprecated, only like mFilu->setProviderName("");
+    void setOnlyProviderSymbols(bool);     // Deprecated, make extra function getProviderSymbols
+    void setFromDate(const QString& = "1000-01-01");  // Deprecated
+    void setToDate(const QString& = "3000-01-01");    // Deprecated
     void setBarsToLoad(int);
-    void setDaysToFetchIfNoData(int);      // unused
+    void setDaysToFetchIfNoData(int);      // Unused
     void printSettings();
 
     // Get Tuple Functions
-    BarTuple*    getBars(const QString& symbol, const QString& market); // add from&toDate
+    BarTuple*    getBars(const QString& symbol, const QString& market); // Add from&toDate
     BarTuple*    getBars(int fiId, int marketId
                        , const QString& fromDate = "1000-01-01"
                        , const QString& toDate = "3000-01-01");
 
-    BarTuple*    getBars(); // deprecated
+    BarTuple*    getBars(); // Deprecated
 
     MarketTuple* getMarket();
 
-    FiTuple*     getFi(const int fiId);            // unused
-    FiTuple*     getFi(const bool fuzzy = false);  // rename to getFiLike(const QString& foo)
-    FiTuple*     getFi(const QString& symbol);     // rename to getFiBySymbol(...)
+    FiTuple*     getFi(const int fiId);            // Unused
+    FiTuple*     getFi(const bool fuzzy = false);  // Rename to getFiLike(const QString& foo)
+    FiTuple*     getFi(const QString& symbol);     // Rename to getFiBySymbol(...)
 
     SymbolTuple* getSymbols();          // getSymbol stuff needs rethinking
     SymbolTuple* getSymbols(int fiId);
@@ -172,9 +172,9 @@ class Filu
 
     int         searchCaption(const QString& table, const QString& caption);
 
-    bool        hadTrouble();   // calling this clears error flag
-    QString     errorText();    // calling this clears error text
-    QString     getLastQuery(); // unused
+    bool        hadTrouble();   // Calling this clears error flag
+    QString     errorText();    // Calling this clears error text
+    QString     getLastQuery(); // Unused
 
     void        deleteRecord(const QString& schema, const QString& table, int id);
 
@@ -200,7 +200,7 @@ class Filu
     QString     mProviderName;
     QString     mFromDate;
     QString     mToDate;
-    int         mLimit;  // to limit the count of rows at SELECT xyz FROM abc...
+    int         mLimit;  // To limit the count of rows at SELECT xyz FROM abc...
     bool        mOnlyProviderSymbols;
     int         mSqlDebugLevel;
     QString     mLastError;
@@ -208,9 +208,9 @@ class Filu
     bool        mHasError;
     QStringList mErrorText;
     QHash<QString, QSqlQuery*>  mSQLs;
-    QHash<QString, QVariant>    mSqlParm;      // holds all values of ':foo' sql parameters
+    QHash<QString, QVariant>    mSqlParm;      // Holds all values of ':foo' sql parameters
                                                // to all SQLs
-    QHash<QString, StringSet>   mSqlParmNames; // holds all parameter names to a sql
+    QHash<QString, StringSet>   mSqlParmNames; // Holds all parameter names to a sql
 
   private:
     void        openDB();

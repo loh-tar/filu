@@ -24,7 +24,7 @@
 
 /***********************************************************************
 *
-* Yes, calculate if a value is between two borders
+*   Yes, calculate if a value is between two borders
 *
 ************************************************************************/
 

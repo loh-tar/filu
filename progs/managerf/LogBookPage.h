@@ -27,8 +27,7 @@ class LogBookPage : public ManagerPage
   //Q_OBJECT
 
   public:
-                  LogBookPage(ManagerF* parent);
-                  LogBookPage(FWidget* parent);
+                  LogBookPage(FClass* parent);
     virtual      ~LogBookPage();
 
   //public slots:

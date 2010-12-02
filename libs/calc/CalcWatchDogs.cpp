@@ -23,7 +23,6 @@
 
 CalcWatchDogs::CalcWatchDogs(Indicator* parent)
              : CalcType(parent)
-
 {
   mType = "WatchDog";
 }
@@ -73,12 +72,12 @@ bool CalcWatchDogs::calc()
     return false;
   }
 
-  // create our output variable
+  // Create our output variable
   addToDataSet(mOuts.at(0));
 
-  int watchDogNB = 1; // count dogs ((output)lines/variables)
+  int watchDogNB = 1; // Count dogs ((output)lines/variables)
 
-  // clean up old dog shit
+  // Clean up old dog shit
   while(!isUnknown("WATCHDOG" + QString::number(watchDogNB)))
   {
     mUsedVariables->remove("WATCHDOG" + QString::number(watchDogNB));
@@ -92,7 +91,7 @@ bool CalcWatchDogs::calc()
   mData->setRange();
   mData->getDateRange(fromDate, toDate);
 
-  // load chart objects
+  // Load chart objects
   mFilu->setFiId(fiId);
   mFilu->setMarketId(marketId);
   mFilu->setFromDate();
@@ -122,7 +121,7 @@ bool CalcWatchDogs::calc()
 
     dogFound = true;
 
-    // build the line/watchdog variable
+    // Build the line/watchdog variable
     QString dogName = "WATCHDOG" + QString::number(++watchDogNB);
     addToDataSet(dogName);
     mUsedVariables->insert(dogName);
@@ -139,7 +138,7 @@ bool CalcWatchDogs::calc()
       if(leftIdx < 0) leftIdx = 0;
       slope = 0;
 
-      // calculate the values of the line and add them to mData
+      // Calculate the values of the line and add them to mData
       mData->setValidRange(dogName, leftIdx, mData->dataTupleSize() - leftIdx);
       mData->setRange(leftIdx, mData->dataTupleSize());
       int i = leftIdx;

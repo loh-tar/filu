@@ -19,7 +19,8 @@
 
 #include "CalcTALib.h"
 
-CalcTALib::CalcTALib(Indicator* parent) : CalcType(parent)
+CalcTALib::CalcTALib(Indicator* parent)
+         : CalcType(parent)
 {
   mType = "TALib";
 }
@@ -46,10 +47,10 @@ bool CalcTALib::prepare(CalcParms& parms)
     return false;
   }
 
-  // analyse all parameters, 1st build input list...
+  // Analyse all parameters, 1st build input list...
   mInput.clear();
 
-  // get the info
+  // Get the info
   talib.getFunctionInfo(mIns.at(0), mInfo);
 
   if(mOuts.size() < mInfo.value("nbOutput").toInt())
@@ -118,14 +119,14 @@ bool CalcTALib::prepare(CalcParms& parms)
         }
       }
     }
-    else // no EODBAR InputType
+    else // No EODBAR InputType
     {
       mInput.insert(key, mIns.at(1 + i));
       ++firstOptInput;
     }
   }
 
-  // check if all input variables are known
+  // Check if all input variables are known
   QHashIterator<QString, QString> hit(mInput);
   while(hit.hasNext())
   {
@@ -166,7 +167,7 @@ bool CalcTALib::prepare(CalcParms& parms)
     mOptInput.insert(mIns.at(i), value);
   }
 
-  // add the output to the...
+  // Add the output to the...
   for(int i = 0; i < mInfo.value("nbOutput").toInt(); ++i)
   {
     mUsedVariables->insert(mOuts.at(i));
@@ -189,7 +190,7 @@ bool CalcTALib::calc()
 
   if(!initTALib(&parmHolder)) return false;
 
-  // call the beast...
+  // Call the beast...
   TA_Integer startIdx = 0;
   TA_Integer endIdx = mData->dataTupleSize() - mFirstValid - 1;
   TA_Integer outBegIdx;
@@ -198,13 +199,13 @@ bool CalcTALib::calc()
   retCode = TA_CallFunc(parmHolder, startIdx, endIdx, &outBegIdx, &outNbElement);
   if(!retCode == TA_SUCCESS )
   {
-    // error
+    // Error
     qDebug() << "CalcTALib::calc: TALib returned error code" << retCode;
     freesParmHolder(parmHolder);
     return false;
   }
 
-  // set the valid ranges
+  // Set the valid ranges
   QHashIterator<QString, QString> hit(mOutput);
   while(hit.hasNext())
   {
@@ -237,7 +238,7 @@ int CalcTALib::barsNeeded(DataTupleSet* data)
 
   if(!retCode == TA_SUCCESS )
   {
-    // error
+    // Error
     qDebug() << "error 7";
     mData = save;
     freesParmHolder(parmHolder);
@@ -259,7 +260,7 @@ int CalcTALib::barsNeeded(DataTupleSet* data)
   return lookback;
 }
 
-bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
+bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
 {
   setFirstValid();
 
@@ -269,7 +270,7 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
   retCode = TA_GetFuncHandle(mIns.at(0).toAscii(), &handle);
   if(!retCode == TA_SUCCESS )
   {
-    // error
+    // Error
     qDebug() << "error 1";
     return false;
   }
@@ -277,12 +278,12 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
   retCode = TA_ParamHolderAlloc(handle, parmHolder);
   if(!retCode == TA_SUCCESS )
   {
-    // error
+    // Error
     qDebug() << "error 2";
     return false;
   }
 
-  // set input variables
+  // Set input variables
   int nbInput = mInfo.value("nbInput").toInt();
   for(int i = 0; i < nbInput; ++i)
   {
@@ -317,7 +318,7 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
                                           , volume, openInterest);
       if(!retCode == TA_SUCCESS )
       {
-        // error
+        // Error
         qDebug() << "error 3";
         return false;
       }
@@ -329,7 +330,7 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
       retCode = TA_SetInputParamRealPtr(*parmHolder, i, value);
       if(!retCode == TA_SUCCESS )
       {
-        // error
+        // Error
         qDebug() << "error 4";
         return false;
       }
@@ -341,7 +342,7 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
     }
   }
 
-  // set optional inputs
+  // Set optional inputs
   nbInput = mInfo.value("nbOptInput").toInt();
   for(int i = 0; i < nbInput; ++i)
   {
@@ -357,19 +358,19 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
       TA_Real optInValue = mOptInput.value(parm);
       retCode = TA_SetOptInputParamReal(*parmHolder, i, optInValue);
     }
-    else // sould be "INTEGER"
+    else // Should be "INTEGER"
     {
       TA_Integer optInValue = (TA_Integer)mOptInput.value(parm);
       retCode = TA_SetOptInputParamInteger(*parmHolder, i, optInValue);
     }
   }
 
-  // create our output variable
+  // Create our output variable
   QHashIterator<QString, QString> hit(mOutput);
   while(hit.hasNext())
     addToDataSet(hit.next().value());
 
-  // set output
+  // Set output
   int nbOutput = mInfo.value("nbOutput").toInt();
   for(int i = 0; i < nbOutput; ++i)
   {
@@ -380,12 +381,12 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
       retCode = TA_SetOutputParamRealPtr(*parmHolder, i, out);
       if(!retCode == TA_SUCCESS )
       {
-        // error
+        // Error
         qDebug() << "error 5";
         return false;
       }
     }
-    else // sould be "INTEGER"
+    else // Should be "INTEGER"
     {
       //TA_Integer* out = mData->valueArray(mOutput.value(key));
       //retCode = TA_SetOutputParamIntegerPtr(*parmHolder, i, out);
@@ -397,7 +398,7 @@ bool CalcTALib::initTALib(TA_ParamHolder **parmHolder)
  return true;
 }
 
-void CalcTALib::freesParmHolder(TA_ParamHolder *parmHolder)
+void CalcTALib::freesParmHolder(TA_ParamHolder* parmHolder)
 {
   TA_RetCode retCode;
 
@@ -405,7 +406,7 @@ void CalcTALib::freesParmHolder(TA_ParamHolder *parmHolder)
 
   if(!retCode == TA_SUCCESS)
   {
-    // error
+    // Error
     qDebug() << "CalcTALib::freesParmHolder: TALib returned error code: " << retCode;
   }
 }

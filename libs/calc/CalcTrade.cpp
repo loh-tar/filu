@@ -21,7 +21,8 @@
 
 #include "CalcTrade.h"
 
-CalcTrade::CalcTrade(Indicator* parent) : CalcType(parent)
+CalcTrade::CalcTrade(Indicator* parent)
+         : CalcType(parent)
 {
   mType   = "Trade";
   mTrader = new Trader(this);
@@ -58,7 +59,7 @@ bool CalcTrade::calc()
 {
   getIndicatorVariables();
 
-  // create our output variable
+  // Create our output variable
   // ... not needed
 
   mData->setRange();
@@ -69,7 +70,7 @@ bool CalcTrade::calc()
     return false;
   }
 
-  // print report to console
+  // Print report to console
   QList<QStringList> report;
   mTrader->getReport(report);
   for(int i = 0; i < report.size(); ++i) qDebug() << report.at(i);
@@ -80,12 +81,11 @@ bool CalcTrade::calc()
     //checkLog();
     double v1, v2;
 
-    // in the following we only validate the the first one.
-    // when this is valid, all other values are for
-    // shure valid too
+    // In the following we only validate the the first one.
+    // When this is valid, all other values are for shure valid too
     if(!mData->getValue("Long", v1))
     {
-      // no valid data, paint all in grey and continue
+      // No valid data, paint all in grey and continue
       mData->setColor(mOuts.at(0), "grey");
       mData->setColor(mOuts.at(1), "grey");
       mData->setColor(mOuts.at(2), "grey");
@@ -93,9 +93,9 @@ bool CalcTrade::calc()
       continue;
     }
 
-    // ok, paint the candles in a suitable color
+    // Ok, paint the candles in a suitable color
     //
-    // we check the status one after the other an repaint
+    // We check the status one after the other an repaint
     // some parts if necessary
 
     mData->getValue("OffMarket", v2);

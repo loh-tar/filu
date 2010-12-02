@@ -35,7 +35,7 @@ class FiTypeSelBtn : public QToolButton, public FClass
   Q_OBJECT
 
   public:
-                FiTypeSelBtn(FWidget* parent);
+                FiTypeSelBtn(FClass* parent);
     virtual    ~FiTypeSelBtn();
 
     QString     selected();
@@ -62,8 +62,7 @@ class SearchFiWidget : public FWidget
   Q_OBJECT
 
   public:
-                SearchFiWidget(FWidget* parent);
-                SearchFiWidget(FMainWindow* parent);
+                SearchFiWidget(FClass* parent);
     virtual    ~SearchFiWidget();
 
     signals:

@@ -45,14 +45,14 @@ BarTuple::~BarTuple()
 
 int BarTuple::findDate(const QDate& date)
 {
-  // find the date inside of mDate[]
-  // we don't iterate simple 0 -> cont() which is to slow
+  // Find the date inside of mDate[].
+  // We don't iterate simple 0 -> cont() which is to slow
   // but we use a ..binary search (that's the correct name?)
 
   int iLow  = 0;
   int iHigh = count() -1;
 
-  // before we do anything check if date is in available range
+  // Before we do anything check if date is in available range
   if(date < mDate[iLow])  return Tuple::eUnderRange;
   if(date > mDate[iHigh]) return Tuple::eOverRange;
 
@@ -78,7 +78,7 @@ int BarTuple::findDate(const QDate& date)
   }
   //qDebug() << "BarTuple::rewind() last low/high/i" << iLow << iHigh << i;
 
-  if(iLow == iHigh) i = iLow; // no other possibility
+  if(iLow == iHigh) i = iLow; // No other possibility
   return i;
 }
 

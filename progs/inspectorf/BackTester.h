@@ -21,8 +21,9 @@
 #define BACKTESTER_HPP
 
 #include "FClass.h"
-#include "Indicator.h"
-#include "Trader.h"
+
+class Indicator;
+class Trader;
 
 class BackTester : public QThread, public FClass
 {
@@ -36,7 +37,7 @@ class BackTester : public QThread, public FClass
 
   public:
                     BackTester();
-                   ~BackTester();
+    virtual        ~BackTester();
 
     void            prepare(const QString& rule,
                             const QString& indicator,
@@ -61,7 +62,7 @@ class BackTester : public QThread, public FClass
     void            buildConstants(const QString& constExp, QStringList& constList);
     void            buildFiles();
     void            buildStrategyId();
-    void            buildReport(QList<QStringList> &report);
+    void            buildReport(QList<QStringList>& report);
 
     QMutex          mMutex;
     QWaitCondition  mWaitCondition;
@@ -75,23 +76,22 @@ class BackTester : public QThread, public FClass
     QString         mOrigIndicator;
     QStringList     mTestRule;
     QStringList     mTestIndicator;
-    QString         mStrategyId;        // a checksum for rule+indicator
-    int             mTsId;              // the strategy id returned by the DB (primary key)
+    QString         mStrategyId;        // A checksum for rule+indicator
+    int             mTsId;              // The strategy id returned by the DB (primary key)
 
     QRegExp         mConstMatcher;
     QRegExp         mEditedMatcher;
     QRegExp         mErrorMatcher;
 
-    QList<QStringList> mConst; // hold the constants. one constant per list, each variety per stringlist
-    QList<int>      mCPos;     // holds the postion of each constant in the file
-    QList<int>      mCType;    // hold where the constant belonged to, 1=rule 2=indicator
-    QList<int>      mIdx;      // we need for each constant an own index counter
-    QList<bool>     mOneMoreLoop; // and we need for each constant an marker if he reach the end
-    int             mLoopsNeeded; // used for progress bar
+    QList<QStringList> mConst; // Hold the constants. one constant per list, each variety per stringlist
+    QList<int>      mCPos;     // Holds the postion of each constant in the file
+    QList<int>      mCType;    // Hold where the constant belonged to, 1=rule 2=indicator
+    QList<int>      mIdx;      // We need for each constant an own index counter
+    QList<bool>     mOneMoreLoop; // And we need for each constant an marker if he reach the end
+    int             mLoopsNeeded; // Used for progress bar
 
     QDate           mFromDate;
     QDate           mToDate;
 };
 
 #endif
-

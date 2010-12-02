@@ -17,12 +17,10 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtGui>
-#include <QDebug>
-
 #include "InspectorF.h"
-#include "RcFile.h"
 
+#include "Trader.h"
+#include "BackTester.h"
 
 InspectorF::InspectorF()
           : QMainWindow()
@@ -31,7 +29,7 @@ InspectorF::InspectorF()
   FWidget* cw = new FWidget(this);
   setCentralWidget(cw);
 
-  // create the tab pages...
+  // Create the tab pages...
 
   //
   // ...the rules tab
@@ -93,7 +91,7 @@ InspectorF::InspectorF()
   mDetailDisplay.setReadOnly(true);
   mDetailDisplay.setOrientation(Qt::Horizontal);
 
-  // add all pages to the tab widget
+  // Add all pages to the tab widget
   mTabWidget = new QTabWidget;
   mTabWidget->addTab(rulesTab, tr("Strategy"));
   mTabWidget->addTab(testingTab, tr("Testing"));
@@ -119,7 +117,7 @@ InspectorF::InspectorF()
   connect(&mScoreView, SIGNAL(newSelection(const QModelIndex &)), this, SLOT(resultSelected(const QModelIndex &)));
 
   //
-  // create the buttons and progess bar at the bottom
+  // Create the buttons and progess bar at the bottom
 
 //   QPushButton* closeButton = new QPushButton(tr("Close"));
 //   connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
@@ -142,7 +140,7 @@ InspectorF::InspectorF()
   //buttonsLayout->addWidget(closeButton);
 
   //
-  // add all stuff to the main widget
+  // Add all stuff to the main widget
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addWidget(mTabWidget);
   mainLayout->addLayout(buttonsLayout);
@@ -157,7 +155,7 @@ InspectorF::InspectorF()
 
 InspectorF::~InspectorF()
 {
-  // is it a bug in QTabWidget? signal is emmitted when go die.
+  // Is it a bug in QTabWidget? signal is emmitted when go die.
   // The result is in our case a segfault
   disconnect(mTabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
@@ -189,7 +187,7 @@ void InspectorF::init()
 //   allFiles = dir.entryList(QDir::Files, QDir::Name);
 //   mIndicatorName.insertItems(0, allFiles);
 
-//   QSqlQuery* query = mFilu->getGroups(-1); // get all groups
+//   QSqlQuery* query = mFilu->getGroups(-1); // Get all groups
 //   if(query)
 //   {
 //     while(query->next())
@@ -238,7 +236,7 @@ void InspectorF::readSettings()
   ba = mRcFile->getBA("InspectorState");
   restoreState(ba);
 
-  // restore rule page
+  // Restore rule page
   mTradingRuleName.setEditText(mRcFile->value("Rule").toString());
   mEditor.mRule.insertPlainText(mRcFile->value("Rule").toString());
   mEditor.mRule.moveCursor(QTextCursor::Start);
@@ -246,7 +244,7 @@ void InspectorF::readSettings()
   mEditor.mIndi.insertPlainText(mRcFile->value("Indicator").toString());
   mEditor.mIndi.moveCursor(QTextCursor::Start);
 
-  // restore testing page
+  // Restore testing page
   mFromDate.setDate(mRcFile->value("FromDate").toDate());
   mToDate.setDate(mRcFile->value("ToDate").toDate());
 
@@ -295,7 +293,7 @@ void InspectorF::loadRule(const QString& fileName)
   mTrader->getRule(mOrigRule);
   //qDebug() << mOrigRule;
 
-  // mark all constants
+  // Mark all constants
   mOrigRule.replaceInStrings(mConstMatcher, "{\\1}");
   mEditor.mRule.clear();
   mEditor.mRule.insertPlainText(mOrigRule.join("\n"));
@@ -319,16 +317,16 @@ void InspectorF::tabChanged(int/* = 0*/)
     mEdited = false;
     mTestButton->setEnabled(true);
 
-    // we start with the rule file
+    // We start with the rule file
     QString txt = mEditor.mRule.toPlainText();
 
-    // restore unchanged constants
+    // Restore unchanged constants
     txt.replace(QRegExp("\\{([\\d\\.]+)\\}"),"\\1");
 
     //mRuleDisplay.setPlainText(txt);
     mDisplay.mRule.setPlainText(txt);
 
-    // all again for the indicator file
+    // All again for the indicator file
     txt = mEditor.mIndi.toPlainText();
     txt.replace(QRegExp("\\{([\\d\\.]+)\\}"),"\\1");
     //mIndicatorDisplay.setPlainText(txt);
@@ -416,8 +414,8 @@ void InspectorF::tabChanged(int/* = 0*/)
     mDetailView.resizeColumnsToContents();
     //mDetailView.hideColumn(0);
     mDetailView.hideColumn(1);
-    mDetailView.hideColumn(12); // rule
-    mDetailView.hideColumn(13); // indicator
+    mDetailView.hideColumn(12); // Rule
+    mDetailView.hideColumn(13); // Indicator
     //resize(mView->columnWidth(2) + mView->columnWidth(3) + mView->columnWidth(4) + mView->columnWidth(5) + 10, height());
     //show();
 
@@ -469,7 +467,7 @@ void InspectorF::newData()
     ++it;
   }
 
-  tabChanged(); // update tab
+  tabChanged(); // Update tab
 }
 
 void InspectorF::resultSelected(const QModelIndex& index)

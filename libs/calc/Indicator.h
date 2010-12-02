@@ -28,10 +28,10 @@ class TALib;
 
 /***********************************************************************
 *
-* Yes, here is the beef! He calculate the data...well, not really.
-* The calculation itself will done by CalcType-Objects
+*   Yes, here is the beef! He calculate the data...well, not really.
+*   The calculation itself will done by CalcType-Objects
 *
-* He is not only used for painting, scanners are also powered by him
+*   He is not only used for painting, scanners are also powered by him
 *
 ************************************************************************/
 
@@ -53,7 +53,7 @@ class Indicator : public FClass
 
     void          ignorePlot(bool ignore = true);
     int           barsNeeded();
-    void          getVariableNames(QSet<QString> *list);
+    void          getVariableNames(QSet<QString>* list);
 
     friend class  CalcType;
     friend class  TALib;
@@ -65,21 +65,21 @@ class Indicator : public FClass
     void          readSettings();
 
     TALib*               mTALib;
-    DataTupleSet*        mData;              // holds the beef, all calculated values
+    DataTupleSet*        mData;              // Holds the beef, all calculated values
     QHash<QString, int>  mFiIds;             // <fi-alias>,<fiId>
-    QStringList          mIndicator;         // holds the whole (rehashed) indicator file
-    QStringList          mOrigIndicator;     // holds the file as it is
-    QList<CalcType*>     mCalcCommands;      // rehashed plot statements, now objects
+    QStringList          mIndicator;         // Holds the whole (rehashed) indicator file
+    QStringList          mOrigIndicator;     // Holds the file as it is
+    QList<CalcType*>     mCalcCommands;      // Rehashed plot statements, now objects
     QString              mViewName;
-    //QString              mIndicatorFileName; // the currend used indicator
+    //QString              mIndicatorFileName; // The currend used indicator
     QString              mIndicatorPath;
 
     bool                 mIgnorePlot;
     bool                 mParseError;
 
-    QSet<QString>       *mAlreadyIncluded;
-    QSet<QString>       *mUsedVariables;
-    QSet<QString>       *mBuildInVariables;
+    QSet<QString>*       mAlreadyIncluded;
+    QSet<QString>*       mUsedVariables;
+    QSet<QString>*       mBuildInVariables;
 };
 
 #endif

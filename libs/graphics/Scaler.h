@@ -24,7 +24,7 @@
 
 /***********************************************************************
 *
-* This class calc (real)values to pixel and vice versa
+*   This class calc (real)values to pixel and vice versa
 *
 ************************************************************************/
 
@@ -73,7 +73,7 @@ class Scaler
     double      mIndicatingRange;
     double      mFactor;             // = mChartHeight / mIndicatingRange
 
-    double      mMaxHigh;            // the min/max-extrema of all all values...
+    double      mMaxHigh;            // The min/max-extrema of all all values...
     double      mMinLow;             // ...in the currend display range
     double      mValuePerTick;
     double      mTickValue;

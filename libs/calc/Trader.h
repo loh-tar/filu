@@ -28,17 +28,17 @@ class MyParser;
 
 /***********************************************************************
 *
-*  The Trader produce as output a list with buy/sell orders.
-*  To do the job he use an normal indicator file (with suitable commands
-*  of course) and a trading rule file.
+*   The Trader produce as output a list with buy/sell orders.
+*   To do the job he use an normal indicator file (with suitable commands
+*   of course) and a trading rule file.
 *
-*  He is used by CalcTrade.cpp to illustrade the result of the trading
-*  idea, the (FIXME: development not started) portfolio manager and
-*  (FIXME: not implemented) back tester inspectorf
+*   He is used by CalcTrade.cpp to illustrade the result of the trading
+*   idea, the (FIXME: development not started) portfolio manager and
+*   (FIXME: not implemented) back tester inspectorf
 *
-*  See also in your source directory
-*    doc/indicator-file-format.txt
-*    doc/trading-rule-file-format.txt
+*   See also in your source directory
+*     doc/indicator-file-format.txt
+*     doc/trading-rule-file-format.txt
 *
 ************************************************************************/
 
@@ -64,17 +64,17 @@ class Trader : public FClass
     bool        simulate(DataTupleSet* data);
     int         prepare(const QDate& fromDate, const QDate& toDate);
     int         simulateNext();
-    void        getOrders(QList<QStringList> &orders);
-    void        getReport(QList<QStringList> &report);
-    void        getVariablesList(QSet<QString> *list);
+    void        getOrders(QList<QStringList>& orders);
+    void        getReport(QList<QStringList>& report);
+    void        getVariablesList(QSet<QString>* list);
 
   protected:
     bool        parseRule();
     bool        nextLine(bool nextBlock = false);
     void        readSettings();
     void        readRules();
-    void        appendMData(); // add all output variables to mData
-    void        takeActions(const QList<QStringList> &actions);
+    void        appendMData(); // Add all output variables to mData
+    void        takeActions(const QList<QStringList>& actions);
     void        actionBuy(const QStringList& action);
     void        actionSell(const QStringList& action);
     void        checkOpenOrders();
@@ -87,17 +87,17 @@ class Trader : public FClass
     void        appendReport(const QString& txt, const double v, const QString& vname, const int precision = 2);
 
     QString     mLine;
-    QString     mOrigLine;          // for error messages
-    int         mLineNumber;        // for error messages
-    QStringList mOrigRule;          // holds the readed rule file as it is
+    QString     mOrigLine;          // For error messages
+    int         mLineNumber;        // For error messages
+    QStringList mOrigRule;          // Holds the readed rule file as it is
 
     QHash<QString,QString>       mSettings;
     QHash<const QString, double> mVariable;
-    QStringList                  mDataAdded;  // holds variable names needs synced between mData and mVariable
+    QStringList                  mDataAdded;  // Holds variable names needs synced between mData and mVariable
 
-    QList<QStringList> mOpenOrders; // as the name implies, intern used
-    QList<QStringList> mOrders;     // for export/real trading. includes a date and "human readable" limit
-    QList<QStringList> mReport;     // like mOrders, but includes additional info about execution of orders
+    QList<QStringList> mOpenOrders; // As the name implies, intern used
+    QList<QStringList> mOrders;     // For export/real trading. includes a date and "human readable" limit
+    QList<QStringList> mReport;     // Like mOrders, but includes additional info about execution of orders
                                     // and a statistic report
 
     QList<Rule>    mRules;

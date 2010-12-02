@@ -28,8 +28,8 @@ class Grip;
 
 /***********************************************************************
 *
-* Grip is a mouse grip, when editing a chart object.
-* Used by COType.cpp and sub classes COxxx.cpp
+*   Grip is a mouse grip, when editing a chart object.
+*   Used by COType.cpp and sub classes COxxx.cpp
 *
 ************************************************************************/
 
@@ -39,9 +39,9 @@ class Grip : public QRectF
 
     typedef enum
     {
-      // must each chart object has
+      // Must each chart object has
       eAnchor,
-      // these positions are usual, some of them could a CO has
+      // These positions are usual, some of them could a CO has
       eTopLeft,
       eTop,
       eTopRight,
@@ -51,7 +51,7 @@ class Grip : public QRectF
       eBottomLeft,
       eLeft,
       eCenter,
-      // used by COLine and may useful for others
+      // Used by COLine and may useful for others
       eFarLeft,
       eFarRight
     }Type;
@@ -75,7 +75,7 @@ class Grip : public QRectF
     Type        mType;
     QDate       mDate;
     double      mValue;
-    int         mIdxPos;     // the index position of IndicatorPainters mBars
+    int         mIdxPos;     // The index position of IndicatorPainters mBars
     int         mIdxStatus;
 
     IndicatorPainter* mP;

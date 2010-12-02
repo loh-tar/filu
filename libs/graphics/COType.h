@@ -20,10 +20,7 @@
 #ifndef COTYPE_HPP
 #define COTYPE_HPP
 
-//#include <math.h>
-
 #include "FObject.h"
-
 #include "Grip.h"
 
 class COTuple;
@@ -32,7 +29,7 @@ class Scaler;
 
 /***********************************************************************
 *
-* This is the base class of all kind of chart objects
+*   This is the base class of all kind of chart objects
 *
 ************************************************************************/
 
@@ -51,10 +48,10 @@ class COType : public FObject
       eToKill
     }Status;
 
-    enum AttrPos      // the position of attribute in the edit window
+    enum AttrPos      // The position of attribute in the edit window
     {
       ePrepend = 0,
-      eAppend  = 1000 // should more than enough editable attributes
+      eAppend  = 1000 // Should more than enough editable attributes
     };
 
     typedef QHash<QString, QVariant> Attributes;
@@ -66,15 +63,15 @@ class COType : public FObject
     static void     getAllTypes(QStringList& list);
     static COType*  createNew(COTuple* co, IndicatorPainter* painter);
     static COType*  createNew(const QString& type, IndicatorPainter* painter);
-    static void     strToAttributes(const QString& str, QHash<QString, QString> &attr);
+    static void     strToAttributes(const QString& str, QHash<QString, QString>& attr);
 
-    void            erase(); // needed?
-    void            setStatus(Status status); // needed?
+    void            erase(); // Needed?
+    void            setStatus(Status status); // Needed?
     Status          status();
 
             void    paint(QPaintDevice* sheet);
     virtual bool    isInvolved(const QPoint& pos);
-    virtual void    showEditWindow(); // must public?
+    virtual void    showEditWindow(); // Must public?
 
     Status          handleEvent(QEvent* event);
 
@@ -83,7 +80,7 @@ class COType : public FObject
 
   protected:
             void    prepare(COTuple* co);
-    virtual void    prepare(const QHash<QString, QString> &keyValue);
+    virtual void    prepare(const QHash<QString, QString>& keyValue);
     virtual void    readAttributes(bool firstCall = false);
     virtual void    writeAttributes();
             bool    save();
@@ -109,7 +106,7 @@ class COType : public FObject
 
             Grip*   createNewGrip(const Grip::Type type, const QPointF& pos = QPoint(-1, -1));
             Grip*   renameGrip(Grip* grip, const Grip::Type newType);
-            Grip*   gripInvolved(const QPoint& point);      // returns the grip wich is hit by point
+            Grip*   gripInvolved(const QPoint& point);      // Returns the grip wich is hit by point
 
     // ***   event handler   ***
     virtual bool    mouseMoved(const QPoint& pos
@@ -121,22 +118,22 @@ class COType : public FObject
     virtual bool    rightButtonPressed(const QPoint& pos);
 
     QDialog*        mEditWindow;
-    Attributes      mAttribute;           // holds any other data an CO could have
-    QStringList     mAttrOrder;           // holds the attribute names in the order to show in edit window
-    QStringList     mAttrTxt;             // holds the user readable name of the attribute
+    Attributes      mAttribute;           // Holds any other data an CO could have
+    QStringList     mAttrOrder;           // Holds the attribute names in the order to show in edit window
+    QStringList     mAttrTxt;             // Holds the user readable name of the attribute
     QPainterPath    mObject;
     QPolygonF       mPaintedObject;
-    Grips           mGrip;                // all available grips
-    Grip*           mMovingGrip;          // user is editing this
-    Grip*           mAnchor;              // it's the "master" position
+    Grips           mGrip;                // All available grips
+    Grip*           mMovingGrip;          // User is editing this
+    Grip*           mAnchor;              // It's the "master" position
     Status          mStatus;
-    bool            mHover;               // not a extra status!
+    bool            mHover;               // Not a extra status!
     int             mClicksLeftTillNewIsPlaced;
 
     QRect             mChartArea;
-    Scaler*           mScaler;            // unused here, useful in subclasses?
+    Scaler*           mScaler;            // Unused here, useful in subclasses?
     IndicatorPainter* mP;                 //
-    QPaintDevice*     mSheet;             // holds the pointer given by paint(...)
+    QPaintDevice*     mSheet;             // Holds the pointer given by paint(...)
 };
 /*
 class MyTextEdit : public QTextEdit

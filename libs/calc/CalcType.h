@@ -26,7 +26,7 @@
 
 /***********************************************************************
 *
-* This is the base class of all kind of calc objects
+*   This is the base class of all kind of calc objects
 *
 ************************************************************************/
 

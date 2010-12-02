@@ -22,7 +22,7 @@
 #include "PlotSheet.h"
 #include "IndicatorPainter.h"
 
-IndiWidgetSimple::IndiWidgetSimple(const QString& name, FWidget* parent)
+IndiWidgetSimple::IndiWidgetSimple(const QString& name, FClass* parent)
                 : FWidget(parent)
                 , mName("1")
                 , mSetName(name)
@@ -30,7 +30,7 @@ IndiWidgetSimple::IndiWidgetSimple(const QString& name, FWidget* parent)
   init();
 }
 
-IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FWidget* parent)
+IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FClass* parent)
                : FWidget(parent)
                , mSetName(name)
 {

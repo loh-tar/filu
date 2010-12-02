@@ -98,7 +98,7 @@ void Importer::reset()
     mFi = 0;
   }
 
-  // read all symbol types out of the DB
+  // Read all symbol types out of the DB
   QSqlQuery* query = mFilu->execSql("GetAllSymbolTypes");
 
   if(!check4FiluError("Importer::reset: ERROR while exec GetAllSymbolTypes.sql"))
@@ -119,7 +119,7 @@ void Importer::reset()
 
 bool Importer::import(QString& data)
 {
-  // data could looks like:
+  // Data could looks like:
   // [Header]Name;Type;Provider;Symbol;Market;RefSymbol
   // Apple Computer;Stock;Yahoo;AAPL;NASDAQ;US0378331005
 
@@ -139,20 +139,20 @@ bool Importer::import(QString& data)
     row[i] = row.at(i).trimmed();
   }
 
-  if(row.indexOf(QRegExp(".+")) == -1) return true; // no content in data, only ";"
+  if(row.indexOf(QRegExp(".+")) == -1) return true; // No content in data, only ";"
 
   mOrigData = data;
   //qDebug() << "Importer::import: " << data;
   //qDebug() << "Importer::import: " << row;
 
-  // check if line is a tag line
+  // Check if line is a tag line
   if(row.at(0).startsWith("["))
   {
     return handleTag(row);
   }
 
-  // no, its not, therefore it must be a data line
-  // we place all in a QHash<QString, QString>
+  // No, its not, therefore it must be a data line.
+  // We place all in a QHash<QString, QString>
   for(int i = 0; i < mHeader.size(); ++i)
   {
     mData.insert(mHeader.at(i), row.at(i));
@@ -218,7 +218,7 @@ bool Importer::handleTag(QStringList& row)
 
   if(row.at(0).startsWith("[Header]"))
   {
-    // delete old header keys, be on the save side
+    // Delete old header keys, be on the save side
     for(int i = 0; i < mHeader.size(); ++i)
     {
       mData.remove(mHeader.at(i));
@@ -251,7 +251,7 @@ bool Importer::handleTag(QStringList& row)
 
   if(row.at(0).startsWith("[Stop]")) return false;
 
-  // at this point we have a global key
+  // At this point we have a global key
   QString key, value;
   buildPair(key, value, row.at(0));
 
@@ -277,11 +277,11 @@ QString Importer::makeUnique(const QString& key)
 
 void Importer::buildPair(QString& key, QString& value, const QString& line)
 {
-  // line looks like e.g. "[Provider]Yahoo" or "[Market1]Xetra"
+  // Line looks like e.g. "[Provider]Yahoo" or "[Market1]Xetra"
   QStringList pair = line.split("]");
   pair[0].remove("[");
-  // don't call here: key = makeUnique(pair.at(0))
-  // a global key can't be auto numbered.
+  // Don't call here: key = makeUnique(pair.at(0))
+  // A global key can't be auto numbered.
   key = pair.at(0);
   if(mMustBeUnique.contains(key)) key.append("0");
   if(pair.size() > 1) value = pair.at(1);
@@ -311,7 +311,7 @@ void Importer::prepare()
   mAllUsedSymbols.clear();
   mToDo.clear();
 
-  // examine the symbol types we have
+  // Examine the symbol types we have
   QString rawKey;
   QHashIterator<QString, QString> i(mData);
   while (i.hasNext())
@@ -374,10 +374,10 @@ void Importer::prepare()
 
     int toBeInstalled = mUsedSymbols + mUsedKnownSymbols.size();
 
-    // check if we have FIs or symbols to add (no symbols, no FI to add)
+    // Check if we have FIs or symbols to add (no symbols, no FI to add)
     if( (toBeInstalled > 0) and mToDo.contains("setFi") )
     {
-      // installs all symbols too
+      // Installs all symbols too
       text << "FIs/Symbols, ";
       mToDo.insert("addFi");
       if(toBeInstalled > 1) mToDo.insert("addSymbol");
@@ -389,7 +389,7 @@ void Importer::prepare()
     }
   }
 
-  // check for needs to add underlyings
+  // Check for needs to add underlyings
   if(mData.contains("Mother") and mData.contains("Weight"))
   {
     text << "Underlyings, ";
@@ -398,7 +398,7 @@ void Importer::prepare()
     mToDo.insert("addUnderlying");
   }
 
-  // check for needs to add eod bars
+  // Check for needs to add eod bars
   if( mData.contains("Market0") and
       mData.contains("Date")    and
       mData.contains("Close")   and
@@ -408,21 +408,21 @@ void Importer::prepare()
     mToDo.insert("addEODBar");
   }
 
-  // check for needs to add a split
+  // Check for needs to add a split
   if(mData.contains("SplitDate"))
   {
     text << "Splits, ";
     mToDo.insert("addSplit");
   }
 
-  // check for needs to add chart objects
+  // Check for needs to add chart objects
   if(mData.contains("CODate") and mData.contains("Plot"))
   {
     text << "ChartObjects, ";
     mToDo.insert("addCO");
   }
 
-  // check for needs to add group
+  // Check for needs to add group
   if(mData.contains("GroupPath") and mData.contains("RefSymbol0"))
   {
     text << "Groups, ";
@@ -435,8 +435,8 @@ void Importer::prepare()
 void Importer::setFi()
 {
   mFi = new FiTuple(1);
-  mFi->next();                         // set on first position
-  mFi->setSymbol(mSymbol);             // add the mSymbol tuple
+  mFi->next();                         // Set on first position
+  mFi->setSymbol(mSymbol);             // Add the mSymbol tuple
   mFi->setName(mData.value("Name"));
   mFi->setType(mData.value("Type"));
   //qDebug() << "Importer::setFi:" << mData.value("Name") << mData.value("Type");
@@ -447,26 +447,26 @@ void Importer::setSymbol()
   // ...and add them to a fresh mSymbol tuple
   mSymbol = new SymbolTuple(mTotalSymbolCount);
 
-  // first, reference symbols...
+  // First, reference symbols...
   for(int i = 0; i < mUsedRefSymbols.size(); ++i)
   {
     mSymbol->next();
     mSymbol->setCaption(mData.value(mUsedRefSymbols.at(i)));
-    // don't set market & owner, so the symbol will not added
+    // Don't set market & owner, so the symbol will not added
     // but used for searching for the FI
     mSymbol->setMarket("");
     mSymbol->setOwner("");
     //qDebug() << "Importer::setSymbol 1:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
-  // second, none provider symbols which has to be installed
+  // Second, none provider symbols which has to be installed
   for(int i = 0; i < mUsedKnownSymbols.size(); ++i)
   {
     mSymbol->next();
     mSymbol->setCaption(mData.value(mUsedKnownSymbols.at(i)));
     if(mKnownSTisProvider.value(mUsedKnownSymbols.at(i)))
     {
-      // we cant install a provider symbol without a market
+      // We cant install a provider symbol without a market
       mSymbol->setMarket("");
       mSymbol->setOwner("");
     }
@@ -478,7 +478,7 @@ void Importer::setSymbol()
     //qDebug() << "Importer::setSymbol 2:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
-  // and last, provider symbols which has to be installed
+  // And last, provider symbols which has to be installed
   for(int i = 0; i < mUsedSymbols; ++i)
   {
     QString p = "Provider" + QString::number(i);
@@ -497,7 +497,7 @@ bool Importer::setSymbol(const QString& symbol)
 {
   // Same name like setSymbol() but do a different job.
   // Here will Filu called to set the FiId and the SqlParm :symbol
-  if(symbol == mData.value("_LastSymbol")) return true;  // we are up to date
+  if(symbol == mData.value("_LastSymbol")) return true;  // We are up to date
 
   int retVal = mFilu->setSymbolCaption(symbol);
 
@@ -515,7 +515,7 @@ bool Importer::setSymbol(const QString& symbol)
 bool Importer::setMarket(const QString& market)
 {
   // Here will Filu called to set the marketId and the SqlParm :market
-  if(market == mData.value("_LastMarket")) return true;  // we are up to date
+  if(market == mData.value("_LastMarket")) return true;  // We are up to date
 
   int retVal = mFilu->setMarketName(market);
 
@@ -571,8 +571,8 @@ void Importer::addFi()
 
     if(newFiId >= Filu::eData)
     {
-      // success
-      mFilu->errorText(); // clear potential messages
+      // Success
+      mFilu->errorText(); // Clear potential messages
       break;
     }
   }
@@ -621,7 +621,7 @@ void Importer::addSymbol()
   mSymbol->rewind();
   while(mSymbol->next())
   {
-    // skip reference and garbage symbols
+    // Skip reference and garbage symbols
     if(mSymbol->caption().isEmpty()) continue;
     if(mSymbol->owner().isEmpty()) continue;
     if(mSymbol->market().isEmpty()) continue;
@@ -721,13 +721,13 @@ void Importer::addEODBar()
     }
   }
 
-  // save market and symbol to detect if data owner was changing
+  // Save market and symbol to detect if data owner was changing
   QString symbol = mData.value(mAllUsedSymbols.at(0));
   QString market = mData.value("Market0");
 
   if(!mData.contains("_EODSymbol"))
   {
-    // at first call, set them
+    // At first call, set them
     mData.insert("_EODSymbol", symbol);
     mData.insert("_EODMarket", market);
   }
@@ -736,7 +736,7 @@ void Importer::addEODBar()
      mData.value("_EODMarket") != market)
   {
     mToDo.insert("commitEODBars");
-    addEODBar(); // call myself to make the commit
+    addEODBar(); // Call myself to make the commit
 
     mData.insert("_EODSymbol", symbol);
     mData.insert("_EODMarket", market);
@@ -744,14 +744,14 @@ void Importer::addEODBar()
 
   if(mPendingData.isEmpty())
   {
-    // add the header needed by mFilu->addEODBarData()
+    // Add the header needed by mFilu->addEODBarData()
     mPendingData << "Date;Open;High;Low;Close;Volume;OpenInterest;Quality";
   }
 
   QStringList data;
   data << mData.value("Date");
 
-  // if no Open/High/Low use Close instead
+  // If no Open/High/Low use Close instead
   data << mData.value("Open", mData.value("Close"));
   data << mData.value("High", mData.value("Close"));
   data << mData.value("Low",  mData.value("Close"));
@@ -768,9 +768,9 @@ void Importer::addEODBar()
 
 void Importer::addSplit()
 {
-  // if no quality is set, use 1 as default
+  // If no quality is set, use 1 as default
   // 1=gold, as final classified data by script
-  // see doc/hacking-provider-scripts.txt
+  // See doc/hacking-provider-scripts.txt
   int quality = mData.value("Quality", "1").toInt();
 
   QString comment;
@@ -840,14 +840,14 @@ void Importer::addSplit()
 
 void Importer::addCO()
 {
-  mFilu->setSqlParm(":id", 0); // force to insert new CO
+  mFilu->setSqlParm(":id", 0); // Force to insert new CO
   if(!setSymbol(mData.value("RefSymbol0")) >= Filu::eSuccess) return;
   if(!setMarket(mData.value("Market0")) >= Filu::eSuccess) return;
   mFilu->setSqlParm(":date", mData.value("CODate"));
   mFilu->setSqlParm(":plot", mData.value("Plot"));
   mFilu->setSqlParm(":type", mData.value("Type"));
 
-  // we have to restore newline and semicolon
+  // We have to restore newline and semicolon
   // before do the insert
   mFilu->setSqlParm(":parameters", FTool::lineToTxt(mData.value("ArgV")));
 
@@ -907,19 +907,19 @@ void Importer::addGroup()
     return;
   }
 
-  // save path to detect if group was changing
+  // Save path to detect if group was changing
   QString path = mData.value("GroupPath");
 
   if(!mData.contains("_GroupPath"))
   {
-    // at first call, set them
+    // At first call, set them
     mData.insert("_GroupPath", path);
   }
 
   if(mData.value("_GroupPath") != path)
   {
     mToDo.insert("commitGroup");
-    addGroup(); // call myself to make the commit
+    addGroup(); // Call myself to make the commit
 
     mData.insert("_GroupPath", path);
   }

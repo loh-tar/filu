@@ -38,12 +38,6 @@ FiluU::FiluU(const QString& connectionName, RcFile* rcFile)
 FiluU::~FiluU()
 {}
 
-/******************************************************************
-*
-*                          public stuff
-*
-*******************************************************************/
-
 QSqlQuery* FiluU::searchFi(const QString& name, const QString& type)
 {
   if(!initQuery("SearchFi")) return 0;
@@ -245,11 +239,10 @@ QSqlQuery * FiluU::getBTLog(int backtestId, int fiId, int marketId)
 }
 
 int  FiluU::addTradingStrategy( const QString sId,
-                                    const QString fromDate,
-                                    const QString toDate,
-                                    const QString rule,
-                                    const QString indicator
-                                  )
+                                const QString fromDate,
+                                const QString toDate,
+                                const QString rule,
+                                const QString indicator )
 {
   if(!initQuery("AddTradingStrategy")) return 0;
 
@@ -274,8 +267,7 @@ int  FiluU::addTradingStrategy( const QString sId,
 
 bool FiluU::addTradingResult( int tsId, int fiId, int marketId,
                               double wltp, double lltp, double agwlp,
-                              double alltp, double tpp, double score
-                            )
+                              double alltp, double tpp, double score )
 {
   if(!initQuery("AddTradingResult")) return false;
 
@@ -311,12 +303,6 @@ QSqlQuery* FiluU::getBTDetails(const QString& strategy)
 
   return query;
 }
-
-/******************************************************************
-*
-*                          private stuff
-*
-*******************************************************************/
 
 void FiluU::createTables()
 {

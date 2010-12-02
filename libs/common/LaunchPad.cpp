@@ -113,7 +113,7 @@ void LaunchPad::buttonClicked(int id)
   {
     if(mSymbolTypes.at(id).isEmpty())
     {
-      // exec cmd with each symbol to FI
+      // Exec cmd with each symbol to FI
       found = true;
       execCmd(mCommands.at(id), st);
     }
@@ -121,13 +121,13 @@ void LaunchPad::buttonClicked(int id)
     {
       if(mMultis.at(id))
       {
-        // exec cmd with each market to symbol type
+        // Exec cmd with each market to symbol type
         found = true;
         execCmd(mCommands.at(id), st);
       }
       else if(st->marketId() == mMarketId)
       {
-        // exec cmd with unique symbol type and market
+        // Exec cmd with unique symbol type and market
         found = true;
         execCmd(mCommands.at(id), st);
         break;

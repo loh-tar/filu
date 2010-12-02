@@ -65,7 +65,7 @@ bool PlotLine::paint(QPaintDevice* sheet, QRect& chartArea,
 
   double value;
   int i = 0;
-  // find first valid value
+  // Find first valid value
   while(data->next())
   {
     if(data->getValue(mCommand.at(1), value)) break;

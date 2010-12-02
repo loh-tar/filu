@@ -35,7 +35,7 @@ Grip::Grip( IndicatorPainter* painter,Type type
 
     : QRectF(pos, size)
     , mType(type)
-    , mIdxPos(-1)  // mark as unvalid
+    , mIdxPos(-1)  // Mark as unvalid
     , mIdxStatus(Tuple::eNotValid)
     , mP(painter)
 {
@@ -47,21 +47,21 @@ Grip::~Grip()
 
 void Grip::update()
 {
-  // calculate mIdxPos and pixel postion out of mDate and mValue
+  // Calculate mIdxPos and pixel postion out of mDate and mValue
 
   QPoint pos;
   int    idx;
 
   idx = mIdxPos;
 
-  if(mIdxStatus < Tuple::eValid) // aka not valid
+  if(mIdxStatus < Tuple::eValid) // Aka not valid
   {
-    // fetch the index of mDate in mBars or a status value
+    // Fetch the index of mDate in mBars or a status value
     idx = mP->mBars->findDate(mDate);
 
     if(idx > Tuple::eValid)
     {
-      // good!
+      // Good!
       mIdxStatus = Tuple::eValid;
       mIdxPos = idx;
     }
@@ -70,9 +70,9 @@ void Grip::update()
       // mDate is not available in mBars so idx holds status no index
       mIdxStatus = idx;
 
-      // set idx to a valid value
-      if(mIdxStatus == Tuple::eUnderRange) idx = 0;  // set to first available position
-      else idx = mP->mBars->count() - 1;             // set to last available position
+      // Set idx to a valid value
+      if(mIdxStatus == Tuple::eUnderRange) idx = 0;  // Set to first available position
+      else idx = mP->mBars->count() - 1;             // Set to last available position
     }
   }
 
@@ -83,7 +83,7 @@ void Grip::update()
 
 void Grip::set(const QPointF& pos)
 {
-  // set to pixel position and calculate mIdxPos, mDate and mValue
+  // Set to pixel position and calculate mIdxPos, mDate and mValue
 
   moveCenter(pos);
 

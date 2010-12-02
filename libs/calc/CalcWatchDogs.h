@@ -24,7 +24,7 @@
 
 /***********************************************************************
 *
-* Yes, call the watch dogs and look if they find a burglar
+*   Yes, call the watch dogs and look if they find a burglar
 *
 ************************************************************************/
 

@@ -27,8 +27,8 @@ class IndicatorDataView;
 
 /***********************************************************************
 *
-*  He is the same as IndiWidgetSimple with the improvement of
-*  additional IndicatorPicker and IndicatorDataView.
+*   He is the same as IndiWidgetSimple with the improvement of
+*   additional IndicatorPicker and IndicatorDataView.
 *
 ************************************************************************/
 
@@ -47,7 +47,7 @@ class IndicatorWidget : public IndiWidgetSimple
   public slots:
     void          showBarData(BarTuple* bars);
     void          showFiIdMarketId(int fiId, int marketId);
-    void          setSize(QList<int> &size);
+    void          setSize(QList<int>& size);
     void          mouseSlot(MyMouseEvent*);
 
   protected slots:

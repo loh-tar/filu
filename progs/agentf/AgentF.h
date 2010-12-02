@@ -78,18 +78,18 @@ class AgentF : public FObject
     Script*            mScript;
     Importer*          mImporter;
     Exporter*          mExporter;
-    QList<QProcess *>  mClones;
+    QList<QProcess*>   mClones;
 
     bool               mQuit;
-    bool               mIamEvil;   // true if in deamon mode, avoid recursive calls
+    bool               mIamEvil;   // True if in deamon mode, avoid recursive calls
 
-    QList<QStringList> mCommands;  // holds all prepared commands for assigning to clones
-    //QStringList        mCMD;       // holds the command line on start up
+    QList<QStringList> mCommands;  // Holds all prepared commands for assigning to clones
+    //QStringList        mCMD;       // Holds the command line on start up
 
     QTextStream        mConsole;/*(stdout);*/
     QTextStream        mErrConsole;
 
-    // setting variables
+    // Setting variables
     int                mMaxClones;
     //int                mDebugLevel;
     QString            mLogFile;

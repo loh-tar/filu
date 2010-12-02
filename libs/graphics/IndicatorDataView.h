@@ -20,7 +20,7 @@
 #ifndef INDICATORDATAVIEW_HPP
 #define INDICATORDATAVIEW_HPP
 
-#include <QtGui>  // needed, FClass.h only include QtCore
+#include <QtGui>  // Needed, FClass.h only include QtCore
 
 #include "FClass.h"
 #include "IndicatorPainter.h"
@@ -30,7 +30,7 @@ class MyMouseEvent;
 
 /***********************************************************************
 *
-* This class ...
+*   This class ...
 *
 ************************************************************************/
 

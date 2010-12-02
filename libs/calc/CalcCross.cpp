@@ -21,7 +21,6 @@
 
 CalcCross::CalcCross(Indicator* parent)
          : CalcType(parent)
-
 {
   mType = "Cross";
 }
@@ -71,7 +70,7 @@ bool CalcCross::calc()
   QString operand2 = mIns.at(1);
   QString opertr   = mIns.at(2);
 
-  // check if both operand variables exist. This should every time happens.
+  // Check if both operand variables exist. This should every time happens.
   // But in case of an operand is a constant, we have probably to add
   // a new variable, but not if the same konstant exist already
 
@@ -113,7 +112,7 @@ bool CalcCross::calc()
     }
   }
 
-  // create our output variable
+  // Create our output variable
   addToDataSet(mOuts.at(0));
 
   int outBegIdx = 0;
@@ -126,10 +125,9 @@ bool CalcCross::calc()
   if(firstValid < outBegIdx) firstValid = outBegIdx;
 
   mData->setValidRange(mOuts.at(0), firstValid + 1, mData->dataTupleSize() - firstValid);
-
   mData->setRange(firstValid, mData->dataTupleSize());
 
-  // prepare for battle...
+  // Prepare for battle...
   double op1, op2, result=0.0;
 
   //...and rock 'n' roll...

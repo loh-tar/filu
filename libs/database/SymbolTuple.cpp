@@ -169,8 +169,8 @@ QVariant SymbolTableModel::headerData(
 *******************************************************************/
 SymbolTableView::SymbolTableView(SymbolTuple* symbols, QWidget* parent)
                : QTableView(parent)
+               , mSymbolTableModel(0)
 {
-  mSymbolTableModel = 0;
   setContent(symbols);
 }
 

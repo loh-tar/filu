@@ -30,8 +30,8 @@ FWidget::FWidget(FClass* parent)
 {}
 
 FWidget::FWidget(FWidget* parent)
-       : QWidget((QWidget*)parent)
-       , FClass((FClass*)parent)
+       : QWidget(parent)
+       , FClass(parent)
 {}
 
 FWidget::FWidget(const QString& connectionName, QWidget* parent)
@@ -40,7 +40,6 @@ FWidget::FWidget(const QString& connectionName, QWidget* parent)
 {}
 
 FWidget::FWidget(FMainWindow* parent)
-       : QWidget((QWidget*)parent)
+       : QWidget(parent)
        , FClass(parent)
 {}
-

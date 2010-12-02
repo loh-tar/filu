@@ -22,12 +22,7 @@
 #include "SearchField.h"
 #include "Script.h"
 
-AddFiPage::AddFiPage(ManagerF* parent) : ManagerPage(parent)
-{
-  createPage();
-}
-
-AddFiPage::AddFiPage(FWidget* parent) : ManagerPage(parent)
+AddFiPage::AddFiPage(FClass* parent) : ManagerPage(parent)
 {
   createPage();
 }
@@ -74,7 +69,7 @@ void AddFiPage::createPage()
   connect(mResultList, SIGNAL(cellClicked(int, int)), this, SLOT(selectResultRow(int, int)));
 
   //
-  // the add area
+  // The add area
   mAddBtn = new QPushButton;
   mAddBtn->setText("Add to DB");
   connect(mAddBtn, SIGNAL(clicked()), this, SLOT(addToDB()));
@@ -107,7 +102,7 @@ void AddFiPage::createPage()
   mSymbolType1 = new QComboBox;
   mSymbolType2 = new QComboBox;
   mSymbolType3 = new QComboBox;
-  // read all symbol types out of the DB
+  // Read all symbol types out of the DB
   QSqlQuery* query = mFilu->execSql("GetAllSymbolTypes");
   if(!check4FiluError("AddFiPage::createPage: ERROR while exec GetAllSymbolTypes.sql"))
   {
@@ -127,8 +122,8 @@ void AddFiPage::createPage()
   addEditLineLO->addWidget(mRefSymbol, 1, 0);
   addEditLineLO->setColumnStretch(0, 2);
   addEditLineLO->addWidget( new QLabel("Name"), 0, 1);
-  addEditLineLO->addWidget(mName, 1, 1, 1, 3);          // span over three columns
-  addEditLineLO->setColumnStretch(3, 3);                // expand the empty column
+  addEditLineLO->addWidget(mName, 1, 1, 1, 3);          // Span over three columns
+  addEditLineLO->setColumnStretch(3, 3);                // Expand the empty column
   addEditLineLO->addWidget( new QLabel("Type"), 0, 4);
   addEditLineLO->addWidget(mType, 1, 4);
 
@@ -165,7 +160,7 @@ void AddFiPage::createPage()
   else qDebug() << "AddFiPage::createPage: no markets found";
 
   //
-  // build the main layout
+  // Build the main layout
   QGridLayout* searchLayout = new QGridLayout;
   searchLayout->addWidget(mProviderSelector  , 0, 0);
   searchLayout->addWidget(mTypeSelector      , 0, 1);
@@ -288,7 +283,7 @@ void AddFiPage::fillResultTable(QStringList* data)
 
     mResultKeys.clear();
 /*
-    // create headers
+    // Create headers
     QStringList headers = data->at(0).split(";");
     for(int i = 0; i < headers.size(); ++i)
     {
@@ -304,7 +299,7 @@ void AddFiPage::fillResultTable(QStringList* data)
 
   int r, c, re; // row, column, existing rows
   re = mResultList->rowCount();
-  for(r = 0; r < data->size(); ++r)  // rows
+  for(r = 0; r < data->size(); ++r)  // Rows
   {
     QStringList row = data->at(r).split(";");
     if(row.at(0).startsWith("[Header]"))
@@ -325,7 +320,7 @@ void AddFiPage::fillResultTable(QStringList* data)
 
     mResultList->insertRow(r + re);
 
-    for(c = 0; c < row.size(); ++c)     // columns
+    for(c = 0; c < row.size(); ++c)     // Columns
     {
       if(c > mResultList->columnCount() - 1)
         mResultList->insertColumn(c);
@@ -351,7 +346,7 @@ void AddFiPage::fillResultTable(QStringList* data)
   mResultList->resizeColumnsToContents();
   mResultList->horizontalHeader()->show();
 
-  delete data; // no longer needed
+  delete data; // No longer needed
   mResultList->update();
 }
 
@@ -413,7 +408,7 @@ void AddFiPage::addToDB()
 //   if(mDisplayType == "Stock")
 //   {
 
-    // build a hopefully useful log message
+    // Build a hopefully useful log message
     QStringList msg;
     msg.append("Add to DB:");
 
@@ -474,15 +469,15 @@ void AddFiPage::addToDB()
     symbol->setMarket(mMarket3->currentText());
     symbol->setOwner(mSymbolType3->currentText());
 
-    fi.next(); // set on first position
+    fi.next(); // Set on first position
 
     fi.setSymbol(symbol);
     fi.setName(mName->text());
     fi.setType(mType->currentText());
 
-    mFilu->errorText(); // make sure there are no old messages left
+    mFilu->errorText(); // Make sure there are no old messages left
 
-    // here is the beef
+    // Here is the beef
     if(mFilu->addFiCareful(fi) < Filu::eSuccess)
     {
       check4FiluError("AddFiPage::addToDB: Oops! new FI or Symbol not added to DB");
@@ -493,7 +488,7 @@ void AddFiPage::addToDB()
     else
     {
       emit message("New FI added to DB");
-      // looks good, clear the edit fields
+      // Looks good, clear the edit fields
       mRefSymbol->setText("");
       mName->setText("");
       mSymbol1->setText("");
@@ -541,9 +536,9 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
 
       for(int i = 1; i <= psml.size(); ++i)
       {
-        QWidget* w = mResultList->cellWidget(row, psml.at(i - 1));
-        if(!w) continue;
-        QStringList txt = ((TWIB*)w)->text().split(" ");
+        TWIB* twib = dynamic_cast<TWIB*>(mResultList->cellWidget(row, psml.at(i - 1)));
+        if(!twib) continue;
+        QStringList txt = twib->text().split(" ");
         symbol->next();
         symbol->setCaption(txt.at(1));
         symbol->setMarket("");
@@ -560,13 +555,13 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
     symbol->setMarket(psmSplitted.at(2));
     symbol->setOwner(psmSplitted.at(0));
 
-    fi.next(); // set on first position
+    fi.next(); // Set on first position
 
     fi.setSymbol(symbol);
     fi.setName(mResultList->item(row, mResultKeys.value("Name"))->text());
     fi.setType(mResultList->item(row, mResultKeys.value("Type"))->text());
 
-    // here is the beef
+    // Here is the beef
     mFilu->addFiCareful(fi);
 
     if(mFilu->hadTrouble())

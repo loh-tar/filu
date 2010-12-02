@@ -24,13 +24,13 @@
 
 /***********************************************************************
 *
-* Support the full functionality of TA-Lib but don't calculate.
+*   Support the full functionality of TA-Lib but don't calculate.
 *
-* It is more like an interface. He fetch all infos about a function
-* and provide they in a user readable form.
+*   It is more like an interface. He fetch all infos about a function
+*   and provide they in a user readable form.
 *
-* One other task is to replace "INCLTALIB(...)" with "foo = TALIB(...)"
-* and add all "PLOT(...)" lines needed to got the desired indicator.
+*   One other task is to replace "INCLTALIB(...)" with "foo = TALIB(...)"
+*   and add all "PLOT(...)" lines needed to got the desired indicator.
 *
 ************************************************************************/
 

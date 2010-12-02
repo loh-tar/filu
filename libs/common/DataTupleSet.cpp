@@ -72,7 +72,7 @@ bool DataTupleSet::append(const QString& key)
 
   DataTuple* dt = new DataTuple(dataTupleSize(), key);
 
-  while(dt->next()) dt->setValue(0.0); // needed e.g. by CalcWatchDogs.cpp
+  while(dt->next()) dt->setValue(0.0); // Needed e.g. by CalcWatchDogs.cpp
 
   return append(dt);
 }
@@ -253,14 +253,14 @@ int DataTupleSet::dataTupleSize()
 
 void DataTupleSet::setNeededBars(const QString& name, int value)
 {
-  if(!DataSet.contains(name)) return; // in case name is a constant (number)
+  if(!DataSet.contains(name)) return; // In case name is a constant (number)
 
   DataSet.value(name)->mNeedsBars = value;
 }
 
 int DataTupleSet::neededBars(const QString& name)
 {
-  if(!DataSet.contains(name)) return 1; // in case name is a constant (number)
+  if(!DataSet.contains(name)) return 1; // In case name is a constant (number)
 
   return DataSet.value(name)->mNeedsBars;
 }

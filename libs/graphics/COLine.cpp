@@ -22,18 +22,15 @@
 COLine::COLine(IndicatorPainter* painter)
       : COType(painter)
 {
-  //qDebug() << "COLine::COLine(FClass* parent) : FClass(parent)";
-
   mClicksLeftTillNewIsPlaced = 2;
 
   setAttribute("Type", "Line");
 
-  setAttribute("ExtendLeft", false, tr("Extend the line left"));
+  setAttribute("ExtendLeft",  false, tr("Extend the line left"));
   setAttribute("ExtendRight", false, tr("Extend the line right"));
-  setAttribute("Horizontal", false, tr("Justify horizontal"));
-  setAttribute("WatchDog", false, tr("Use as watch dog"));
-  setAttribute("WatchRef", "", tr("Watch Variable(s)"));
-
+  setAttribute("Horizontal",  false, tr("Justify horizontal"));
+  setAttribute("WatchDog",    false, tr("Use as watch dog"));
+  setAttribute("WatchRef",       "", tr("Watch Variable(s)"));
 
 //   QRectF rec(0, 0, 10, 10);
 //   rec.moveCenter(QPointF(0, 0));
@@ -49,7 +46,7 @@ COLine::~COLine()
 
 bool COLine::isInvolved(const QPoint& pos)
 {
-  // move our help line to the mouse position
+  // Move our help line to the mouse position
   mHelp.translate(-mHelp.p1());
   mHelp.translate(-mHelp.pointAt(0.5));
   mHelp.translate(pos);
@@ -67,7 +64,7 @@ bool COLine::isInvolved(const QPoint& pos)
 // }
 /***********************************************************************
 *
-*   protected slots
+*   Protected Slots
 *
 ************************************************************************/
 void COLine::editWindowChanged()
@@ -120,15 +117,15 @@ void COLine::editWindowChanged()
 
 /***********************************************************************
 *
-*   protected functions
+*   Protected Functions
 *
 ************************************************************************/
-void COLine::prepare(const QHash<QString, QString> &keyValue)
+void COLine::prepare(const QHash<QString, QString>& keyValue)
 {
   //qDebug() << "COLine::prepare(QHash<>)" << keyValue;
   COType::prepare(keyValue);
 
-  // here we have to set all spezial settings
+  // Here we have to set all spezial settings
   setAttribute("ExtendLeft", keyValue.value("ExtendLeft") == "true");
   setAttribute("ExtendRight", keyValue.value("ExtendRight") == "true");
   setAttribute("Horizontal", keyValue.value("Horizontal") == "true");
@@ -150,7 +147,7 @@ void COLine::readAttributes(bool firstCall/* = false*/)
   // This function is also called after edit window was closed. Therefore
   // we have to take care for that case.
 
-  // create and set the anchor
+  // Create and set the anchor
   COType::readAttributes(firstCall);
 
   if(firstCall)
@@ -169,8 +166,7 @@ void COLine::readAttributes(bool firstCall/* = false*/)
   {
     double anchorVal = mAnchor->value();
 
-    Grip* grip;
-    foreach(grip, mGrip)
+    foreach(Grip* grip, mGrip)
     {
       QDate date = grip->date();
       grip->set(date, anchorVal);
@@ -195,7 +191,7 @@ bool COLine::paintObject()
 {
   if(!clipLine()) return false;
 
-  // to do the job at isInvolved(),
+  // To do the job at isInvolved(),
   // we create a tiny perpendicular line to our line
   mHelp = mLine.normalVector();
   mHelp.setLength(3.0);
@@ -216,7 +212,7 @@ bool COLine::paintObject()
 
 bool COLine::clipLine()
 {
-  // here we create our line as they will be painted
+  // Here we create our line as they will be painted
   // and clip the line at the chart area borders
 
   QPointF p1 = mGrip.value(Grip::eLeft)->pos();
@@ -224,11 +220,11 @@ bool COLine::clipLine()
 
   mLine = QLineF(p1, p2);
 
-  QLineF  border;   // a chart area border
-  QPointF p3;       // the intersection point
-  int     iType;    // intersection type
+  QLineF  border;   // A chart area border
+  QPointF p3;       // The intersection point
+  int     iType;    // Intersection type
 
-  bool leftOK        = false; // indicates if no more investigation
+  bool leftOK        = false; // Indicates if no more investigation
   bool rightOK       = false; // is needed about left/right grip
 
   bool leftExtended  = mAttribute.value("ExtendLeft").value<bool>();
@@ -238,10 +234,10 @@ bool COLine::clipLine()
   area.moveBottom(-area.top());
   //qDebug() << "p1 in" << area.contains(p1) << "p2 in" << area.contains(p2);
   //qDebug() << "p1 in" << area.contains(p1.toPoint()) << "p2 in" << area.contains(p2.toPoint());
-  // check special case vertical line
+  // Check special case vertical line
   if(p1.x() == p2.x())
   {
-    // we say "left" has to be to lower point
+    // We say "left" has to be to lower point
     if(-p1.y() > -p2.y())
     {
       p3 = p1;
@@ -266,12 +262,12 @@ bool COLine::clipLine()
     else return false;
   }
 
-  // check left
+  // Check left
   border = QLineF(area.bottomLeft(), area.topLeft());
   iType  = mLine.intersect(border, &p3);
 
   if(   (iType == QLineF::BoundedIntersection)
-     or (leftExtended ) or p1.x() < area.left())
+     or (leftExtended ) or p1.x() < area.left() )
   {
     p1 = p3;
   }
@@ -282,12 +278,12 @@ bool COLine::clipLine()
     leftOK = true;
   }
 
-  // check right
+  // Check right
   border = QLineF(area.bottomRight(), area.topRight());
   iType  = mLine.intersect(border, &p3);
 
   if(  (iType == QLineF::BoundedIntersection)
-    or (rightExtended) or p2.x() > area.right())
+    or (rightExtended) or p2.x() > area.right() )
   {
     p2 = p3;
   }
@@ -306,7 +302,7 @@ bool COLine::clipLine()
     else return false;
   }
 
-  // check top
+  // Check top
   border = QLineF(area.topLeft(), area.topRight());
   iType  = mLine.intersect(border, &p3);
 
@@ -344,7 +340,7 @@ bool COLine::clipLine()
     else return false;
   }
 
-  // check bottom
+  // Check bottom
   border = QLineF(area.bottomLeft(), area.bottomRight());
   iType  = mLine.intersect(border, &p3);
 
@@ -424,14 +420,13 @@ void COLine::gripMoved( const QPoint& deltaPos
   Grip* leftGrip  = mGrip.value(Grip::eLeft);
   Grip* rightGrip = mGrip.value(Grip::eRight);
 
-  // check for horizontal line
+  // Check for horizontal line
   if(mAttribute.value("Horizontal").value<bool>())
   {
-    // move all grip on the same new y position
+    // Move all grip on the same new y position
     double newY = mMovingGrip->pos().y();
 
-    Grip* grip;
-    foreach(grip, mGrip)
+    foreach(Grip* grip, mGrip)
     {
       QPointF pos = grip->pos();
       pos.setY(newY);
@@ -454,16 +449,16 @@ void COLine::gripMoved( const QPoint& deltaPos
     }
   }
 
-  // check if we have to rename left and right grip
+  // Check if we have to rename left and right grip
   if(rightGrip->mIdxPos < leftGrip->mIdxPos)
   {
     renameGrip(leftGrip, Grip::eRight);
     renameGrip(rightGrip, Grip::eLeft);
   }
 
-  if(mClicksLeftTillNewIsPlaced) return; // anchor not yet available
+  if(mClicksLeftTillNewIsPlaced) return; // Anchor not yet available
 
-  // calculate the new anchor position in the middle of both
+  // Calculate the new anchor position in the middle of both
   mLine  = QLineF(leftGrip->pos(), rightGrip->pos());
   QPointF anchorPos = mLine.pointAt(0.5);
 

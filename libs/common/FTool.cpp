@@ -54,7 +54,7 @@ QString FTool::txtToLine(const QString& txt)
   // we have to escape them too.
   line.replace("/", "//");
 
-  // semicolon
+  // Semicolon
   line.replace(";", "/,");
 
   // new line char
@@ -66,13 +66,13 @@ QString FTool::txtToLine(const QString& txt)
 
 int FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringList& parm)
 {
-  // place the parameter to the command switch "-foo" into parm
+  // Place the parameter to the command switch "-foo" into parm
 
   int pos = cmdLine.indexOf(cmd);
 
-  if(-1 == pos) return -1; // command not found. was not given on command line
+  if(-1 == pos) return -1; // Command not found. was not given on command line
 
-    parm.clear();          // be on the save side
+    parm.clear();          // Be on the save side
 
     for(int i = pos + 1; i <= cmdLine.size() - 1; ++i)
     {

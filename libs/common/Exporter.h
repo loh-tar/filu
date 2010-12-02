@@ -28,10 +28,10 @@ class FiluU;
 
 /***********************************************************************
 *
-* File created at 2010-03-15
+*   File created at 2010-03-15
 *
-* Yes, he exports stuff out of the DB into a plain text file.
-* He is almost used by "agentf -exp ..." command. Options are
+*   Yes, he exports stuff out of the DB into a plain text file.
+*   He is almost used by "agentf -exp ..." command. Options are
 *
 ************************************************************************/
 
@@ -39,7 +39,6 @@ class Exporter : public FClass
 {
   public:
                 Exporter(FClass* parent);
-//                 Exporter(FiluU* filu);
     virtual    ~Exporter();
 
     void        reset();
@@ -57,11 +56,11 @@ class Exporter : public FClass
     bool        expSplits();
     //TODO: bool expUnderlyings();
 
-    // user data exports
+    // User data exports
     bool        expCOs();
     bool        expGroups();
 
-    QStringList    mCommandLine;  // yes, the command line with all options
+    QStringList    mCommandLine;  // Yes, the command line with all options
 
     QTextStream*   mOutput;
     QTextStream    mConsole;

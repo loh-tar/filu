@@ -19,10 +19,10 @@
 
 #include "CalcMuParser.h"
 
-CalcMuParser::CalcMuParser(Indicator* parent) : CalcType(parent)
+CalcMuParser::CalcMuParser(Indicator* parent)
+            : CalcType(parent)
 {
-  mType = "muParser";
-
+  mType   = "muParser";
   mParser = new MyParser;
 }
 
@@ -60,7 +60,7 @@ bool CalcMuParser::calc()
 
   getIndicatorVariables();
 
-  // create our output variable
+  // Create our output variable
   addToDataSet(mOuts.at(0));
 
   int outBegIdx = 0;
@@ -70,8 +70,7 @@ bool CalcMuParser::calc()
   QStringList list;
   mData->getVariableNames(list);
 
-  QString var;
-  foreach(var, mParserVariables)
+  foreach(const QString& var, mParserVariables)
   {
     if(!list.contains(var))
     {
@@ -111,4 +110,3 @@ bool CalcMuParser::calc()
   mData->setRange();
   return true;
 }
-

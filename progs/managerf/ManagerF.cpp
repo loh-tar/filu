@@ -42,7 +42,7 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   mPageStack->addWidget(new IndicatorPage(this));
 // mPageStack->addWidget(new ...);
 
-  // special treatment may to FIXME
+  // Special treatment may to FIXME
   mLogBookPage = new LogBookPage(this);
   mPageStack->addWidget(mLogBookPage);
 

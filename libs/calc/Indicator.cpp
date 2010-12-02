@@ -59,7 +59,7 @@ QStringList* Indicator::useFile(const QString& fileName)
   mOrigIndicator.clear();
   mAlreadyIncluded->clear();
 
-  mViewName = fileName; // if no VIEWNAME(...) in indicator file
+  mViewName = fileName; // If no VIEWNAME(...) in indicator file
 
   if(!readIndicator(fileName, mIndicator)) return 0;
 
@@ -109,7 +109,7 @@ DataTupleSet* Indicator::calculate(BarTuple* bars)
 
 DataTupleSet* Indicator::calculate(DataTupleSet* data)
 {
-  if(!data) return 0; // be on the save side
+  if(!data) return 0; // Be on the save side
 
   // No check here if(hasError()) , we want ask all CalcType what's wrong.
   // That's important because of CalcWatchdogs, depend on found dog or not
@@ -129,7 +129,7 @@ DataTupleSet* Indicator::calculate(DataTupleSet* data)
   data->rewind();
 
   //
-  // check for build-in date "functions"
+  // Check for build-in date "functions"
   if(mUsedVariables->contains("DAY"))
   {
     data->append("DAY");
@@ -169,7 +169,7 @@ DataTupleSet* Indicator::calculate(DataTupleSet* data)
     data->rewind();
   }
 
-  // almost useless..but anyway
+  // Almost useless..but anyway
   if(mUsedVariables->contains("YEAR"))
   {
     data->append("YEAR");
@@ -184,7 +184,7 @@ DataTupleSet* Indicator::calculate(DataTupleSet* data)
   }
 
   //
-  // here is the beef, calc ...
+  // Here is the beef, calc ...
   data->setRange();
   for(int i = 0; i < mCalcCommands.size(); ++i)
   {
@@ -235,20 +235,20 @@ int Indicator::barsNeeded()
   return MaxNeeded;
 }
 
-void Indicator::getVariableNames(QSet<QString> *list)
+void Indicator::getVariableNames(QSet<QString>* list)
 {
   *list = *mUsedVariables;
 }
 
 /***********************************************************************
 *
-*                              private stuff
+*                              Private  Stuff
 *
 ************************************************************************/
 
 bool Indicator::readIndicator(const QString& fileName, QStringList& indicator)
 {
-  // make sure we have no garbage in the indicator
+  // Make sure we have no garbage in the indicator
   indicator.clear();
 
   if (fileName.isEmpty())
@@ -264,7 +264,7 @@ bool Indicator::readIndicator(const QString& fileName, QStringList& indicator)
     return false;
   }
 
-  // read/fill the Indicator
+  // Read/fill the Indicator
   QTextStream in(&file);
   while (!in.atEnd())
   {
@@ -283,14 +283,14 @@ bool Indicator::parse(QStringList& indicator)
 
   int i = 0;
   //
-  // remove all unwanted stuff
+  // Remove all unwanted stuff
   while( i < indicator.size())
   {
     if(rootFile) mOrigIndicator.append(indicator.at(i));
 
     bool remove = false;
 
-    if(indicator[i].startsWith("*")) remove = true; // ignore remarks
+    if(indicator[i].startsWith("*")) remove = true; // Ignore remarks
     else if(indicator[i].isEmpty())  remove = true;
     else if(indicator[i].contains("PLOT(") and mIgnorePlot)     remove = true;
     else if(indicator[i].contains("SETCOLOR(") and mIgnorePlot) remove = true;
@@ -305,7 +305,7 @@ bool Indicator::parse(QStringList& indicator)
   }
 
   //
-  // extract view name, if some
+  // Extract view name, if some
   QStringList viewName = indicator.filter("VIEWNAME(");
   if(viewName.size())
   {
@@ -316,11 +316,11 @@ bool Indicator::parse(QStringList& indicator)
   }
 
   //
-  // load included indicator files
+  // Load included indicator files
   i = 0;
   while((i = indicator.indexOf(QRegExp("INCLUDE\\(.*"), i)) >= 0)
   {
-    // extract the file name and optional IGNOREPLOT
+    // Extract the file name and optional IGNOREPLOT
     QStringList parms = indicator.at(i).split(",");
     parms.replaceInStrings(QRegExp(".*\\(|\\).*"), "");
     parms.replaceInStrings(" ", "");
@@ -331,7 +331,7 @@ bool Indicator::parse(QStringList& indicator)
       continue;
     }
 
-    bool ignorePlot = mIgnorePlot; // save global setting
+    bool ignorePlot = mIgnorePlot; // Save global setting
 
     if(parms.size() == 2)
     {
@@ -355,7 +355,7 @@ bool Indicator::parse(QStringList& indicator)
 
     mAlreadyIncluded->insert(parms.at(0));
 
-    // read the file...
+    // Read the file...
     QStringList list;
     if(!readIndicator(parms.at(0), list))
     {
@@ -374,17 +374,17 @@ bool Indicator::parse(QStringList& indicator)
       ++i;
     }
 
-    indicator.removeAt(i); // the old INCLUDE(...) line
+    indicator.removeAt(i); // The old INCLUDE(...) line
   }
 
   //
-  // include ta-lib indicators
+  // Include ta-lib indicators
   i = 0;
   while((i = indicator.indexOf(QRegExp("INCLTALIB\\(.*"), i)) >= 0)
   {
     if(!mTALib) mTALib = new TALib();
 
-    // prepare for battle...
+    // Prepare for battle...
     QStringList list;
     if(!mTALib->getIndicator(indicator.at(i), list))
     {
@@ -399,7 +399,7 @@ bool Indicator::parse(QStringList& indicator)
       indicator.insert(i, list[j].remove(" "));
       ++i;
     }
-    indicator.removeAt(i); // the old INCLTALIB(...) line
+    indicator.removeAt(i); // The old INCLTALIB(...) line
   }
 
 // for(int i=0;i<indicator.size();i++)
@@ -435,18 +435,18 @@ bool Indicator::prepare(QStringList& indicator)
   mCalcCommands.clear();
 
   //
-  // check for SIMTRADE
+  // Check for SIMTRADE
   int i = 0;
   while((i = indicator.indexOf(QRegExp("SIMTRADE\\(.*"), i)) >= 0)
   {
-    // extract parameter list
+    // Extract parameter list
     QString tradeRule = indicator.at(i);
     tradeRule.remove(QRegExp(".*\\(|\\).*"));
     //qDebug() << "Indicator::prepare:check for SIMTRADE" << tradeRule;
 
     QStringList ins(tradeRule);
     QStringList outs;
-    CalcParms parms;     // for the beef
+    CalcParms parms;     // For the beef
     parms.setIns(ins);
     parms.setOuts(outs);
 
@@ -469,15 +469,15 @@ bool Indicator::prepare(QStringList& indicator)
   }
 
   //
-  // load extra FIs
+  // Load extra FIs
   i = 0;
   while((i = indicator.indexOf(QRegExp("LOADFI\\(.*"), i)) > 0)
   {
-    // extract parameter list
+    // Extract parameter list
     QString parameters = indicator.at(i);
     parameters.remove(QRegExp(".*\\(|\\).*"));
 qDebug() << "Indicator::prepare:load extra FIs" << parameters;
-    // load the bars to the FI
+    // Load the bars to the FI
     //FIXME: has to be implemented
     addErrorText("Indicator::prepare: Not yet supported: " + indicator.at(i));
     return false;
@@ -493,12 +493,12 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
   }
 
   //
-  // check for equations/function calls
+  // Check for equations/function calls
   QStringList equations = indicator.filter("=");
 
   if(equations.isEmpty()) return true;
 
-  // some preparations for constant search&replace
+  // Some preparations for constant search&replace
   QStringList days;
   days << "MON" << "TUE" << "WED" << "THU" << "FRI" << "SAT" << "SUN";
   QStringList months;
@@ -507,14 +507,14 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
 
   for(i = 0; i < equations.size(); i++)
   {
-    CalcParms parms;      // for the beef
+    CalcParms parms;      // For the beef
 
-    // a function call looks like
+    // A function call looks like
     // sma50 = TALIB(SMA, CLOSE, TimePeriod=50)
     // sma50 = SETCOLOR(red)
     // midPrice = MUP((HIGH + LOW ) * 0.5)
 
-    // split the line into parts
+    // Split the line into parts
     QString line = equations.at(i);
     QStringList parts;
     QString part;
@@ -524,7 +524,7 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
       if(ch == ' ') continue;
 
       uint u = uint(ch.unicode());
-      // matches [a-zA-Z0-9_.]
+      // Matches [a-zA-Z0-9_.]
       if((u - 'a' < 26 || u - 'A' < 26 || u - '0' < 10 || u == '_' || u == '.'))
       {
         part += ch;
@@ -537,7 +537,7 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
       if( (ch == '-') or (ch == '#') ) part += ch;
       else if( (ch == '=') and (parts.size() > 0) )
       {
-        // build operators: <=, >=, !=, ==
+        // Build operators: <=, >=, !=, ==
         if(parts.last().contains(QRegExp("[\\<\\>\\!\\=]"))) parts.last() += ch;
         else parts << ch;
       }
@@ -546,12 +546,12 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
 
     //qDebug() << "\nparts: " << parts;
 
-    // get the output
+    // Get the output
     QStringList outs = parts.mid(0, parts.indexOf("="));
     parms.setOuts(outs);
     //qDebug() << "outs: " << outs;
 
-    // get the input
+    // Get the input
     QStringList ins  = parts.mid(parts.indexOf("=") + 1);
     //qDebug() << "ins1: " << ins;
 
@@ -561,16 +561,16 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
       continue;
     }
 
-    // get the function name
+    // Get the function name
     QString func = ins.at(0);
     //qDebug() << "func:" << func;
-    ins.removeFirst(); // remove function name
+    ins.removeFirst(); // Remove function name
 
-    // remove the function parentheses
+    // Remove the function parentheses
     ins.removeFirst();
     ins.removeLast();
 
-    // replace days and month constants
+    // Replace days and month constants
     for(int i = 0; i < ins.size(); ++i)
     {
       int day = days.indexOf(ins.at(i));
