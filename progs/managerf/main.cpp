@@ -24,12 +24,8 @@ int main(int argc, char* argv[])
 {
   Q_INIT_RESOURCE(icons);
 
-// does not work...so ease
-//      QApplication app(argc, argv);
-//      ManagerF managerf(&app);
-//      return app.exec();
-
   QApplication app(argc, argv);
   ManagerF managerf;
-  return managerf.exec();
- }
+  managerf.show();
+  return app.exec();
+}

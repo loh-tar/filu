@@ -25,7 +25,7 @@
 #include "LogBookPage.h"
 
 ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
-         : QDialog(), FClass(connectionName)
+        : FMainWindow(connectionName)
 {
   mPageIcons = new QListWidget;
   mPageIcons->setViewMode(QListView::IconMode);
@@ -68,7 +68,10 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addLayout(horizontalLayout);
   mainLayout->addLayout(buttonsLayout);
-  setLayout(mainLayout);
+
+  QWidget* dummy = new QWidget;
+  dummy->setLayout(mainLayout);
+  setCentralWidget(dummy);
 
   setWindowTitle(tr("ManagerF - The Filu Manager"));
  }

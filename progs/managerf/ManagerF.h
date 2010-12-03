@@ -20,13 +20,11 @@
 #ifndef MANAGERF_H
 #define MANAGERF_H
 
-#include <QtGui>
-
-#include "FClass.h"
+#include "FWidget.h"
 
 class LogBookPage;
 
-class ManagerF : public QDialog, public FClass
+class ManagerF : public FMainWindow
 {
      Q_OBJECT
 
