@@ -22,7 +22,8 @@
 #include "SearchField.h"
 #include "Script.h"
 
-AddFiPage::AddFiPage(FClass* parent) : ManagerPage(parent)
+AddFiPage::AddFiPage(FClass* parent)
+         : ManagerPage(parent)
 {
   createPage();
 }

@@ -30,6 +30,24 @@ IndicatorPage::IndicatorPage(FClass* parent)
 IndicatorPage::~IndicatorPage()
 {}
 
+void IndicatorPage::loadSettings()
+{
+  mRcFile->beginGroup("IndicatorPage");
+  mSplitter->restoreState(mRcFile->value("Splitter").toByteArray());
+  mEditor->loadSettings();
+  mIndiSelector->loadSettings();
+  mRcFile->endGroup();
+}
+
+void IndicatorPage::saveSettings()
+{
+  mRcFile->beginGroup("IndicatorPage");
+  mRcFile->setValue("Splitter", mSplitter->saveState());
+  mEditor->saveSettings();
+  mIndiSelector->saveSettings();
+  mRcFile->endGroup();
+}
+
 void IndicatorPage::createPage()
 {
   mIcon = QIcon(":/icons/indicator.png");
@@ -39,16 +57,16 @@ void IndicatorPage::createPage()
 
   mEditor = new IndicatorEditor(this);
 
-  mIndiSelector = new IndicatorSelector;
+  mIndiSelector = new IndicatorSelector(this);
   connect(mIndiSelector, SIGNAL(addText(const QString *))
          , this, SLOT(addToIndicator(const QString *)));
 
-  QSplitter* split = new QSplitter(Qt::Horizontal);
-  split->addWidget(mEditor);
-  split->addWidget(mIndiSelector);
+  mSplitter = new QSplitter(Qt::Horizontal);
+  mSplitter->addWidget(mEditor);
+  mSplitter->addWidget(mIndiSelector);
 
   QHBoxLayout* layout = new QHBoxLayout;
-  layout->addWidget(split);
+  layout->addWidget(mSplitter);
 
   pageGroup->setLayout(layout);
 

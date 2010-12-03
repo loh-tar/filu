@@ -21,13 +21,27 @@
 
 #include "SearchField.h"
 
-IndicatorSelector::IndicatorSelector(QWidget* parent) : QWidget(parent)
+IndicatorSelector::IndicatorSelector(FClass* parent) : FWidget(parent)
 {
   createPage();
 }
 
 IndicatorSelector::~IndicatorSelector()
 {}
+
+void IndicatorSelector::loadSettings()
+{
+  mRcFile->beginGroup("IndicatorSelector");
+  mSplitter->restoreState(mRcFile->value("Splitter").toByteArray());
+  mRcFile->endGroup();
+}
+
+void IndicatorSelector::saveSettings()
+{
+  mRcFile->beginGroup("IndicatorSelector");
+  mRcFile->setValue("Splitter", mSplitter->saveState());
+  mRcFile->endGroup();
+}
 
 void IndicatorSelector::createPage()
 {
@@ -44,11 +58,11 @@ void IndicatorSelector::createPage()
   connect(mInfoList, SIGNAL(currentRowChanged(int)),
           this, SLOT(checkInfoSelection(int)));
 
-  QSplitter* splitt1 = new QSplitter(Qt::Vertical);
-  splitt1->addWidget(mFunctionList);
-  splitt1->addWidget(mInfoList);
-  splitt1->setStretchFactor(0, 1);  // The mFunctionList
-  splitt1->setStretchFactor(1, 2);  // The mInfoList
+  mSplitter = new QSplitter(Qt::Vertical);
+  mSplitter->addWidget(mFunctionList);
+  mSplitter->addWidget(mInfoList);
+  mSplitter->setStretchFactor(0, 1);  // The mFunctionList
+  mSplitter->setStretchFactor(1, 2);  // The mInfoList
 
   mAddBtn = new QPushButton;
   connect(mAddBtn, SIGNAL(clicked()), this, SLOT(addToIndicator()));
@@ -67,9 +81,9 @@ void IndicatorSelector::createPage()
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->setMargin(0);
   mainLayout->addWidget(mSF);
-  mainLayout->addWidget(splitt1);
+  mainLayout->addWidget(mSplitter);
   mainLayout->addLayout(addBtnLayout);
-  mainLayout->setStretchFactor(splitt1, 1);
+  mainLayout->setStretchFactor(mSplitter, 1);
 
   setLayout(mainLayout);
 }

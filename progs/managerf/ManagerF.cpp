@@ -34,7 +34,6 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   mPageIcons->setMaximumWidth(128);
   mPageIcons->setSpacing(12);
 
-
   mPageStack = new QStackedWidget;
   mPageStack->addWidget(new FiPage(this));
   mPageStack->addWidget(new AddFiPage(this));
@@ -48,7 +47,6 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
 
   QPushButton* closeButton = new QPushButton(tr("Close"));
   createIcons();
-  mPageIcons->setCurrentRow(0);
 
   connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
@@ -74,11 +72,31 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   setCentralWidget(dummy);
 
   setWindowTitle(tr("ManagerF - The Filu Manager"));
- }
+
+  //
+  // Restore all settings
+  mRcFile->beginGroup("Manager");
+
+  resize(mRcFile->getSZ("ManagerSize"));
+  move(mRcFile->getPT("ManagerPosition"));
+  restoreState(mRcFile->getBA("ManagerState"));
+  mPageIcons->setCurrentRow(mRcFile->getIT("CurrentPage"));
+
+  for(int i = 0; i < mPageStack->count(); i++)
+  {
+    ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
+    mp->loadSettings();
+  }
+  mRcFile->endGroup(); // "Manager"
+}
 
 ManagerF::~ManagerF()
 {
   mRcFile->beginGroup("Manager");
+  mRcFile->set("ManagerSize", size());
+  mRcFile->set("ManagerPosition", pos());
+  mRcFile->set("ManagerState", saveState());
+  mRcFile->set("CurrentPage", mPageIcons->currentRow());
 
   for(int i = 0; i < mPageStack->count(); i++)
   {
@@ -91,18 +109,13 @@ ManagerF::~ManagerF()
 
 void ManagerF::createIcons()
 {
-  mRcFile->beginGroup("Manager");
-
   for(int i = 0; i < mPageStack->count(); i++)
   {
     QListWidgetItem* icon = new QListWidgetItem(mPageIcons);
     ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
     mp->setPageIcon(icon);
-    mp->loadSettings();
     connect(mp, SIGNAL(message(const QString&, const bool)), this, SLOT(messageBox(const QString&, const bool)));
   }
-
-  mRcFile->endGroup();
 
   connect(mPageIcons,
     SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
@@ -111,7 +124,7 @@ void ManagerF::createIcons()
 
 void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
 {
-  if (!current) current = previous;
+  if(!current) current = previous;
 
   mPageStack->setCurrentIndex(mPageIcons->row(current));
 }

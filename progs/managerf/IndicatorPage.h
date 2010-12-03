@@ -31,18 +31,22 @@ class IndicatorPage : public ManagerPage
   Q_OBJECT
 
   public:
-                IndicatorPage(FClass* parent);
-    virtual    ~IndicatorPage();
+                  IndicatorPage(FClass* parent);
+    virtual      ~IndicatorPage();
+
+    virtual void  loadSettings();
+    virtual void  saveSettings();
 
   protected slots:
-    void        addToIndicator(const QString*);
+    void          addToIndicator(const QString*);
 
   protected:
-    void        createPage();
+    void          createPage();
    // void showEvent(QShowEvent* /*event*/);
 
     IndicatorEditor*   mEditor;
     IndicatorSelector* mIndiSelector;
+    QSplitter*         mSplitter;
 
 //    QStringList mTheIndicator;
 

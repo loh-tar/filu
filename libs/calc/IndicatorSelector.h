@@ -20,19 +20,22 @@
 #ifndef INDICATORSELECTOR_HPP
 #define INDICATORSELECTOR_HPP
 
-#include <QtGui>
+#include "FWidget.h"
 
 #include "TALib.h"
 
 class SearchField;
 
-class IndicatorSelector : public QWidget
+class IndicatorSelector : public FWidget
 {
   Q_OBJECT
 
   public:
-                    IndicatorSelector(QWidget* parent = 0);
+                    IndicatorSelector(FClass* parent);
                    ~IndicatorSelector();
+
+    void            loadSettings();
+    void            saveSettings();
 
   signals:
     void            addText(const QString* txt);
@@ -54,6 +57,7 @@ class IndicatorSelector : public QWidget
     QListWidget*    mFunctionList;
     QPushButton*    mAddBtn;
     QPushButton*    mInclBtn;
+    QSplitter*      mSplitter;
 
     QStringList     mAllFunctions;
     QStringList     mTheIndicator;

@@ -22,7 +22,7 @@
 
 #include "FWidget.h"
 
- class IndicatorEditor : public   FWidget
+class IndicatorEditor : public FWidget
 {
   Q_OBJECT
 
@@ -31,6 +31,8 @@
    virtual       ~IndicatorEditor();
 
     void          includeText(const QString& txt);
+    void          loadSettings();
+    void          saveSettings();
 
   public slots:
 

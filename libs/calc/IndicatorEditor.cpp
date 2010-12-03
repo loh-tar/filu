@@ -20,9 +20,10 @@
 #include "IndicatorEditor.h"
 
 IndicatorEditor::IndicatorEditor(FClass* parent)
-                : FWidget(parent)
+               : FWidget(parent)
 {
   mButton = new QToolButton;
+  mButton->setToolTip(tr("Save File"));
   mButton->setAutoRaise(true);
   mButton->setArrowType(Qt::DownArrow);
   connect(mButton, SIGNAL(clicked()), this, SLOT(saveFile()));
@@ -36,7 +37,9 @@ IndicatorEditor::IndicatorEditor(FClass* parent)
   layout1->addWidget(mFileSelector);
 
   mEditor = new QTextEdit;
+  mEditor->setFontFamily("Monospace");
   mEditor->setLineWrapMode(QTextEdit::NoWrap);
+  mEditor->setCursorWidth(2);
   mEditor->installEventFilter(this);
 
   QVBoxLayout* mainLayout = new QVBoxLayout;
@@ -46,12 +49,34 @@ IndicatorEditor::IndicatorEditor(FClass* parent)
 
   setLayout(mainLayout);
 
-  readSettings();
+  mIndicatorPath = mRcFile->getST("IndicatorPath");
   readDir();
 }
 
 IndicatorEditor::~IndicatorEditor()
 {
+}
+
+void IndicatorEditor::loadSettings()
+{
+  mRcFile->beginGroup("IndicatorEditor");
+  mFileSelector->setCurrentIndex(mFileSelector->findText(mRcFile->getST("LastEditFile")));
+  loadFile();
+  QTextCursor cur = mEditor->textCursor();
+  cur.setPosition(mRcFile->getIT("CursorPos"));
+  mEditor->setTextCursor(cur);
+  mEditor->ensureCursorVisible();
+  mEditor->setFocus(); // FIXME:Does not work...
+  editorLostFocus();   // ...as workaround
+  mRcFile->endGroup();
+}
+
+void IndicatorEditor::saveSettings()
+{
+  mRcFile->beginGroup("IndicatorEditor");
+  mRcFile->setValue("LastEditFile", mFileSelector->lineEdit()->text());
+  mRcFile->setValue("CursorPos", mEditor->textCursor().position());
+  mRcFile->endGroup();
 }
 
 void IndicatorEditor::includeText(const QString& txt)
@@ -132,11 +157,6 @@ void IndicatorEditor::readDir()
   mAllFiles = dir.entryList(QDir::Files, QDir::Name);
 
   mFileSelector->insertItems(0, mAllFiles);
-}
-
-void IndicatorEditor::readSettings()
-{
-  mIndicatorPath = mRcFile->getST("IndicatorPath");
 }
 
 /***********************************************************************
