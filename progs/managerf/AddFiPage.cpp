@@ -72,7 +72,7 @@ void AddFiPage::createPage()
   //
   // The add area
   mAddBtn = new QPushButton;
-  mAddBtn->setText("Add to DB");
+  mAddBtn->setText(tr("Add to DB"));
   connect(mAddBtn, SIGNAL(clicked()), this, SLOT(addToDB()));
 
   QFontMetrics f(font());
@@ -105,7 +105,7 @@ void AddFiPage::createPage()
   mSymbolType3 = new QComboBox;
   // Read all symbol types out of the DB
   QSqlQuery* query = mFilu->execSql("GetAllSymbolTypes");
-  if(!check4FiluError("AddFiPage::createPage: ERROR while exec GetAllSymbolTypes.sql"))
+  if(!check4FiluError("AddFiPage::createPage: " + tr("ERROR while exec GetAllSymbolTypes.sql")))
   {
     if(query)
     {
@@ -145,7 +145,6 @@ void AddFiPage::createPage()
   addEditLineLO->addWidget(mSymbolType2, 4, 2);
   addEditLineLO->addWidget(mSymbolType3, 5, 2);
 
-
   mFilu->setMarketName("");
   MarketTuple* markets = mFilu->getMarket();
   if(markets)
@@ -158,7 +157,10 @@ void AddFiPage::createPage()
     mMarket3->addItems(sl);
     delete markets;
   }
-  else qDebug() << "AddFiPage::createPage: no markets found";
+  else
+  {
+    emit message("AddFiPage::createPage: " + tr("No markets found"));
+  }
 
   //
   // Build the main layout
@@ -176,7 +178,6 @@ void AddFiPage::createPage()
 //  QHBoxLayout* configLayout = new QHBoxLayout;
 //  configLayout->addWidget(searchGroup);
   //configLayout->addStretch(1);
-
 
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addWidget(searchGroup);
@@ -253,7 +254,7 @@ void AddFiPage::search()
 
 void AddFiPage::searchFi()
 {
-  emit message("Search FI matched to '" + mSearchField->text() + "'...");
+  emit message("AddFiPage::searchFi: " + tr("Search FI matched to '") + mSearchField->text() + "'...");
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
   mScripter->askProvider(mProvider, "fetchFi", parms);
@@ -261,7 +262,7 @@ void AddFiPage::searchFi()
 
 void AddFiPage::searchIdx()
 {
-  emit message("Search Index matched to '" + mSearchField->text() + "'...");
+  emit message("AddFiPage::searchIdx: " + tr("Search Index matched to '") + mSearchField->text() + "'...");
   QStringList parms(mSearchField->text());
   QStringList* result = mScripter->askProvider(mProvider, "fetchIdx", parms);
   if(!result)
@@ -321,7 +322,7 @@ void AddFiPage::fillResultTable(QStringList* data)
 
     mResultList->insertRow(r + re);
 
-    for(c = 0; c < row.size(); ++c)     // Columns
+    for(c = 0; c < row.size(); ++c)  // Columns
     {
       if(c > mResultList->columnCount() - 1)
         mResultList->insertColumn(c);
@@ -392,7 +393,7 @@ void AddFiPage::searchOrCancel()
     if(mSearchCancelBtn->text() == "Cancel")
     {
       mScripter->stopRunning();
-      emit message("Script canceled");
+      emit message("AddFiPage::searchOrCancel: " + tr("Script canceled"));
     }
     else search();
   }
@@ -401,7 +402,7 @@ void AddFiPage::searchOrCancel()
 void AddFiPage::scriptFinished()
 {
   mSearchCancelBtn->setText("Search");
-  emit message("Done");
+  emit message("AddFiPage::scriptFinished: " + tr("Done"));
 }
 
 void AddFiPage::addToDB()
@@ -411,7 +412,7 @@ void AddFiPage::addToDB()
 
     // Build a hopefully useful log message
     QStringList msg;
-    msg.append("Add to DB:");
+    msg.append(tr("Add to DB:"));
 
     if(!mRefSymbol->text().isEmpty()) msg.append(mRefSymbol->text());
     if(!mName->text().isEmpty())      msg.append(mName->text());
@@ -481,14 +482,14 @@ void AddFiPage::addToDB()
     // Here is the beef
     if(mFilu->addFiCareful(fi) < Filu::eSuccess)
     {
-      check4FiluError("AddFiPage::addToDB: Oops! new FI or Symbol not added to DB");
-      emit message(errorText().join("\n"), true); // true=is error message
+      check4FiluError("AddFiPage::addToDB: " +tr("Oops! new FI or Symbol not added to DB"));
+      emit message(errorText().join("\n"), eError);
       clearErrors(); //FIXME Why does errorText() not clear?
       //emit message("Fail to add FI");
     }
     else
     {
-      emit message("New FI added to DB");
+      emit message("AddFiPage::addToDB: " +tr("New FI added to DB"));
       // Looks good, clear the edit fields
       mRefSymbol->setText("");
       mName->setText("");
