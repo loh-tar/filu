@@ -38,10 +38,11 @@ class FClass
                    FClass(const QString& connectionName);
     virtual       ~FClass();
 
-    enum SomeEnums
+    enum MsgType
     {
       eNotice,
       eWarning,
+      eError,
       eCritical
     };
 
@@ -51,8 +52,8 @@ class FClass
     bool           hasError() const { return mHasError; };
 
   protected:
-    void           addErrorText(const QStringList& errorMessage, int type = eNotice);
-    void           addErrorText(const QString& errorMessage, int type = eNotice);
+    void           addErrorText(const QStringList& errorMessage, MsgType type = eNotice);
+    void           addErrorText(const QString& errorMessage, MsgType type = eNotice);
     void           removeErrorText(const QString& errorMessage);
     bool           check4FiluError(const QString& errMessage);  // True if error
     void           clearErrors();

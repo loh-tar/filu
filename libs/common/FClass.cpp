@@ -56,7 +56,7 @@ RcFile* FClass::getRcFile()
   return mRcFile;
 }
 
-void FClass::addErrorText(const QStringList& errorMessage, int type/* = eNotice*/)
+void FClass::addErrorText(const QStringList& errorMessage, MsgType type/* = eNotice*/)
 {
   for(int i = 0; i < errorMessage.size(); i++)
   {
@@ -64,7 +64,7 @@ void FClass::addErrorText(const QStringList& errorMessage, int type/* = eNotice*
   }
 }
 
-void FClass::addErrorText(const QString& errorMessage, int type/* = eNotice*/)
+void FClass::addErrorText(const QString& errorMessage, MsgType type/* = eNotice*/)
 {
   mHasError = true;
 
