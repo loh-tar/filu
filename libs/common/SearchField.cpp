@@ -22,6 +22,7 @@
 SearchField::SearchField(QWidget* parent) : QWidget(parent)
 {
   mButton = new QToolButton;
+  mButton->setToolTip(tr("Clear Field"));
   mButton->setAutoRaise(true);
   mButton->setArrowType(Qt::RightArrow);
   connect(mButton, SIGNAL(clicked()), this, SLOT(clearField()));
