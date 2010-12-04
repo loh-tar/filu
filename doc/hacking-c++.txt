@@ -261,39 +261,33 @@ Class Definitions
 
       <methods>
 
-    public slots:
+    signals:
       <methods>
 
-    signals:
+    public slots:
       <methods>
 
     public;
       <members>
 
-    protected:
-      <ctors>
-      <dtors>
-      <operators>
-
-      <methods>
-
     protected slots:
       <methods>
 
     protected:
-      <members>
-
-    private:
       <ctors>
       <dtors>
       <operators>
-
       <methods>
+      <members>
 
     private slots:
       <methods>
 
     private:
+      <ctors>
+      <dtors>
+      <operators>
+      <methods>
       <members>
   };
 
