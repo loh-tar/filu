@@ -267,7 +267,7 @@ void AddFiPage::searchIdx()
   if(!result)
   {
     result = new QStringList;
-    result->append("HEADER=Error");
+    result->append("[Header]Error");
     mScripter->getErrorMessage(*result);
   }
 
