@@ -301,14 +301,15 @@ Include the class and function name into the error message like this.
     ...
     if(!mLine.contains(":"))
     {
-      addErrorText("Trader::readRules: Missing colon at line: " + QString::number(mLineNumber));
+      addErrorText("Trader::readRules: " + tr("Missing colon at line: ") + QString::number(mLineNumber));
       continue;
     }
     ...
   }
 
-As you see there are no parentheses after "readRules" but a colon. And the
-FClass function addErrorText() is used as preferred. After the function name.
+As you see there are no parentheses after "readRules" but a colon and the
+essence message text begin with an uppercase letter and is encapsulated in
+tr(""). Furthermore is the FClass function addErrorText() used as preferred.
 
 
 Footnotes
