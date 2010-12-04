@@ -65,12 +65,12 @@ void LogBookPage::createPage()
           this, SLOT(showLogFileContextMenu(const QPoint&)));
 }
 
-void LogBookPage::addToLog(const QString& msg, const bool error)
+void LogBookPage::addToLog(const QString& msg, const MsgType type)
 {
   mLogBook.moveCursor(QTextCursor::End);
   mLogBook.insertPlainText(msg + "\n");
 
-  if(error) mLogBook.insertPlainText("\n");
+  if(type > eNotice) mLogBook.insertPlainText("\n");
 
   mLogBook.ensureCursorVisible();
 }

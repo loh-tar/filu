@@ -114,7 +114,7 @@ void ManagerF::createIcons()
     QListWidgetItem* icon = new QListWidgetItem(mPageIcons);
     ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
     mp->setPageIcon(icon);
-    connect(mp, SIGNAL(message(const QString&, const bool)), this, SLOT(messageBox(const QString&, const bool)));
+    connect(mp, SIGNAL(message(const QString&, const MsgType)), this, SLOT(messageBox(const QString&, const MsgType)));
   }
 
   connect(mPageIcons,
@@ -129,15 +129,17 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
   mPageStack->setCurrentIndex(mPageIcons->row(current));
 }
 
-void ManagerF::messageBox(const QString& msg, const bool error/* = false*/)
+void ManagerF::messageBox(const QString& msg, const MsgType type/* = eNotice*/)
 {
   // FIXME: Work not as desired, see ManagerPage.h
-  if(error)
+  if(type > eNotice)
     mMessage->setBackgroundRole(QPalette::Highlight);
   else
     mMessage->setBackgroundRole(QPalette::NoRole);
 
+  addErrorText(msg, type);
+
   mMessage->setText(msg);
   mMessage->repaint();   // Force an update as soon as possible
-  mLogBookPage->addToLog(msg, error);
+  mLogBookPage->addToLog(msg, type);
 }

@@ -31,7 +31,7 @@ class LogBookPage : public ManagerPage
     virtual        ~LogBookPage();
 
   //public slots:
-    void            addToLog(const QString& msg, const bool error);
+    void            addToLog(const QString& msg, const MsgType type);
 
   protected slots:
     void            tabChanged(int index);
