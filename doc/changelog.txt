@@ -6,6 +6,7 @@ ManagerF
  - Save & Restore window position and size.
  - Indicators: Save & Restore last settings.
  - Indicators: Change editor font to Monospace.
+ - Log Book: Add a 2nd tab to view the agentf.log file. RightMouseBtn to delete.
 
 RcFile
 --------

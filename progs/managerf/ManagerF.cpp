@@ -138,5 +138,6 @@ void ManagerF::messageBox(const QString& msg, const bool error/* = false*/)
     mMessage->setBackgroundRole(QPalette::NoRole);
 
   mMessage->setText(msg);
+  mMessage->repaint();   // Force an update as soon as possible
   mLogBookPage->addToLog(msg, error);
 }

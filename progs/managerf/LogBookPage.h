@@ -24,19 +24,28 @@
 
 class LogBookPage : public ManagerPage
 {
-  //Q_OBJECT
+  Q_OBJECT
 
   public:
-                  LogBookPage(FClass* parent);
-    virtual      ~LogBookPage();
+                    LogBookPage(FClass* parent);
+    virtual        ~LogBookPage();
 
   //public slots:
-    void          addToLog(const QString& msg, const bool error);
+    void            addToLog(const QString& msg, const bool error);
+
+  protected slots:
+    void            tabChanged(int index);
+    void            readLogFile();
+    void            showLogFileContextMenu(const QPoint &pt);
+    void            clearLogFile();
 
   protected:
-    void          createPage();
+    void            createPage();
 
-    QTextEdit     mLogBook;
+    QTabWidget*     mTab;
+    QTextEdit       mLogBook;
+    QTextEdit       mLogFile;
+    QAction*        mActClearLogFile;
 };
 
 #endif

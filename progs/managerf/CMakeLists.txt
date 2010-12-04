@@ -27,7 +27,7 @@ set(managerf_MOCH
     IndicatorPage.h
     ManagerF.h
     ManagerPage.h
-    #LogBookPage.h
+    LogBookPage.h
 )
 
 QT4_ADD_RESOURCES(managerf_MOCQRC icons.qrc)
