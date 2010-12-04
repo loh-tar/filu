@@ -45,7 +45,7 @@ RcFile::RcFile() : QSettings("Filu")
 
   // Agent stuff
   mDefault.insert("MaxClones",         5);
-  mDefault.insert("LogFile",           "~/agentf.log");
+  mDefault.insert("LogFile",           "agentf.log");
   mDefault.insert("DebugLevel",        0);
 
   // Performer stuff
@@ -185,6 +185,7 @@ void RcFile::checkFiluHome()
     setFullPath("FiluHome", "IndiSetsPath");
     setFullPath("FiluHome", "TradingRulePath");
     setFullPath("FiluHome", "IndiFilterSetPath");
+    setFullPath("FiluHome", "LogFile");
 
     mConsole << "RcFile::checkFiluHome() " << tr("...done.") << endl;
 

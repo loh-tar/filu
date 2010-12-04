@@ -1,11 +1,15 @@
-2010-12-03
+2010-12-04
 ============
 ManagerF
 ----------
  - Change from QDialog to FMainWindow.
  - Save & Restore window position and size.
- - IndicatorPage: Save & Restore last settings.
- - IndicatorPage: Change editor font to Monospace.
+ - Indicators: Save & Restore last settings.
+ - Indicators: Change editor font to Monospace.
+
+RcFile
+--------
+ - Change the agentf.log file path to ~/Filu.
 
 
 2010-12-01
