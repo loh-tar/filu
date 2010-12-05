@@ -22,8 +22,6 @@
 
 #include "FObject.h"
 
-class FWidget;
-
 class Script : public FObject
 {
   Q_OBJECT
@@ -40,7 +38,6 @@ class Script : public FObject
 
     void          showWaitWindow(bool yes = true);
     void          stopRunning();
-    void          getErrorMessage(QStringList&);
 
     signals:
     void          newData(QStringList*);
@@ -59,7 +56,6 @@ class Script : public FObject
     QProcess*     mProc;
     bool          mRunning;
     QStringList*  mResult;
-    QStringList   mErrorMessage;
 };
 
 #endif

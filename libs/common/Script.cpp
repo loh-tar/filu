@@ -35,15 +35,14 @@ Script::~Script()
 
 QStringList * Script::execute(const QString& script, const QStringList& parameters)
 {
-  QString msg = script + " " + parameters.join(" ");
-  qDebug() << "Script::execute:" << msg;
-
   clearErrors();
+
+  //addErrorText("Script::execute: " + script + " " + parameters.join(" "), eNotice);
+  //qDebug() << "Script::execute: " + script + " " + parameters.join(" ");
 
   if(!script.length())
   {
-    mErrorMessage.append("Script::execute: error - no script name");
-    qDebug("Script::execute: error - no script name");
+    addErrorText("Script::execute: " + tr("No script name"), eError);
     return 0;
   }
 
@@ -61,8 +60,7 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      mErrorMessage.append("Script::execute: error - script not started:" + script);
-      qDebug() << "Script::execute: error - script not started:" << script;
+      addErrorText("Script::execute: Script not started:" + script, eCritical);
       mRunning = false;
       mProc->kill();
     }
@@ -77,15 +75,13 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      mErrorMessage.append("Script::execute: error - script not started:" + script);
-      qDebug() << "Script::execute: error - script not started:" << script;
+      addErrorText("Script::execute: " + tr("Script not started:") + script, eCritical);
       return 0;
     }
 
     if(!mProc->waitForFinished())
     {
-      mErrorMessage.append("Script::execute: error - script not finished");
-      qDebug("Script::execute: error - script not finished");
+      addErrorText("Script::execute: " + tr("Script not finished:") + script, eCritical);
       mProc->kill();
       return 0;
     }
@@ -109,9 +105,8 @@ QStringList* Script::askProvider(const QString& provider
 
   if(script.isEmpty())
   {
-    mErrorMessage.append("Script::askProvider: provider " + provider
-             + " has no script for function " + function);
-    qDebug() << mErrorMessage;
+    addErrorText("Script::askProvider: " + tr("Provider '") + provider
+             + tr("' has no script for function '") + function + "'");
 
     emit finished();
 
@@ -187,9 +182,4 @@ void Script::returnResult()
   mRunning = false;
   mShowWaitWindow = false;
   emit finished();
-}
-
-void Script::getErrorMessage(QStringList& message)
-{
-  message << mErrorMessage;
 }
