@@ -32,7 +32,7 @@ delivered by the script will read from stdin. So the script must write to
 stdout.
 
 The data written by the script must separate by a semicolon. The first line must
-be a header line, keys seperate by a semicolon too. Each data set must
+be a header line, keys separate by a semicolon too. Each data set must
 terminated with a newline character. No footer line.
 
 If the script is unable to deliver any data, return no data. If the script find
@@ -40,7 +40,7 @@ only partial data, the missing data could leave out in most cases. It is also
 possible that the script leave out some header keys.
 
 An overview of all possible header keys you will found in
-import-file-format.txt. But it is not shure that the data delivered by the sript
+import-file-format.txt. But it is not sure that the data delivered by the script
 go the way thru Importer.cpp. For example, data from fetchBar* will go an own
 way into the database for a little better performance.
 
@@ -56,7 +56,7 @@ Output:   Date, Open, High, Low, Close, Volume, OpenInterest, Quality
             2=bronze, as temporary classified data by script
             3=tin, means there was an logical error in the data detected by the
               database
-          So the sript should only deliver gold or bronze.
+          So the script should only deliver gold or bronze.
           NOTICE: If only a close price is available, the missed prices must
                   filled with the close price. Otherwise the database will
           change the quality to tin.
