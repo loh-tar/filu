@@ -264,15 +264,17 @@ void AddFiPage::searchIdx()
 {
   emit message("AddFiPage::searchIdx: " + tr("Search Index matched to '") + mSearchField->text() + "'...");
   QStringList parms(mSearchField->text());
-  QStringList* result = mScripter->askProvider(mProvider, "fetchIdx", parms);
-  if(!result)
-  {
-    result = new QStringList;
-    result->append("[Header]Error");
-    mScripter->getErrorMessage(*result);
-  }
-
-  fillResultTable(result);
+  mScripter->showWaitWindow();
+  mScripter->askProvider(mProvider, "fetchIdx", parms);
+//   QStringList* result = mScripter->askProvider(mProvider, "fetchIdx", parms);
+//   if(!result)
+//   {
+//     result = new QStringList;
+//     result->append(mScripter->errorText());
+//     result->prepend("[Header]Error");
+//
+//     fillResultTable(result);
+//   }
 }
 
 void AddFiPage::fillResultTable(QStringList* data)
@@ -402,7 +404,25 @@ void AddFiPage::searchOrCancel()
 void AddFiPage::scriptFinished()
 {
   mSearchCancelBtn->setText("Search");
-  emit message("AddFiPage::scriptFinished: " + tr("Done"));
+
+  if(mScripter->hasError())
+  {
+    // For 'historical reasons', and because it looks so cool,
+    // we fill the result table with the error message...
+    QString errorMsg = mScripter->errorText().at(0); // We keep it simple, assume no more than one line
+    QStringList* result = new QStringList;
+    result->append("[Header]Error");
+    result->append(errorMsg);
+    fillResultTable(result);
+
+    // ...and of cause the log book
+    //emit message("AddFiPage::scriptFinished: " + tr("Huston, we have a problem."), eError);
+    emit message("AddFiPage::scriptFinished: " + errorMsg, eError);
+  }
+  else
+  {
+    emit message("AddFiPage::scriptFinished: " + tr("Done"));
+  }
 }
 
 void AddFiPage::addToDB()
