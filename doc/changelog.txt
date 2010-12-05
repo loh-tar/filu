@@ -1,4 +1,4 @@
-2010-12-04
+2010-12-05
 ============
 ManagerF
 ----------
@@ -7,6 +7,7 @@ ManagerF
  - Indicators: Save & Restore last settings.
  - Indicators: Change editor font to Monospace.
  - Log Book: Add a 2nd tab to view the agentf.log file. RightMouseBtn to delete.
+ - Add Fi: Fix possible segfault because of outdated header keys.
 
 RcFile
 --------

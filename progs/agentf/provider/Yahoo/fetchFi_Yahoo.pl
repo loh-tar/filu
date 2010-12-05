@@ -10,13 +10,13 @@ use Finance::Quote;
 $q = Finance::Quote->new;
 
 my %markets;
-$markets{PA} ="Paris";
+$markets{PA} = "Paris";
 $markets{BC} = "Barcelona";
 $markets{BE} = "Berlin";
 $markets{BI} = "Bilbao";
 $markets{BR} = "Breme";
 $markets{CO} = "Copenhagen";
-$markets{D}  =  "Dusseldorf";
+$markets{D}  = "Dusseldorf";
 $markets{F}  = "Frankfurt";
 $markets{H}  = "Hamburg";
 $markets{HA} = "Hanover";
@@ -34,7 +34,7 @@ $markets{DE} = "Xetra";
 
 # my @markets = qw{ PA BC BE BI BR CO D F H HA L MA MC MI MU O ST SG VA VI DE };
 
-print "HEADER=Symbol;Name;Type;MySymbol;Market\n";
+print "[Header]RefSymbol;Name;Type;Yahoo;Market\n";
 
 foreach $market( keys(%markets ) )
 {
