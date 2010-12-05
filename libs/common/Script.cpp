@@ -134,13 +134,13 @@ QString Script::locateProviderScript(const QString& provider, const QString& fun
   // Build the fullpath to the provider script
   QString fullPath(mProviderPath + provider + "/");
 
-  mWorkingDir = fullPath;
-
   QDir dir(fullPath);
   dir.setNameFilters(QStringList(function + "*"));
 
   QStringList files = dir.entryList();
   if(files.isEmpty()) return QString();
+
+  mWorkingDir = fullPath;
 
   fullPath.append(files.at(0));
 
