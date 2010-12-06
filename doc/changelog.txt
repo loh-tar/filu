@@ -8,6 +8,8 @@ ManagerF
  - Indicators: Change editor font to Monospace.
  - Log Book: Add a 2nd tab to view the agentf.log file. RightMouseBtn to delete.
  - Add Fi: Fix possible segfault because of outdated header keys.
+ - Add Fi: Change symbol edit fields to from QLineEdit to SearchField. Looks not
+   so nice but we can clear the fields now by mouse click.
 
 RcFile
 --------

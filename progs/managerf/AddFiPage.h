@@ -60,10 +60,10 @@ class AddFiPage : public ManagerPage
     QPushButton*  mSearchCancelBtn;
 
     QPushButton*  mAddBtn;
-    QLineEdit*    mRefSymbol;
+    SearchField*  mRefSymbol;
     QLineEdit*    mName;
     QComboBox*    mType;
-    QLineEdit*    mSymbol1, *mSymbol2, *mSymbol3;
+    SearchField*  mSymbol1, *mSymbol2, *mSymbol3;
     QComboBox*    mMarket1, *mMarket2, *mMarket3;
     QComboBox*    mSymbolType1, *mSymbolType2, *mSymbolType3;
 

@@ -77,7 +77,7 @@ void AddFiPage::createPage()
 
   QFontMetrics f(font());
   int w = f.width("X");
-  mRefSymbol = new QLineEdit;
+  mRefSymbol = new SearchField;
   mName = new QLineEdit;
   mName->setMinimumWidth(w * 30);
 
@@ -86,9 +86,9 @@ void AddFiPage::createPage()
   mFilu->getFiType(types);
   mType->addItems(types);
 
-  mSymbol1 = new QLineEdit;
-  mSymbol2 = new QLineEdit;
-  mSymbol3 = new QLineEdit;
+  mSymbol1 = new SearchField;
+  mSymbol2 = new SearchField;
+  mSymbol3 = new SearchField;
 
   mMarket1 = new QComboBox;
   mMarket1->setMinimumContentsLength(10);
