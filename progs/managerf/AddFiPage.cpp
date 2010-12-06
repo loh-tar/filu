@@ -36,7 +36,7 @@ AddFiPage::~AddFiPage()
 void AddFiPage::createPage()
 {
   mIcon = QIcon(":/icons/configure.xpm");
-  mIconText = tr("Add new FI");
+  mIconText = tr("Add FI");
 
   mScripter = new Script(this);
   connect(mScripter, SIGNAL(newData(QStringList *))
@@ -44,7 +44,7 @@ void AddFiPage::createPage()
   connect(mScripter, SIGNAL(finished())
           , this, SLOT(scriptFinished()));
 
-  QGroupBox* searchGroup = new QGroupBox(tr("Add new FI to Data Base"));
+  QGroupBox* searchGroup = new QGroupBox(tr("Add a new FI to the Data Base"));
 
   mSearchCancelBtn = new QPushButton;
   mSearchCancelBtn->setText("Search");
@@ -118,15 +118,16 @@ void AddFiPage::createPage()
     }
   }
 
+  // Build the edit line layout
   QGridLayout* addEditLineLO = new QGridLayout;
   addEditLineLO->addWidget( new QLabel("RefSymbol"), 0, 0);
-  addEditLineLO->addWidget(mRefSymbol, 1, 0);
-  addEditLineLO->setColumnStretch(0, 2);
-  addEditLineLO->addWidget( new QLabel("Name"), 0, 1);
-  addEditLineLO->addWidget(mName, 1, 1, 1, 3);          // Span over three columns
-  addEditLineLO->setColumnStretch(3, 3);                // Expand the empty column
-  addEditLineLO->addWidget( new QLabel("Type"), 0, 4);
-  addEditLineLO->addWidget(mType, 1, 4);
+  addEditLineLO->addWidget(mRefSymbol              , 1, 0);
+  addEditLineLO->setColumnStretch(0, 3);
+  addEditLineLO->addWidget( new QLabel("Name")     , 0, 1);
+  addEditLineLO->addWidget(mName                   , 1, 1, 1, 3); // Span over three columns
+  addEditLineLO->setColumnStretch(3, 2);                          // Expand the empty column
+  addEditLineLO->addWidget( new QLabel("Type")     , 0, 4);
+  addEditLineLO->addWidget(mType                   , 1, 4);
 
   addEditLineLO->addWidget(mAddBtn, 1, 5);
 
@@ -168,10 +169,12 @@ void AddFiPage::createPage()
   searchLayout->addWidget(mProviderSelector  , 0, 0);
   searchLayout->addWidget(mTypeSelector      , 0, 1);
   searchLayout->addWidget(mSearchField       , 0, 2);
+  searchLayout->setColumnStretch(2, 2);
   searchLayout->addWidget(mSearchCancelBtn   , 0, 3);
-  searchLayout->addWidget(mResultList    , 1, 0, 1, 4);
-  //searchLayout->setColumnStretch(2, 1);
-  searchLayout->addLayout(addEditLineLO, 2, 0, 1, 3);
+  searchLayout->addWidget(mResultList        , 1, 0, 1, 6); // Span over two more than existing columns...
+  searchLayout->setColumnStretch(4, 2);                     // ...and stretch...
+  searchLayout->setColumnStretch(5, 2);                     // ...these more
+  searchLayout->addLayout(addEditLineLO      , 2, 0, 1, 5);
 
   searchGroup->setLayout(searchLayout);
 
