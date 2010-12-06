@@ -48,6 +48,11 @@ QString SearchField::text()
   return mField->text();
 }
 
+void SearchField::setText(const QString& txt)
+{
+  mField->setText(txt);
+}
+
 QRegExp SearchField::filter()
 {
   QRegExp filter(mField->text(), Qt::CaseInsensitive);

@@ -37,6 +37,7 @@ class SearchField : public QWidget
     virtual      ~SearchField();
 
     QString       text();
+    void          setText(const QString&);
     QRegExp       filter();
 
     signals:
