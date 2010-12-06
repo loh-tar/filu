@@ -43,7 +43,7 @@ BarTuple::~BarTuple()
   delete []mOpenInterest;
 }
 
-int BarTuple::findDate(const QDate& date)
+int BarTuple::findDate(const QDate& date) const
 {
   // Find the date inside of mDate[].
   // We don't iterate simple 0 -> cont() which is to slow

@@ -20,7 +20,7 @@
 #ifndef TUPLE_HPP
 #define TUPLE_HPP
 
-#include <QtCore>
+#include <QtCore>  // Not needed here but by the derived classes
 
 /***********************************************************************
 *
@@ -45,11 +45,11 @@ class Tuple
                 Tuple(int size);
     virtual    ~Tuple();
 
-    int         id();
+    int         id() const;
     bool        next();
     int         rewind(int start = -1);
-    int         count();
-    bool        isInvalid();
+    int         count() const;
+    bool        isInvalid() const;
 
     friend class Filu;
 
@@ -60,7 +60,7 @@ class Tuple
     int*        mId;
 };
 
-inline int Tuple::id()
+inline int Tuple::id() const
 {
   return mId[mIndex];
 }
@@ -76,12 +76,12 @@ inline bool Tuple::next()
   return false;
 }
 
-inline int Tuple::count()
+inline int Tuple::count() const
 {
   return mMaxIndex + 1;
 }
 
-inline bool Tuple::isInvalid()
+inline bool Tuple::isInvalid() const
 {
   if(mIndex <= mMaxIndex and mIndex > -1) return false;
 

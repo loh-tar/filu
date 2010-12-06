@@ -28,14 +28,14 @@ class SymbolTuple : public Tuple
                 SymbolTuple(int size);
     virtual    ~SymbolTuple();
 
-    //int         typeId();
-    int         fiId();
-    int         marketId();
-    QString     caption();
-    //QString     issueDate();
-    //QString     maturityDate();
-    QString     market();
-    QString     owner();
+    //int         typeId() const;
+    int         fiId() const;
+    int         marketId() const;
+    const QString&  caption() const;
+    //const QString&  issueDate() const;
+    //const QString&  maturityDate() const;
+    const QString&  market() const;
+    const QString&  owner() const;
 
     void        setFiId(const int id);
     void        setMarketId(const int id);
@@ -58,27 +58,27 @@ class SymbolTuple : public Tuple
     QString*    mOwner;
 };
 
-inline int SymbolTuple::fiId()
+inline int SymbolTuple::fiId() const
 {
   return mFiId[mIndex];
 }
 
-inline int SymbolTuple::marketId()
+inline int SymbolTuple::marketId() const
 {
   return mMarketId[mIndex];
 }
 
-inline QString SymbolTuple::caption()
+inline const QString& SymbolTuple::caption() const
 {
   return mCaption[mIndex];
 }
 
-inline QString SymbolTuple::market()
+inline const QString& SymbolTuple::market() const
 {
   return mMarket[mIndex];
 }
 
-inline QString SymbolTuple::owner()
+inline const QString& SymbolTuple::owner() const
 {
   return mOwner[mIndex];
 }

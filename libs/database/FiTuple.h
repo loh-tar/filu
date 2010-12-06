@@ -30,12 +30,12 @@ class FiTuple : public Tuple
                   FiTuple(int size);
     virtual      ~FiTuple();
 
-    int           typeId();
-    QString       type();
-    QString       name();
-    SymbolTuple*  symbol();
-    //QString       issueDate();
-    //QString       maturityDate();
+    int             typeId() const;
+    const QString&  type() const;
+    const QString&  name() const;
+    SymbolTuple*    symbol() const;
+    //const QString       issueDate() const;
+    //const QString       maturityDate() const;
 
     void          setId(int id);
     void          setTypeId(int type);
@@ -56,33 +56,33 @@ class FiTuple : public Tuple
     //QString*      mMaturityDate;
 };
 
-inline int FiTuple::typeId()
+inline int FiTuple::typeId() const
 {
   return mTypeId[mIndex];
 }
 
-inline QString FiTuple::type()
+inline const QString& FiTuple::type() const
 {
   return mType[mIndex];
 }
 
-inline QString FiTuple::name()
+inline const QString& FiTuple::name() const
 {
   return mName[mIndex];
 }
 
-inline SymbolTuple* FiTuple::symbol()
+inline SymbolTuple* FiTuple::symbol() const
 {
   return mSymbol[mIndex];
 }
 
 /*
-inline QString FiTuple::issueDate()
+inline const QString& FiTuple::issueDate() const
 {
   return mIssueDate[mIndex];
 }
 
-inline QString FiTuple::maturityDate()
+inline const QString& FiTuple::maturityDate() const
 {
   return mMaturityDate[mIndex];
 }

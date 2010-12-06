@@ -28,8 +28,8 @@ class MarketTuple : public Tuple
                 MarketTuple(int size);
     virtual    ~MarketTuple();
 
-    QString     name();
-    QString     currency();
+    const QString&  name() const;
+    const QString&  currency() const;
 
     friend class Filu;
 
@@ -39,12 +39,12 @@ class MarketTuple : public Tuple
     QString*    mCurrency;
 };
 
-inline QString MarketTuple::name()
+inline const QString& MarketTuple::name() const
 {
   return mName[mIndex];
 }
 
-inline QString MarketTuple::currency()
+inline const QString& MarketTuple::currency() const
 {
   return mCurrency[mIndex];
 }

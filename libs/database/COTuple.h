@@ -28,12 +28,12 @@ class COTuple : public Tuple
               COTuple(int size);
     virtual  ~COTuple();
 
-    int       fiId();
-    int       marketId();
-    QString   viewName();
-    QDate     anchorDate();
-    QString   type();
-    QString   attributes();
+          int       fiId() const;
+          int       marketId() const;
+    const QString&  viewName() const;
+    const QDate&    anchorDate() const;
+    const QString&  type() const;
+    const QString&  attributes() const;
 
     void      setId(int);
     void      setFiId(int);
@@ -54,32 +54,32 @@ class COTuple : public Tuple
     QString*  mAttributes;
 };
 
-inline int COTuple::fiId()
+inline int COTuple::fiId() const
 {
   return mFiId[mIndex];
 }
 
-inline int COTuple::marketId()
+inline int COTuple::marketId() const
 {
   return mMarketId[mIndex];
 }
 
-inline QString COTuple::viewName()
+inline const QString& COTuple::viewName() const
 {
   return mViewName[mIndex];
 }
 
-inline QDate COTuple::anchorDate()
+inline const QDate& COTuple::anchorDate() const
 {
   return mAnchorDate[mIndex];
 }
 
-inline QString COTuple::type()
+inline const QString& COTuple::type() const
 {
   return mType[mIndex];
 }
 
-inline QString COTuple::attributes()
+inline const QString& COTuple::attributes() const
 {
   return mAttributes[mIndex];
 }
@@ -99,7 +99,7 @@ inline void COTuple::setMarketId(int id)
   mMarketId[mIndex] = id;
 }
 
-void COTuple::setViewName(const QString& name)
+inline void COTuple::setViewName(const QString& name)
 {
   mViewName[mIndex] = name;
 }
