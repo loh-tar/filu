@@ -28,17 +28,25 @@ class MarketTuple : public Tuple
                 MarketTuple(int size);
     virtual    ~MarketTuple();
 
-    int         id();
     QString     name();
     QString     currency();
 
     friend class Filu;
 
-  private:
+  protected:
     // Holds the beef
-    int*        Id;
-    QString*    Name;
-    QString*    Currency;
+    QString*    mName;
+    QString*    mCurrency;
 };
+
+inline QString MarketTuple::name()
+{
+  return mName[mIndex];
+}
+
+inline QString MarketTuple::currency()
+{
+  return mCurrency[mIndex];
+}
 
 #endif

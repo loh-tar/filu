@@ -20,22 +20,15 @@
 #include "Tuple.h"
 
 Tuple::Tuple(int size)
-     : Index(-1)
-     , MaxIndex(size - 1)
-{}
+     : mIndex(-1)
+     , mMaxIndex(size - 1)
+{
+  mId = new int[size];
+}
 
 Tuple::~Tuple()
-{}
-
-bool Tuple::next()
 {
-  if(Index < MaxIndex)
-  {
-    ++Index;
-    return true;
-  }
-
-  return false;
+  delete []mId;
 }
 
 int Tuple::rewind(int start /* = -1*/)
@@ -43,22 +36,10 @@ int Tuple::rewind(int start /* = -1*/)
   int status = eValid;
 
   if(start < 0) status = eUnderRange;
-  if(start > MaxIndex) status = eOverRange;
+  if(start > mMaxIndex) status = eOverRange;
 
-  if(status != eValid) Index = -1;
-  else Index = start;
+  if(status != eValid) mIndex = -1;
+  else mIndex = start;
 
   return status;
-}
-
-int Tuple::count()
-{
-  return MaxIndex + 1;
-}
-
-bool Tuple::isInvalid()
-{
-  if(Index <= MaxIndex and Index > -1) return false;
-
-  return true;
 }

@@ -21,70 +21,20 @@
 
 SymbolTuple::SymbolTuple(int size) : Tuple(size)
 {
-  FiId     = new int[size];
-  MarketId = new int[size];
-  Caption  = new QString[size];
-  Market   = new QString[size];
-  Owner    = new QString[size];
+  mFiId     = new int[size];
+  mMarketId = new int[size];
+  mCaption  = new QString[size];
+  mMarket   = new QString[size];
+  mOwner    = new QString[size];
 }
 
 SymbolTuple::~SymbolTuple()
 {
-  delete []FiId;
-  delete []MarketId;
-  delete []Caption;
-  delete []Market;
-  delete []Owner;
-}
-
-int SymbolTuple::fiId()
-{
-  return FiId[Index];
-}
-
-int SymbolTuple::marketId()
-{
-  return MarketId[Index];
-}
-
-QString SymbolTuple::caption()
-{
-  return Caption[Index];
-}
-
-QString SymbolTuple::market()
-{
-  return Market[Index];
-}
-
-QString SymbolTuple::owner()
-{
-  return Owner[Index];
-}
-
-void SymbolTuple::setFiId(const int id)
-{
-  FiId[Index] = id;
-}
-
-void SymbolTuple::setMarketId(const int id)
-{
-  MarketId[Index] =  id;
-}
-
-void SymbolTuple::setCaption(const QString& caption)
-{
-  Caption[Index] = caption;
-}
-
-void SymbolTuple::setMarket(const QString& market)
-{
-  Market[Index] = market;
-}
-
-void SymbolTuple::setOwner(const QString& owner)
-{
-  Owner[Index] = owner;
+  delete []mFiId;
+  delete []mMarketId;
+  delete []mCaption;
+  delete []mMarket;
+  delete []mOwner;
 }
 
 /******************************************************************
@@ -118,15 +68,15 @@ QVariant SymbolTableModel::data(const QModelIndex& index, int role) const
     switch(index.column())
       {
       case 0:
-        return mSymbols->FiId[index.row()];
+        return mSymbols->mFiId[index.row()];
       case 1:
-        return mSymbols->MarketId[index.row()];
+        return mSymbols->mMarketId[index.row()];
       case 2:
-        return mSymbols->Caption[index.row()];
+        return mSymbols->mCaption[index.row()];
       case 3:
-        return mSymbols->Market[index.row()];
+        return mSymbols->mMarket[index.row()];
       case 4:
-        return mSymbols->Owner[index.row()];
+        return mSymbols->mOwner[index.row()];
     }
   }
 

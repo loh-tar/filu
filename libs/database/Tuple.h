@@ -22,8 +22,12 @@
 
 #include <QtCore>
 
-//  This is the base class of each xxxTuple class
-//  They is not directly used
+/***********************************************************************
+*
+*   This is the base class of each xxxTuple class.
+*   They is not directly used.
+*
+************************************************************************/
 
 class Tuple
 {
@@ -41,15 +45,47 @@ class Tuple
                 Tuple(int size);
     virtual    ~Tuple();
 
+    int         id();
     bool        next();
     int         rewind(int start = -1);
     int         count();
     bool        isInvalid();
 
-    int         Index;
+    friend class Filu;
 
   protected:
-    int         MaxIndex;
+    int         mIndex;
+    int         mMaxIndex;
+
+    int*        mId;
 };
+
+inline int Tuple::id()
+{
+  return mId[mIndex];
+}
+
+inline bool Tuple::next()
+{
+  if(mIndex < mMaxIndex)
+  {
+    ++mIndex;
+    return true;
+  }
+
+  return false;
+}
+
+inline int Tuple::count()
+{
+  return mMaxIndex + 1;
+}
+
+inline bool Tuple::isInvalid()
+{
+  if(mIndex <= mMaxIndex and mIndex > -1) return false;
+
+  return true;
+}
 
 #endif

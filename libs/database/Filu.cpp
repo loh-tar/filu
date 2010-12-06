@@ -317,12 +317,12 @@ SymbolTuple* Filu::getSymbols()
   {
     query->next();
 
-    int i = symbol->Index;
-    symbol->FiId[i]     = query->value(0).toInt();
-    symbol->MarketId[i] = query->value(1).toInt();
-    symbol->Caption[i]  = query->value(2).toString();
-    symbol->Market[i]   = query->value(3).toString();
-    symbol->Owner[i]    = query->value(4).toString();
+    int i = symbol->mIndex;
+    symbol->mFiId[i]     = query->value(0).toInt();
+    symbol->mMarketId[i] = query->value(1).toInt();
+    symbol->mCaption[i]  = query->value(2).toString();
+    symbol->mMarket[i]   = query->value(3).toString();
+    symbol->mOwner[i]    = query->value(4).toString();
   }
   symbol->rewind();
 
@@ -394,11 +394,11 @@ MarketTuple* Filu::getMarket()
   {
     tuple->next();
 
-    int i = market->Index;
-    market->Id[i]       = tuple->value(0).toInt();
-    market->Name[i]     = tuple->value(1).toString();
-    market->Currency[i] = tuple->value(2).toString();
-    //market->Type[i]     = tuple->value(3).toString();
+    int i = market->mIndex;
+    market->mId[i]       = tuple->value(0).toInt();
+    market->mName[i]     = tuple->value(1).toString();
+    market->mCurrency[i] = tuple->value(2).toString();
+    //market->mType[i]     = tuple->value(3).toString();
   }
   market->rewind();
 
@@ -1296,7 +1296,7 @@ BarTuple* Filu::fillQuoteTuple(QSqlQuery* tuple)
   {
     tuple->next();
 
-    int i = bars->Index;
+    int i = bars->mIndex;
     bars->mDate[i]   = tuple->value(0).toDate();
     bars->mTime[i]   = tuple->value(1).toTime();
     bars->mOpen[i]   = tuple->value(2).toDouble();
@@ -1325,12 +1325,12 @@ FiTuple* Filu::fillFiTuple(QSqlQuery* tuple)
   {
     tuple->next();
 
-    int i = fi->Index;
-    fi->Id[i]     = tuple->value(0).toInt();
-    fi->TypeId[i] = tuple->value(1).toInt();
-    fi->Name[i]   = tuple->value(2).toString();
-    fi->Type[i]   = tuple->value(3).toString();
-    fi->Symbol[i] = 0;
+    int i = fi->mIndex;
+    fi->mId[i]     = tuple->value(0).toInt();
+    fi->mTypeId[i] = tuple->value(1).toInt();
+    fi->mName[i]   = tuple->value(2).toString();
+    fi->mType[i]   = tuple->value(3).toString();
+    fi->mSymbol[i] = 0;
     //    fi->IssueDate[i] = tuple->value(3).toString();
     //    fi->MaturityDate[i] = tuple->value(3).toString();
 

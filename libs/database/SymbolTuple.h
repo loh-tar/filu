@@ -20,8 +20,6 @@
 #ifndef SYMBOLTUPLE_HPP
 #define SYMBOLTUPLE_HPP
 
-#include <QTableView>
-
 #include "Tuple.h"
 
 class SymbolTuple : public Tuple
@@ -30,13 +28,12 @@ class SymbolTuple : public Tuple
                 SymbolTuple(int size);
     virtual    ~SymbolTuple();
 
-//    int id();
-//    int typeId();
+    //int         typeId();
     int         fiId();
     int         marketId();
     QString     caption();
-//    QString issueDate();
-//    QString maturityDate();
+    //QString     issueDate();
+    //QString     maturityDate();
     QString     market();
     QString     owner();
 
@@ -46,17 +43,72 @@ class SymbolTuple : public Tuple
     void        setMarket(const QString&);
     void        setOwner(const QString&);
 
+    friend class Filu;
+    friend class SymbolTableModel;
+
+  protected:
     // Holds the beef
-//    int* SymbolId;
-//    int* StypeId;
-    int*        FiId;
-    int*        MarketId;
-    QString*    Caption;
-//    QString*  Issuedate;
-//    QString*  Maturitydate;
-    QString*    Market;
-    QString*    Owner;
+    //int*        mStypeId;
+    int*        mFiId;
+    int*        mMarketId;
+    QString*    mCaption;
+    //QString*    mIssuedate;
+    //QString*    mMaturitydate;
+    QString*    mMarket;
+    QString*    mOwner;
 };
+
+inline int SymbolTuple::fiId()
+{
+  return mFiId[mIndex];
+}
+
+inline int SymbolTuple::marketId()
+{
+  return mMarketId[mIndex];
+}
+
+inline QString SymbolTuple::caption()
+{
+  return mCaption[mIndex];
+}
+
+inline QString SymbolTuple::market()
+{
+  return mMarket[mIndex];
+}
+
+inline QString SymbolTuple::owner()
+{
+  return mOwner[mIndex];
+}
+
+inline void SymbolTuple::setFiId(const int id)
+{
+  mFiId[mIndex] = id;
+}
+
+inline void SymbolTuple::setMarketId(const int id)
+{
+  mMarketId[mIndex] =  id;
+}
+
+inline void SymbolTuple::setCaption(const QString& caption)
+{
+  mCaption[mIndex] = caption;
+}
+
+inline void SymbolTuple::setMarket(const QString& market)
+{
+  mMarket[mIndex] = market;
+}
+
+inline void SymbolTuple::setOwner(const QString& owner)
+{
+  mOwner[mIndex] = owner;
+}
+
+#include <QTableView>
 
 class SymbolTableModel : public QAbstractTableModel
 {

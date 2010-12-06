@@ -22,91 +22,25 @@
 
 FiTuple::FiTuple(int size) : Tuple(size)
 {
-  Id     = new int[size];
-  TypeId = new int[size];
-  Type   = new QString[size];
-  Name   = new QString[size];
-  Symbol = new SymbolTuple*[size];
-  //IssueDate = new QString[size];
-  //MaturityDate = new QString[size];
+  mTypeId = new int[size];
+  mType   = new QString[size];
+  mName   = new QString[size];
+  mSymbol = new SymbolTuple*[size];
+  //mIssueDate = new QString[size];
+  //mMaturityDate = new QString[size];
 }
 
 FiTuple::~FiTuple()
 {
-  delete []Id;
-  delete []TypeId;
-  delete []Type;
-  delete []Name;
+  delete []mTypeId;
+  delete []mType;
+  delete []mName;
   // Clean up Symbols
-  for (int i = 0; i < MaxIndex ; i++) delete []Symbol[i] ;
-  delete [] Symbol;
-  //delete []Symbol;
-  //delete []IssueDate;
-  //delete []MaturityDate;
+  for (int i = 0; i < mMaxIndex ; i++) delete []mSymbol[i] ;
+  delete []mSymbol;
+  //delete []mIssueDate;
+  //delete []mMaturityDate;
 }
-
-int FiTuple::id()
-{
-  return Id[Index];
-}
-
-int FiTuple::typeId()
-{
-  return TypeId[Index];
-}
-
-QString FiTuple::type()
-{
-  return Type[Index];
-}
-
-QString FiTuple::name()
-{
-  return Name[Index];
-}
-
-SymbolTuple* FiTuple::symbol()
-{
-  return Symbol[Index];
-}
-
-/*
-QString FiTuple::issueDate()
-{
-  return IssueDate[Index];
-}
-
-QString FiTuple::maturityDate()
-{
-  return MaturityDate[Index];
-}
-*/
-
-void FiTuple::setId(int id)
-{
-  Id[Index] = id;
-}
-
-void FiTuple::setTypeId(int type)
-{
-  TypeId[Index] = type;
-}
-
-void FiTuple::setType(const QString& type)
-{
-  Type[Index] = type;
-}
-
-void FiTuple::setName(const QString& name)
-{
-  Name[Index] = name;
-}
-
-void FiTuple::setSymbol(SymbolTuple* symbol)
-{
-  Symbol[Index] = symbol;
-}
-
 
 /******************************************************************
 *
@@ -145,13 +79,13 @@ QVariant FiTableModel::data(const QModelIndex& index, int role) const
     switch(index.column())
     {
       case 0:
-        return mFi->Id[index.row()];
+        return mFi->mId[index.row()];
       case 1:
-        return mFi->TypeId[index.row()];
+        return mFi->mTypeId[index.row()];
       case 2:
-        return mFi->Name[index.row()];
+        return mFi->mName[index.row()];
       case 3:
-        return mFi->Type[index.row()];
+        return mFi->mType[index.row()];
     }
    }
   return QVariant();

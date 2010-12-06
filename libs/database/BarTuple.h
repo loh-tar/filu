@@ -37,7 +37,13 @@ class BarTuple : public Tuple
     double      low();
     double      close();
     double      volume();
+    int         fiId();
+    int         marketId();
 
+    friend class Filu;
+    friend class DataTupleSet;
+
+  protected:
     // Holds the beef
     QDate*      mDate;
     QTime*      mTime;
@@ -51,5 +57,50 @@ class BarTuple : public Tuple
     int         mFiId;
     int         mMarketId;
 };
+
+inline QDate BarTuple::date()
+{
+  return mDate[mIndex];
+}
+
+inline QTime BarTuple::time()
+{
+  return mTime[mIndex];
+}
+
+inline double BarTuple::open()
+{
+  return mOpen[mIndex];
+}
+
+inline double BarTuple::high()
+{
+  return mHigh[mIndex];
+}
+
+inline double BarTuple::low()
+{
+  return mLow[mIndex];
+}
+
+inline double BarTuple::close()
+{
+  return mClose[mIndex];
+}
+
+inline double BarTuple::volume()
+{
+  return mVolume[mIndex];
+}
+
+inline int BarTuple::fiId()
+{
+  return mFiId;
+}
+
+inline int BarTuple::marketId()
+{
+  return mMarketId;
+}
 
 #endif

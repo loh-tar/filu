@@ -81,39 +81,3 @@ int BarTuple::findDate(const QDate& date)
   if(iLow == iHigh) i = iLow; // No other possibility
   return i;
 }
-
-QDate BarTuple::date()
-{
-  return mDate[Index];
-}
-
-QTime BarTuple::time()
-{
-  return mTime[Index];
-}
-
-double BarTuple::open()
-{
-  return mOpen[Index];
-}
-
-double BarTuple::high()
-{
-  return mHigh[Index];
-}
-
-double BarTuple::low()
-{
-  return mLow[Index];
-}
-
-double BarTuple::close()
-{
-  return mClose[Index];
-}
-
-double BarTuple::volume()
-{
-  return mVolume[Index];
-}
-

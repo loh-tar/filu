@@ -120,7 +120,7 @@ COTuple* FiluU::getCOs()
   while(co->next())
   {
     query->next();
-    int i = co->Index;
+    int i = co->mIndex;
     co->mId[i]         = query->value(0).toInt();
     co->mFiId[i]       = query->value(1).toInt();
     co->mMarketId[i]   = query->value(2).toInt();

@@ -32,81 +32,10 @@ COTuple::COTuple(int size) : Tuple(size)
 
 COTuple::~COTuple()
 {
-  delete []mId;
   delete []mFiId;
   delete []mMarketId;
   delete []mViewName;
   delete []mAnchorDate;
   delete []mType;
   delete []mAttributes;
-}
-
-int COTuple::id()
-{
-  return mId[Index];
-}
-
-int COTuple::fiId()
-{
-  return mFiId[Index];
-}
-
-int COTuple::marketId()
-{
-  return mMarketId[Index];
-}
-
-QString COTuple::viewName()
-{
-  return mViewName[Index];
-}
-
-QDate COTuple::anchorDate()
-{
-  return mAnchorDate[Index];
-}
-
-QString COTuple::type()
-{
-  return mType[Index];
-}
-
-QString COTuple::attributes()
-{
-  return mAttributes[Index];
-}
-
-void COTuple::setId(int id)
-{
-  mId[Index] = id;
-}
-
-void COTuple::setFiId(int id)
-{
-  mFiId[Index] = id;
-}
-
-void COTuple::setMarketId(int id)
-{
-  mMarketId[Index] = id;
-}
-
-void COTuple::setViewName(const QString& name)
-{
-  mViewName[Index] = name;
-}
-
-void COTuple::setAnchorDate(const QDate& date)
-{
-  mAnchorDate[Index] = date;
-}
-
-void COTuple::setType(const QString& type)
-{
-  mType[Index] = type;
-}
-
-void COTuple::setAttributes(const QString& attr)
-{
-  mAttributes[Index] = attr;
 }

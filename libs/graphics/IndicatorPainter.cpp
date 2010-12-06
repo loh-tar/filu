@@ -234,8 +234,8 @@ bool IndicatorPainter::calculate()
   }
 
   // Load chart objects
-  mFilu->setFiId(mBars->mFiId);
-  mFilu->setMarketId(mBars->mMarketId);
+  mFilu->setFiId(mBars->fiId());
+  mFilu->setMarketId(mBars->marketId());
   mBars->rewind(0);
   mFilu->setFromDate(mBars->date().toString(Qt::ISODate));
   mBars->rewind(mBars->count() - 1);

@@ -36,8 +36,8 @@ COType::COType(IndicatorPainter* painter)
       , mP(painter)
 {
   setAttribute("Id", -1);
-  setAttribute("FiId",     mP->mBars->mFiId);
-  setAttribute("MarketId", mP->mBars->mMarketId);
+  setAttribute("FiId",     mP->mBars->fiId());
+  setAttribute("MarketId", mP->mBars->marketId());
   setAttribute("ViewName", mP->mViewName);
   setAttribute("AnchorValue", 0.0,     tr("Anchor Value"));
   setAttribute("AnchorDate",  QDate(), tr("Anchor Date"));

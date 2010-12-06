@@ -20,8 +20,6 @@
 #ifndef FITUPLE_HPP
 #define FITUPLE_HPP
 
-#include <QTableView>
-
 #include "Tuple.h"
 
 class SymbolTuple;
@@ -32,13 +30,12 @@ class FiTuple : public Tuple
                   FiTuple(int size);
     virtual      ~FiTuple();
 
-    int           id();
     int           typeId();
     QString       type();
     QString       name();
     SymbolTuple*  symbol();
-    //QString issueDate();
-    //QString maturityDate();
+    //QString       issueDate();
+    //QString       maturityDate();
 
     void          setId(int id);
     void          setTypeId(int type);
@@ -49,16 +46,74 @@ class FiTuple : public Tuple
     friend class  Filu;
     friend class  FiTableModel;
 
-  private:
+  protected:
     // Holds the beef
-    int*          Id;
-    int*          TypeId;
-    QString*      Type;
-    QString*      Name;
-    SymbolTuple** Symbol;
-    //QString* IssueDate;
-    //QString* MaturityDate;
+    int*          mTypeId;
+    QString*      mType;
+    QString*      mName;
+    SymbolTuple** mSymbol;
+    //QString*      mIssueDate;
+    //QString*      mMaturityDate;
 };
+
+inline int FiTuple::typeId()
+{
+  return mTypeId[mIndex];
+}
+
+inline QString FiTuple::type()
+{
+  return mType[mIndex];
+}
+
+inline QString FiTuple::name()
+{
+  return mName[mIndex];
+}
+
+inline SymbolTuple* FiTuple::symbol()
+{
+  return mSymbol[mIndex];
+}
+
+/*
+inline QString FiTuple::issueDate()
+{
+  return mIssueDate[mIndex];
+}
+
+inline QString FiTuple::maturityDate()
+{
+  return mMaturityDate[mIndex];
+}
+*/
+
+inline void FiTuple::setId(int id)
+{
+  mId[mIndex] = id;
+}
+
+inline void FiTuple::setTypeId(int type)
+{
+  mTypeId[mIndex] = type;
+}
+
+inline void FiTuple::setType(const QString& type)
+{
+  mType[mIndex] = type;
+}
+
+inline void FiTuple::setName(const QString& name)
+{
+  mName[mIndex] = name;
+}
+
+inline void FiTuple::setSymbol(SymbolTuple* symbol)
+{
+  mSymbol[mIndex] = symbol;
+}
+
+#include <QTableView>
 
 class FiTableModel : public QAbstractTableModel
 {

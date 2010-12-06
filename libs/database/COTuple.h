@@ -28,7 +28,6 @@ class COTuple : public Tuple
               COTuple(int size);
     virtual  ~COTuple();
 
-    int       id();
     int       fiId();
     int       marketId();
     QString   viewName();
@@ -46,8 +45,7 @@ class COTuple : public Tuple
 
     friend class FiluU;
 
-  private:
-    int*      mId;
+  protected:
     int*      mFiId;
     int*      mMarketId;
     QString*  mViewName;
@@ -55,4 +53,70 @@ class COTuple : public Tuple
     QString*  mType;
     QString*  mAttributes;
 };
+
+inline int COTuple::fiId()
+{
+  return mFiId[mIndex];
+}
+
+inline int COTuple::marketId()
+{
+  return mMarketId[mIndex];
+}
+
+inline QString COTuple::viewName()
+{
+  return mViewName[mIndex];
+}
+
+inline QDate COTuple::anchorDate()
+{
+  return mAnchorDate[mIndex];
+}
+
+inline QString COTuple::type()
+{
+  return mType[mIndex];
+}
+
+inline QString COTuple::attributes()
+{
+  return mAttributes[mIndex];
+}
+
+inline void COTuple::setId(int id)
+{
+  mId[mIndex] = id;
+}
+
+inline void COTuple::setFiId(int id)
+{
+  mFiId[mIndex] = id;
+}
+
+inline void COTuple::setMarketId(int id)
+{
+  mMarketId[mIndex] = id;
+}
+
+void COTuple::setViewName(const QString& name)
+{
+  mViewName[mIndex] = name;
+}
+
+inline void COTuple::setAnchorDate(const QDate& date)
+{
+  mAnchorDate[mIndex] = date;
+}
+
+inline void COTuple::setType(const QString& type)
+{
+  mType[mIndex] = type;
+}
+
+inline void COTuple::setAttributes(const QString& attr)
+{
+  mAttributes[mIndex] = attr;
+}
+
 #endif

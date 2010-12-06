@@ -21,29 +21,12 @@
 
 MarketTuple::MarketTuple(int size) : Tuple(size)
 {
-  Id       = new int[size];
-  Name     = new QString[size];
-  Currency = new QString[size];
+  mName     = new QString[size];
+  mCurrency = new QString[size];
 }
 
 MarketTuple::~MarketTuple()
 {
-  delete []Id;
-  delete []Name;
-  delete []Currency;
-}
-
-int MarketTuple::id()
-{
-  return Id[Index];
-}
-
-QString MarketTuple::name()
-{
-  return Name[Index];
-}
-
-QString MarketTuple::currency()
-{
-  return Currency[Index];
+  delete []mName;
+  delete []mCurrency;
 }
