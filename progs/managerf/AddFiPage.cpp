@@ -103,18 +103,26 @@ void AddFiPage::createPage()
   mSymbolType1 = new QComboBox;
   mSymbolType2 = new QComboBox;
   mSymbolType3 = new QComboBox;
+
   // Read all symbol types out of the DB
-  QSqlQuery* query = mFilu->execSql("GetAllSymbolTypes");
-  if(!check4FiluError("AddFiPage::createPage: " + tr("ERROR while exec GetAllSymbolTypes.sql")))
+  SymbolTypeTuple* symbolTypes = mFilu->getSymbolTypes(Filu::eAllTypes);
+  if(!check4FiluError("AddFiPage::createPage: " + tr("ERROR while exec GetSymbolTypes.sql")))
   {
-    if(query)
+    if(symbolTypes)
     {
-      while(query->next())
+      while(symbolTypes->next())
       {
-         mSymbolType1->insertItem(0, query->value(0).toString());
-         mSymbolType2->insertItem(0, query->value(0).toString());
-         mSymbolType3->insertItem(0, query->value(0).toString());
+         mSymbolType1->insertItem(0, symbolTypes->caption());
+         mSymbolType2->insertItem(0, symbolTypes->caption());
+         mSymbolType3->insertItem(0, symbolTypes->caption());
       }
+
+      delete symbolTypes;
+    }
+    else
+    {
+      // Purposely no tr()
+      addErrorText("AddFiPage::createPage: You should never read this:", eCritical);
     }
   }
 
