@@ -52,25 +52,10 @@ void Filu::setFiId(int id)
 
 bool Filu::setIdsByNameSettings()
 {
-/*  SymbolTuple* symbol = getSymbols();
-  if(symbol->count() != 1)
-  {
-    qDebug() << "Filu::setIdsByNameSettings: fail to set Ids";
-    qDebug() << "\tno or to much fittings for" << mSymbolCaption << mMarketName;
-    qDebug() << mLastError;
-    return false;
-  }
-  symbol->next();
-  mFiId = symbol->fiId();
-  mMarketId = symbol->marketId();
-  */
   mFiId = -1; // Mark as unvalid
-  //QString save = mMarketName;
-  //mMarketName = "";  // Mark as unset, we want fi
-  FiTuple* fi = getFi();
-  //mMarketName = save;
 
-  //if(mHasError)
+  FiTuple* fi = getFi();
+
   if(!fi or fi->count() == 0)
   {
     qDebug() << "Filu::setIdsByNameSettings: fail to set FiId";
@@ -85,11 +70,7 @@ bool Filu::setIdsByNameSettings()
     if(mSqlDebugLevel == 1) qDebug() << mLastError;
     return false;
   }
-  /*if(fi->count() == 0)
-  {
-    qDebug() << "Filu::setIdsByNameSettings: fail to set FiId"; qDebug() << mLastError;
-    return false;
-  }*/
+
   fi->next();
   mFiId = fi->id();
 
@@ -191,7 +172,6 @@ void Filu::setProviderId(int id)
 void Filu::setProviderName(const QString& name)
 {
   mProviderName = name;
-  //mProviderId = id;
 }
 
 void Filu::setOnlyProviderSymbols(bool b)
@@ -520,11 +500,6 @@ int Filu::getFiType(QStringList& type)
 
   return eData;
 }
-
-/*QString Filu::getFromDate()
-{
-  return mFromDate;
-}*/
 
 int Filu::getEODBarDateRange(DateRange& dateRange
                            , int quality
