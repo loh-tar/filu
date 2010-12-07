@@ -108,43 +108,4 @@ inline void SymbolTuple::setOwner(const QString& owner)
   mOwner[mIndex] = owner;
 }
 
-#include <QTableView>
-
-class SymbolTableModel : public QAbstractTableModel
-{
-  Q_OBJECT
-
-  public:
-                SymbolTableModel(SymbolTuple* symbols, QObject* parent = 0)
-                    : QAbstractTableModel(parent)
-                    , mSymbols(symbols) {}
-
-    virtual    ~SymbolTableModel() {}
-
-    int         rowCount(const QModelIndex& parent = QModelIndex()) const;
-    int         columnCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant    data(const QModelIndex& index, int role) const;
-
-    QVariant    headerData(int section, Qt::Orientation orientation,
-                           int role = Qt::DisplayRole) const;
-
-  private:
-    SymbolTuple* mSymbols;
-};
-
-class SymbolTableView : public QTableView
-{
-  Q_OBJECT
-
-  public:
-                SymbolTableView(SymbolTuple* symbols, QWidget* parent = 0);
-    virtual    ~SymbolTableView();
-
-    void        setContent(SymbolTuple* symbols);
-    QSize       sizeHint() const;
-
-  private:
-    SymbolTableModel* mSymbolTableModel;
-};
-
 #endif

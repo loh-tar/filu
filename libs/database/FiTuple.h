@@ -113,40 +113,4 @@ inline void FiTuple::setSymbol(SymbolTuple* symbol)
   mSymbol[mIndex] = symbol;
 }
 
-#include <QTableView>
-
-class FiTableModel : public QAbstractTableModel
-{
-  Q_OBJECT
-
-  public:
-                  FiTableModel(FiTuple* fi, QObject* parent = 0);
-    virtual      ~FiTableModel() {}
-
-    int           rowCount(const QModelIndex& parent = QModelIndex()) const;
-    int           columnCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant      data(const QModelIndex& index, int role) const;
-
-    QVariant      headerData(int section, Qt::Orientation orientation,
-                           int role = Qt::DisplayRole) const;
-
-  private:
-    FiTuple*      mFi;
-};
-
-class FiTableView : public QTableView
-{
-  Q_OBJECT
-
-  public:
-                  FiTableView(FiTuple* fi, QWidget* parent = 0);
-   virtual       ~FiTableView();
-
-   void           setContent(FiTuple* fi);
-   QSize          sizeHint() const;
-
-  private:
-    FiTableModel* mFiModel;
-};
-
 #endif

@@ -27,10 +27,9 @@ set(Filu_SRC ${Filu_SRC}
     database/MarketTuple.cpp
     database/SymbolTuple.cpp
 )
-set(Filu_MOCH ${Filu_MOCH}
-    database/FiTuple.h
-    database/SymbolTuple.h
-)
+#set(Filu_MOCH ${Filu_MOCH}
+#    database/
+#)
 include_directories(database)
 
 set(Filu_SRC ${Filu_SRC}
@@ -53,6 +52,8 @@ set(Filu_SRC ${Filu_SRC}
     common/DialogButton.cpp
     common/ButtonPad.cpp
     common/IndiSetPad.cpp
+    common/FiTableView.cpp
+    common/SymbolTableView.cpp
 )
 set(Filu_MOCH ${Filu_MOCH}
     common/LaunchPad.h
@@ -65,6 +66,8 @@ set(Filu_MOCH ${Filu_MOCH}
     common/DialogButton.h
     common/ButtonPad.h
     common/IndiSetPad.h
+    #common/FiTableView.h
+    #common/SymbolTableView.h
 )
 include_directories(common)
 

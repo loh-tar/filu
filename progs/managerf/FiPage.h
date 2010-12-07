@@ -24,6 +24,8 @@
 
 class IndicatorWidget;
 class SearchField;
+class SymbolTableView;
+class FiTableView;
 
 class FiPage : public ManagerPage
 {

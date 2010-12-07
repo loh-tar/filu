@@ -21,6 +21,8 @@
 
 #include "IndicatorWidget.h"
 #include "SearchField.h"
+#include "SymbolTableView.h"
+#include "FiTableView.h"
 
 FiPage::FiPage(FClass* parent)
       : ManagerPage(parent)
