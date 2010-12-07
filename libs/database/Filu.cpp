@@ -918,7 +918,7 @@ int Filu::addFiCareful(FiTuple& fi)
   fi.rewind(0);
   if(fi.isInvalid())
   {
-    qDebug("Filu::addFiCareful: fi unvalid"); // You should never read this
+    addErrorText("Filu::addFiCareful: FI unvalid", eCritical); // You should never read this
     return eError;
   }
 
@@ -1292,7 +1292,8 @@ void Filu::openDB()
   {
     printSettings();
     QSqlError err = db.lastError();
-    qDebug() << "Filu::openDB: Error :-(" << err.databaseText();
+    addErrorText("Filu::openDB: Error :-(", eCritical);
+    addErrorText(err.databaseText(), eCritical);
   }
   else
   {
@@ -1381,9 +1382,9 @@ bool Filu::initQuery(const QString& name)
   bool ok = query->prepare(sql);
   if(!ok)
   {
-    qDebug() << "Filu::initQuery: Can't prepare: " << sql;
+    addErrorText("Filu::initQuery: Can't prepare: " + sql, eCritical);
     QSqlError err = query->lastError();
-    qDebug() << ":-(" << err.databaseText();
+    addErrorText(err.databaseText(), eCritical);
 
     return false;
   }
@@ -1406,7 +1407,7 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
   QFile file(fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    qDebug() << "Filu::readSqlStatement: Can't open file " << fileName;
+    addErrorText("Filu::readSqlStatement: " + QObject::tr("Can't open file: ") + fileName, eError);
     return false;
   }
 
@@ -1511,9 +1512,9 @@ int Filu::execute(QSqlQuery* query)
   if(mHasError)
   {
     if(mSqlDebugLevel == 1)
-      qDebug() << "Filu::execute: Executed query was:\n" << mLastQuery;
+      addErrorText("Filu::execute: Executed query was:\n" + mLastQuery, eCritical);
 
-    qDebug() << "Filu::execute: Error text:\n" << mLastError;
+    addErrorText("Filu::execute: Error text:\n" + mLastError, eCritical);
     return eError;
   }
 
@@ -1536,7 +1537,7 @@ int Filu::execute(QSqlQuery* query)
     if(query->numRowsAffected() < 0)
     {
       qDebug() << "Filu::execute: Error while non select sql";
-      if(mSqlDebugLevel == 1) qDebug() << "LastQuery:\n" << mLastQuery;
+      if(mSqlDebugLevel == 1) addErrorText("Filu::execute: LastQuery:\n" + mLastQuery, eCritical);
       //mHasError = true;
       return eNoSuccess;
     }
