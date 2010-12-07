@@ -49,8 +49,8 @@ class Filu
       eWarning,
       eCritical,
 
-      // Return values for functions returning an intenger, mostly an data Id
-      // Do* not* use it for functions returning fooTuple
+      // Return values for functions returning an intenger, mostly a data Id
+      // Do *not* use it for functions returning fooTuple
       // FIXME: Did you know how to solve this with usual && || operators?
       eData        =      1,  // Use it like if(retVal >= eData) ...
       eSuccess     =      1,  // Use it like if(retVal == eSuccess) ...
@@ -67,7 +67,7 @@ class Filu
       eGold        =  1, // As final classified data by script
       eBronze      =  2, // As temporary classified data by script
       eTin         =  3  // Means there was an logical error in the data
-                         // Detected by the database
+                         // detected by the database
     };
 
     // Set Functions
@@ -158,7 +158,7 @@ class Filu
                         , const int& quality = 2);
 
     // The Big Beef, Indicator Functions
-    // These are* not* usual indicators. That's indicators provided by Filu,
+    // These are *not* usual indicators. That's indicators provided by Filu,
     // the ultimate cause of starting the FiMi project by Christian Kindler.
     int         getIndicatorNames(QStringList* names, const QString& like = "");
     int         getIndicatorInfo(KeyVal* info, const QString& name);
