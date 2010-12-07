@@ -26,6 +26,7 @@ set(Filu_SRC ${Filu_SRC}
     database/FiluU.cpp
     database/MarketTuple.cpp
     database/SymbolTuple.cpp
+    database/SymbolTypeTuple.h
 )
 #set(Filu_MOCH ${Filu_MOCH}
 #    database/

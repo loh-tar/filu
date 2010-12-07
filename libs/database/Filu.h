@@ -29,6 +29,7 @@
 #include "SymbolTuple.h"
 #include "MarketTuple.h"
 #include "FiTuple.h"
+#include "SymbolTypeTuple.h"
 
 class RcFile;
 
@@ -66,8 +67,13 @@ class Filu
       ePlatinum    =  0, // Modified by the user, don't change automatically
       eGold        =  1, // As final classified data by script
       eBronze      =  2, // As temporary classified data by script
-      eTin         =  3  // Means there was an logical error in the data
+      eTin         =  3, // Means there was an logical error in the data
                          // detected by the database
+
+      // Filter for getSymbolTypes(...)
+      eAllTypes        = 1,
+      eOnlyProvider    = 2,
+      eOnlyNonProvider = 3
     };
 
     // Set Functions
@@ -107,6 +113,8 @@ class Filu
     SymbolTuple* searchSymbol(const QString& symbol
                             , const QString& market = ""
                             , const QString& owner  = "");
+
+    SymbolTypeTuple* getSymbolTypes(int filter = eAllTypes/* FIXME, bool orderBySeq = true*/);
 
     int          getFiType(QStringList& type);
 

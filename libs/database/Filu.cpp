@@ -365,6 +365,56 @@ SymbolTuple* Filu::searchSymbol(const QString& symbol
   return st;
 }
 
+SymbolTypeTuple* Filu::getSymbolTypes(int filter/* = eAllTypes FIXME, bool orderBySeq = true*/)
+{
+  if(!initQuery("GetSymbolTypes")) return 0;
+
+  QSqlQuery* query = mSQLs.value("GetSymbolTypes");
+
+  bool allTypes;
+  bool isProvider;
+
+  switch(filter)
+  {
+    case eOnlyProvider:
+      allTypes   = false;
+      isProvider = true;
+      break;
+
+    case eOnlyNonProvider:
+      allTypes   = false;
+      isProvider = false;
+      break;
+
+    case eAllTypes:
+    default:
+      allTypes   = true;
+      isProvider = true;
+      break;
+  }
+
+  query->bindValue(":all", allTypes);
+  query->bindValue(":isProvider", isProvider);
+  //query->bindValue(":", orderBySeq);
+
+  if(execute(query) <= eError) return 0;
+
+  SymbolTypeTuple* symbolType = new SymbolTypeTuple(query->size());
+  while(symbolType->next())
+  {
+    query->next();
+
+    int i = symbolType->mIndex;
+    symbolType->mId[i]         = query->value(0).toInt();
+    symbolType->mCaption[i]    = query->value(1).toString();
+    symbolType->mSeq[i]        = query->value(1).toInt();
+    symbolType->mIsProvider[i] = query->value(2).toInt();
+  }
+  symbolType->rewind();
+
+  return symbolType;
+}
+
 MarketTuple* Filu::getMarket()
 {
   if(!initQuery("GetMarketByName")) return 0;

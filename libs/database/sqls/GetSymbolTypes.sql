@@ -1,13 +1,12 @@
-* FIXME: unsure if needed, currently not used. see also GetAllSymbolTypes.sql
 *  file name: GetSymbolTypes.sql
-*  Used as query:
-*  Used in function: Filu::
+*  Used in function: Filu::getSymbolTypes()
 *
 *  Purpose: Fetch symbol types
 *
 *  Inputs: (variable names are important and begins with a colon)
 *     :all
-*     :onlyProvider
+*     :isProvider
+*     :orderBySeq FIXME
 *  Outputs: (order is important)
 *     sTypeId
 *     caption
@@ -16,8 +15,15 @@
 *
 
 -- GetSymbolTypes.sql
-SELECT stype_id, caption, seq, isprovider
-FROM :filu.stype
+SELECT
+  stype.stype_id AS "ID",
+  stype.caption AS "SymbolType",
+  stype.seq AS "SEQ",
+  stype.isprovider AS "IsProvider"
+FROM
+  :filu.stype
 WHERE
-CASE WHEN :all = TRUE THEN TRUE ELSE isprovider = :onlyProvider END
-;
+  CASE WHEN :all = TRUE THEN TRUE ELSE isprovider = :isProvider END
+ORDER BY
+  stype.seq ASC,
+  stype.caption ASC;
