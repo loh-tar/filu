@@ -1,6 +1,5 @@
 *  file name: GetAllSymbolTypes.sql
 *  Used by function Exporter::expSymbolTypes()
-*                   Importer::reset()
 *
 *  Purpose:
 *     To fetch all symbol types

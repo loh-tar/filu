@@ -99,19 +99,21 @@ void Importer::reset()
   }
 
   // Read all symbol types out of the DB
-  QSqlQuery* query = mFilu->execSql("GetAllSymbolTypes");
+  SymbolTypeTuple* symbolTypes = mFilu->getSymbolTypes(Filu::eAllTypes);
 
-  if(!check4FiluError("Importer::reset: ERROR while exec GetAllSymbolTypes.sql"))
+  if(!check4FiluError("Importer::reset: ERROR while exec GetSymbolTypes.sql"))
   {
-    if(query)
+    if(symbolTypes)
     {
-      while(query->next())
+      while(symbolTypes->next())
       {
-        mKnownSymbolTypes  << query->value(0).toString();
+        mKnownSymbolTypes << symbolTypes->caption();
 
-        mKnownSTisProvider.insert(query->value(0).toString()
-                                , query->value(2).toBool()   );
+        mKnownSTisProvider.insert(symbolTypes->caption()
+                                , symbolTypes->isProvider() );
       }
+
+      delete symbolTypes;
     }
   }
 
