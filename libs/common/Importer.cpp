@@ -78,6 +78,7 @@ void Importer::reset()
 {
   mPendingData.clear();
   mHeader.clear();
+  mHeaderExpanded.clear();
   mData.clear();
   mKnownSymbolTypes.clear();
   mKnownSTisProvider.clear();
@@ -162,6 +163,8 @@ bool Importer::import(QString& data)
 
   if(!mPrepared) prepare();
 
+  //return true; // debug only
+
   printDot();
   mToDo.insert("PrintNewLine");
 
@@ -221,18 +224,43 @@ bool Importer::handleTag(QStringList& row)
   if(row.at(0).startsWith("[Header]"))
   {
     // Delete old header keys, be on the save side
-    for(int i = 0; i < mHeader.size(); ++i)
+    for(int i = 0; i < mHeaderExpanded.size(); ++i)
     {
-      mData.remove(mHeader.at(i));
+      mData.remove(mHeaderExpanded.at(i));
     }
 
     row[0].remove("[Header]");
     mHeader = row;
+    mHeaderExpanded = row;
     for(int i = 0; i < mHeader.size(); ++i)
     {
       if(mHeader.at(i).isEmpty()) continue;
-      mHeader.replace(i, makeUnique(mHeader.at(i)));
-      //qDebug() << "Importer::handleTag: [Header]" << i << mHeader.at(i);
+
+      if(mKnownSymbolTypes.contains(mHeader.at(i)))
+      {
+        // mHeader.at(i) e.g. "Yahoo" or "Reuters"
+        QString symbol = makeUnique("Symbol");
+        QString unique = symbol;
+        unique.remove("Symbol"); // Now the number suffix
+        mData.insert("Provider" + unique, mHeader.at(i));  // Set e.g. Provider0 = Yahoo
+        mHeaderExpanded.append("Provider" + unique);
+        //qDebug() << "Importer::handleTag: [Header]" << i  << mHeader.at(i) << symbol << mKnownSTisProvider.value(mHeader.at(i));
+        if(!mKnownSTisProvider.value(mHeader.at(i)))
+        {
+          // mHeader.at(i) e.g. "Reuters"
+          mData.insert("Market" + unique, "NoMarket");
+          mHeaderExpanded.append("Market" + unique);
+          //qDebug() << "Importer::handleTag: [Header]" << i << ("Market" + unique);
+        }
+        mHeader.replace(i, symbol);
+        mHeaderExpanded.replace(i, symbol);
+      }
+      else
+      {
+        mHeader.replace(i, makeUnique(mHeader.at(i)));
+        mHeaderExpanded.replace(i, mHeader.at(i));
+        //qDebug() << "Importer::handleTag: [Header]" << i << mHeader.at(i);
+      }
       mData.insert(mHeader.at(i), "");
     }
 
@@ -271,7 +299,7 @@ QString Importer::makeUnique(const QString& key)
   for(int i = 0; true; ++i)
   {
     unique = key + QString::number(i);
-    if(!mHeader.contains(unique)) break;
+    if(!mHeaderExpanded.contains(unique)) break;
   }
 
   return unique;
@@ -285,7 +313,31 @@ void Importer::buildPair(QString& key, QString& value, const QString& line)
   // Don't call here: key = makeUnique(pair.at(0))
   // A global key can't be auto numbered.
   key = pair.at(0);
+
+  if("Provider" == key)
+  {
+    if(!mData.contains("Market0"))    mData.insert("Market0", "");
+    if(!mData.contains("Symbol0"))    mData.insert("Symbol0", "");
+  }
+  else if("Symbol" == key)
+  {
+    if(!mData.contains("Provider0"))  mData.insert("Provider0", "");
+    if(!mData.contains("Market0"))    mData.insert("Market0", "");
+  }
+  else if("Market" == key)
+  {
+    if(!mData.contains("Provider0"))  mData.insert("Provider0", "");
+    if(!mData.contains("Symbol0"))    mData.insert("Symbol0", "");
+  }
+
+  if(mKnownSymbolTypes.contains(key))
+  {
+    if(!mData.contains("Market0"))    mData.insert("Market0", "");
+    if(!mData.contains("Symbol0"))    mData.insert("Symbol0", "");
+  }
+
   if(mMustBeUnique.contains(key)) key.append("0");
+
   if(pair.size() > 1) value = pair.at(1);
   else value = "";
 }
@@ -331,7 +383,6 @@ void Importer::prepare()
     if(mKnownSymbolTypes.contains(rawKey))
     {
       mUsedKnownSymbols.append(i.key());
-      //qDebug() << "Importer::prepare: I know " << i.key();
       continue;
     }
 
@@ -347,7 +398,7 @@ void Importer::prepare()
       continue;
     }
 
-   qDebug() << "Importer::prepare: Oops?! What's that? :" << rawKey;
+    qDebug() << "Importer::prepare: Oops?! What's that? :" << rawKey;
 
   }
   //qDebug() << "Importer::prepare:" <<  mTotalSymbolCount << "symbols total used";
@@ -369,7 +420,7 @@ void Importer::prepare()
     text << "SymbolTypes, ";
     mToDo.insert("addSymbolType");
   }
-  //qDebug() << mUsedSymbols << mTotalSymbolCount;
+
   if(mTotalSymbolCount > 0)
   {
     mToDo.insert("setSymbol");
@@ -432,6 +483,9 @@ void Importer::prepare()
   }
 
   if(tmpText > introTxt) mConsole << tmpText;
+
+  //qDebug() << "Importer::prepare: mHeader" << mHeader;
+  //qDebug() << "Importer::prepare: mData" << mData;
 }
 
 void Importer::setFi()

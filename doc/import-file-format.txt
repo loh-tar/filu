@@ -20,9 +20,9 @@ NOTE: Exporter.cpp generate such an import file, see doc/export-data.txt, and
 Controlling Tags
 ==================
 [CompList]<MotherSymbol>
-  Set the Key "Mother" to <MotherSymbol>, you can you call it "index symbol".
-  All SymbolKeys listed in the following represent the full set of underlyings
-  to this  FI. Not listed FIs will remove from the underlying list.
+  Set the Key "Mother" to <MotherSymbol>, you can call it "index symbol". All
+  SymbolKeys listed in the following represent the full set of underlyings to
+  this  FI. Not listed FIs will remove from the underlying list.
 
 [CompListEnd]
   Terminates the [CompList]
@@ -36,13 +36,11 @@ Controlling Tags
   following data are ordered in the same wise as the here listed Keys. Depend on
   which Keys are set will the Importer determine what data are able to store in
   the database. All previous declared Keys by [Header] are deleted, but *only*
-  these! Other Keys stay valid. NOTE: New declared keys take not care about
-  existing keys defined with "[<Foo>]bar". That is especialy importand for
-  e.g. Provider/Symbol/Market. A maybe existing Symbol0 will be overwritten
-  with the new Header-Symbol, wich will be append by 0 and not 1, see below.
+  these! Other Keys stay mostly valid if they will not be overwritten by a new
+  Header Key.
 
 [Ignore]foo=bar FIXME: not implemented
-  Will ignore all data where key 'foo' has value 'bar'
+  Will ignore all data where Key 'foo' has value 'bar'
 
 [Include] FIXME: not implemented
   Includes an other import file at this point.
@@ -65,13 +63,14 @@ Assignment Tags
 [<Foo>]bar
   This declares the variable (aka Key) "Foo" and set the value to "bar". This
   mean nothing else as that you can assign each data normally listed in columns
-  with a Tag. This is useful when the same value appears in each data row.
+  with a Tag. This is useful when the same value appears in each data row. But
+  [Header] will overwrite them if there is the same Key listed.
 
 
 Known Header Keys
 ===================
 As mentioned above determine the Importer by the set of Keys which data can be
-stored to the database. In the following you will find what keys has to be set
+stored to the database. In the following you will find what Keys has to be set
 to got an data insert/update.
 
 Keys which are optional and not a must have are market behind its name with
@@ -125,28 +124,33 @@ DDate (optional) FIXME: not implemented
 
 Provider
 Symbol
-Market
-  These three keys are bind together to build the symbol dataset. Internally
-  will the key append with 0 (Provider0, Symbol0, Market0). So if you have more
-  than one symbols in a row, you have to append them with a number 1..n
-  (Provider1, Symbol1, Market1, Provider2, ...) to be sure that the assignments
-  are all correct. If you think its clear enough listed and you trust Importer
-  then will he do the numbering for you.
-  NOTE: "Provider" is not as exactly named. It must not be a real data
-  provider usable with "agentf this ..." command. A more fitting name would
-  be "SymbolType". In such a case set "Market" to "NoMarket" but it should
-  make more sense to use <KnownSymbolType>, see below.
-  Therefore are these three Keys qualifies as (either or <KnownSymbolType>)
+Market (either these three Keys or <KnownSymbolType>)
+  These three Keys are bind together to build the symbol dataset. Internally
+  will these Keys append with a number 0..n, (e.g. Provider2) dependent on which
+  number not already exist. So if you have more than one symbols in a row, you
+  have to append them with a number 1..n (Provider1, Symbol1, Market1,
+  Provider2, ...) to be sure that the assignments are all correct. But take care
+  that you not skip a number and the first number is 0 or nothing. If you think
+  its clear enough listed and you trust Importer then will he do the numbering
+  for you.
+  NOTE: "Provider" is not as exactly named. It must not be a real data provider
+        usable with "agentf this ..." command. A more fitting name would be
+  "SymbolType". In such a case set "Market" to "NoMarket" but it should make
+  more sense to use <KnownSymbolType>, see below.
 
 RefSymbol (optional)
   Symbols listed here will only used for identify the FI. They will not
-  installed if you list more than one "RefSymbol" and some of them are not
-  found in the DB.
+  installed.
 
 <KnownSymbolType> (either or Provider/Symbol/Market)
-  Furthermore, any provider symbol type already known by Filu could listed in
-  the Header. If it is *not* a provider symbol will it installed, otherwise
-  only used as RefSymbol.
+  Any symbol type already known by Filu could listed. If it is *not* a provider
+  symbol will it be installed. A provider symbol will only be installed when a
+  market is given otherwise will it only used as RefSymbol.
+  NOTE: Internally will <KnownSymbolType> replaced by SymbolX whereas X is a
+        number 0..n which not already exist. That means that you could run into
+  truble when you use your own numbering simultaneous for Provider/Symbol/Market
+  when you declare your own after <KnownSymbolType> and chose a number which was
+  already auto generated.
 
 
 Symbols
@@ -195,6 +199,7 @@ SplitRatio (either or SplitPre:Post or SplitPost:Pre)
   Format is a number, e.g. "0.5"
 
 SplitComment (optional)
+
 
 EODBar Data
 =============

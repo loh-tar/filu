@@ -75,6 +75,7 @@ class Importer : public FClass
     QStringList   mPendingData;        // Collect data till committed
     QHash<QString, QString> mData;     // The split mOrigData associated to the [Header]
     QStringList   mHeader;             // Must be a stringlist, we need the positions of header data
+    QStringList   mHeaderExpanded;     // Is mHeader + auto added keys, e.g. when a KnownSymbolType is used
     QSet<QString> mToDo;               // Holds notes, which job is todo to avoid redundant if()
     bool          mPrepared;
 
