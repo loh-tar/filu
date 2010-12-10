@@ -387,8 +387,8 @@ SymbolTypeTuple* Filu::getSymbolTypes(int filter/* = eAllTypes FIXME, bool order
     int i = symbolType->mIndex;
     symbolType->mId[i]         = query->value(0).toInt();
     symbolType->mCaption[i]    = query->value(1).toString();
-    symbolType->mSeq[i]        = query->value(1).toInt();
-    symbolType->mIsProvider[i] = query->value(2).toInt();
+    symbolType->mSeq[i]        = query->value(2).toInt();
+    symbolType->mIsProvider[i] = query->value(3).toInt();
   }
   symbolType->rewind();
 
