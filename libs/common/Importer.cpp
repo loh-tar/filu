@@ -116,11 +116,13 @@ void Importer::reset()
   mRolex.start();
 }
 
-bool Importer::import(QString& data)
+bool Importer::import(const QString& line)
 {
-  // Data could looks like:
+  // line could looks like:
   // [Header]Name;Type;Provider;Symbol;Market;RefSymbol
   // Apple Computer;Stock;Yahoo;AAPL;NASDAQ;US0378331005
+
+  QString data = line;
 
   data = data.replace(QRegExp("^[\"\']" ),  "");
   data = data.simplified();
@@ -191,6 +193,12 @@ bool Importer::import(QString& data)
   }
 
   return true;
+}
+
+void Importer::getPreparedHeaderData(QStringList& header, QHash<QString, QString>& data)
+{
+  header = mHeaderExpanded;
+  data   = mData;
 }
 
 bool Importer::handleTag(QStringList& row)

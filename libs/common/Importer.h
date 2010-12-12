@@ -45,7 +45,8 @@ class Importer : public FClass
     virtual      ~Importer();
 
     void          reset();
-    bool          import(QString& data);
+    bool          import(const QString& line);
+    void          getPreparedHeaderData(QStringList& header, QHash<QString, QString>& data);
 
   protected:
     void          printDot();
