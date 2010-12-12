@@ -1,3 +1,10 @@
+2010-12-12
+============
+ManagerF
+----------
+ - Add Fi: Refurbished under the hood.
+
+
 2010-12-05
 ============
 ManagerF

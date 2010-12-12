@@ -21,6 +21,7 @@
 
 #include "SearchField.h"
 #include "Script.h"
+#include "Importer.h"
 
 AddFiPage::AddFiPage(FClass* parent)
          : ManagerPage(parent)
@@ -31,6 +32,7 @@ AddFiPage::AddFiPage(FClass* parent)
 AddFiPage::~AddFiPage()
 {
   delete mScripter;
+  delete mImporter;
 }
 
 void AddFiPage::createPage()
@@ -43,6 +45,8 @@ void AddFiPage::createPage()
           , this, SLOT(fillResultTable(QStringList *)));
   connect(mScripter, SIGNAL(finished())
           , this, SLOT(scriptFinished()));
+
+  mImporter = new Importer(this);
 
   QGroupBox* searchGroup = new QGroupBox(tr("Add a new FI to the Data Base"));
 
@@ -86,44 +90,30 @@ void AddFiPage::createPage()
   mFilu->getFiType(types);
   mType->addItems(types);
 
-  mSymbol1 = new SearchField;
-  mSymbol2 = new SearchField;
-  mSymbol3 = new SearchField;
-
-  mMarket1 = new QComboBox;
-  mMarket1->setMinimumContentsLength(10);
-  mMarket1->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-  mMarket2 = new QComboBox;
-  mMarket2->setMinimumContentsLength(10);
-  mMarket2->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-  mMarket3 = new QComboBox;
-  mMarket3->setMinimumContentsLength(10);
-  mMarket3->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-
-  mSymbolType1 = new QComboBox;
-  mSymbolType2 = new QComboBox;
-  mSymbolType3 = new QComboBox;
-
   // Read all symbol types out of the DB
   SymbolTypeTuple* symbolTypes = mFilu->getSymbolTypes(Filu::eAllTypes);
   if(!check4FiluError("AddFiPage::createPage: " + tr("ERROR while exec GetSymbolTypes.sql")))
   {
-    if(symbolTypes)
-    {
-      while(symbolTypes->next())
-      {
-         mSymbolType1->insertItem(0, symbolTypes->caption());
-         mSymbolType2->insertItem(0, symbolTypes->caption());
-         mSymbolType3->insertItem(0, symbolTypes->caption());
-      }
-
-      delete symbolTypes;
-    }
-    else
+    if(!symbolTypes)
     {
       // Purposely no tr()
       addErrorText("AddFiPage::createPage: You should never read this:", eCritical);
     }
+  }
+
+  // Read all markets out of the DB
+  mFilu->setMarketName("");
+  MarketTuple* markets = mFilu->getMarket();
+  QStringList marketList;
+  if(markets)
+  {
+    while(markets->next()) marketList.append(markets->name());
+    marketList.sort();
+    delete markets;
+  }
+  else
+  {
+    emit message("AddFiPage::createPage: " + tr("No markets found"));
   }
 
   // Build the edit line layout
@@ -140,35 +130,27 @@ void AddFiPage::createPage()
   addEditLineLO->addWidget(mAddBtn, 1, 5);
 
   addEditLineLO->addWidget( new QLabel("Symbol"), 2, 0);
-  addEditLineLO->addWidget(mSymbol1, 3, 0);
-  addEditLineLO->addWidget(mSymbol2, 4, 0);
-  addEditLineLO->addWidget(mSymbol3, 5, 0);
-
   addEditLineLO->addWidget( new QLabel("Market"), 2, 1);
-  addEditLineLO->addWidget(mMarket1, 3, 1);
-  addEditLineLO->addWidget(mMarket2, 4, 1);
-  addEditLineLO->addWidget(mMarket3, 5, 1);
-
   addEditLineLO->addWidget( new QLabel("Provider"), 2, 2);
-  addEditLineLO->addWidget(mSymbolType1, 3, 2);
-  addEditLineLO->addWidget(mSymbolType2, 4, 2);
-  addEditLineLO->addWidget(mSymbolType3, 5, 2);
 
-  mFilu->setMarketName("");
-  MarketTuple* markets = mFilu->getMarket();
-  if(markets)
+  for(int i = 0; i < 3; ++i)
   {
-    QStringList sl;
-    while(markets->next()) sl.append(markets->name());
-    sl.sort();
-    mMarket1->addItems(sl);
-    mMarket2->addItems(sl);
-    mMarket3->addItems(sl);
-    delete markets;
-  }
-  else
-  {
-    emit message("AddFiPage::createPage: " + tr("No markets found"));
+    mPSMGrp.addOne();
+
+    if(symbolTypes)
+    {
+      symbolTypes->rewind();
+      while(symbolTypes->next())
+      {
+        mPSMGrp.provider(i)->insertItem(0, symbolTypes->caption());
+      }
+    }
+
+    mPSMGrp.market(i)->addItems(marketList);
+
+    addEditLineLO->addWidget(mPSMGrp.symbol(i), i + 3, 0);
+    addEditLineLO->addWidget(mPSMGrp.market(i), i + 3, 1);
+    addEditLineLO->addWidget(mPSMGrp.provider(i), i + 3, 2);
   }
 
   //
@@ -206,42 +188,38 @@ void AddFiPage::selectResultRow( int row, int /*column*/)
 {
   mResultList->selectRow(row);
 
-  if(mResultKeys.contains("RefSymbol"))
-    mRefSymbol->setText(mResultList->item(row, mResultKeys.value("RefSymbol"))->text());
-  else mRefSymbol->setText("");
+  // Place all table entries in the QHash
+  for(int i = 0; i < mResultList->columnCount(); ++i)
+  {
+    mPreparedHeaderData.insert(mPreparedHeader.at(i), mResultList->item(row, i)->text());
+  }
+  //qDebug() << mPreparedHeaderData;
 
-  if(mResultKeys.contains("Name"))
-    mName->setText(mResultList->item(row, mResultKeys.value("Name"))->text());
-  else mName->setText("");
+  mRefSymbol->setText(mPreparedHeaderData.value("RefSymbol0"));
+  mName->setText(mPreparedHeaderData.value("Name"));
 
-  if(mResultKeys.contains("Type"))
-    mType->setCurrentIndex(mType->findText(mResultList->item(row, mResultKeys.value("Type"))->text()));
-  else if(mDisplayType == "Index") mType->setCurrentIndex(mType->findText("Index"));
-        else mType->setCurrentIndex(mType->findText(""));
+  int idx = mType->findText(mPreparedHeaderData.value("Type"));
+  if(idx < 0) emit message("AddFiPage::selectResultRow: " + tr("Unknown FiType: ") + mPreparedHeaderData.value("Type"), eWarning);
+  mType->setCurrentIndex(idx);
 
   // Search for Symbol/Market/Provider with or without a number suffix
-  // FIXME When mSymbol1/mMarket1/mSymbolType1 is changed to dynamicaly list we will
-  //       improve herfe, till then we keep it simple and fill only the first set
-  QString suffix;
-  int i = -1;
-  do
+  for(int i = 0; i < mPSMGrp.size(); ++i)
   {
-    if(mResultKeys.contains("Symbol" + suffix))
-    {
-      mSymbol1->setText(mResultList->item(row, mResultKeys.value("Symbol" + suffix))->text());
-      // We assume that by existing Symbol also Market and Provider exist
-      mMarket1->setCurrentIndex(mMarket1->findText(mResultList->item(row, mResultKeys.value("Market" + suffix))->text()));
-      mSymbolType1->setCurrentIndex(mSymbolType1->findText(mResultList->item(row, mResultKeys.value("Provider" + suffix))->text()));
-      break; // Remove this break when above FIXME was done
-    }
-    else
-    {
-      mSymbol1->setText("");
-      if(i > -1) break; // Don't try more if number-suffix was not found
-    }
-    suffix = QString::number(++i);
-  }while(true);
+    QString suffix = QString::number(i);
+    QString symbol = mPreparedHeaderData.value("Symbol" + suffix);
 
+
+    mPSMGrp.symbol(i)->setText(symbol);
+    if(symbol.isEmpty()) continue; // No Symbol, don't set Provider/Market but don't break, be shure all Symbols are cleared
+
+    idx = mPSMGrp.market(i)->findText(mPreparedHeaderData.value("Market" + suffix));
+    if(idx < 0) emit message("AddFiPage::selectResultRow: " + tr("Unknown Market: ") + mPreparedHeaderData.value("Market" + suffix), eWarning);
+    mPSMGrp.market(i)->setCurrentIndex(idx);
+
+    idx = mPSMGrp.provider(i)->findText(mPreparedHeaderData.value("Provider" + suffix));
+    if(idx < 0) emit message("AddFiPage::selectResultRow: " + tr("Unknown SymbolType: ") + mPreparedHeaderData.value("Provider" + suffix), eWarning);
+    mPSMGrp.provider(i)->setCurrentIndex(idx);
+  }
 }
 
 void AddFiPage::search()
@@ -297,19 +275,6 @@ void AddFiPage::fillResultTable(QStringList* data)
     while(mResultList->columnCount()) mResultList->removeColumn(0);
 
     mResultKeys.clear();
-/*
-    // Create headers
-    QStringList headers = data->at(0).split(";");
-    for(int i = 0; i < headers.size(); ++i)
-    {
-      mResultList->insertColumn(i);
-      mResultKeys.insert(headers.at(i), i);
-    }
-
-    mResultList->setHorizontalHeaderLabels(headers);
-    data->removeAt(0);
-    if(data->size() == 0) return;
-    */
   }
 
   int r, c, re; // row, column, existing rows
@@ -319,6 +284,17 @@ void AddFiPage::fillResultTable(QStringList* data)
     QStringList row = data->at(r).split(";");
     if(row.at(0).startsWith("[Header]"))
     {
+      // Prepare the Header line
+      // data->at(r) looks like : "[Header]Reuters;Name;Yahoo;Market;Quality;Notice
+      // mPreparedHeader will became: "Symbol0", "Name", "Symbol1", "Market1", "Quality", "Notice", "Provider0", "Market0", "Provider1"
+      // mPreparedHeaderData will became: QHash(("Market0", "NoMarket")("Market1", "")("Provider0", "Reuters")("Symbol0", "")("Provider1", "Yahoo")("Symbol1", "")("Notice", "")("Quality", "")("Name", ""))
+      mImporter->reset();
+      mImporter->import(data->at(r));
+      mImporter->getPreparedHeaderData(mPreparedHeader, mPreparedHeaderData);
+      //qDebug() << data->at(r);
+      //qDebug() << mPreparedHeader;
+      //qDebug() << mPreparedHeaderData;
+
       row[0].remove("[Header]");
 
       for(int i = mResultList->columnCount(); i < row.size(); ++i)
@@ -340,7 +316,14 @@ void AddFiPage::fillResultTable(QStringList* data)
       if(c > mResultList->columnCount() - 1)
         mResultList->insertColumn(c);
 
-      if(row.at(c).isEmpty()) continue;
+      if(row.at(c).isEmpty())
+      {
+        // No data for that column,
+        // insert a dummy to prevent a segfault when later the table is read
+        QTableWidgetItem* newItem = new QTableWidgetItem("");
+        mResultList->setItem(r + re, c, newItem);
+        continue;
+      }
 
       if(mResultList->horizontalHeaderItem(c)->text() == "Provider-Symbol-Market")
       {
@@ -354,6 +337,14 @@ void AddFiPage::fillResultTable(QStringList* data)
         mResultList->setItem(r + re, c, newItem);
       }
       //mResultList->item(r + re, c)->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    }
+
+    for(; c < mResultList->columnCount(); ++c)
+    {
+      // More Header Keys listed than data,
+      // insert a dummy to prevent a segfault when later the table is read
+      QTableWidgetItem* newItem = new QTableWidgetItem("");
+      mResultList->setItem(r + re, c, newItem);
     }
   }
 
@@ -371,13 +362,13 @@ void AddFiPage::loadSettings()
 
   mType->setCurrentIndex(mType->findText(mRcFile->getST("Type")));
 
-  mMarket1->setCurrentIndex(mMarket1->findText(mRcFile->getST("Market1")));
-  mMarket2->setCurrentIndex(mMarket2->findText(mRcFile->getST("Market2")));
-  mMarket3->setCurrentIndex(mMarket3->findText(mRcFile->getST("Market3")));
+  for(int i = 0; i < mPSMGrp.size(); ++i)
+  {
+    QString suffix = QString::number(i);
 
-  mSymbolType1->setCurrentIndex(mSymbolType1->findText(mRcFile->getST("SymbolType1")));
-  mSymbolType2->setCurrentIndex(mSymbolType2->findText(mRcFile->getST("SymbolType2")));
-  mSymbolType3->setCurrentIndex(mSymbolType3->findText(mRcFile->getST("SymbolType3")));
+    mPSMGrp.market(i)->setCurrentIndex(mPSMGrp.market(i)->findText(mRcFile->getST("Market" + suffix)));
+    mPSMGrp.provider(i)->setCurrentIndex(mPSMGrp.provider(i)->findText(mRcFile->getST("Provider" + suffix)));
+  }
 
   mRcFile->endGroup(); // "AddFiPage"
 }
@@ -388,13 +379,13 @@ void AddFiPage::saveSettings()
 
   mRcFile->set("Type", mType->currentText());
 
-  mRcFile->set("Market1", mMarket1->currentText());
-  mRcFile->set("Market2", mMarket2->currentText());
-  mRcFile->set("Market3", mMarket3->currentText());
+  for(int i = 0; i < mPSMGrp.size(); ++i)
+  {
+    QString suffix = QString::number(i);
 
-  mRcFile->set("SymbolType1", mSymbolType1->currentText());
-  mRcFile->set("SymbolType2", mSymbolType2->currentText());
-  mRcFile->set("SymbolType3", mSymbolType3->currentText());
+    mRcFile->set("Market" + suffix, mPSMGrp.market(i)->currentText());
+    mRcFile->set("Provider" + suffix, mPSMGrp.provider(i)->currentText());
+  }
 
   mRcFile->endGroup(); // "AddFiPage"
 }
@@ -438,98 +429,84 @@ void AddFiPage::scriptFinished()
 
 void AddFiPage::addToDB()
 {
-//   if(mDisplayType == "Stock")
-//   {
+  // Build a hopefully useful log message
+  QStringList msg;
 
-    // Build a hopefully useful log message
-    QStringList msg;
-    msg.append(tr("Add to DB:"));
+  if(!mName->text().isEmpty())
+  {
+    msg.append(tr("Add new FI to DB: "));
+    msg.append("Name=" + mName->text() + ", ");
+    msg.append("Type=" + mType->currentText() + ", ");
+    if(!mRefSymbol->text().isEmpty()) msg.append("RefSymbol=" + mRefSymbol->text() + ", ");
+  }
+  else
+  {
+    msg.append(tr("Add more Symbols to DB: "));
+    if(!mRefSymbol->text().isEmpty()) msg.append("RefSymbol=" + mRefSymbol->text() + ", ");
+  }
 
-    if(!mRefSymbol->text().isEmpty()) msg.append(mRefSymbol->text());
-    if(!mName->text().isEmpty())      msg.append(mName->text());
+  for(int i = 0; i < mPSMGrp.size(); ++i)
+  {
+    if(mPSMGrp.symbol(i)->text().isEmpty()) continue;
 
-    if(!mSymbol1->text().isEmpty())
-    {
-      msg.append(mSymbol1->text() + "-"
-               + mMarket1->currentText() + "-"
-               + mSymbolType1->currentText() );
-    }
+    QString suffix = QString::number(i);
+    if(0 == i) suffix = ""; // Looks nicer without "0"
 
-    if(!mSymbol2->text().isEmpty())
-    {
-      msg.append(mSymbol2->text() + "-"
-               + mMarket2->currentText() + "-"
-               + mSymbolType2->currentText() );
-    }
+    msg.append("Symbol" + suffix + "=" +
+                mPSMGrp.symbol(i)->text() + "-" +
+                mPSMGrp.provider(i)->currentText() + "-" +
+                mPSMGrp.market(i)->currentText() + ", ");
+  }
+  // Remove last ", "
+  QString last = msg.at(msg.size() - 1);
+  last.chop(2);
+  msg.replace((msg.size() - 1), last);
+  emit message(msg.join(""));
 
-    if(!mSymbol3->text().isEmpty())
-    {
-      msg.append(mSymbol3->text() + "-"
-               + mMarket3->currentText() + "-"
-               + mSymbolType3->currentText() );
-    }
+  // Build Header and Data Line
+  QString header = "[Header]";
+  QString data;
 
-    emit message(msg.join(" "));
+  if(!mRefSymbol->text().isEmpty())
+  {
+    header.append("RefSymbol;");
+    data.append(mRefSymbol->text() + ";");
+  }
 
-    FiTuple fi(1);
-    SymbolTuple* symbol;
+  if(!mName->text().isEmpty())
+  {
+    header.append("Name;Type;");
+    data.append(mName->text() + ";");
+    data.append(mType->currentText() + ";");
+  }
 
-    if(!mRefSymbol->text().isEmpty())
-    {
-      symbol = new SymbolTuple(4);
-      symbol->next();
-      symbol->setCaption(mRefSymbol->text());
-      symbol->setMarket("");
-      symbol->setOwner("");
-    }
-    else
-    {
-      symbol = new SymbolTuple(3);
-    }
+  for(int i = 0; i < mPSMGrp.size(); ++i)
+  {
+    if(mPSMGrp.symbol(i)->text().isEmpty()) continue;
 
-    symbol->next();
-    symbol->setCaption(mSymbol1->text());
-    symbol->setMarket(mMarket1->currentText());
-    symbol->setOwner(mSymbolType1->currentText());
+    header.append("Provider;Symbol;Market;");
+    data.append(mPSMGrp.provider(i)->currentText() + ";" +
+                mPSMGrp.symbol(i)->text() + ";" +
+                mPSMGrp.market(i)->currentText() + ";");
+  }
+  // Do it very nice, remove last ";"
+  header.chop(1);
+  data.chop(1);
 
-    symbol->next();
-    symbol->setCaption(mSymbol2->text());
-    symbol->setMarket(mMarket2->currentText());
-    symbol->setOwner(mSymbolType2->currentText());
+  // Import the stuff
+  mImporter->reset();
+  mImporter->import(header);
+  mImporter->import(data);
 
-    symbol->next();
-    symbol->setCaption(mSymbol3->text());
-    symbol->setMarket(mMarket3->currentText());
-    symbol->setOwner(mSymbolType3->currentText());
+  emit message("FIXME Add error/success message");
+  // emit message("Fail to add FI");
+  // emit message("AddFiPage::addToDB: " +tr("New FI added to DB"));
 
-    fi.next(); // Set on first position
+  // Looks good, clear the edit fields
+  mRefSymbol->setText("");
+  mName->setText("");
+  for(int i = 0; i < mPSMGrp.size(); ++i) mPSMGrp.symbol(i)->setText("");
 
-    fi.setSymbol(symbol);
-    fi.setName(mName->text());
-    fi.setType(mType->currentText());
-
-    mFilu->errorText(); // Make sure there are no old messages left
-
-    // Here is the beef
-    if(mFilu->addFiCareful(fi) < Filu::eSuccess)
-    {
-      check4FiluError("AddFiPage::addToDB: " +tr("Oops! new FI or Symbol not added to DB"));
-      emit message(errorText().join("\n"), eError);
-      clearErrors(); //FIXME Why does errorText() not clear?
-      //emit message("Fail to add FI");
-    }
-    else
-    {
-      emit message("AddFiPage::addToDB: " +tr("New FI added to DB"));
-      // Looks good, clear the edit fields
-      mRefSymbol->setText("");
-      mName->setText("");
-      mSymbol1->setText("");
-      mSymbol2->setText("");
-      mSymbol3->setText("");
-    }
-
-//   }
 }
 
 void AddFiPage::addToDBbyTWIB(QString psm, int row)
@@ -604,6 +581,50 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
       qDebug() << "\tare you sure that FI type, market and symbol type exist?";
     }
   }
+}
+
+PSMGrp::PSMGrp() : mCount(0)
+{}
+
+PSMGrp::~PSMGrp()
+{
+  for(int i = 0; i < mCount - 1; ++i)
+  {
+    delete mProvider.at(i);
+    delete mSymbol.at(i);
+    delete mMarket.at(i);
+  }
+}
+
+int PSMGrp::addOne()
+{
+  ++mCount;
+
+  mProvider.append(new QComboBox);
+  mSymbol.append(new SearchField);
+  mMarket.append(new QComboBox);
+
+  return mCount;
+}
+
+int PSMGrp::size()
+{
+  return mCount;
+}
+
+QComboBox* PSMGrp::provider(int i)
+{
+  return (i < 0) or (i > (mCount -1)) ? 0 : mProvider.at(i);
+}
+
+SearchField* PSMGrp::symbol(int i)
+{
+  return (i < 0) or (i > (mCount -1)) ? 0 : mSymbol.at(i);
+}
+
+QComboBox* PSMGrp::market(int i)
+{
+  return (i < 0) or (i > (mCount -1)) ? 0 : mMarket.at(i);
 }
 
 TWIB::TWIB(const QString& txt, int row, QWidget* parent) : QWidget(parent)

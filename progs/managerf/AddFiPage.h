@@ -24,6 +24,31 @@
 
 class SearchField;
 class Script;
+class Importer;
+
+class PSMGrp;
+
+class PSMGrp // Provider-Symbol-Market-Group
+{
+
+  public:
+                    PSMGrp();
+                   ~PSMGrp();
+
+    int             addOne();
+    int             size();
+
+    QComboBox*      provider(int i);
+    SearchField*    symbol(int i);
+    QComboBox*      market(int i);
+
+  protected:
+    QList<QComboBox*>     mProvider;
+    QList<SearchField*>   mSymbol;
+    QList<QComboBox*>     mMarket;
+
+  int                   mCount;
+};
 
 class AddFiPage : public ManagerPage
 {
@@ -63,18 +88,18 @@ class AddFiPage : public ManagerPage
     SearchField*  mRefSymbol;
     QLineEdit*    mName;
     QComboBox*    mType;
-    SearchField*  mSymbol1, *mSymbol2, *mSymbol3;
-    QComboBox*    mMarket1, *mMarket2, *mMarket3;
-    QComboBox*    mSymbolType1, *mSymbolType2, *mSymbolType3;
+    PSMGrp        mPSMGrp;
 
     Script*       mScripter;
-
+    Importer*     mImporter;
     QString       mProviderPath;
     QString       mProvider;
     QString       mDisplayType;
     bool          mNewQuery;
 
     QMultiHash<QString, int> mResultKeys;
+    QStringList              mPreparedHeader;
+    QHash<QString, QString>  mPreparedHeaderData;
 };
 
 class TWIB : public QWidget // Table-Widget-Install-Button
