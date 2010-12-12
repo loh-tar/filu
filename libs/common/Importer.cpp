@@ -31,8 +31,7 @@ Importer::Importer(FClass* parent)
         , mSymbol(0)
         , mConsole(stdout)
 {
-  mRolex.start();
-  init();
+  reset();
 }
 
 Importer::~Importer()
@@ -56,13 +55,6 @@ Importer::~Importer()
   if(mSymbol) delete mSymbol;
 
   mConsole << endl;
-}
-
-void Importer::init()
-{
-  reset();
-  mMustBeUnique = "Provider Symbol Market RefSymbol";
-  mAllSymbolTypes << "Symbol" << "RefSymbol" << mKnownSymbolTypes;
 }
 
 void Importer::printDot()
@@ -118,6 +110,10 @@ void Importer::reset()
     }
   }
 
+  mMustBeUnique = "Provider Symbol Market RefSymbol";
+  mAllSymbolTypes << "Symbol" << "RefSymbol" << mKnownSymbolTypes;
+
+  mRolex.start();
 }
 
 bool Importer::import(QString& data)

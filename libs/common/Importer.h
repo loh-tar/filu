@@ -48,7 +48,6 @@ class Importer : public FClass
     bool          import(QString& data);
 
   protected:
-    void          init();
     void          printDot();
     bool          handleTag(QStringList& row);
     QString       makeUnique(const QString& key);
