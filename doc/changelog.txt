@@ -3,6 +3,7 @@
 ManagerF
 ----------
  - Add Fi: Refurbished under the hood.
+ - Add Fi: Add a search result counter label.
 
 
 2010-12-05

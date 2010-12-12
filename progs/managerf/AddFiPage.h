@@ -50,6 +50,23 @@ class PSMGrp // Provider-Symbol-Market-Group
   int                   mCount;
 };
 
+class HitCountLabel : public QLabel
+{
+
+  public:
+       HitCountLabel() : QLabel() { setPrefix(tr("Found"));
+                                    setCount(0);
+                                    /*setFrameStyle(QFrame::Panel | QFrame::Sunken);*/ };
+
+  void setPrefix(const QString& pf) { mPrefix = pf + ": "; };
+  void setCount(const int c) { setText(mPrefix + QString::number(c)); mCount = c; };
+  int  count() const { return mCount; };
+
+  protected:
+    QString mPrefix;
+    int     mCount;
+};
+
 class AddFiPage : public ManagerPage
 {
   Q_OBJECT
@@ -83,6 +100,7 @@ class AddFiPage : public ManagerPage
     SearchField*  mSearchField;
     QTableWidget* mResultList;
     QPushButton*  mSearchCancelBtn;
+    HitCountLabel mHitCounter;
 
     QPushButton*  mAddBtn;
     SearchField*  mRefSymbol;

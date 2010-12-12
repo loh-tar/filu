@@ -161,6 +161,7 @@ void AddFiPage::createPage()
   searchLayout->addWidget(mSearchField       , 0, 2);
   searchLayout->setColumnStretch(2, 2);
   searchLayout->addWidget(mSearchCancelBtn   , 0, 3);
+  searchLayout->addWidget(&mHitCounter       , 0, 4);
   searchLayout->addWidget(mResultList        , 1, 0, 1, 6); // Span over two more than existing columns...
   searchLayout->setColumnStretch(4, 2);                     // ...and stretch...
   searchLayout->setColumnStretch(5, 2);                     // ...these more
@@ -348,6 +349,8 @@ void AddFiPage::fillResultTable(QStringList* data)
     }
   }
 
+  mHitCounter.setCount(r + re);
+
   mResultList->horizontalHeader()->hide();
   mResultList->resizeColumnsToContents();
   mResultList->horizontalHeader()->show();
@@ -423,7 +426,7 @@ void AddFiPage::scriptFinished()
   }
   else
   {
-    emit message("AddFiPage::scriptFinished: " + tr("Done"));
+    emit message("AddFiPage::scriptFinished: " + mHitCounter.text());
   }
 }
 
