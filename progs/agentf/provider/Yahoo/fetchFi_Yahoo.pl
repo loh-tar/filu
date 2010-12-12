@@ -1,68 +1,100 @@
 #!/usr/bin/perl
+#
+#    This file is part of Filu.
+#
+#    Copyright (C) 2007, 2010  loh.tar@googlemail.com
+#
+#    Filu is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    Filu is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with Filu. If not, see <http://www.gnu.org/licenses/>.
+#
+#
 
-# don't buffer output, IMPORTANT!
-$|=1 ;
+#
+# http://cpansearch.perl.org/src/MSISK/HTML-TableExtract-2.10/lib/HTML/TableExtract.pm
+#
+# http://uk.finance.yahoo.com/lookup?s=appl&t=A&m=ALL&r=&b=20
+# s = search for this
+# t = type, which page is shown, no searched = (A-All)(S-Stock)(M-Mutal Funds)
+# m = market All,GB,US,DE
+# b = how many results rows to skip
+# r = sort order, odd=asc, even=dsc, 1,2=Symbol, 2,3=Name, 4,5=Exchange,
+#
+# http://uk.finance.yahoo.com/lookup?s=foo
+# http://uk.finance.yahoo.com/lookup/stocks;?s=AAPL&t=S&m=ALL&r=
+# http://uk.finance.yahoo.com/lookup/all
+# http://uk.finance.yahoo.com/lookup/funds
+# http://uk.finance.yahoo.com/lookup/etfs
+# http://uk.finance.yahoo.com/lookup/indices
+# http://uk.finance.yahoo.com/lookup/futures
+# http://uk.finance.yahoo.com/lookup/currency
+#
+# http://finance.yahoo.com/lookup?s=US0378331005
+#
 
-# perl -MCPAN -e'shell'
-# install Finance::Quote::Yahoo::Europe
+# Don't buffer output, IMPORTANT!
+$|=1;
 
-use Finance::Quote;
-$q = Finance::Quote->new;
+use strict;
+use LWP::Simple;
+use HTML::TableExtract;
+use Yahoo; # Our own module, shipped with Filu
 
-my %markets;
-$markets{PA} = "Paris";
-$markets{BC} = "Barcelona";
-$markets{BE} = "Berlin";
-$markets{BI} = "Bilbao";
-$markets{BR} = "Breme";
-$markets{CO} = "Copenhagen";
-$markets{D}  = "Dusseldorf";
-$markets{F}  = "Frankfurt";
-$markets{H}  = "Hamburg";
-$markets{HA} = "Hanover";
-$markets{L}  = "London";
-$markets{MA} = "Madrid";
-$markets{MC} = "Madrid (M.C.)";
-$markets{MI} = "Milan";
-$markets{MU} = "Munich";
-$markets{O}  = "Oslo";
-$markets{ST} = "Stockholm";
-$markets{SG} = "Stuttgart";
-$markets{VA} = "Valence";
-$markets{VI} = "Vienna";
-$markets{DE} = "Xetra";
+if ($#ARGV < 0) { &usage }
 
-# my @markets = qw{ PA BC BE BI BR CO D F H HA L MA MC MI MU O ST SG VA VI DE };
+my $search4 = $ARGV[0];
 
-print "[Header]RefSymbol;Name;Type;Yahoo;Market\n";
+# Print early the header so the user see an action
+print "[Header]Yahoo;Name;ISIN;Type;Market\n";
 
-foreach $market( keys(%markets ) )
+my $url="http://uk.finance.yahoo.com/lookup/all?s=$search4&t=A&m=ALL&r=&b=";
+#print "$url\n";
+
+my $content = get($url);
+
+# Which data has to be extract.
+# The order given here is the order we will got the data,
+# they is indepened of the original table, cool! But the names must fit.
+my $te = HTML::TableExtract->new( headers => [qw(Symbol Name Isin Type Exchange)] );
+
+$te->parse($content);
+
+# Examine all matching tables
+foreach my $ts ($te->tables)
 {
-    my %info = $q->fetch("europe","$ARGV[0].$market"); # Failover to other methods ok.
+  #print "Table (", join(',', $ts->coords), "):\n";
+  foreach my $row ($ts->rows)
+  {
+    # Replace Yahoo market token with our own
+    @$row[4] = Yahoo::convertMarket(@$row[4]);
 
-    my $curr;
-    my $name;
-    my $symbol;
-    my $reuters;
-
-    foreach $key( keys(%info) )
-    {
-        if ( $key =~ m/.*currency$/ ) { $curr =  $info { $key }  };
-        if ( $key =~ m/.*name$/ ) { $name =  $info { $key }  };
-        if ( $key =~ m/.*symbol$/ ) { $symbol =  $info { $key }  };
-    }
-
-    # Daimler Benz, Stock, DCX.DE, XETRA, EUR, yahoo,'t',  ,
-    #if ( $name ne "") {
-    #    print "$name, Stock, $symbol, " . $markets{ $market} . ", $curr, yahoo, 't'\n";
-    #    $symbol =~ s/\..*//;
-    #    print "$name, Stock, $symbol, " . $markets{ $market} . ", $curr, Reuters, 'f'\n";
-    #};
-
-    if ( $name ne "")
-    {
-      $reuters = $symbol;
-      $reuters =~ s/\..*//;
-      print "$reuters;$name;Stock;$symbol;" . $markets{ $market} . "\n";
-    };
+    print join(';', @$row), "\n";
+  }
 }
+
+#exit good
+exit 0;
+
+#
+# -------- subs --------
+#
+
+sub usage()
+{
+  print STDERR "call me like this: \n" .
+                "./me foo\n" .
+                "./me aapl\n";
+  die "\n";
+}
+
+# Usual in perl last line is...
+1;

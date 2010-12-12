@@ -50,7 +50,7 @@ The perl scripts needs the packages:
 
 Some more packages available with "bauerbill -S --cpan foo":
   perl-date-simple
-  perl-finance-quote  (currently not needed, script is broken)
+  perl-timedate
 
 To install TALib and muParser you could follow the Ubuntu instructions or use
 packages from AUR:
@@ -68,8 +68,9 @@ To compile the programs you need the .deb packages:
   libqt4-dev
 
 The perl scripts needs the .dep packages:
+  libwww-perl
   libdate-simple-perl
-  libfinance-quote-perl  (currently not needed, script is broken)
+  libtimedate-perl
 
 Install TALib from: http://ta-lib.org/
 Last tested version is 0.4.0.

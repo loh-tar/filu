@@ -1,5 +1,45 @@
 #!/usr/bin/perl
+#
+#    This file is part of Filu.
+#
+#    Copyright (C) 2007, 2010  loh.tar@googlemail.com
+#
+#    Filu is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    Filu is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with Filu. If not, see <http://www.gnu.org/licenses/>.
+#
+#
+#    FiMi
+#
+#    Copyright (C) 2001-2006 Christian Kindler
+#
+#    This file is part of FiMi.
+#
+#    FiMi is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    Foobar is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with Foobar; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
 
+use strict;
 use LWP::Simple;
 use Date::Simple(':all');
 
@@ -17,8 +57,7 @@ my $toMonth      = $toDate->month -1;
 my $toYear       = $toDate->year;
 
 my $yahoo_symbol = $ARGV[2];
-my $yahoo_today  =
-"http://finance.yahoo.com/d/quotes.csv?s=$yahoo_symbol&f=d1ohgl1vl1";
+my $yahoo_today  = "http://finance.yahoo.com/d/quotes.csv?s=$yahoo_symbol&f=d1ohgl1vl1";
 my $yahoo        = "http://ichart.finance.yahoo.com/table.csv?" .
                    "s=$yahoo_symbol" .
                    "&a=$fromMonth&b=$fromDay&c=$fromYear" .
@@ -61,28 +100,18 @@ foreach my $line(@lines)
     my $result = &parse($line);
     if( defined $result )
     {
-      print $result . ";$quality\n";
+      print "$result;$quality\n";
       # only the first line is less quality
       if ( $quality == 2 ) { $quality = 1 };
     }
 }
 
 #exit good
-1;
-
+exit 0;
 
 #
 # -------- subs --------
 #
-
-sub usage()
-{
-    print STDERR "call me like this: \n" .
-                 "./me fromdate todate symbol market\n" .
-                 "./me 2007-01-01 2007-04-21 AAPL NYSE\n";
-    die "\n";
-}
-
 
 sub parse($)
 {
@@ -152,13 +181,21 @@ sub parse($)
         $newline = "$columns[0];$columns[1];$columns[2];$columns[3];" .
                    "$columns[4];$columns[5];";
 
-        # eliminate unwanted cahracters
+        # eliminate unwanted characters
         while ( $newline =~ s/N.A//i) {};
 
     } # end if ($columns[0] != "Date" and defined $columns[0])
 
-
-
-    # return the result
-    $newline;
+    return $newline;
 }
+
+sub usage()
+{
+  print STDERR "call me like this: \n" .
+                "./me fromdate todate symbol market\n" .
+                "./me 2007-01-01 2007-04-21 AAPL NYSE\n";
+  die "\n";
+}
+
+# Usual in perl last line is...
+1;

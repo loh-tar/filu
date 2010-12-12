@@ -1,9 +1,16 @@
 2010-12-12
 ============
-ManagerF
-----------
- - Add Fi: Refurbished under the hood.
- - Add Fi: Add a search result counter label.
+ManagerF - Add Fi PAge
+------------------------
+ - Refurbished under the hood.
+ - Add a search result counter label.
+
+Yahoo Scripts
+---------------
+ - New module Yahoo.pm, holds sub routines.
+ - Complete replace of fetchFi, but recycle well working old parts.
+ - New file fetchIdx. Works well but the Yahoo data are sadly not the best.
+ - Adjustments at fetchBar for new Yahoo.pm.
 
 
 2010-12-05
