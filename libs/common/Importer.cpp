@@ -68,6 +68,7 @@ void Importer::printDot()
 
 void Importer::reset()
 {
+  clearErrors();
   mPendingData.clear();
   mHeader.clear();
   mHeaderExpanded.clear();
@@ -192,7 +193,7 @@ bool Importer::import(const QString& line)
     mFi = 0;
   }
 
-  return true;
+  return !hasError();
 }
 
 void Importer::getPreparedHeaderData(QStringList& header, QHash<QString, QString>& data)
@@ -667,14 +668,16 @@ void Importer::addSymbol()
 
   if(fiId < Filu::eData)
   {
-    mConsole << endl << "Fail to add symbol, No fitting RefSymbol found: ";
-
+    QString msg = QObject::tr("Fail to add symbol. No fitting RefSymbol found: ");
     mSymbol->rewind();
     while(mSymbol->next())
     {
       if(mSymbol->caption().isEmpty()) continue;
-      mConsole << mSymbol->caption() << ", ";
+      msg.append(mSymbol->caption() + ", ");
     }
+    msg.chop(2);
+    addErrorText("Importer::addSymbol: " + msg, eError);
+    mConsole << endl << msg << endl;
     return;
   }
 
@@ -711,9 +714,9 @@ void Importer::addUnderlying()
     if(momId < Filu::eData)
     {
       mToDo.remove("addUnderlying");
-      mConsole << endl
-               << "Importer::addUnderlying: Mother " << mData.value("Mother")
-               << " not found." << endl;
+      QString msg = QObject::tr("Mother not found: ") + mData.value("Mother");
+      addErrorText("Importer::addUnderlying: " + msg, eError);
+      mConsole << endl << msg << endl;
       return;
     }
 
