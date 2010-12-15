@@ -228,8 +228,8 @@ BarTuple* Filu::getBars(int fiId, int marketId
   query->bindValue(":marketId", marketId);
   query->bindValue(":fromDate", fromDate);
   query->bindValue(":toDate", toDate);
-  int result = execute(query);
-  if(result <= eError) return 0;
+
+  if(execute(query) < eData) return 0;
 
   mFiId = fiId;
   mMarketId = marketId;
@@ -252,8 +252,9 @@ BarTuple* Filu::getBars()
     query->bindValue(":fiId", mFiId);
     query->bindValue(":marketId", mMarketId);
     query->bindValue(":limit", mLimit);
-    int result = execute(query);
-    if(result <= eError) return 0;
+
+    if(execute(query) < eData) return 0;
+
     bars = fillQuoteTuple(query);
   }
   else
@@ -267,8 +268,9 @@ BarTuple* Filu::getBars()
     query->bindValue(":marketId", mMarketId);
     query->bindValue(":fromDate", mFromDate);
     query->bindValue(":toDate", mToDate);
-    int result = execute(query);
-    if(result <= eError) return 0;
+
+    if(execute(query) < eData) return 0;
+
     bars = fillQuoteTuple(query);
   }
 
@@ -287,9 +289,8 @@ SymbolTuple* Filu::getSymbols()
   query->bindValue(":symbol", mSymbolCaption);
   query->bindValue(":market", mMarketName);
   query->bindValue(":onlyProviderSymbols", mOnlyProviderSymbols);
-  int result = execute(query);
 
-  if(result < eData) return 0;
+  if(execute(query) < eData) return 0;
 
   // Fill the object to be returned to client
   SymbolTuple* symbol= new SymbolTuple(query->size());
@@ -377,7 +378,7 @@ SymbolTypeTuple* Filu::getSymbolTypes(int filter/* = eAllTypes FIXME, bool order
   query->bindValue(":isProvider", isProvider);
   //query->bindValue(":", orderBySeq);
 
-  if(execute(query) <= eError) return 0;
+  if(execute(query) < eData) return 0;
 
   SymbolTypeTuple* symbolType = new SymbolTypeTuple(query->size());
   while(symbolType->next())
@@ -407,8 +408,9 @@ MarketTuple* Filu::getMarket()
   {
     // Aha, no marketId set, we have to use the marketName
     query->bindValue(":market", mMarketName);
-    int result = execute(query);
-    if(result <= eError) return 0;
+
+    if(execute(query) < eData) return 0;
+
     tuple = query;
   }
   else
@@ -460,8 +462,8 @@ FiTuple* Filu::getFi(const bool fuzzy/* = false*/)
     query->bindValue(":type", mFiType);
     query->bindValue(":fuzzy", fuzzy);
     query->bindValue(":fiId", mFiId);
-    int result = execute(query);
-    if(result <= eError) return 0;
+
+    if(execute(query) < eData) return 0;
 
     return fillFiTuple(query);
   }
@@ -474,9 +476,8 @@ FiTuple* Filu::getFi(const QString& symbol)
   QSqlQuery* query = mSQLs.value("GetFiBySymbol");
 
   query->bindValue(":symbol", symbol);
-  int result = execute(query);
 
-  if(result <= eError) return 0;
+  if(execute(query) < eData) return 0;
 
   return fillFiTuple(query);
 }
@@ -699,9 +700,7 @@ QSqlQuery* Filu::execSql(const QString& name)
     //qDebug() << "Filu::execSql:" << parm << mSqlParm.value(parm);
   }
 
-  int result = execute(query);
-
-  if(result <= eError) return 0;
+  if(execute(query) <= eError) return 0;
 
   return query;
 }
