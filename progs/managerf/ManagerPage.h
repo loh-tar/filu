@@ -36,6 +36,7 @@ class ManagerPage : public FWidget
     virtual void  saveSettings();
 
     void          setPageIcon(QListWidgetItem* button);
+    const QString& iconText() { return mIconText; };
 
     signals:
     void          message(const QString& msg, const MsgType type = eNotice);

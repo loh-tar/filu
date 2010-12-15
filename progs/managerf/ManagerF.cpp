@@ -39,15 +39,15 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   mPageStack->addWidget(new AddFiPage(this));
   //mPageStack->addWidget(new ConfigPage(this));
   mPageStack->addWidget(new IndicatorPage(this));
-// mPageStack->addWidget(new ...);
+  //mPageStack->addWidget(new ...);
 
   // Special treatment may to FIXME
   mLogBookPage = new LogBookPage(this);
   mPageStack->addWidget(mLogBookPage);
 
-  QPushButton* closeButton = new QPushButton(tr("Close"));
   createIcons();
 
+  QPushButton* closeButton = new QPushButton(tr("Close"));
   connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
   QHBoxLayout* horizontalLayout = new QHBoxLayout;
@@ -114,12 +114,21 @@ void ManagerF::createIcons()
     QListWidgetItem* icon = new QListWidgetItem(mPageIcons);
     ManagerPage* mp = static_cast<ManagerPage*>(mPageStack->widget(i));
     mp->setPageIcon(icon);
-    connect(mp, SIGNAL(message(const QString&, const MsgType)), this, SLOT(messageBox(const QString&, const MsgType)));
+
+    // Fetch errors happens while page construction
+    QString msg = mp->errorText().join("\n");
+    if(!msg.isEmpty())
+    {
+      msg.prepend(mp->iconText() + " Page: ");
+      mLogBookPage->addToLog(msg, eWarning);
+    }
+
+    connect(mp, SIGNAL(message(const QString&, const MsgType))
+          , this, SLOT(messageBox(const QString&, const MsgType)));
   }
 
-  connect(mPageIcons,
-    SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-    this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
+  connect(mPageIcons, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *))
+        , this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
 }
 
 void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
