@@ -24,9 +24,26 @@
 
 class LogBookPage;
 
+class MsgLabel : public QLabel // MessageLabel
+{
+  Q_OBJECT
+
+  public:
+                    MsgLabel();
+    virtual        ~MsgLabel() {};
+
+  public slots:
+    void            setMessage(const QString& msg, const FClass::MsgType type = FClass::eNotice);
+    void            resetMessage();
+
+  protected:
+    QTimer          mRolex;
+
+};
+
 class ManagerF : public FMainWindow
 {
-     Q_OBJECT
+  Q_OBJECT
 
   public:
                 ManagerF(const QString connectionName = "ManagerF");
@@ -41,7 +58,7 @@ class ManagerF : public FMainWindow
 
     QListWidget*    mPageIcons;
     QStackedWidget* mPageStack;
-    QLabel*         mMessage;
+    MsgLabel*       mMsgLabel;
     LogBookPage*    mLogBookPage;
 };
 

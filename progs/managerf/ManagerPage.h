@@ -37,10 +37,7 @@ class ManagerPage : public FWidget
 
     void          setPageIcon(QListWidgetItem* button);
 
-    signals:      // FIXME: 'type' is currently unused. The idea was that the
-                  // messages could temporary colored like some KDE progs do to
-                  // force more attention. I fail already to color the background
-                  // of the QLabel mMessage :-/
+    signals:
     void          message(const QString& msg, const MsgType type = eNotice);
 
   protected:

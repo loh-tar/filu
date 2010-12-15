@@ -54,11 +54,11 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   horizontalLayout->addWidget(mPageIcons);
   horizontalLayout->addWidget(mPageStack, 1);
 
-  mMessage = new QLabel;
-  mMessage->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+  mMsgLabel = new MsgLabel;
+  mMsgLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 
   QHBoxLayout* buttonsLayout = new QHBoxLayout;
-  buttonsLayout->addWidget(mMessage);
+  buttonsLayout->addWidget(mMsgLabel);
   buttonsLayout->setStretch(0, 5);
   buttonsLayout->addWidget(closeButton);
   buttonsLayout->setStretch(1, 1);
@@ -131,15 +131,29 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
 
 void ManagerF::messageBox(const QString& msg, const MsgType type/* = eNotice*/)
 {
-  // FIXME: Work not as desired, see ManagerPage.h
-  if(type > eNotice)
-    mMessage->setBackgroundRole(QPalette::Highlight);
-  else
-    mMessage->setBackgroundRole(QPalette::NoRole);
-
   addErrorText(msg, type);
-
-  mMessage->setText(msg);
-  mMessage->repaint();   // Force an update as soon as possible
+  mMsgLabel->setMessage(msg, type);
   mLogBookPage->addToLog(msg, type);
+}
+
+MsgLabel::MsgLabel()
+        : QLabel()
+{
+  connect(&mRolex, SIGNAL(timeout()), this, SLOT(resetMessage()));
+}
+
+void MsgLabel::setMessage(const QString& msg, const FClass::MsgType type/* = eNotice*/)
+{
+  if(type > FClass::eNotice) setStyleSheet("background: yellow");
+
+  setText(msg);
+  repaint();    // Force an update as soon as possible
+
+  mRolex.start(9000);
+}
+
+void MsgLabel::resetMessage()
+{
+  setStyleSheet("");
+  setText("");
 }
