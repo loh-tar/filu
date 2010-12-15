@@ -108,18 +108,11 @@ int Filu::setMarketName(const QString& name)
 {
   mMarketName = name;
 
-  if(!initQuery("GetIdByCaption")) return eInitError;
+  const int retVal = searchCaption("market", name);
 
-  QSqlQuery* query = mSQLs.value("GetIdByCaption");
+  mMarketId = retVal;
 
-  query->bindValue(":table", "market");
-  query->bindValue(":caption", name);
-  int result = execute(query);
-  if(result <= eError) return eExecError;
-
-  query->next();
-
-  mMarketId = query->value(0).toInt();
+  if(retVal < eData) return retVal;
 
   setSqlParm(":marketId", mMarketId);
   setSqlParm(":market", name);
@@ -144,12 +137,11 @@ int Filu::setSymbolCaption(const QString& caption)
   QSqlQuery* query = mSQLs.value("GetFiIdBySymbol");
 
   query->bindValue(":symbol", caption);
-  int result = execute(query);
 
-  if(result <= eError) return eExecError;
+  if(execute(query) <= eError)  return eExecError;
 
   query->next();
-  int retVal = query->value(0).toInt();
+  const int retVal = query->value(0).toInt();
 
   if(retVal >= eData)
   {
@@ -491,8 +483,12 @@ int Filu::getFiType(QStringList& type)
   QSqlQuery* query = mSQLs.value("GetAllFiTypes");
 
   int result = execute(query);
-  if(result == eNoData) return eNoData;
-  if(result <= eError) return result;
+  if(result <= eError)  return eExecError;
+  if(result == eNoData)
+  {
+    addErrorText("Filu::getFiTypes: No FiTypes found.");
+    return eNoData;
+  }
 
   while(query->next())
   {
@@ -510,8 +506,6 @@ int Filu::getEODBarDateRange(DateRange& dateRange
   // Get the dates of the first and the last bar stored in Filu.
   // Function is also useable without symbol/market parameters
   // but then you have to set marketId and fiId previously.
-  // Returns false if no data in table or any other problem occured
-  // and true if data was found
 
   // If no data in table we want fetch from these date on
   dateRange.insert("first", QDate::currentDate().addDays(mDaysToFetchIfNoData * -1));
@@ -532,10 +526,11 @@ int Filu::getEODBarDateRange(DateRange& dateRange
   query->bindValue(":fiId", mFiId);
   query->bindValue(":marketId", mMarketId);
   query->bindValue(":quality", quality);
-  int result = execute(query);
-  if(result <= eError) return eExecError;
 
-  if(query->size() < 1) return eNoData;
+  int result = execute(query);
+  if(result <= eError)  return eExecError;
+  if(result == eNoData) return eNoData;
+
   query->next();
   dateRange.insert("first", query->value(0).toDate());
   dateRange.insert("last", query->value(1).toDate());
@@ -550,8 +545,14 @@ int Filu::getIndicatorNames(QStringList* names, const QString& like /* = "" */)
   QSqlQuery* query = mSQLs.value("GetIndicator");
 
   query->bindValue(":name", "fpi_" + like.toLower());
+
   int result = execute(query);
-  if(result <= eError) return eExecError;
+  if(result <= eError)  return eExecError;
+  if(result == eNoData)
+  {
+    addErrorText("Filu::getIndicatorNames: No Indicator match: " + like);
+    return eNoData;
+  }
 
   names->clear();
 
@@ -570,9 +571,14 @@ int Filu::getIndicatorInfo(KeyVal* info, const QString& name)
   QSqlQuery* query = mSQLs.value("GetIndicator");
 
   query->bindValue(":name", "fpi_" + name.toLower());
+
   int result = execute(query);
-  if(result == eNoData) return eNoData;
-  if(result < eData) return eExecError;
+  if(result <= eError)  return eExecError;
+  if(result == eNoData)
+  {
+    addErrorText("Filu::getIndicatorInfo: Indicator not found: " + name);
+    return eNoData;
+  }
 
   query->next();
 
@@ -715,12 +721,8 @@ void Filu::setSqlParm(const QString& parm, const QVariant& value)
 
 int Filu::searchCaption(const QString& table, const QString& caption)
 {
-  // The functionality is done by the database function called by GetIdByCaption.sql.
-  // Returns -3 if error.
-  //         -2 if caption was emtpty.
-  //         -1 if more than one times found.
-  //          0 if not found
-  //         >0 the ID of the uniqe caption in the table.
+  // The functionality is done by the database function
+  // called by GetIdByCaption.sql.
 
   if(!initQuery("GetIdByCaption")) return eInitError;
 
@@ -728,12 +730,21 @@ int Filu::searchCaption(const QString& table, const QString& caption)
 
   query->bindValue(":table", table);
   query->bindValue(":caption", caption);
-  int result = execute(query);
-  if(result <= eError) return eExecError;
+
+  if(execute(query) <= eError) return eExecError;
 
   query->next();
+  const int retVal = query->value(0).toInt();
 
-  return query->value(0).toInt();
+  if(retVal >= eData) return retVal;
+
+  QString errParm = QString(" Table: %1, Caption: %2").arg(table).arg(caption);
+
+  if(retVal ==  0) addErrorText("Filu::searchCaption: Caption not found: " + errParm);
+  if(retVal == -1) addErrorText("Filu::searchCaption: Caption is more than one times in table: " + errParm);
+  if(retVal == -2) addErrorText("Filu::searchCaption: Caption was empty.");
+
+  return (eError + retVal);
 }
 
 int Filu::addSymbolType(const QString& type
@@ -751,17 +762,16 @@ int Filu::addSymbolType(const QString& type
   query->bindValue(":isProvider", isProvider);
   query->bindValue(":stypeId", id);
 
-  int result = execute(query);
-
-  if(result <= eError)
-  {
-    addErrorText("Filu::addSymbolType: Error while add symbol type:" + type);
-    return eExecError;
-  }
+  if(execute(query) <= eError) return eExecError;
 
   query->next();
+  const int retVal = query->value(0).toInt();
 
-  return query->value(0).toInt();
+  if(retVal >= eData) return retVal;
+
+  if(retVal == -1) addErrorText("Filu::addSymbolType: Type was empty.");
+
+  return (eError + retVal);
 }
 
 int Filu::addMarket(const QString& market
@@ -776,9 +786,7 @@ int Filu::addMarket(const QString& market
   query->bindValue(":currencyName", currency);
   query->bindValue(":currencySymbol", currSymbol);
 
-  int result = execute(query);
-
-  if(result <= eError)
+  if(execute(query) <= eError)
   {
     addErrorText(QString("Filu::addMarket: Error while add market: %1, %2, %3").arg(market).arg(currency).arg(currSymbol));
     return eExecError;
@@ -874,11 +882,9 @@ int Filu::addEODBarData(const QStringList* data)
     v = (iQ == -1) ? "1" : values.at(iQ); // If not exist we assume the data are final
     query->bindValue(":status", v.isEmpty() ? NULL : v);
 
-    int result = execute(query);
-
     ++sqlExecCounter;
 
-    if(result <= eError)
+    if(execute(query) <= eError)
     {
       QSqlDatabase::database(mConnectionName).rollback();
       addErrorText("Filu::addEODBarData: Error while add EODBar with date: " + values[0]);
@@ -917,14 +923,14 @@ int Filu::addFiCareful(FiTuple& fi)
   fi.rewind(0);
   if(fi.isInvalid())
   {
-    addErrorText("Filu::addFiCareful: FI unvalid", eCritical); // You should never read this
+    addErrorText("Filu::addFiCareful: FI unvalid.", eCritical); // You should never read this
     return eError;
   }
 
   SymbolTuple* symbol = fi.symbol();
   if(!symbol)
   {
-    addErrorText("Filu::addFiCareful: Can't add FI without Symbol");
+    addErrorText("Filu::addFiCareful: Can't add FI without Symbol.");
     return eError;
   }
 
@@ -968,7 +974,7 @@ int Filu::addFiCareful(FiTuple& fi)
 
     if(retVal == eNoData)
     {
-      addErrorText("Filu::addFiCareful: No valid symbol to add FI");
+      addErrorText("Filu::addFiCareful: No valid symbol to add FI.");
       return eError;
     }
 
@@ -996,10 +1002,10 @@ int Filu::addFiCareful(FiTuple& fi)
     if(symbol->market().isEmpty()) continue;
     if(symbol->owner().isEmpty()) continue;
 
-    int retVal = addSymbol(symbol->caption()
-                         , symbol->market()
-                         , symbol->owner()
-                         , fi.id());
+    const int retVal = addSymbol(symbol->caption()
+                               , symbol->market()
+                               , symbol->owner()
+                               , fi.id());
     if(retVal < eSuccess)
     {
       --count;
@@ -1009,7 +1015,7 @@ int Filu::addFiCareful(FiTuple& fi)
 
   if(mHasError and (count > 0))
   {
-    QString errorText = QString("Filu::addFiCareful: %1 Symbols added without trouble").arg(count);
+    QString errorText = QString("Filu::addFiCareful: %1 Symbols added without trouble.").arg(count);
     addErrorText(errorText);
   }
 
@@ -1080,8 +1086,8 @@ int Filu::addFi(const QString& name
   query->bindValue(":symbol", symbol);
   query->bindValue(":market", market);
   query->bindValue(":sType", stype);
-  int result = execute(query);
-  if(result <= eError) return eExecError;
+
+  if(execute(query) <= eError) return eExecError;
 
   query->next();
   const int retVal = query->value(0).toInt();
@@ -1126,11 +1132,11 @@ int Filu::addSymbol(const QString& symbol
   query->bindValue(":caption", symbol);
   query->bindValue(":market", market);
   query->bindValue(":sType", stype);
-  int result = execute(query);
-  if(result <= eError) return eExecError;
+
+  if(execute(query) <= eError) return eExecError;
 
   query->next();
-  int retVal = query->value(0).toInt();
+  const int retVal = query->value(0).toInt();
 
   if(retVal >= eData) return retVal;
 
@@ -1162,9 +1168,8 @@ int Filu::addUnderlying(const QString& mother
   query->bindValue(":motherSymbol", mother);
   query->bindValue(":symbol", symbol);
   query->bindValue(":weight", weight);
-  int result = execute(query);
 
-  if(result <= eError) return eExecError;
+  if(execute(query) <= eError) return eExecError;
 
   query-> next();
   const int retVal = query->value(0).toInt();
@@ -1199,12 +1204,10 @@ int Filu::addSplit(const QString& symbol
   query->bindValue(":comment", comment);
   query->bindValue(":quality", quality);
 
-  int result = execute(query);
-
-  if(result <= eError) return eExecError;
+  if(execute(query) <= eError) return eExecError;
 
   query->next();
-  int retVal = query->value(0).toInt();
+  const int retVal = query->value(0).toInt();
 
   if(retVal >= eData) return retVal; // (new or existing)SplitId
 
