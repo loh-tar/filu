@@ -1,8 +1,5 @@
-* NASDAQ_index_FiMi.csv
-
-*IndexName=Nasdaq 100 Index;IXIC
-
-FiMi-Symbol;Weight
+* Index_NASDAQ100_Filu.csv
+* RefSymbol;Weight
 
 AAPL;1
 ADBE;1

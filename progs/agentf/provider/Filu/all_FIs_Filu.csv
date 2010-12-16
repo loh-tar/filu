@@ -6,6 +6,7 @@
 *
 * German Stocks Xetra
 *
+DAX;Deutscher Aktienindex DAX30;Index;Yahoo;^GDAXI;Xetra
 ADS;Adidas;Stock;Yahoo;ADS.DE;Xetra;Reuters;ADS;NoMarket
 ALV;Allianz;Stock;Yahoo;ALV.DE;Xetra;Reuters;ALV;NoMarket
 BAS;BASF;Stock;Yahoo;BAS.DE;Xetra;Reuters;BAS;NoMarket

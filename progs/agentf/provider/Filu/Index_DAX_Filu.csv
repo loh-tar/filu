@@ -1,9 +1,5 @@
-* DAX_index_FiMi.csv;
-
-*IndexName=Deutscher Aktienindex, DAX30;DAX
-*IndexName=Deutscher Aktienindex, DAX30;DAX/Yahoo/xetra
-
-* FiMi-Symbol;Weight
+* Index_DAX_Filu.csv;
+* RefSymbol;Weight
 
 ADS;1
 ALV;1
