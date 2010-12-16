@@ -46,6 +46,12 @@ M: write new GetSymbols.sql, now is too complicate an delivers not ever what
    expected.
 M: add automatic new added FIs to the users FI group "New FIs". But that need a
    merge of Filu and FiluU.
+M: check if it is possible not only to return an error code but also an
+   errormessage. For functions which are expected to return only a number should
+   this not be possible but maybe for others. Then we can take take that message
+   and have not to write an own in Filu.cpp.
+M: Create the main DB like the user tables => No need to use the console, let it
+   do ManagerF.
 L: figure out optimum postgres parameters.
 L: list all markets a specific provider provides (?)
 L: change in the creation *.sqls all function variables from absolute type
@@ -162,8 +168,3 @@ Importer
 H: add [Include]
 M: add [Skip], follow data will ignored until [UnSkip] or [Piks] ?
 M: add [Ignore]foo=bar, will ignore all data where key 'foo' has value 'bar'
-
-FooTuple
-==========
-M: move QTableView parts in own files
-M: review, there is eg. mID in many classes but is not part of base class
