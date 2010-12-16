@@ -51,7 +51,7 @@ class ManagerF : public FMainWindow
 
   public slots:
     void        changePage(QListWidgetItem* current, QListWidgetItem* previous);
-    void        messageBox(const QString& msg, const MsgType type = eNotice);
+    void        messageBox(const QString& func, const QString& msg, const MsgType type = eNotice);
 
   private:
     void        createIcons();

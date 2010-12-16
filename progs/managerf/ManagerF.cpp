@@ -123,8 +123,8 @@ void ManagerF::createIcons()
       mLogBookPage->addToLog(msg, eWarning);
     }
 
-    connect(mp, SIGNAL(message(const QString&, const MsgType))
-          , this, SLOT(messageBox(const QString&, const MsgType)));
+    connect(mp, SIGNAL(message(const QString&, const QString&, const MsgType))
+          , this, SLOT(messageBox(const QString&, const QString&, const MsgType)));
   }
 
   connect(mPageIcons, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *))
@@ -138,11 +138,16 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
   mPageStack->setCurrentIndex(mPageIcons->row(current));
 }
 
-void ManagerF::messageBox(const QString& msg, const MsgType type/* = eNotice*/)
+void ManagerF::messageBox(const QString& func, const QString& msg, const MsgType type/* = eNotice*/)
 {
-  addErrorText(msg, type);
-  mMsgLabel->setMessage(msg, type);
-  mLogBookPage->addToLog(msg, type);
+  // func looks like "void ManagerF::messageBox(...)"
+  QRegExp regex("\\w+::\\w+");
+  regex.indexIn(func);          // Extract to "ManagerF::messageBox"
+  QString message = regex.cap() + ": " + msg;
+
+  addErrorText(message, type);
+  mMsgLabel->setMessage(message, type);
+  mLogBookPage->addToLog(message, type);
 }
 
 MsgLabel::MsgLabel()

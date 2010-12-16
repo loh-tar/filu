@@ -111,17 +111,17 @@ void LogBookPage::readLogFile()
   if(messages.isEmpty()) messages << tr("LogFile is empty.");
   if(file.size() > 10000)
   {
-    QString msg = "LogBookPage::readLogFile: " + tr("File is big, have a little patience...");
+    QString msg = tr("File is big, have a little patience...");
     mLogFile.clear();
     mLogFile.insertPlainText(msg);
-    emit message(msg);
+    emit message(Q_FUNC_INFO, msg);
   }
 
   mLogFile.clear();
   mLogFile.insertPlainText(messages.join("\n"));
   mLogFile.moveCursor(QTextCursor::End);
 
-  if(file.size() > 10000) emit message("LogBookPage::readLogFile: " + tr("...Done."));
+  if(file.size() > 10000) emit message(Q_FUNC_INFO, tr("...Done."));
 
   file.close();
 }
@@ -150,8 +150,8 @@ void LogBookPage::clearLogFile()
   else
   {
     addErrorText("LogBookPage::clearLogFile: " + tr("Can't remove LogFile"), eCritical);
-    emit message("LogBookPage::clearLogFile: " + tr("Can't remove LogFile"));
+    emit message(Q_FUNC_INFO, tr("Can't remove LogFile"));
   }
 
-  emit message("LogBookPage::clearLogFile: " + tr("LogFile cleared."));
+  emit message(Q_FUNC_INFO, tr("LogFile cleared."));
 }

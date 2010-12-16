@@ -28,12 +28,13 @@ class Importer;
 
 class PSMGrp;
 
-class PSMGrp // Provider-Symbol-Market-Group
+class PSMGrp : public QObject // Provider-Symbol-Market-Group
 {
+  Q_OBJECT
 
   public:
                     PSMGrp();
-                   ~PSMGrp();
+    virtual        ~PSMGrp();
 
     int             addOne();
     int             size();
@@ -41,13 +42,18 @@ class PSMGrp // Provider-Symbol-Market-Group
     QComboBox*      provider(int i);
     SearchField*    symbol(int i);
     QComboBox*      market(int i);
+    QAbstractButton* searchBtn(int i);
+
+  signals:
+    void            searchCompBtnClicked(int);
 
   protected:
     QList<QComboBox*>     mProvider;
     QList<SearchField*>   mSymbol;
     QList<QComboBox*>     mMarket;
+    QButtonGroup          mBtnGrp; // Search Componets Buttons
 
-  int                   mCount;
+    int                   mCount;
 };
 
 class HitCountLabel : public QLabel
@@ -80,20 +86,24 @@ class AddFiPage : public ManagerPage
 
   protected slots:
     void          search();
+    void          insertRow();
+    void          removeRow();
     void          selectResultRow( int row, int column);
     void          fillResultTable(QStringList* data);
     void          searchOrCancel();
     void          scriptFinished();
+    void          searchCompBtnClicked(int idx);
     void          addToDB();
+    void          addAllToDB();
     void          addToDBbyTWIB(QString psm, int row);
 
   protected:
     void          createPage();
     void          showEvent(QShowEvent* /*event*/);
 
-
     void          searchFi();
     void          searchIdx();
+    bool          importFails(const QString& func, const QString& data);
 
     QComboBox*    mTypeSelector;
     QComboBox*    mProviderSelector;
@@ -102,7 +112,6 @@ class AddFiPage : public ManagerPage
     QPushButton*  mSearchCancelBtn;
     HitCountLabel mHitCounter;
 
-    QPushButton*  mAddBtn;
     SearchField*  mRefSymbol;
     QLineEdit*    mName;
     QComboBox*    mType;
@@ -115,7 +124,7 @@ class AddFiPage : public ManagerPage
     QString       mDisplayType;
     bool          mNewQuery;
 
-    QMultiHash<QString, int> mResultKeys;
+    QMultiHash<QString, int> mResultKeys; // Only used by TWIB
     QStringList              mPreparedHeader;
     QHash<QString, QString>  mPreparedHeaderData;
 };

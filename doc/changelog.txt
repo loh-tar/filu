@@ -1,9 +1,15 @@
-2010-12-12
+2010-12-16
 ============
 ManagerF - Add Fi PAge
 ------------------------
  - Refurbished under the hood.
  - Add a search result counter label.
+ - Add buttons to insert and remove lines in the result table. DoubleClick
+   the fields in the table to edit. Could improved.
+ - Add a button to install all listed stuff. When showing a CompList
+   will these noted.
+ - Add a temporary visible button to search for the components when
+   the selected FI is an Index.
 
 Yahoo Scripts
 ---------------
