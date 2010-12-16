@@ -18,6 +18,10 @@ Yahoo Scripts
  - New file fetchIdx. Works well but the Yahoo data are sadly not the best.
  - Adjustments at fetchBar for new Yahoo.pm.
 
+Scripts
+---------
+ - Rename fetchFi* to fetchCompList*
+
 
 2010-12-05
 ============

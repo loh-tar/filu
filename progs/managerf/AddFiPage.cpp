@@ -322,8 +322,8 @@ void AddFiPage::searchIdx()
   emit message(Q_FUNC_INFO, tr("Search Index matched to '") + mSearchField->text() + "'...");
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
-  mScripter->askProvider(mProvider, "fetchIdx", parms);
-//   QStringList* result = mScripter->askProvider(mProvider, "fetchIdx", parms);
+  mScripter->askProvider(mProvider, "fetchCompList", parms);
+//   QStringList* result = mScripter->askProvider(mProvider, "fetchCompList", parms);
 //   if(!result)
 //   {
 //     result = new QStringList;
