@@ -13,8 +13,9 @@
 
 -- GetIdByCaption.sql
 -- Returns:
---   0, if no data available(caption not found)
---  >0, found id to caption
---  -1, caption is more than one times in table
+--    0, if no data available(caption not found)
+--   >0, found id to caption
+--   -1, caption is more than one times in table
+--   -2, caption was empty
 
 SELECT * FROM :filu.id_from_caption(:table, :caption);
