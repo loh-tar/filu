@@ -210,7 +210,7 @@ Open (optional)
 High (optional)
 Low (optional)
 Close
-VolumeVolume (optional)
+Volume (optional)
 OpenInterest (optional)
 Quality (optional)
   see doc/hacking-provider-scripts.txt
