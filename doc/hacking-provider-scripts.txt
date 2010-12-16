@@ -44,13 +44,31 @@ import-file-format.txt. But it is not sure that the data delivered by the script
 go the way thru Importer.cpp. For example, data from fetchBar* will go an own
 way into the database for a little better performance.
 
+
+Used Terms and Notes
+======================
+As already described in import-file-format.txt means in the following:
+
+RefSymbol
+  Any Symbol which may useful, list as much as possible.
+
+<KnownSymbolType>
+  When listed will it be installed.
+
+<SymbolDataSet>
+  Means 'Provider, Symbol, Market'. Should be extended by a number.
+
+Keys in brackets [] are optional.
+Keys separate by a vertical bar | means 'either or'.
+
+
 Script Functions
 ==================
 Name:     fetchBar*
-Purpose:  EOD Bar data to a FI in a given time frame
+Purpose:  EOD Bar data to a FI in a given time frame.
 Input:    FromDate, ToDate, Symbol, Market
 Output:   Date, Open, High, Low, Close, Volume, OpenInterest, Quality
-          Quality stored in the database could be:
+Comment:  Quality stored in the database could be:
             0=platinum, modified by the user, don't change automatically
             1=gold, as final classified data by script
             2=bronze, as temporary classified data by script
@@ -61,14 +79,15 @@ Output:   Date, Open, High, Low, Close, Volume, OpenInterest, Quality
                   filled with the close price. Otherwise the database will
           change the quality to tin.
 
-Name:     fetchFI* (draft status only)
-Purpose:  The master data to a FI
-Input:    SearchString, Market
-          SearchString could be a Symbol or a part of the name
-Output:   Name, Symbol, Market, RefSymbol, <KnownSymbolType>
+Name:     fetchFI*
+Purpose:  The master data to a FI.
+Input:    SearchString
+Output:   Name, Type, <SymbolDataSet>|<KnownSymbolType>[, RefSymbol]
+Comment:  The SearchString could be a Symbol or a part of the name.
 
-Name:     fetchIdx* (draft status only)
-Purpose:  All associated underlyings to an index with name and symbol(s)
-Input:    Symbol, Market
-Output:   Name, Symbol, Market, RefSymbol, <KnownSymbolType>
-
+Name:     fetchCompList*
+Purpose:  All associated underlyings to an Index with RefSymbol and Weight.
+Input:    Symbol
+Output:   RefSymbol, Weight[, Name, Type, <SymbolDataSet>|<KnownSymbolType>]
+Comment:  Name, Type and more Symbol(s) are optional but desired.
+          If Weight is not available fill it with 1, it is anyway not yet used.
