@@ -18,6 +18,8 @@ have to import all that stuff *YOU* need. Markets, currencies, stocks and so on.
 A long time ago in a galaxy far, far away... there was all imagine default data
 pre installed. But I don't like that bloating and removed all.
 
+NOTE: About market names see hacking-provider-scripts.txt
+
 The goal is that you could use ManagerF to import all stuff easily live from
 somewhere of the Internet. But that need more work, especially at the provider
 scripts.

@@ -68,7 +68,10 @@ sub marketFromSymbol($)
 
   my $marketToken = $symbol_market[1];
 
-  # Edit or add some if needed. Take a look at...
+  # Edit or add some if needed. When you change here something,
+  # change them also in doc/hacking-provider-scripts.txt
+  #
+  # Take a look at...
   #   http://help.yahoo.com/l/uk/yahoo/finance/basics/fitadelay2.html
   my %markets;
   $markets{BC} = "Barcelona";
@@ -119,7 +122,8 @@ sub convertMarket($)
   # ...but they fit not exactly to the token need here.
   #
   # Because Yahoo symbols don't distinguish between NYSE/NASDAQ etc
-  # we have to set here always to NYSE
+  # we have to set here always to NYSE.
+  # Take care that the names fit with these in 'marketFromSymbol($)' above
   #
   my %markets;
   $markets{BAR} = "Barcelona";

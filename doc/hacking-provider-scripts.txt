@@ -61,6 +61,10 @@ RefSymbol
 Keys in brackets [] are optional.
 Keys separate by a vertical bar | means 'either or'.
 
+Market
+  Because markets currently handled in Filu simplified the scripts has to ship
+  standardized names. See appendix A.
+
 
 Script Functions
 ==================
@@ -91,3 +95,36 @@ Input:    Symbol
 Output:   RefSymbol, Weight[, Name, Type, <SymbolDataSet>|<KnownSymbolType>]
 Comment:  Name, Type and more Symbol(s) are optional but desired.
           If Weight is not available fill it with 1, it is anyway not yet used.
+
+
+Appendix A
+============
+Standardized market names. When you change here some names, changes them also in
+the existing provider scripts, e.g. Yahoo.pm.
+
+  Barcelona
+  Berlin
+  Bilbao
+  Brussels
+  Copenhagen
+  Dusseldorf
+  Eurex
+  Frankfurt
+  HKSE
+  Hamburg
+  Hanover
+  London
+  Madrid
+  Milan
+  Munich
+  NYSE          Yahoo can't distingues between NYSE/NASDAQ, so always NYSE
+  Euronext
+  Oslo
+  Euronext
+  Stockholm
+  Stuttgart
+  Toronto
+  CDNX
+  Valence
+  Vienna
+  Xetra
