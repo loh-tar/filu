@@ -20,9 +20,7 @@ pre installed. But I don't like that bloating and removed all.
 
 The goal is that you could use ManagerF to import all stuff easily live from
 somewhere of the Internet. But that need more work, especially at the provider
-scripts. One nice script stops working someone in 2009. So if you are a Perl
-hacker it would be great you start contributing Filu. Fortunately works the most
-important fetchBar_Yahoo.pl script perfectly.
+scripts.
 
 Till ManagerF works as desired, we have to import data with 'agentf imp <file>'
 command. What we need is a *.imp file with the data we are interested in. Take a
@@ -83,9 +81,6 @@ not out of the database but rather out of some *.csv files located at
 click one of the rows in the shown list will these FI copy to the fields below
 where you can make some edits or simple click 'Add to DB'.
 
-NOTE: ManagerFs AddFi page is something outdated and need a review, so don't
-      wonder why the result you got after the search has strange column names.
-
 For more information about provider and how to write your own provider script
 read doc/hacking-provider-scripts.txt
 
@@ -124,11 +119,39 @@ IS the oldest part of Filu and is nearly useless.
 
 Add FI Page
 -------------
-Needs improvements under the hood and a fixed fetchFi_Yahoo.pl script.
-Therefore currently also not very useful. But you can enter by hand the FI data
-at the bottom input fields and click 'Add to DB'. You can also add more symbols
-to existing FIs by filling the new symbol data and give an already known symbol
-in the RefSymbol field, Name and Type could leave blank in that case.
+Choose a provider and a function (script) at the upper left ComboBoxes and enter
+your search string in the middle. Hit Return or click 'Search' to fetch the data
+from the provider. The results will are listed in the center table. Clicking one
+row will copy the FI into the below area.
+
+You can also enter by hand the FI data into the fields, without using a previous
+search. Click 'Add to DB' right from the Type ComboBox to store this one FI. You
+can also add more symbols to existing FIs by filling the new symbol data and
+give an already known symbol in the RefSymbol field, Name and Type could leave
+blank in that case.
+
+When the selected FI is an Index appears a 'Search Comp' button right from the
+Symbol lines which will fetch the components of that Index from the provider
+which is the owner of the symbol. The results will listed in the table, or
+nothing if the provider has no component data to that Index or an error message
+appears if the the provider has no function to fetch components.
+
+NOTE: Watch the 'Found:' counter at the top while fetching Index components.
+      Say fetching 'NASDAQ Composite, ^IXIC' from Yahoo will populate the table
+with many more FIs as you may like. Hit 'Cancel', the 'Search' Button at the top
+has changed the caption, to stop the script.
+
+When the table is filled with all components could you add or remove lines with
+the '+/-' Buttons at the upper right and edit the a line itself by double click.
+Clicking 'Add all to DB' will...You guess it. Furthermore will all FIs added as
+underlying to the Index-FI. You can hit that button also to add all results from
+a normal search, its your decision if it make sense. Adding underlines will not
+perform in that case.
+
+NOTE: The 'underline-adding' works not perfect right now. Currently he may say
+      'OK' but there wasn't, because the FI may fail to add. But that's more an
+issue of Importer than of ManagerF.
+
 
 Indicator Page
 ----------------
