@@ -22,6 +22,8 @@
 RcFile::RcFile() : QSettings("Filu")
                  , mConsole(stdout)
 {
+  mDefault.reserve(33);
+
   // Global stuff
   mDefault.insert("InstallPath",       "/usr/local/lib/Filu/");
   mDefault.insert("ProviderPath",      "provider/");
@@ -30,6 +32,7 @@ RcFile::RcFile() : QSettings("Filu")
   mDefault.insert("IndiSetsPath",      "IndicatorSets/");
   mDefault.insert("TradingRulePath",   "TradingRules/");
   mDefault.insert("IndiFilterSetPath", "IndicatorFilterSettings/");
+  mDefault.insert("MakeNameNice",      "true");
 
   // Filu stuff
   mDefault.insert("HostName",          "localhost");
@@ -58,6 +61,8 @@ RcFile::RcFile() : QSettings("Filu")
   mDefault.insert("ManagerSize",     QSize(832,512));
   mDefault.insert("ManagerPosition", "");
   mDefault.insert("ManagerState",    "");
+  mDefault.insert("LastProvider",    "Filu");
+  mDefault.insert("LastScript",      "Search FI");
 
   // Inspetor stuff
   mDefault.insert("InspectorSize",     QSize(832,512));
@@ -72,12 +77,9 @@ RcFile::~RcFile()
 {
 }
 
-void RcFile::get(const QString& key, QString& val)
+void RcFile::set(const QString& key, const QVariant& val)
 {
-  QVariant v;
-  v = value(key, mDefault.value(key));
-
-  val = v.toString();
+  setValue(key, val);
 }
 
 QString RcFile::getST(const QString& key)
@@ -85,43 +87,14 @@ QString RcFile::getST(const QString& key)
   return value(key, mDefault.value(key)).toString();
 }
 
-void RcFile::set(const QString& key, const QVariant& val)
-{
-  setValue(key, val);
-}
-
-void RcFile::get(const QString& key, QPoint& val)
-{
-  QVariant v;
-  v = value(key, mDefault.value(key));
-
-  val = v.toPoint();
-}
-
 QPoint RcFile::getPT(const QString& key)
 {
   return value(key, mDefault.value(key)).toPoint();
 }
 
-void RcFile::get(const QString& key, QSize& val)
-{
-  QVariant v;
-  v = value(key, mDefault.value(key));
-
-  val = v.toSize();
-}
-
 QSize RcFile::getSZ(const QString& key)
 {
   return value(key, mDefault.value(key)).toSize();
-}
-
-void RcFile::get(const QString& key, QByteArray& val)
-{
-  QVariant v;
-  v = value(key, mDefault.value(key));
-
-  val = v.toByteArray();
 }
 
 QByteArray RcFile::getBA(const QString& key)
@@ -142,6 +115,28 @@ bool RcFile::getBL(const QString& key)
 double RcFile::getDB(const QString& key)
 {
   return value(key, mDefault.value(key)).toDouble();
+}
+
+QString RcFile::getGlobalST(const QString& key)
+{
+  saveGroup();
+
+  QString val = value(key, mDefault.value(key)).toString();
+
+  restoreGroup();
+
+  return val;
+}
+
+void RcFile::saveGroup()
+{
+  mDefault.insert("_SavedGroup", group()); // Use of mDefault is only a makeshift
+  while(!group().isEmpty()) endGroup();
+}
+
+void RcFile::restoreGroup()
+{
+  beginGroup(mDefault.value("_SavedGroup").toString());
 }
 
 /***********************************************************************

@@ -32,12 +32,7 @@ class RcFile : public QSettings
                   RcFile();
     virtual      ~RcFile();
 
-    void get(const QString& key, QString& val);
     void set(const QString& key, const QVariant& val);
-
-    void get(const QString& key, QPoint& val);
-    void get(const QString& key, QSize& val);
-    void get(const QString& key, QByteArray& val);
 
     QString       getST(const QString& key);
     QPoint        getPT(const QString& key);
@@ -46,6 +41,11 @@ class RcFile : public QSettings
     int           getIT(const QString& key);
     bool          getBL(const QString& key);
     double        getDB(const QString& key);
+
+    QString       getGlobalST(const QString& key);
+
+    void          saveGroup();
+    void          restoreGroup();
 
   protected:
     void          checkFiluHome();
