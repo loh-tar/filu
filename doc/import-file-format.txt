@@ -45,6 +45,12 @@ Controlling Tags
 [Include] FIXME: not implemented
   Includes an other import file at this point.
 
+[MakeNameNice]On
+  Each other than 'On' is 'Off'.
+  This overwrites the setting done in your ~/.config/Filu.conf file. When
+  activated the FI names will beautified, hopefully. The behavior is controlled
+  by ~/Filu/MakeNameNice.conf. Take a look there for more infos.
+
 [Skip] FIXME: not implemented
   Follow data will ignored until [Piks] is read
 

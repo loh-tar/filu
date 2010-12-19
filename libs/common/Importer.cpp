@@ -114,6 +114,57 @@ void Importer::reset()
   mMustBeUnique = "Provider Symbol Market RefSymbol";
   mAllSymbolTypes << "Symbol" << "RefSymbol" << mKnownSymbolTypes;
 
+  mRcFile->saveGroup();
+  mRcFile->sync();
+  mMakeNameNice = mRcFile->getBL("MakeNameNice");
+  mRcFile->restoreGroup();
+
+  if(mMakeNameNice)
+  {
+    mNiceSearch.clear();
+    mNiceReplace.clear();
+
+    QFile file(mRcFile->getGlobalST("FiluHome") + "MakeNameNice.conf");
+    if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+      const QString errorMsg1 = QObject::tr("Wrong \"=\" in line %1 of file 'MakeNameNice.conf'.");
+      const QString errorMsg2 = QObject::tr("Invalid RegExp in line %1 of file 'MakeNameNice.conf', ErrTxt: %2.");
+
+      QTextStream in(&file);
+      int ln = 0; // Count lines
+      while (!in.atEnd())
+      {
+        ++ln;
+        QString line = in.readLine();
+        if(line.startsWith("*")) continue; // Ignore remarks
+        if(line.isEmpty()) continue;
+
+        QStringList parts = line.split("\"=\"");
+
+        if(parts.size() < 2)
+        {
+          addErrorText("Importer::reset: " + errorMsg1.arg(ln), eError);
+          continue;
+        }
+
+        parts[0].remove(0, 1);
+        parts[1].chop(1);
+        QRegExp regExp(parts.at(0));
+        if(!regExp.isValid())
+        {
+          addErrorText("Importer::reset: " + errorMsg2.arg(ln).arg(regExp.errorString()), eError);
+          continue;
+        }
+        mNiceSearch  <<  parts.at(0);
+        mNiceReplace <<  parts.at(1);
+      }
+    }
+    else
+    {
+      addErrorText("Importer::reset: " + QObject::tr("No file 'MakeNameNice.conf' found."), eWarning);
+    }
+  }
+
   mRolex.start();
 }
 
@@ -202,6 +253,41 @@ void Importer::getPreparedHeaderData(QStringList& header, QHash<QString, QString
   data   = mData;
 }
 
+QString Importer::makeNameNice(const QString& name)
+{
+  if(!mMakeNameNice) return name;
+
+  QString niceName = name;
+  makeNameNice(niceName);
+  return niceName;
+}
+
+void Importer::makeNameNice(QString& name)
+{
+  if(!mMakeNameNice) return;
+
+  name = name.simplified();
+  for(int i = 0; i < mNiceSearch.size(); ++i)
+  {
+    QRegExp regExp(mNiceSearch.at(i));
+    regExp.setCaseSensitivity(Qt::CaseInsensitive);
+    name.replace(regExp, mNiceReplace.at(i));
+  }
+
+  if(name.size() < 5) return;        // Don't change names like BASF
+  if(name != name.toUpper()) return; // Don't change names with lower case
+
+  QStringList parts = name.split(QRegExp("\\b")); // Split at word boundary
+  for(int i = 0; i < parts.size(); ++i)
+  {
+    if(parts.at(i).size() < 4) continue;
+    parts[i] = parts.at(i).toLower();
+    parts[i].replace(0, 1, parts.at(i).at(0).toUpper());
+  }
+
+  name = parts.join("");
+}
+
 bool Importer::handleTag(QStringList& row)
 {
   if(!mPendingData.isEmpty())
@@ -221,6 +307,15 @@ bool Importer::handleTag(QStringList& row)
   if(row.at(0).startsWith("[Reset]"))
   {
     reset();
+    return true;
+  }
+
+  if(row.at(0).startsWith("[MakeNameNice]"))
+  {
+    row[0].remove("[MakeNameNice]");
+    if(row.at(0).compare("On", Qt::CaseInsensitive) == 0) mMakeNameNice = true;
+    else mMakeNameNice = false;
+
     return true;
   }
 
@@ -495,10 +590,10 @@ void Importer::prepare()
 
 void Importer::setFi()
 {
-  mFi = new FiTuple(1);
+  mFi = new FiTuple(1);  //FIXME: Not used! (?)
   mFi->next();                         // Set on first position
   mFi->setSymbol(mSymbol);             // Add the mSymbol tuple
-  mFi->setName(mData.value("Name"));
+  mFi->setName(makeNameNice(mData.value("Name")));
   mFi->setType(mData.value("Type"));
   //qDebug() << "Importer::setFi:" << mData.value("Name") << mData.value("Type");
 }
@@ -621,7 +716,7 @@ void Importer::addFi()
     if(mSymbol->market().isEmpty()) continue;
 
     // FIXME: Set Delete date, of the FI
-    newFiId = mFilu->addFi(mData.value("Name")
+    newFiId = mFilu->addFi(makeNameNice(mData.value("Name"))
                          , mData.value("Type")
                          , mSymbol->caption()
                          , mSymbol->market()

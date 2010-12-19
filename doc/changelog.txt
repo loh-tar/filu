@@ -1,3 +1,12 @@
+2010-12-19
+============
+Importer
+----------
+ - New Controlling Tag [MakeNameNice]. See doc/import-file-format.txt. If you
+   has done an update copy manualy FiluSource/userfiles/MakeNameNice.conf
+   to your ~/Filu directory.
+
+
 2010-12-16
 ============
 ManagerF - Add Fi PAge

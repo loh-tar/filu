@@ -47,6 +47,8 @@ class Importer : public FClass
     void          reset();
     bool          import(const QString& line);
     void          getPreparedHeaderData(QStringList& header, QHash<QString, QString>& data);
+    QString       makeNameNice(const QString& name);
+    void          makeNameNice(QString& name);
 
   protected:
     void          printDot();
@@ -94,6 +96,9 @@ class Importer : public FClass
     int           mFiId;
     int           mMarketId;
     QTime         mRolex;
+    bool          mMakeNameNice;
+    QStringList   mNiceSearch;
+    QStringList   mNiceReplace;
 
   private:
 
