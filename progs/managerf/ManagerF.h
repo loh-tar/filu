@@ -37,6 +37,7 @@ class MsgLabel : public QLabel // MessageLabel
     void            resetMessage();
 
   protected:
+    FClass::MsgType mLastMsgType;
     QTimer          mRolex;
 
 };

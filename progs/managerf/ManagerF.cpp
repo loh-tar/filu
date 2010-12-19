@@ -152,12 +152,17 @@ void ManagerF::messageBox(const QString& func, const QString& msg, const MsgType
 
 MsgLabel::MsgLabel()
         : QLabel()
+        , mLastMsgType(FClass::eNotice)
 {
   connect(&mRolex, SIGNAL(timeout()), this, SLOT(resetMessage()));
 }
 
 void MsgLabel::setMessage(const QString& msg, const FClass::MsgType type/* = eNotice*/)
 {
+  // Don't overwirte an important message with a less important one
+  if(type < mLastMsgType) return;
+  mLastMsgType = type;
+
   if(type > FClass::eNotice) setStyleSheet("background: yellow");
 
   setText(msg);
@@ -168,6 +173,7 @@ void MsgLabel::setMessage(const QString& msg, const FClass::MsgType type/* = eNo
 
 void MsgLabel::resetMessage()
 {
+  mLastMsgType = FClass::eNotice;
   setStyleSheet("");
   setText("");
 }
