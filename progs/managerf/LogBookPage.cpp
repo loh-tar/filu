@@ -54,8 +54,11 @@ void LogBookPage::createPage()
 
   mLogBook.setReadOnly(true);
   //mLogBook.setFontFamily("Monospace");
+  mLogBook.setLineWrapMode(QTextEdit::NoWrap);
+
   mLogFile.setReadOnly(true);
   //mLogFile.setFontFamily("Monospace");
+  mLogFile.setLineWrapMode(QTextEdit::NoWrap);
 
   mActClearLogFile = new QAction(tr("Clear File"), &mLogFile);
   connect(mActClearLogFile, SIGNAL(triggered(bool)), this, SLOT(clearLogFile()));
@@ -68,9 +71,12 @@ void LogBookPage::createPage()
 void LogBookPage::addToLog(const QString& msg, const MsgType type)
 {
   mLogBook.moveCursor(QTextCursor::End);
-  mLogBook.insertPlainText(msg + "\n");
+  if(type == eNotice) mLogBook.setTextBackgroundColor(QColor("white"));
+  else mLogBook.setTextBackgroundColor(QColor("yellow"));
+//   if(type == eWarning) mLogBook.setTextBackgroundColor(QColor("yellow"));
+//   if(type == eError) mLogBook.setTextBackgroundColor(QColor("red"));
 
-  if(type > eNotice) mLogBook.insertPlainText("\n");
+  mLogBook.insertPlainText(msg + "\n");
 
   mLogBook.ensureCursorVisible();
 }

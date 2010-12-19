@@ -12,6 +12,10 @@ ManagerF - Add Fi Page
  - Prevent segfault when Header is missing.
  - Save/Restore last used Provider and Script (Upper left ComboBoxes).
 
+ManagerF - Log Book Page
+--------------------------
+ - Colored line if the message was more important.
+
 
 2010-12-16
 ============

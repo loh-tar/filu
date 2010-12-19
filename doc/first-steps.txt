@@ -170,7 +170,10 @@ the editor. See also doc/indicator-file-format.txt.
 Log Book
 ----------
 Here find you some messages which may produce the other pages. Currently write
-only AddFi some messages, and not the very best.
+only 'Add Fi' some messages, and not the very best.
+
+On the second tab 'LogFile' could you view the messages written by AgentF. In
+the future may more messages loggend there. RightClick to clear the file,
 
 
 PerformerF
