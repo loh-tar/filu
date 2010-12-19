@@ -47,6 +47,7 @@ void AddFiPage::createPage()
           , this, SLOT(scriptFinished()));
 
   mImporter = new Importer(this);
+  if(mImporter->hasError()) addErrorText(mImporter->errorText(), eWarning);
 
   QGroupBox* searchGroup = new QGroupBox(tr("Add a new FI to the Data Base"));
 
@@ -55,8 +56,7 @@ void AddFiPage::createPage()
   connect(mSearchCancelBtn, SIGNAL(clicked()), this, SLOT(searchOrCancel()));
 
   mProviderSelector = new QComboBox;
-  mProviderPath = mRcFile->getST("ProviderPath");
-  QDir dir(mProviderPath);
+  QDir dir(mRcFile->getST("ProviderPath"));
   mProviderSelector->insertItems(0, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot));
   mProviderSelector->setCurrentIndex(mProviderSelector->findText("Filu"));
 
@@ -370,7 +370,8 @@ void AddFiPage::fillResultTable(QStringList* data)
       // mPreparedHeader will became: "Symbol0", "Name", "Symbol1", "Market1", "Quality", "Notice", "Provider0", "Market0", "Provider1"
       // mPreparedHeaderData will became: QHash(("Market0", "NoMarket")("Market1", "")("Provider0", "Reuters")("Symbol0", "")("Provider1", "Yahoo")("Symbol1", "")("Notice", "")("Quality", "")("Name", ""))
       mImporter->reset();
-      mImporter->import(data->at(r));
+      importFails(Q_FUNC_INFO, data->at(r)); // Only to check for wrong MakeNameNice.conf.
+                                             // But ignore the error if some
       mImporter->getPreparedHeaderData(mPreparedHeader, mPreparedHeaderData);
       //qDebug() << data->at(r);
       //qDebug() << mPreparedHeader;
@@ -392,10 +393,11 @@ void AddFiPage::fillResultTable(QStringList* data)
 
     mResultList->insertRow(r + re);
 
+    if(!mResultList->columnCount()) continue; // Something is wrong with the Header
+
     for(c = 0; c < row.size(); ++c)  // Columns
     {
-      if(c > mResultList->columnCount() - 1)
-        mResultList->insertColumn(c);
+      if(c > mResultList->columnCount() - 1) mResultList->insertColumn(c);
 
       if(row.at(c).isEmpty())
       {
@@ -414,6 +416,10 @@ void AddFiPage::fillResultTable(QStringList* data)
       }
       else
       {
+        if(mResultList->horizontalHeaderItem(c)->text() == "Name")
+        {
+          mImporter->makeNameNice(row[c]);
+        }
         QTableWidgetItem* newItem = new QTableWidgetItem(row.at(c));
         mResultList->setItem(r + re, c, newItem);
       }
@@ -443,6 +449,9 @@ void AddFiPage::loadSettings()
 {
   mRcFile->beginGroup("AddFiPage");
 
+  mProviderSelector->setCurrentIndex(mProviderSelector->findText(mRcFile->getST("LastProvider")));
+  mTypeSelector->setCurrentIndex(mTypeSelector->findText(mRcFile->getST("LastScript")));
+
   mType->setCurrentIndex(mType->findText(mRcFile->getST("Type")));
 
   for(int i = 0; i < mPSMGrp.size(); ++i)
@@ -459,6 +468,9 @@ void AddFiPage::loadSettings()
 void AddFiPage::saveSettings()
 {
   mRcFile->beginGroup("AddFiPage");
+
+  mRcFile->set("LastProvider", mProviderSelector->currentText());
+  mRcFile->set("LastScript", mTypeSelector->currentText());
 
   mRcFile->set("Type", mType->currentText());
 

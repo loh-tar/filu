@@ -6,10 +6,16 @@ Importer
    has done an update copy manualy FiluSource/userfiles/MakeNameNice.conf
    to your ~/Filu directory.
 
+ManagerF - Add Fi Page
+------------------------
+ - Use of Importers new function makeNameNice().
+ - Prevent segfault when Header is missing.
+ - Save/Restore last used Provider and Script (Upper left ComboBoxes).
+
 
 2010-12-16
 ============
-ManagerF - Add Fi PAge
+ManagerF - Add Fi Page
 ------------------------
  - Refurbished under the hood.
  - Add a search result counter label.
