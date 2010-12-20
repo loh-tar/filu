@@ -55,6 +55,7 @@ set(Filu_SRC ${Filu_SRC}
     common/IndiSetPad.cpp
     common/FiTableView.cpp
     common/SymbolTableView.cpp
+    common/LineEdit.cpp
 )
 set(Filu_MOCH ${Filu_MOCH}
     common/LaunchPad.h
@@ -69,6 +70,7 @@ set(Filu_MOCH ${Filu_MOCH}
     common/IndiSetPad.h
     #common/FiTableView.h
     #common/SymbolTableView.h
+    common/LineEdit.h
 )
 include_directories(common)
 
