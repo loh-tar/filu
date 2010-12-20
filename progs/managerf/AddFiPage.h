@@ -22,6 +22,7 @@
 
 #include "ManagerPage.h"
 
+class LineEdit;
 class SearchField;
 class Script;
 class Importer;
@@ -40,7 +41,7 @@ class PSMGrp : public QObject // Provider-Symbol-Market-Group
     int             size();
 
     QComboBox*      provider(int i);
-    SearchField*    symbol(int i);
+    LineEdit*       symbol(int i);
     QComboBox*      market(int i);
     QAbstractButton* searchBtn(int i);
 
@@ -49,7 +50,7 @@ class PSMGrp : public QObject // Provider-Symbol-Market-Group
 
   protected:
     QList<QComboBox*>     mProvider;
-    QList<SearchField*>   mSymbol;
+    QList<LineEdit*>      mSymbol;
     QList<QComboBox*>     mMarket;
     QButtonGroup          mBtnGrp; // Search Componets Buttons
 
@@ -112,8 +113,8 @@ class AddFiPage : public ManagerPage
     QPushButton*  mSearchCancelBtn;
     HitCountLabel mHitCounter;
 
-    SearchField*  mRefSymbol;
-    QLineEdit*    mName;
+    LineEdit*     mRefSymbol;
+    LineEdit*     mName;
     QComboBox*    mType;
     PSMGrp        mPSMGrp;
 

@@ -19,6 +19,7 @@
 
 #include "AddFiPage.h"
 
+#include "LineEdit.h"
 #include "SearchField.h"
 #include "Script.h"
 #include "Importer.h"
@@ -98,10 +99,10 @@ void AddFiPage::createPage()
 
   QFontMetrics f(font());
   int w = f.width("X");
-  mRefSymbol = new SearchField;
+  mRefSymbol = new LineEdit;
   mRefSymbol->setMinimumWidth(w * 15);
-  mName = new QLineEdit;
-  mName->setMinimumWidth(w * 30);
+  mName = new LineEdit;
+  mName->setMinimumWidth(w * 40);
 
   mType = new QComboBox;
   QStringList types;
@@ -758,7 +759,7 @@ PSMGrp::~PSMGrp()
 int PSMGrp::addOne()
 {
   mProvider.append(new QComboBox);
-  mSymbol.append(new SearchField);
+  mSymbol.append(new LineEdit);
   mMarket.append(new QComboBox);
 
   QPushButton* btn = new QPushButton(tr("Search Comp"));
@@ -779,7 +780,7 @@ QComboBox* PSMGrp::provider(int i)
   return (i < 0) or (i > (mCount -1)) ? 0 : mProvider.at(i);
 }
 
-SearchField* PSMGrp::symbol(int i)
+LineEdit* PSMGrp::symbol(int i)
 {
   return (i < 0) or (i > (mCount -1)) ? 0 : mSymbol.at(i);
 }

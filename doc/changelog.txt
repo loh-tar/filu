@@ -11,6 +11,8 @@ ManagerF - Add Fi Page
  - Use of Importers new function makeNameNice().
  - Prevent segfault when Header is missing.
  - Save/Restore last used Provider and Script (Upper left ComboBoxes).
+ - Change once more edit fields from SearchField to a new class LineEdit. The
+   clear button is now inside and looks nicer.
 
 ManagerF - Log Book Page
 --------------------------
