@@ -763,7 +763,7 @@ int PSMGrp::addOne()
   mMarket.append(new QComboBox);
 
   QPushButton* btn = new QPushButton(tr("Search Comp"));
-  btn->setToolTip(tr("Search the Componets of this Index"));
+  btn->setToolTip(tr("Search the Components of this Index"));
   btn->hide();
   mBtnGrp.addButton(btn, mCount);
 

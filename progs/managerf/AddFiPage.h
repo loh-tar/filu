@@ -52,7 +52,7 @@ class PSMGrp : public QObject // Provider-Symbol-Market-Group
     QList<QComboBox*>     mProvider;
     QList<LineEdit*>      mSymbol;
     QList<QComboBox*>     mMarket;
-    QButtonGroup          mBtnGrp; // Search Componets Buttons
+    QButtonGroup          mBtnGrp; // Search Components Buttons
 
     int                   mCount;
 };
