@@ -61,7 +61,7 @@ void AddFiPage::createPage()
   mProviderSelector->insertItems(0, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot));
   mProviderSelector->setCurrentIndex(mProviderSelector->findText("Filu"));
 
-  mSearchField = new SearchField;
+  mSearchField = new SearchField(this);
 
   connect(mSearchField, SIGNAL(returnPressed()), this, SLOT(search()));
 

@@ -45,7 +45,7 @@ void IndicatorSelector::saveSettings()
 
 void IndicatorSelector::createPage()
 {
-  mSF = new SearchField;
+  mSF = new SearchField(this);
   connect(mSF, SIGNAL(textChanged()), this, SLOT(refreshFunctionList()));
 
   mTALib.getAllFunctionNames(mAllFunctions);
