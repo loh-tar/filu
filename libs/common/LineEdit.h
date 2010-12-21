@@ -44,11 +44,11 @@ class LineEdit : public QLineEdit
   protected:
     void          resizeEvent(QResizeEvent *);
 
-  private slots:
-    void          updateCloseButton(const QString &text);
-
-  private:
     QToolButton*  mClearBtn;
+
+  private slots:
+    virtual void  updateClearBtn(const QString &text);
+    virtual void  clearBtnClicked();
 };
 
 #endif

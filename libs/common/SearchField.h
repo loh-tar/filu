@@ -22,7 +22,7 @@
 
 #include <QtGui>
 
-class LineEdit;
+#include "LineEdit.h"
 
 /***********************************************************************
 *
@@ -30,29 +30,31 @@ class LineEdit;
 *
 ************************************************************************/
 
-class SearchField : public QWidget
+class SearchField : public LineEdit
 {
   Q_OBJECT
 
   public:
-                  SearchField(QWidget* parent = 0);
+                  SearchField(QWidget* parent);
     virtual      ~SearchField();
 
-    QString       text();
-    void          setText(const QString&);
     QRegExp       filter();
 
     signals:
     void          textChanged();
     void          newtext(const QString&);
-    void          returnPressed();
 
   public slots:
     void          clearField();
-    void          setFocus();
 
-  protected:
-    LineEdit*     mField;
+  private:
+    QListWidget*  mHistory;
+
+  private slots:
+    void          updateClearBtn(const QString &text);
+    void          clearBtnClicked();
+    void          updateHistory();
+    void          historyChosen(QListWidgetItem* item);
 };
 
 #endif

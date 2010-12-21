@@ -18,50 +18,109 @@
 //
 
 #include "SearchField.h"
-#include "LineEdit.h"
 
-SearchField::SearchField(QWidget* parent) : QWidget(parent)
+SearchField::SearchField(QWidget* parent) : LineEdit(parent)
 {
-  mField = new LineEdit;
-  connect(mField, SIGNAL(textChanged(const QString &)), this, SIGNAL(textChanged()));
-  connect(mField, SIGNAL(textChanged(const QString &)), this, SIGNAL(newtext(const QString &)));
-  connect(mField, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
+  mHistory = new QListWidget(parent);
+  mHistory->setWindowFlags(Qt::FramelessWindowHint);
+  mHistory->setMinimumSize(QSize(0,0));
+  mHistory->hide();
+  connect(mHistory, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(historyChosen(QListWidgetItem*)));
 
-  QHBoxLayout* layout = new QHBoxLayout;
-  layout->setMargin(0);
-  layout->addWidget(mField);
-  //layout->addStretch(0);
-
-  setLayout(layout);
+  connect(this, SIGNAL(textChanged(const QString &)), this, SIGNAL(textChanged()));
+  connect(this, SIGNAL(textChanged(const QString &)), this, SIGNAL(newtext(const QString &)));
+  connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(updateHistory()));
 }
 
 SearchField::~SearchField()
 {}
 
-QString SearchField::text()
-{
-  return mField->text();
-}
-
-void SearchField::setText(const QString& txt)
-{
-  mField->setText(txt);
-}
-
 QRegExp SearchField::filter()
 {
-  QRegExp filter(mField->text(), Qt::CaseInsensitive);
+  QRegExp filter(text(), Qt::CaseInsensitive);
   return filter;
 }
 
 void SearchField::clearField()
 {
-  mField->clear();
-  mField->setFocus();
+  clear();
+  setFocus();
   emit textChanged();
 }
 
-void SearchField::setFocus()
+void SearchField::updateClearBtn(const QString& text)
 {
-  mField->setFocus();
+  if(text.isEmpty())
+  {
+    mClearBtn->hide();
+  }
+  else
+  {
+    mHistory->hide();
+    mClearBtn->show();
+  }
+}
+
+void SearchField::clearBtnClicked()
+{
+  mHistory->show();
+
+  QPoint p = pos();
+  p.setX(p.x() + width() - mHistory->width());
+  p.setY(p.y() + height());
+  mHistory->move(p);
+  mHistory->raise();
+
+  clear();
+}
+
+void SearchField::updateHistory()
+{
+  static QString lastInserted;
+
+  QString txt = text();
+  if(txt.isEmpty()) return;
+
+  if(lastInserted == txt) return;
+
+  if(lastInserted.size() - txt.size() == 1)
+  {
+    // Probably 'DEL' pressed
+    if(mHistory->count() > 0) delete mHistory->takeItem(0);
+  }
+
+  txt.chop(1);
+  if((lastInserted == txt))
+  {
+    // Simple any char added
+    if(mHistory->count() > 0) delete mHistory->takeItem(0);
+  }
+
+  lastInserted = text();
+
+//   QList<QListWidgetItem *> has = mHistory->findItems(lastInserted, Qt::MatchExactly);
+//   if(has.size() > 0)
+//   {
+//     delete has.at(0);
+//   }
+
+  mHistory->insertItem(0, lastInserted);
+  if(mHistory->count() > 7) delete mHistory->takeItem(7);
+
+  int maxWidth = 0;
+  for(int i = 0; i < mHistory->count(); ++i)
+  {
+    maxWidth = qMax(maxWidth, mHistory->fontMetrics().width(mHistory->item(i)->text()));
+  }
+
+  mHistory->resize(maxWidth + 20
+                 , mHistory->fontMetrics().height() * mHistory->count() + 7);
+
+}
+
+void SearchField::historyChosen(QListWidgetItem* item)
+{
+  mHistory->hide();
+  setText(item->text());
+  setFocus();
 }
