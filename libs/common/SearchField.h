@@ -22,6 +22,8 @@
 
 #include <QtGui>
 
+class LineEdit;
+
 /***********************************************************************
 *
 *   Yes, it's a search field, used at several places
@@ -50,8 +52,7 @@ class SearchField : public QWidget
     void          setFocus();
 
   protected:
-    QLineEdit*    mField;
-    QToolButton*  mButton;
+    LineEdit*     mField;
 };
 
 #endif

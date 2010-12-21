@@ -18,24 +18,19 @@
 //
 
 #include "SearchField.h"
+#include "LineEdit.h"
 
 SearchField::SearchField(QWidget* parent) : QWidget(parent)
 {
-  mButton = new QToolButton;
-  mButton->setToolTip(tr("Clear Field"));
-  mButton->setAutoRaise(true);
-  mButton->setArrowType(Qt::RightArrow);
-  connect(mButton, SIGNAL(clicked()), this, SLOT(clearField()));
-
-  mField = new QLineEdit;
+  mField = new LineEdit;
   connect(mField, SIGNAL(textChanged(const QString &)), this, SIGNAL(textChanged()));
   connect(mField, SIGNAL(textChanged(const QString &)), this, SIGNAL(newtext(const QString &)));
   connect(mField, SIGNAL(returnPressed()), this, SIGNAL(returnPressed()));
 
-  QGridLayout* layout = new QGridLayout;
+  QHBoxLayout* layout = new QHBoxLayout;
   layout->setMargin(0);
-  layout->addWidget(mButton, 0, 0);
-  layout->addWidget(mField, 0, 1);
+  layout->addWidget(mField);
+  //layout->addStretch(0);
 
   setLayout(layout);
 }
