@@ -45,8 +45,6 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
   mLogBookPage = new LogBookPage(this);
   mPageStack->addWidget(mLogBookPage);
 
-  createIcons();
-
   QPushButton* closeButton = new QPushButton(tr("Close"));
   connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
@@ -56,6 +54,8 @@ ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
 
   mMsgLabel = new MsgLabel;
   mMsgLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+
+  createIcons();
 
   QHBoxLayout* buttonsLayout = new QHBoxLayout;
   buttonsLayout->addWidget(mMsgLabel);
@@ -120,6 +120,7 @@ void ManagerF::createIcons()
     if(!msg.isEmpty())
     {
       msg.prepend(mp->iconText() + " Page: ");
+      mMsgLabel->setMessage(msg, eWarning);
       mLogBookPage->addToLog(msg, eWarning);
     }
 
