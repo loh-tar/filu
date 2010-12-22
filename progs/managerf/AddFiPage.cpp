@@ -38,7 +38,7 @@ AddFiPage::~AddFiPage()
 
 void AddFiPage::createPage()
 {
-  mIcon = QIcon(":/icons/configure.xpm");
+  mIcon = QIcon(":/icons/add-fi.png");
   mIconText = tr("Add FI");
 
   mScripter = new Script(this);

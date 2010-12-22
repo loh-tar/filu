@@ -1,11 +1,8 @@
  <!DOCTYPE RCC><RCC version="1.0">
  <qresource>
-    <file>icons/configure.xpm</file>
-    <file>icons/chart.xpm</file>
-    <file>icons/disable.xpm</file>
-    <file>icons/disable_gray.xpm</file>
-    <file>icons/ok.xpm</file>
     <file>icons/indicator.png</file>
     <file>icons/logbook.png</file>
+    <file>icons/add-fi.png</file>
+    <file>icons/fi-page.png</file>
  </qresource>
  </RCC>

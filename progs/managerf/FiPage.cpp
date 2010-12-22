@@ -33,7 +33,7 @@ FiPage::FiPage(FClass* parent)
       , mPlotSheet(0)
       , mBars(0)
 {
-  mIcon = QIcon(":/icons/chart.xpm");
+  mIcon = QIcon(":/icons/fi-page.png");
   mIconText = tr("FI Details");
   createPage();
 }

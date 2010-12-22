@@ -53,5 +53,5 @@ void ManagerPage::setPageIcon(QListWidgetItem* button)
   button->setText(mIconText);
   button->setTextAlignment(Qt::AlignHCenter);
   button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-  button->setSizeHint(QSize(100, 50));
+  button->setSizeHint(QSize(100, 70));
 }
