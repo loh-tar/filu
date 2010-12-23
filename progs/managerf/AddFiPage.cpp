@@ -312,7 +312,8 @@ void AddFiPage::removeRow()
 
 void AddFiPage::searchFi()
 {
-  emit message(Q_FUNC_INFO, tr("Search FI matched to '") + mSearchField->text() + "'...");
+  QString msg = tr("Search FI at %1 matched to '%2'...");
+  emit message(Q_FUNC_INFO, msg.arg(mProvider).arg(mSearchField->text()));
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
   mScripter->askProvider(mProvider, "fetchFi", parms);
@@ -320,7 +321,8 @@ void AddFiPage::searchFi()
 
 void AddFiPage::searchIdx()
 {
-  emit message(Q_FUNC_INFO, tr("Search Index matched to '") + mSearchField->text() + "'...");
+  QString msg = tr("Search Components at %1 for '%2'...");
+  emit message(Q_FUNC_INFO, msg.arg(mProvider).arg(mSearchField->text()));
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
   mScripter->askProvider(mProvider, "fetchCompList", parms);
