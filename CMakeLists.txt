@@ -11,8 +11,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 # to FiluSource/libs/Filu.conf. Let me know what is the right way.
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-add_subdirectory (libs)
-add_subdirectory (progs)
+# When we use ...
+# set(XDG_APPS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/applications CACHE FILEPATH "Install path for .desktop files")
+# set(ICON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/pixmaps CACHE FILEPATH "Global icon install path")
+# ...will the *.desktop files and icons not found (!?) so we hard code:
+set(XDG_APPS_INSTALL_DIR /usr/share/applications CACHE FILEPATH "Install path for .desktop files")
+set(ICON_INSTALL_DIR /usr/share/pixmaps CACHE FILEPATH "Global icon install path")
+
+add_subdirectory(libs)
+add_subdirectory(progs)
 
 # Install user default files
 set(USERFILES_FILES ${FiluRoot_SOURCE_DIR}/userfiles/)

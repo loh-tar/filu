@@ -1,0 +1,15 @@
+[Desktop Entry]
+Categories=Office;Finance;Applications;Qt;
+Comment[en_US]=
+Comment=
+Exec=performerf
+GenericName[en_US]=The Filu Chart Tool
+GenericName=The Filu Chart Tool
+Icon=/usr/share/pixmaps/filu-performerf.png
+MimeType=
+Name[en_US]=PerformerF
+Name=PerformerF
+StartupNotify=true
+Terminal=false
+Type=Application
+Version=1.0

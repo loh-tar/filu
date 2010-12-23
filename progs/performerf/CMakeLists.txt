@@ -31,3 +31,6 @@ target_link_libraries(performerf Filu ${QT_LIBRARIES})
 install(TARGETS performerf
         RUNTIME DESTINATION bin
 )
+
+install(FILES filu-performerf.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
+install(FILES filu-performerf.png DESTINATION ${ICON_INSTALL_DIR})

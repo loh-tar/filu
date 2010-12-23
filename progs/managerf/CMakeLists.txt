@@ -43,3 +43,6 @@ target_link_libraries(managerf Filu ${QT_LIBRARIES})
 install(TARGETS managerf
         RUNTIME DESTINATION bin
 )
+
+install(FILES filu-managerf.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
+install(FILES filu-managerf.png DESTINATION ${ICON_INSTALL_DIR})

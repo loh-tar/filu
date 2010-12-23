@@ -1,0 +1,15 @@
+[Desktop Entry]
+Categories=Office;Finance;Applications;Qt;
+Comment[en_US]=
+Comment=
+Exec=managerf
+GenericName[en_US]=The Filu Manager
+GenericName=The Filu Manager
+Icon=/usr/share/pixmaps/filu-managerf.png
+MimeType=
+Name[en_US]=ManagerF
+Name=ManagerF
+StartupNotify=true
+Terminal=false
+Type=Application
+Version=1.0
