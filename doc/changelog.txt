@@ -1,3 +1,24 @@
+2010-12-24
+============
+Santa Claus Snapshot
+----------------------
+Brings nice improvements at ManagerF, mostly his AddFiPage. For the list of
+changes go on reading here.
+
+To update from the 2010-12-01 snapshot only compile and install the progs. To be
+sure that the new Yahoo scripts are working take a look at the readme for
+updated Perl dependencies.
+
+
+2010-12-23
+============
+Sundries
+-------
+ - The SearchFields has now a simple history.
+ - Change the icons at ManagerF.
+ - Add system menu entries. Look at 'Office'.
+
+
 2010-12-19
 ============
 Importer
