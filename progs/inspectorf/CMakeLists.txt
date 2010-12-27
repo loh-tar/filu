@@ -5,10 +5,12 @@ set(QT_USE_QTSQL TRUE)
 include(${QT_USE_FILE})
 
 include_directories(${CMAKE_SOURCE_DIR} ${inspectorf_SOURCE_DIR} ${inspectorf_BINARY_DIR})
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/common")
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/database")
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/calc")
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/graphics")
+
+include_directories(${FiluCore_SOURCE_DIR})
+include_directories(${FiluCore_SOURCE_DIR}/calc)
+include_directories(${FiluCore_SOURCE_DIR}/database)
+
+include_directories(${FiluGui_SOURCE_DIR})
 
 set(inspectorf_SRC
     main.cpp
@@ -23,7 +25,7 @@ set(inspectorf_MOCH
 QT4_WRAP_CPP(inspectorf_MOCSRC ${inspectorf_MOCH})
 
 add_executable(inspectorf ${inspectorf_SRC} ${inspectorf_MOCSRC})
-target_link_libraries(inspectorf Filu ${QT_LIBRARIES})
+target_link_libraries(inspectorf FiluCore FiluGui ${QT_LIBRARIES})
 
 install(TARGETS inspectorf
         RUNTIME DESTINATION bin

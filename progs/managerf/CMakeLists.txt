@@ -5,10 +5,12 @@ set(QT_USE_QTSQL TRUE)
 include(${QT_USE_FILE})
 
 include_directories(${CMAKE_SOURCE_DIR} ${managerf_SOURCE_DIR} ${managerf_BINARY_DIR})
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/common")
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/database")
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/calc")
-include_directories( "${FiluRoot_SOURCE_DIR}/libs/graphics")
+
+include_directories(${FiluCore_SOURCE_DIR})
+include_directories(${FiluCore_SOURCE_DIR}/calc)
+include_directories(${FiluCore_SOURCE_DIR}/database)
+
+include_directories(${FiluGui_SOURCE_DIR})
 
 set(managerf_SRC
     AddFiPage.cpp
@@ -38,7 +40,7 @@ add_executable(managerf
                ${managerf_SRC}
                ${managerf_MOCSRC} ${managerf_MOCQRC}
 )
-target_link_libraries(managerf Filu ${QT_LIBRARIES})
+target_link_libraries(managerf FiluCore FiluGui ${QT_LIBRARIES})
 
 install(TARGETS managerf
         RUNTIME DESTINATION bin

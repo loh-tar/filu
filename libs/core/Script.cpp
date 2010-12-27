@@ -18,7 +18,6 @@
 //
 
 #include "Script.h"
-#include "FWidget.h"
 
 Script::Script(FClass* parent)
       : FObject(parent)

@@ -104,12 +104,8 @@ H: add --timeFrame foo, foo= day,week, month or n for any count of days. Then
 
 Libf
 ======
-H: One ugly pitfall is a dependency between calc and graphics and vice versa,
-   witch cause a build error. Solved with the "all in one" library. May be a
-   library design bug or only a make file problem. COType::strToAttributes()
-   is the bad guy
+H: (re)move COType::strToAttributes() from Gui to Core. Maybe move into FTool?
 H: merge Filu.cpp and FiluU.cpp to Filu.cpp
-M: split the lib into GUI and non GUI parts.
 M: new class CmdOptions, see FTool.h
 M: redesign FiGroupWidget signals/slots. use QModelIndex for slots and
    QHash<QString, QString> for signals. (hmm...)
