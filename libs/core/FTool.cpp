@@ -63,6 +63,23 @@ QString FTool::txtToLine(const QString& txt)
   return line;
 }
 
+void FTool::strToAttributes(const QString& str, QHash<QString, QString>& attr)
+{
+  QStringList keyValueList = str.split('\n');
+
+  foreach(QString keyValueStr, keyValueList)
+  {
+    int idx = keyValueStr.indexOf("=");
+    QString name  = keyValueStr.left(idx);
+    QString value = keyValueStr.remove(0, ++idx);
+
+    value.replace("/n", QString('\n'));
+    value.replace("/=", "=");
+    value.replace("//", "/");
+
+    attr.insert(name, value);
+  }
+}
 
 int FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringList& parm)
 {

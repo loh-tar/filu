@@ -104,7 +104,6 @@ H: add --timeFrame foo, foo= day,week, month or n for any count of days. Then
 
 Libf
 ======
-H: (re)move COType::strToAttributes() from Gui to Core. Maybe move into FTool?
 H: merge Filu.cpp and FiluU.cpp to Filu.cpp
 M: new class CmdOptions, see FTool.h
 M: redesign FiGroupWidget signals/slots. use QModelIndex for slots and

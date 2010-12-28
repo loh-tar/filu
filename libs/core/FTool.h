@@ -36,6 +36,11 @@ namespace FTool
 QString       lineToTxt(const QString& line);
 QString       txtToLine(const QString& txt);
 
+// Was native part of COType.
+// Its moved in here because we need it also at CalcWatchDogs which
+// is not part of Gui ==> remove the dependency between Core/Gui.
+void strToAttributes(const QString& str, QHash<QString, QString>& attr);
+
 // A simple command line options handler.
 // Places the parameter to switch cmd into parm.
 // Retruns -1 if cmd not found or the number of cmd arguments

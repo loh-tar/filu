@@ -113,7 +113,7 @@ bool CalcWatchDogs::calc()
     if(!mIns.contains(cot->viewName())) continue;
 
     QHash<QString, QString> attributes;
-    COType::strToAttributes(cot->attributes(), attributes);
+    FTool::strToAttributes(cot->attributes(), attributes);
 
     QString watchRef = attributes.value("WatchRef");
 

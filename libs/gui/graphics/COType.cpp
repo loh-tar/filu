@@ -89,24 +89,6 @@ COType* COType::createNew(const QString& type, IndicatorPainter* painter)
   return newCO;
 }
 
-void  COType::strToAttributes(const QString& str, QHash<QString, QString>& attr)
-{
-  QStringList keyValueList = str.split('\n');
-
-  foreach(QString keyValueStr, keyValueList)
-  {
-    int idx = keyValueStr.indexOf("=");
-    QString name  = keyValueStr.left(idx);
-    QString value = keyValueStr.remove(0, ++idx);
-
-    value.replace("/n", QString('\n'));
-    value.replace("/=", "=");
-    value.replace("//", "/");
-
-    attr.insert(name, value);
-  }
-}
-
 /***********************************************************************
 *
 *   Other Puplic Functions
@@ -558,7 +540,7 @@ void COType::prepare(COTuple* co)
 
   // ...and some included in the parameter field..so extract them
   QHash<QString, QString> keyValue;
-  strToAttributes(co->attributes(), keyValue);
+  FTool::strToAttributes(co->attributes(), keyValue);
 
   //...and add these too
   prepare(keyValue);

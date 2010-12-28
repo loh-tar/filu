@@ -104,7 +104,7 @@ set_target_properties(FiluCore PROPERTIES
     SOVERSION 0.1.0
 )
 
-target_link_libraries(FiluCore FiluGui ${LIBS} ${QT_LIBRARIES})
+target_link_libraries(FiluCore ${LIBS} ${QT_LIBRARIES})
 
 install(TARGETS FiluCore
         LIBRARY DESTINATION lib/Filu

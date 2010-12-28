@@ -63,7 +63,6 @@ class COType : public FObject
     static void     getAllTypes(QStringList& list);
     static COType*  createNew(COTuple* co, IndicatorPainter* painter);
     static COType*  createNew(const QString& type, IndicatorPainter* painter);
-    static void     strToAttributes(const QString& str, QHash<QString, QString>& attr);
 
     void            erase(); // Needed?
     void            setStatus(Status status); // Needed?
