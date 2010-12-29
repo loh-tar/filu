@@ -6,9 +6,6 @@ are be supported. When here in front of a line, or in the description, a minus
 sign appears is these function, or part, probably not implemented. It's more a
 draft, an idea. Maybe not the best idea or meanwhile obsolete.
 
-Indicator, or short indicators, are located by default in
-~/Filu/Indicators.
-
 Indicator files, or short Indicators, are plain text files and be the linchpin
 to got any desired result, if only to paint a line or to do pretty complicated
 trading ideas. Well, the latter need one more file, see
@@ -17,10 +14,20 @@ doc/trading-rule-file-format.txt. Indicators are located by default in
 favourite text editor.
 
 
-Remarks
-=========
+Remarks, Embedded Setting Keys
+================================
 *
-  Lines begin with an asterisk "*" are ignored
+  Lines beginning with an asterisk "*" are ignored by the indicator but will
+  investigate by other program parts. They look here for embedded setting keys.
+  Spaces within the settings line are allowed. After the key follow usually a
+  separator character e.g. a colon ":". The asterisk is part of the key so you
+  can disable a setting temporary when you include a second asterisk or any
+  other character like "-".
+
+*AddToGroup:<foo>[, <bar>...]
+  The indicator will appear in the group <foo> in the indicator picker. If the
+  group not exist will they created. Include so much "*AddToGroup:<foo>" as you
+  like.
 
 
 Reseved Names, Special Variables And Defines
@@ -128,7 +135,7 @@ The command for plot something look like:
 
 -PLOT(BOOLBOARD, <variable>[, <variable2>...][, LABELS])
   Plots a kind of table with dots which indicates if <variableN> is true.
-  When the last parameter is LABELS will at the left side the labels of each
+  When the last parameter is LABELS will at the left side the label of each
   variable plotted.
 
 PLOT(CANDLE, FI())

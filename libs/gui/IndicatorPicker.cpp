@@ -76,16 +76,18 @@ void IndicatorPicker::raiseTree()
     {
       QString line = in.readLine();
       line.remove(" ");
-      if(line.startsWith("*AddToGroup:"))
+      if(line.startsWith("*AddToGroup"))
       {
-        line = line.remove("*AddToGroup:");
-        if(!groups.contains(line))
+        line = line.remove(0, 12); // Remove "*AddToGroup" plus the seperator char e.g. ":"
+        foreach(QString group, line.split(","))
         {
-          QTreeWidgetItem* group = new QTreeWidgetItem(this, QStringList(line));
-          groups.insert(line, group);
-        }
+          if(!groups.contains(group))
+          {
+            groups.insert(group, new QTreeWidgetItem(this, QStringList(group)));
+          }
 
-        new QTreeWidgetItem(groups.value(line), QStringList(files.at(i)));
+          new QTreeWidgetItem(groups.value(group), QStringList(files.at(i)));
+        }
       }
     }
     file.close();

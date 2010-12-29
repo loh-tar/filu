@@ -1,3 +1,10 @@
+2010-12-29
+============
+Indicator
+-----------
+ - *AddToGroup can now take a comma separated list of groups.
+
+
 2010-12-24
 ============
 Santa Claus Snapshot
@@ -13,7 +20,7 @@ updated Perl dependencies.
 2010-12-23
 ============
 Sundries
--------
+----------
  - The SearchFields has now a simple history.
  - Change the icons at ManagerF.
  - Add system menu entries. Look at 'Office'.
