@@ -38,8 +38,9 @@ class FiluU : public Filu
 
     QSqlQuery*  getGroups(int motherId = -1); // -1 returns all groups
     QSqlQuery*  getGMembers(int groupId);
-
+    int         getGroupId(const QString& path);
     void        addToGroup(int group, int fiId);
+    int         addGroup(const QString& path);  // Returns GroupId or error
     void        putGroup(int groupId, const QString& name, int motherId);
 
     COTuple*    getCOs();

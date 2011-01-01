@@ -69,6 +69,8 @@ QSqlQuery* FiluU::getGroups(int motherId /*= -1*/)
 
 QSqlQuery* FiluU::getGMembers(int groupId)
 {
+  if(groupId < 0) return 0;
+
   if(!initQuery("GetGMembers")) return 0;
 
   QSqlQuery* query = mSQLs.value("GetGMembers");
@@ -81,6 +83,30 @@ QSqlQuery* FiluU::getGMembers(int groupId)
   return query;
 }
 
+int FiluU::getGroupId(const QString& path)
+{
+  QStringList groups = path.split("/", QString::SkipEmptyParts);
+
+  int groupId  = 0; // Set to root group
+  foreach(QString group, groups)
+  {
+    QSqlQuery* query = getGroups(groupId);
+    groupId = -1; // Set to not valid
+    while(query->next())
+    {
+      if(query->value(1).toString() == group)
+      {
+        groupId = query->value(0).toInt();
+        break;
+      }
+    }
+
+    if(groupId < 0) break; // Not found
+  }
+
+  return groupId;
+}
+
 void FiluU::addToGroup(int groupId, int fiId)
 {
   if(!initQuery("AddGMember")) return;
@@ -90,6 +116,23 @@ void FiluU::addToGroup(int groupId, int fiId)
   query->bindValue(":groupId", groupId);
   query->bindValue(":fiId", fiId);
   /*int result = */execute(query);
+}
+
+int FiluU::addGroup(const QString& path)
+{
+  // Returns GroupId or error
+  if(!initQuery("AddGroup")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("AddGroup");
+
+  query->bindValue(":groupPath", path);
+
+  int result = execute(query);
+
+  if(result <= eError) return eExecError;
+
+  query->next();
+  return query->value(0).toInt();
 }
 
 void FiluU::putGroup(int groupId, const QString& name, int motherId)
