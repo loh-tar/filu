@@ -350,7 +350,7 @@ bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
   int size = cmd.size();
   for(int i = 0; i < size; ++i)
   {
-    if(cmd.at(i).startsWith('"'))
+    if(cmd.at(i).startsWith("\""))
     {
       QString help = cmd.at(i);
       for(int j = i; j < size; )
@@ -358,9 +358,9 @@ bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
         help.append(" " + cmd.at(j));
         cmd.removeAt(j);
         --size;
-        if(help.endsWith('"')) break;
+        if(help.endsWith("\"")) break;
       }
-      help.remove('"');
+      help.remove("\"");
       cmd[i] = help;
     }
   }
