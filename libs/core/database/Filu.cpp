@@ -193,19 +193,21 @@ void Filu::setDaysToFetchIfNoData(int days)
   mDaysToFetchIfNoData = days;
 }
 
-BarTuple* Filu::getBars(const QString& symbol, const QString& market)
+BarTuple* Filu::getBars(const QString& symbol, const QString& market
+                      , const QString& fromDate/* = "1000-01-01"*/
+                      , const QString& toDate/* = "3000-01-01"*/)
 {
-  // Symbol and market looks like "AAPL" and "NYSE"
+  int retVal;
 
-//  setFiIdBySymbol(symbol);
-//  setMarketIdByName(market);
-  mSymbolCaption = symbol;
-  mMarketName = market;
-  if(!setIdsByNameSettings()) return 0;
+  retVal = setSymbolCaption(symbol);
+  if(retVal < eData) return 0;
 
-  BarTuple* bars = getBars();
+  int fiId = retVal;
 
-  return bars;
+  retVal = setMarketName(market);
+  if(retVal < eData) return 0;
+
+  return getBars(fiId, retVal, fromDate, toDate);
 }
 
 BarTuple* Filu::getBars(int fiId, int marketId
@@ -220,6 +222,43 @@ BarTuple* Filu::getBars(int fiId, int marketId
   query->bindValue(":marketId", marketId);
   query->bindValue(":fromDate", fromDate);
   query->bindValue(":toDate", toDate);
+
+  if(execute(query) < eData) return 0;
+
+  mFiId = fiId;
+  mMarketId = marketId;
+
+  BarTuple* bars = fillQuoteTuple(query);
+
+  return bars;
+}
+
+BarTuple* Filu::getBars(const QString& symbol, const QString& market, int limit)
+{
+  int retVal;
+
+  retVal = setSymbolCaption(symbol);
+  if(retVal < eData) return 0;
+
+  int fiId = retVal;
+
+  retVal = setMarketName(market);
+  if(retVal < eData) return 0;
+
+  return getBars(fiId, retVal, limit);
+}
+
+BarTuple* Filu::getBars(int fiId, int marketId, int limit)
+{
+  if(!limit) return 0;
+
+  if(!initQuery("GetBarsLtd")) return 0;
+
+  QSqlQuery* query = mSQLs.value("GetBarsLtd");
+
+  query->bindValue(":fiId", fiId);
+  query->bindValue(":marketId", marketId);
+  query->bindValue(":limit", limit);
 
   if(execute(query) < eData) return 0;
 
@@ -310,6 +349,18 @@ SymbolTuple* Filu::getSymbols(int fiId)
   mSymbolCaption = "";
   mMarketName    = "";
   mOnlyProviderSymbols = false;
+
+  return getSymbols();
+}
+
+SymbolTuple* Filu::getAllProviderSymbols()
+{
+  mFiId   = 0;
+  mFiType = "";
+  mProviderName  = "";
+  mSymbolCaption = "";
+  mMarketName    = "";
+  mOnlyProviderSymbols = true;
 
   return getSymbols();
 }
@@ -499,32 +550,20 @@ int Filu::getFiType(QStringList& type)
 }
 
 int Filu::getEODBarDateRange(DateRange& dateRange
-                           , int quality
-                           , const QString& symbol/* = 0 */
-                           , const QString& market/* = 0 */)
+                           , int fiId, int marketId, int quality)
 {
   // Get the dates of the first and the last bar stored in Filu.
-  // Function is also useable without symbol/market parameters
-  // but then you have to set marketId and fiId previously.
 
   // If no data in table we want fetch from these date on
   dateRange.insert("first", QDate::currentDate().addDays(mDaysToFetchIfNoData * -1));
   dateRange.insert("last", QDate::currentDate().addDays(mDaysToFetchIfNoData * -1));
 
-  if(!symbol.isEmpty() && !market.isEmpty())
-  {
-    // Function was called with parameters
-    mMarketName = market;
-    mSymbolCaption = symbol;
-    if(!setIdsByNameSettings()) return eError;
-  }
-
   if(!initQuery("GetEODBarDateRange")) return eInitError;
 
   QSqlQuery* query = mSQLs.value("GetEODBarDateRange");
 
-  query->bindValue(":fiId", mFiId);
-  query->bindValue(":marketId", mMarketId);
+  query->bindValue(":fiId", fiId);
+  query->bindValue(":marketId", marketId);
   query->bindValue(":quality", quality);
 
   int result = execute(query);
@@ -801,7 +840,7 @@ int Filu::addMarket(const QString& market
   return 1;
 }
 
-int Filu::addEODBarData(const QStringList* data)
+int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
 {
   // The StringList must at first line contain a header,
   // then follow the data.
@@ -836,8 +875,8 @@ int Filu::addEODBarData(const QStringList* data)
 
   QSqlQuery* query = mSQLs.value("AddBars");
 
-  query->bindValue(":fiId", mFiId);
-  query->bindValue(":marketId", mMarketId);
+  query->bindValue(":fiId", fiId);
+  query->bindValue(":marketId", marketId);
   int barCount = 0;         // Let's count really committed bars
   int sqlExecCounter = 0;   // To compare with commitBlockSize aka 'commitFreq'
   int increment = 1;

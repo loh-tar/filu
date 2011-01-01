@@ -95,7 +95,7 @@ bool AgentF::dateIsNotValid(QString& date)
   if(date == "auto") return false;  // We accept "auto" as valid
   if(QDate::fromString(date, Qt::ISODate).isValid()) return false;
 
-  printError("Wrong date: " + date);
+  printError("Bad date: " + date);
   return true;
 }
 
@@ -119,37 +119,82 @@ void AgentF::addEODBarData(const QStringList& parm)
   //
   // This function update the bars of one defined FI.
   // parm list looks like:
-  // <caller> -this <symbol> <market> <provider> [<fromDate> [<toDate>]]
+  // <caller> this <symbol> <market> <provider> [<fromDate> [<toDate>]]
 
-  //qDebug() << "AgentF::addEODBarData()" << parm;
-  //return;
+  if(parm.size() == 9)
+  {
+    addEODBarDataFull(parm);
+    return;
+  }
 
-  QString fromDate("auto");
-  QString toDate("auto");
-  if(parm.count() > 5) fromDate = parm[5];
+  QStringList parameters = parm; // Parameter list for addEODBarDataFull(...)
+
+  QString fromDate = "auto";
+  QString toDate   = "auto";
+
+  if(parm.size() == 5)
+  {
+    parameters << fromDate << toDate;
+  }
+  else if(parm.size() == 6)
+  {
+    fromDate = parm[5];
+    parameters << toDate;
+  }
+  else
+  {
+    fromDate = parm[5];
+    toDate = parm[6];
+  }
+
   if(dateIsNotValid(fromDate)) return;
-
-  if(parm.count() > 6) toDate = parm[6];
   if(dateIsNotValid(toDate)) return;
 
-  // Because the IDs are don't set, we have to set they now
+  // We need fiId and marketId
   // parm[2]=<symbol>, parm[3]=<market>, parm[4]=<provider>
   SymbolTuple* st = mFilu->searchSymbol(parm[2], parm[3], parm[4]);
   if(!st)
   {
-    printError(QString("Symbol not found: %1, %2, %3").arg(parm[2]).arg(parm[3]).arg(parm[4]));
+    printError(QString("Symbol not found: %1, %2, %3").arg(parm[2], parm[3], parm[4]));
     return;
   }
 
-  delete st; // Not used
+  st->next();
 
-  DateRange dateRange;
+  parameters.append(QString::number(st->fiId()));
+  parameters.append(QString::number(st->marketId()));
+
+  delete st;
+
+  addEODBarDataFull(parameters);
+}
+
+void AgentF::addEODBarDataFull(const QStringList& parm)
+{
+  //
+  // This function update the bars of one defined FI.
+  // parm list looks like:
+  // <caller> this <symbol> <market> <provider> <fromDate> <toDate> <fiId> <marketId>
+  //    0      1      2        3         4          5         6       7        8
+
+  if(parm.size() < 9)
+  {
+    printError("addEODBarDataFull: To less arguments.");
+    return;
+  }
+
+  QString fromDate = parm.at(5);
+  QString toDate   = parm.at(6);
+  int fiId         = parm.at(7).toInt();
+  int marketId     = parm.at(8).toInt();
 
   // Build the parameter list needed by the script
   QStringList parameters;
+
+  DateRange dateRange;
   if(fromDate == "auto")
   {
-    mFilu->getEODBarDateRange(dateRange, Filu::eBronze);
+    mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
     // FIXME: To find out if anything is todo we have to check more smarter.
     //        We have to use the 'offday' table, but its not implemented yet.
     QDate date = dateRange.value("last").addDays(1);
@@ -167,7 +212,7 @@ void AgentF::addEODBarData(const QStringList& parm)
   else
   {
     // 26.2.'10 mFilu->getEODBarDateRange(dateRange, Filu::Approved);
-    mFilu->getEODBarDateRange(dateRange, Filu::eBronze);
+    mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
     // Avoid 'holes' in the data table
     QDate date = QDate::fromString(fromDate, Qt::ISODate);
     if(date > dateRange.value("last")) date = dateRange.value("last").addDays(1);
@@ -200,8 +245,8 @@ void AgentF::addEODBarData(const QStringList& parm)
     return;
   }
 
-  mFilu->addEODBarData(data);
-
+  // Here is the beef...
+  mFilu->addEODBarData(fiId, marketId, data);
   delete data; // No longer needed
 }
 
@@ -211,24 +256,17 @@ void AgentF::updateAllBars(const QStringList& parm)
   // agentf full [<fromDate>] [<toDate>]
 
   QString fromDate("auto");
-  if(parm.count() > 2) fromDate = parm[2];
+  if(parm.size() > 2) fromDate = parm[2];
   if(dateIsNotValid(fromDate)) return;
 
   QString toDate(QDate::currentDate().toString(Qt::ISODate));
-  if(parm.count() > 3) toDate = parm[3];
+  if(parm.size() > 3) toDate = parm[3];
   if(dateIsNotValid(toDate)) return;
 
-  // Get all available provider symbols
-  mFilu->setMarketName("");
-  mFilu->setSymbolCaption("");
-  mFilu->setProviderName("");
-  mFilu->setFiId(0);
-  mFilu->setFiType("");
-  mFilu->setOnlyProviderSymbols(true);
-  SymbolTuple* symbols = mFilu->getSymbols();
+  SymbolTuple* symbols = mFilu->getAllProviderSymbols();
   if(!symbols)
   {
-    printError("No provider symbols found");
+    printError("No provider symbols found.");
     QCoreApplication::exit(1);
     return;
   }
@@ -243,6 +281,8 @@ void AgentF::updateAllBars(const QStringList& parm)
   parameters.append("");
   parameters.append(fromDate);
   parameters.append(toDate);
+  parameters.append("");
+  parameters.append("");
 
   printError("Processing...");
 
@@ -251,6 +291,8 @@ void AgentF::updateAllBars(const QStringList& parm)
     parameters[1] = symbols->caption();
     parameters[2] = symbols->market();
     parameters[3] = symbols->owner();
+    parameters[6] = QString::number(symbols->fiId());
+    parameters[7] = QString::number(symbols->marketId());
 
     // Save the now completed parameter list needed by addEODBarData()
     mCommands.append(parameters);
@@ -282,7 +324,6 @@ void AgentF::addFi(const QStringList& parm)
   fi.setName(parm[2]);
   fi.setType(parm[3]);
 
-
   int i = 4;
   while(symbol->next())
   {
@@ -296,7 +337,6 @@ void AgentF::addFi(const QStringList& parm)
   mFilu->addFiCareful(fi);
 
   check4FiluError("FAIL! FI not added.");
-
 }
 
 bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
@@ -330,6 +370,7 @@ bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
 
 void AgentF::readCommandFile(const QStringList& parm)
 {
+
   // parm list looks like
   // agentf rcf mycommands.txt
 

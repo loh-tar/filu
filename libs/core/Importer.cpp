@@ -849,14 +849,21 @@ void Importer::addEODBar()
     mConsole << endl << "Importer::addEODBar: commit " << mData.value("_EODSymbol")
              << " " << mData.value("_EODMarket") << "..." << flush;
 
-    mFilu->setMarketName(mData.value("_EODMarket"));
+    int marketId = mFilu->setMarketName(mData.value("_EODMarket"));
+    if(marketId < 1)
+    {
+      mConsole << "could not set Market'" << mData.value("_EODMarket") << "', nothing importet." << endl;
+      mPendingData.clear();
+      return;
+    }
 
-    bool ok = false;
-//     for(int i = 0; i < mAllUsedSymbols.size(); ++i)
-//     {
-      ok = mFilu->getFi(mData.value("_EODSymbol"));
-//       if(ok) break;
-//     }
+    int fiId = mFilu->setSymbolCaption(mData.value("_EODSymbol"));
+    if(fiId < 1)
+    {
+      mConsole << "could not set Symbol'" << mData.value("_EODSymbol") << "', nothing importet." << endl;
+      mPendingData.clear();
+      return;
+    }
 
     mToDo.remove("commitEODBars");
     mToDo.remove("eodBarsPending");
@@ -864,19 +871,10 @@ void Importer::addEODBar()
     mData.remove("_EODSymbol");
     mData.remove("_EODMarket");
 
-    if(ok)
-    {
-      mFilu->addEODBarData(&mPendingData);
-      mPendingData.clear();
-      //mConsole << "done." << endl;
-      return;
-    }
-    else
-    {
-      mConsole << "could not set Fi or Market, nothing importet." << endl;
-      mPendingData.clear();
-      return;
-    }
+    mFilu->addEODBarData(fiId, marketId, &mPendingData);
+    mPendingData.clear();
+    //mConsole << "done." << endl;
+    return;
   }
 
   // Save market and symbol to detect if data owner was changing

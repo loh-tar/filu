@@ -94,11 +94,16 @@ class Filu
     void printSettings();
 
     // Get Tuple Functions
-    BarTuple*    getBars(const QString& symbol, const QString& market); // Add from&toDate
+    BarTuple*    getBars(const QString& symbol, const QString& market
+                       , const QString& fromDate = "1000-01-01"
+                       , const QString& toDate = "3000-01-01");
+
     BarTuple*    getBars(int fiId, int marketId
                        , const QString& fromDate = "1000-01-01"
                        , const QString& toDate = "3000-01-01");
 
+    BarTuple*    getBars(const QString& symbol, const QString& market, int limit);
+    BarTuple*    getBars(int fiId, int marketId, int limit);
     BarTuple*    getBars(); // Deprecated
 
     MarketTuple* getMarket();
@@ -109,6 +114,7 @@ class Filu
 
     SymbolTuple* getSymbols();          // getSymbol stuff needs rethinking
     SymbolTuple* getSymbols(int fiId);
+    SymbolTuple* getAllProviderSymbols();
 
     SymbolTuple* searchSymbol(const QString& symbol
                             , const QString& market = ""
@@ -119,9 +125,7 @@ class Filu
     int          getFiType(QStringList& type);
 
     int          getEODBarDateRange(DateRange& dateRange
-                                  , int quality
-                                  , const QString& symbol = 0
-                                  , const QString& market = 0);
+                                  , int fiId, int marketId, int quality);
 
     // Add Functions
     int          addSymbolType(const QString& type
@@ -133,7 +137,7 @@ class Filu
                          , const QString& currency
                          , const QString& currSymbol);
 
-    int          addEODBarData(const QStringList* data);
+    int          addEODBarData(int fiId, int marketId, const QStringList* data);
 
     int          addFiCareful(FiTuple& fi);
     int          addFi(FiTuple& fi);

@@ -62,6 +62,7 @@ class AgentF : public FObject
                                        const QStringList& parameters);
 
     void addEODBarData(const QStringList& parm);
+    void addEODBarDataFull(const QStringList& parm);
     void updateAllBars(const QStringList& parm);
     void addFi(const QStringList& parm);
     bool lineToCommand(const QString& line, QStringList& cmd);
