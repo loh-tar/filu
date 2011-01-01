@@ -78,7 +78,7 @@ void IndicatorPicker::raiseTree()
       line.remove(" ");
       if(line.startsWith("*AddToGroup"))
       {
-        line = line.remove(0, 12); // Remove "*AddToGroup" plus the seperator char e.g. ":"
+        line.remove(0, 12); // Remove "*AddToGroup" plus the seperator char e.g. ":"
         foreach(QString group, line.split(","))
         {
           if(!groups.contains(group))
