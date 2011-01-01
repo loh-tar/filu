@@ -101,6 +101,30 @@ int FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringL
     return parm.size();
 }
 
+int FTool::timeFrame(const QString& frame, bool trueDays/* = false*/)
+{
+  bool ok;
+  int timeFrame = frame.toInt(&ok);
+  if(ok)
+  {
+    if(timeFrame > 0) return timeFrame;
+
+    return -1;
+  }
+
+  int week = 5;
+  if(trueDays) week = 7;
+
+  QString Frame = frame.toUpper();
+
+  if(Frame == "DAY")          timeFrame = 1;
+  else if(Frame == "WEEK")    timeFrame = week;
+  else if(Frame == "MONTH")   timeFrame = week * 4;
+  else if(Frame == "QUARTER") timeFrame = week * 4 * 3;
+  else timeFrame = -1; // Error
+
+  return timeFrame;
+}
 
 void FTool::copyDir(const QString& src, const QString& dest)
 {

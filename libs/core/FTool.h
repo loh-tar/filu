@@ -44,10 +44,14 @@ void strToAttributes(const QString& str, QHash<QString, QString>& attr);
 // A simple command line options handler.
 // Places the parameter to switch cmd into parm.
 // Retruns -1 if cmd not found or the number of cmd arguments
-// FIXME: not used, create an own class with more features
+// FIXME: Create an own class with more features
 int           getParameter( const QStringList& cmdLine
                           , const QString& cmd
                           , QStringList& parm );
+
+// Convert a named time frame to a number or -1 if unknown.
+// When trueDays = true is calculated with week=7 days, if false week=5 days
+int timeFrame(const QString& frame, bool trueDays = false);
 
 // Yes, it copy a whole dir tree
 void          copyDir(const QString& src, const QString& dest);
