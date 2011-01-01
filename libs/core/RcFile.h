@@ -38,6 +38,7 @@ class RcFile : public QSettings
     QPoint        getPT(const QString& key);
     QSize         getSZ(const QString& key);
     QByteArray    getBA(const QString& key);
+    QDate         getDT(const QString& key);
     int           getIT(const QString& key);
     bool          getBL(const QString& key);
     double        getDB(const QString& key);

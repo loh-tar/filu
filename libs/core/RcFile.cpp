@@ -79,7 +79,14 @@ RcFile::~RcFile()
 
 void RcFile::set(const QString& key, const QVariant& val)
 {
-  setValue(key, val);
+  switch(val.type())
+  {
+    case QVariant::Date:
+      setValue(key, val.toDate().toString(Qt::ISODate));
+      break;
+    default:
+      setValue(key, val);
+  }
 }
 
 QString RcFile::getST(const QString& key)
@@ -100,6 +107,11 @@ QSize RcFile::getSZ(const QString& key)
 QByteArray RcFile::getBA(const QString& key)
 {
   return value(key, mDefault.value(key)).toByteArray();
+}
+
+QDate RcFile::getDT(const QString& key)
+{
+  return value(key, mDefault.value(key)).toDate();
 }
 
 int RcFile::getIT(const QString& key)
