@@ -43,6 +43,7 @@ class Indicator : public FClass
 
     QStringList*  useFile(const QString& file);
     QString       viewName();
+    QString       fileName();
 
     bool          useIndicator(const QStringList& indicator);
     void          getIndicator(QStringList& indicator);
@@ -54,6 +55,8 @@ class Indicator : public FClass
     void          ignorePlot(bool ignore = true);
     int           barsNeeded();
     void          getVariableNames(QSet<QString>* list);
+    int           scanFreq(bool trueDays = false);
+    bool          hasScan4();
 
     friend class  CalcType;
     friend class  TALib;
@@ -71,8 +74,9 @@ class Indicator : public FClass
     QStringList          mOrigIndicator;     // Holds the file as it is
     QList<CalcType*>     mCalcCommands;      // Rehashed plot statements, now objects
     QString              mViewName;
-    //QString              mIndicatorFileName; // The currend used indicator
+    QString              mIndicatorFileName; // The currend used indicator
     QString              mIndicatorPath;
+    QString              mScanFreq;
 
     bool                 mIgnorePlot;
     bool                 mParseError;

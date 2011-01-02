@@ -108,7 +108,7 @@ class Filu
 
     MarketTuple* getMarket();
 
-    FiTuple*     getFi(const int fiId);            // Unused
+    FiTuple*     getFi(const int fiId);
     FiTuple*     getFi(const bool fuzzy = false);  // Rename to getFiLike(const QString& foo)
     FiTuple*     getFi(const QString& symbol);     // Rename to getFiBySymbol(...)
 

@@ -22,12 +22,14 @@
 #include "Script.h"
 #include "Importer.h"
 #include "Exporter.h"
+#include "Scanner.h"
 
 AgentF::AgentF(QCoreApplication* app)
       : FObject ("AgentF", app)
       , mScript(0)
       , mImporter(0)
       , mExporter(0)
+      , mScanner(0)
       , mQuit(true)
       , mIamEvil(false)
       , mConsole(stdout)
@@ -45,6 +47,7 @@ AgentF::~AgentF()
   if(mScript)   delete mScript;
   if(mImporter) delete mImporter;
   if(mExporter) delete mExporter;
+  if(mScanner)  delete mScanner;
 }
 
 void AgentF::run()
@@ -248,6 +251,15 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
   // Here is the beef...
   mFilu->addEODBarData(fiId, marketId, data);
   delete data; // No longer needed
+
+  // ...and as dessert check for events
+  if(!mScanner)
+  {
+    mScanner = new Scanner(this);
+    mScanner->autoSetup();
+  }
+
+  mScanner->scanThis(fiId, marketId);
 }
 
 void AgentF::updateAllBars(const QStringList& parm)
@@ -297,6 +309,10 @@ void AgentF::updateAllBars(const QStringList& parm)
     // Save the now completed parameter list needed by addEODBarData()
     mCommands.append(parameters);
   }
+
+  parameters.clear();
+  parameters << "MASTER_CMD" << "MarkScanned";
+  mCommands.append(parameters);
 
   startClones();
   mQuit = false; // Don't quit after all, enter main event loop
@@ -479,6 +495,18 @@ void AgentF::exxport(const QStringList& parm)
   mExporter->exxport(parm2);
 }
 
+void AgentF::scan(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf scan --group all --indi Watchdog
+
+  if(!mScanner) mScanner = new Scanner(this);
+
+  mScanner->exec(parm);
+
+  if(mScanner->hasError()) printError(mScanner->errorText().join("\n"));
+}
+
 void AgentF::addSplit(const QStringList& parm)
 {
   // parm list looks like
@@ -523,6 +551,7 @@ void AgentF::execCmd(const QStringList& parm)
   else if(cmd == "rcf")      readCommandFile(parm);
   else if(cmd == "imp")      import(parm);
   else if(cmd == "exp")      exxport(parm);
+  else if(cmd == "scan")     scan(parm);
   else if(cmd == "addSplit") addSplit(parm);
   else if(cmd == "daemon")   beEvil(parm);
   else if(cmd == "printSettings")
@@ -549,6 +578,10 @@ void AgentF::printUsage()
   qDebug();
   qDebug() << "  agentf full [<fromDate>] [<toDate>]";
   qDebug() << "    agentf full 2001-01-01";
+  qDebug();
+  qDebug() << "  agentf scan <parameter list> (see doc/first-steps.txt)";
+  qDebug() << "    agentf scan --group all --indi MyNewIdea --verbose Info";
+  qDebug() << "    agentf scan --group all --auto --force --timeFrame Quarter";
   qDebug();
   qDebug() << "  agentf addFi <longName> <fiType> <symbol> <market> <symbolType>[<symbol> <market> <symbolType> ...]";
   qDebug() << "    agentf addFi \"Apple Computer\" Stock AAPL NYSE Yahoo ";
@@ -661,6 +694,29 @@ void AgentF::cloneIsReady() // Slot
     printError(feedTxt + "quit");
     clone->write("quit\n");
   }
+
+  check4MasterCMD();
+}
+
+void AgentF::check4MasterCMD()
+{
+  if(mCommands.size() < 1) return;
+  if(mCommands.at(0).at(0) != "MASTER_CMD") return;
+
+  if(mCommands.at(0).at(1) == "MarkScanned")
+  {
+    if(!mScanner) mScanner = new Scanner(this);
+    mScanner->autoSetup();
+    mScanner->mark();
+    delete mScanner;
+    mScanner = 0;
+  }
+  else
+  {
+    printError("check4MasterCMD: Unknown cmd: " + mCommands.at(0).at(1));
+  }
+
+  mCommands.removeAt(0);
 }
 
 void AgentF::cloneHasFinished() // Slot

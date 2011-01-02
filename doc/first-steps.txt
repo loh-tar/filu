@@ -105,6 +105,51 @@ rcf
 Read Command File. The file can contain each command supported by AgentF. Lines
 begin with an asterisk are ignored as usual.
 
+scan
+------
+Yes, it starts a scan. Over the entire database, one or more groups or only one
+FI with one or more scanners. These scanners are indicators with a SCAN4
+variable, see doc/indicator-file-format.txt. There are also more info about some
+things noted below. When the scan has found a FI will it added to the PerformerF
+group 'ScanResults/<today>/<indicatorName>'.
+
+The parameters are leaded by '--' and can given in any order, they are:
+
+group <path>[ <path>...]
+  A list of group paths to scan. When 'all' is given all FIs are scanned.
+
+this <symbol> <market>
+  Scan only this FI.
+
+indi <name>[ <name>...]
+  A list of indicators to use for scanning.
+
+auto
+  Selects all indicators with a ScanFreq Key and take care of its value, so
+  avoids unwanted scans. When you also use '--indi' wi
+
+force
+  Forces '--auto' to scan anyway if needed or not.
+
+timeFrame <name>|<number>
+  The time frame to be scanned. Overwrite the ScanFreq Key of the indicator when
+  '--auto' is used but still respekt if there is a need to be scanned. Use also
+  '--force' to ignore that too.
+
+mark
+  Save the scan date in the settings file ~/.config/Filu.conf.
+
+verbose <levelName>|number
+  Set the verbosity, possible names are Quiet, Info and Max or 0/1/2. The names
+  are not case sensitive.
+
+NOTE: Each time the bars of an FI are be updated a scan will automatic performed
+      with the '--auto' switch. So you normally not have to scan directly except
+for testing purposes or multiuser mode.
+
+  agentf scan --group all --indi MyNewIdea --timeFrame Quarter
+  agentf scan --group all --auto
+
 daemon
 --------
 Is not a daemon as typical known. It is very similar to rcf. He read from stdin

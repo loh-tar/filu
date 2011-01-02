@@ -26,6 +26,7 @@ set(FiluCore_SRC ${FiluCore_SRC}
     Importer.cpp
     Newswire.cpp
     RcFile.cpp
+    Scanner.cpp
     Script.cpp
 )
 set(FiluCore_MOCH ${FiluCore_MOCH}
@@ -38,6 +39,7 @@ set(FiluCore_MOCH ${FiluCore_MOCH}
     #Importer.h
     #Newswire.h
     #RcFile.h
+    #Scanner.h
     Script.h
 )
 include_directories(.)

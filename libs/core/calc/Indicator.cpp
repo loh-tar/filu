@@ -58,7 +58,9 @@ QStringList* Indicator::useFile(const QString& fileName)
   clearErrors();
   mOrigIndicator.clear();
   mAlreadyIncluded->clear();
+  mScanFreq = "Day";
 
+  mIndicatorFileName = fileName;
   mViewName = fileName; // If no VIEWNAME(...) in indicator file
 
   if(!readIndicator(fileName, mIndicator)) return 0;
@@ -74,11 +76,17 @@ QString Indicator::viewName()
   return mViewName;
 }
 
+QString Indicator::fileName()
+{
+  return mIndicatorFileName;
+}
+
 bool Indicator::useIndicator(const QStringList& indicator)
 {
   clearErrors();
   mOrigIndicator.clear();
   mAlreadyIncluded->clear();
+  mScanFreq = "Day";
 
   mIndicator = indicator;
 
@@ -240,6 +248,25 @@ void Indicator::getVariableNames(QSet<QString>* list)
   *list = *mUsedVariables;
 }
 
+int Indicator::scanFreq(bool trueDays/* = false*/)
+{
+  int frame;
+  frame = FTool::timeFrame(mScanFreq, trueDays);
+  if(-1 == frame)
+  {
+    addErrorText(QString("Indicator::scanFreq: ScanFreq of indicator '%1' unknown: %2").arg(fileName(), mScanFreq), eWarning);
+  }
+
+  return frame;
+}
+
+bool Indicator::hasScan4()
+{
+  if(mUsedVariables->contains("SCAN4")) return true;
+
+  return false;
+}
+
 /***********************************************************************
 *
 *                              Private  Stuff
@@ -286,7 +313,19 @@ bool Indicator::parse(QStringList& indicator)
   // Remove all unwanted stuff
   while( i < indicator.size())
   {
-    if(rootFile) mOrigIndicator.append(indicator.at(i));
+    if(rootFile)
+    {
+      QString line = indicator.at(i);
+      mOrigIndicator.append(line);
+
+      line.remove(" ");
+      if(line.startsWith("*ScanFreq"))
+      {
+        line.remove(0, 10); // Remove "*ScanFreq" plus the seperator char e.g. ":"
+        mScanFreq = line;
+        if(mScanFreq.isEmpty()) mScanFreq = "Day";
+      }
+    }
 
     bool remove = false;
 
@@ -610,5 +649,5 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
 
 void  Indicator::readSettings()
 {
-  mIndicatorPath = mRcFile->getST("IndicatorPath");
+  mIndicatorPath = mRcFile->getGlobalST("IndicatorPath");
 }

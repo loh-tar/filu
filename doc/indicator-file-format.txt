@@ -29,6 +29,11 @@ Remarks, Embedded Setting Keys
   group not exist will they created. Include so much "*AddToGroup:<foo>" as you
   like.
 
+*ScanFreq:<frame>
+  <frame> could be Day, Week, Month, Quarter or any positive number. The names
+  are not case sensitive. The indicator will automatic used as scanner. But this
+  need also a declared SCAN4 variable, otherwise an error is thrown.
+
 
 Reseved Names, Special Variables And Defines
 ==============================================
@@ -39,7 +44,8 @@ Reseved Names, Special Variables And Defines
   NOTE: "THIS" is the <fi-alias> of the currend FI.
 
 SCAN4
-  Scanners look for them to force an action
+  The scanner look for them to decide if an event is happen. Each value greater
+  null is an event.
 
     SCAN4 = CROSS(CLOSE, sma200)
     SCAN4 = MUP(foo < bar)

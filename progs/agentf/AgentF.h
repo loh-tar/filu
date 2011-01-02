@@ -20,14 +20,12 @@
 #ifndef AGENTF_HPP
 #define AGENTF_HPP
 
-#include <QtCore>
-
 #include "FObject.h"
 
 class Script;
 class Importer;
 class Exporter;
-
+class Scanner;
 
 /***********************************************************************
 *
@@ -70,22 +68,24 @@ class AgentF : public FObject
     void beEvil(const QStringList& parm);
     void import(const QStringList& parm);
     void exxport(const QStringList& parm);
+    void scan(const QStringList& parm);
     void addSplit(const QStringList& parm);
     void printUsage();
     void printSettings();
     void check4FiluError(const QString message);
     void printError(const QString message);
+    void check4MasterCMD();
 
     Script*            mScript;
     Importer*          mImporter;
     Exporter*          mExporter;
+    Scanner*           mScanner;
     QList<QProcess*>   mClones;
 
     bool               mQuit;
     bool               mIamEvil;   // True if in deamon mode, avoid recursive calls
 
     QList<QStringList> mCommands;  // Holds all prepared commands for assigning to clones
-    //QStringList        mCMD;       // Holds the command line on start up
 
     QTextStream        mConsole;/*(stdout);*/
     QTextStream        mErrConsole;

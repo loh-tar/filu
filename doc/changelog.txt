@@ -1,8 +1,15 @@
-2010-12-29
+2011-01-03
 ============
+AgentF
+--------
+ - New command 'scan'. See doc/first-steps.txt. That replace diggerf.
+ - Each time the bars of an FI are be updated a scan will automatic performed.
+ - Fix: No longer that doubled 'agentf:' when 'full' is running.
+
 Indicator
 -----------
  - *AddToGroup can now take a comma separated list of groups.
+ - New Key *ScanFreq. See doc/indicator-file-format.txt
 
 
 2010-12-24
