@@ -83,7 +83,7 @@ void FTool::strToAttributes(const QString& str, QHash<QString, QString>& attr)
 
 int FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringList& parm)
 {
-  // Place the parameter to the command switch "-foo" into parm
+  // Place the parameter to the command switch "--foo" into parm
 
   int pos = cmdLine.indexOf(cmd);
 
@@ -93,7 +93,7 @@ int FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringL
 
     for(int i = pos + 1; i <= cmdLine.size() - 1; ++i)
     {
-      if(cmdLine.at(i).startsWith('-')) break;
+      if(cmdLine.at(i).startsWith("--")) break;
 
       parm.append(cmdLine.at(i));
     }
