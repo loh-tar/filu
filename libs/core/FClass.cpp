@@ -20,7 +20,8 @@
 #include "FClass.h"
 
 FClass::FClass(const FClass* parent)
-      : mRcFile(parent->mRcFile)
+      : Newswire()
+      , mRcFile(parent->mRcFile)
       , mFilu(parent->mFilu)
       , mDebugLevel(parent->mDebugLevel)
       , mHasError(false)
@@ -28,7 +29,8 @@ FClass::FClass(const FClass* parent)
 {}
 
 FClass::FClass(const QString& connectionName)
-      : mRcFile(new RcFile())
+      : Newswire()
+      , mRcFile(new RcFile())
       , mFilu(new FiluU(connectionName, mRcFile))
       , mHasError(false)
       , mRoot(true)

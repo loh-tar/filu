@@ -24,6 +24,7 @@ set(FiluCore_SRC ${FiluCore_SRC}
     FObject.cpp
     FTool.cpp
     Importer.cpp
+    Newswire.cpp
     RcFile.cpp
     Script.cpp
 )
@@ -35,6 +36,7 @@ set(FiluCore_MOCH ${FiluCore_MOCH}
     #FObject.h
     #FTool.h
     #Importer.h
+    #Newswire.h
     #RcFile.h
     Script.h
 )

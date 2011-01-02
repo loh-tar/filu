@@ -22,6 +22,7 @@
 
 #include <QtCore>
 
+#include "Newswire.h"
 #include "FiluU.h"
 #include "RcFile.h"
 
@@ -31,8 +32,10 @@
 *
 ************************************************************************/
 
-class FClass
+class FClass : public Newswire
 {
+  Q_DECLARE_TR_FUNCTIONS(FClass)
+
   public:
                    FClass(const FClass* parent);
                    FClass(const QString& connectionName);
