@@ -34,12 +34,12 @@ FWidget::FWidget(FWidget* parent)
        , FClass(parent)
 {}
 
-FWidget::FWidget(const QString& connectionName, QWidget* parent)
-       : QWidget(parent)
-       , FClass(connectionName)
-{}
-
 FWidget::FWidget(FMainWindow* parent)
        : QWidget(parent)
        , FClass(parent)
+{}
+
+FWidget::FWidget(const QString& connectionName, QWidget* parent)
+       : QWidget(parent)
+       , FClass(connectionName)
 {}

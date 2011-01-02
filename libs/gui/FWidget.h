@@ -40,6 +40,7 @@ class FMainWindow : public QMainWindow, public FClass
 class FWidget : public QWidget, public FClass
 {
   public:
+              // Here no 'const FFoo' because QWidget don't take const
               FWidget(FClass* parent);
               FWidget(FWidget* parent);
               FWidget(FMainWindow* parent);

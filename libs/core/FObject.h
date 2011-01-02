@@ -31,6 +31,7 @@
 class FObject : public QObject, public FClass
 {
   public:
+              // Here no 'const FFoo' because QObject don't take const
               FObject(FClass* parent);
               FObject(FObject* parent);
               FObject(const QString& connectionName, QObject* parent = 0);

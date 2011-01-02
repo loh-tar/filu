@@ -19,14 +19,13 @@
 
 #include "FClass.h"
 
-FClass::FClass(FClass* parent)
-      : mRcFile(parent->getRcFile())
-      , mFilu(parent->getFilu())
+FClass::FClass(const FClass* parent)
+      : mRcFile(parent->mRcFile)
+      , mFilu(parent->mFilu)
+      , mDebugLevel(parent->mDebugLevel)
       , mHasError(false)
       , mRoot(false)
-{
-  mDebugLevel = mRcFile->getIT("DebugLevel");
-}
+{}
 
 FClass::FClass(const QString& connectionName)
       : mRcFile(new RcFile())
@@ -44,16 +43,6 @@ FClass::~FClass()
     delete mFilu;
     delete mRcFile;
   }
-}
-
-FiluU* FClass::getFilu()
-{
-  return mFilu;
-}
-
-RcFile* FClass::getRcFile()
-{
-  return mRcFile;
 }
 
 void FClass::addErrorText(const QStringList& errorMessage, MsgType type/* = eNotice*/)

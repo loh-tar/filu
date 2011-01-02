@@ -34,7 +34,7 @@
 class FClass
 {
   public:
-                   FClass(FClass* parent);
+                   FClass(const FClass* parent);
                    FClass(const QString& connectionName);
     virtual       ~FClass();
 
@@ -46,10 +46,8 @@ class FClass
       eCritical
     };
 
-    FiluU*         getFilu();
-    RcFile*        getRcFile();
     const QStringList& errorText() const { return mErrorMessage; };
-    bool           hasError() const { return mHasError; };
+    bool               hasError() const { return mHasError; };
 
   protected:
     void           addErrorText(const QStringList& errorMessage, MsgType type = eNotice);
