@@ -593,7 +593,7 @@ void AgentF::startClones()
     //clone->setProcessChannelMode(QProcess::MergedChannels);
     connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
-    clone->start("agentf daemon");
+    clone->start(QCoreApplication::applicationFilePath() + " daemon");
     if(!clone->waitForStarted())
     {
       printError("startClones: Error! Clone not started");
@@ -628,8 +628,8 @@ void AgentF::cloneIsReady() // Slot
 
   if(!clone)
   {
-      printError("cloneIsReady: Curious, no clone found");
-      return; // No more todo
+    printError("cloneIsReady: Curious, no clone found");
+    return; // No more todo
   }
 
   QString text(clone->readAllStandardOutput());
@@ -642,13 +642,14 @@ void AgentF::cloneIsReady() // Slot
 
   if(!text.contains("[READY]")) return;
 
-  QString feedTxt = QString("agentf: Feed clone %1: ").arg(cloneNumber + 1);
+  QString feedTxt = QString("Feed clone %1: ").arg(cloneNumber + 1);
 
   // Feed the clone
   if(mCommands.size() > 0)
   {
     QString cmd = mCommands.at(0).join(" ");
     printError(feedTxt + cmd.toUtf8());
+
     cmd.append("\n");
     clone->write(cmd.toUtf8());
 
