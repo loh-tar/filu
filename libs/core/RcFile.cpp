@@ -18,9 +18,12 @@
 //
 
 #include "RcFile.h"
+#include "Newswire.h"
+#include "FTool.h"
 
-RcFile::RcFile() : QSettings("Filu")
-                 , mConsole(stdout)
+RcFile::RcFile(Newswire* parent)
+      : QSettings("Filu")
+      , mNewswire(parent)
 {
   mDefault.reserve(33);
 
@@ -33,6 +36,7 @@ RcFile::RcFile() : QSettings("Filu")
   mDefault.insert("TradingRulePath",   "TradingRules/");
   mDefault.insert("IndiFilterSetPath", "IndicatorFilterSettings/");
   mDefault.insert("MakeNameNice",      "true");
+  mDefault.insert("VerboseLevel",      "Info");
 
   // Filu stuff
   mDefault.insert("HostName",          "localhost");
@@ -87,53 +91,55 @@ void RcFile::set(const QString& key, const QVariant& val)
     default:
       setValue(key, val);
   }
+
+  mForced.remove(key);
 }
 
 QString RcFile::getST(const QString& key)
 {
-  return value(key, mDefault.value(key)).toString();
+  return getValue(key).toString();
 }
 
 QPoint RcFile::getPT(const QString& key)
 {
-  return value(key, mDefault.value(key)).toPoint();
+  return getValue(key).toPoint();
 }
 
 QSize RcFile::getSZ(const QString& key)
 {
-  return value(key, mDefault.value(key)).toSize();
+  return getValue(key).toSize();
 }
 
 QByteArray RcFile::getBA(const QString& key)
 {
-  return value(key, mDefault.value(key)).toByteArray();
+  return getValue(key).toByteArray();
 }
 
 QDate RcFile::getDT(const QString& key)
 {
-  return value(key, mDefault.value(key)).toDate();
+  return getValue(key).toDate();
 }
 
 int RcFile::getIT(const QString& key)
 {
-  return value(key, mDefault.value(key)).toInt();
+  return getValue(key).toInt();
 }
 
 bool RcFile::getBL(const QString& key)
 {
-  return value(key, mDefault.value(key)).toBool();
+  return getValue(key).toBool();
 }
 
 double RcFile::getDB(const QString& key)
 {
-  return value(key, mDefault.value(key)).toDouble();
+  return getValue(key).toDouble();
 }
 
 QString RcFile::getGlobalST(const QString& key)
 {
   saveGroup();
 
-  QString val = value(key, mDefault.value(key)).toString();
+  QString val = getValue(key).toString();
 
   restoreGroup();
 
@@ -151,6 +157,48 @@ void RcFile::restoreGroup()
   beginGroup(mDefault.value("_SavedGroup").toString());
 }
 
+void RcFile::takeFiluParms(QStringList& cmdLine)
+{
+  mNewswire->setVerboseLevel(FFI_, getST("VerboseLevel"));
+
+  int pos = cmdLine.indexOf("--Filu");
+
+  if(-1 == pos)
+  {
+    mNewswire->setLogFile(getST("LogFile"));
+    return;
+  }
+
+  cmdLine.takeAt(pos); // Remove --Filu
+
+  QString parm;
+  while(pos < cmdLine.size())
+  {
+    if(cmdLine.at(pos).startsWith("--")) break;
+
+    parm.append(cmdLine.takeAt(pos));
+
+    QStringList keyVal = parm.split("=", QString::SkipEmptyParts);
+    if(keyVal.size() < 2) continue;
+
+    mForced.insert(keyVal.at(0), keyVal.at(1));
+    parm.clear();
+  }
+
+  if(mForced.size())
+  {
+    if(mForced.contains("LogFile"))
+      mNewswire->setLogFile(getST("LogFile"));
+
+    if(mForced.contains("VerboseLevel"))
+      mNewswire->setVerboseLevel(FFI_, mForced.value("VerboseLevel").toString());
+
+    QStringList keys = mForced.keys();
+    foreach(QString key, keys)
+      mNewswire->verbose(FFI_, tr("Taken Filu parm: Set  '%1' to '%2'").arg(key).arg(mForced.value(key).toString()), Newswire::eInfo);
+  }
+}
+
 /***********************************************************************
 *
 *                             Protected  Stuff
@@ -162,9 +210,9 @@ void RcFile::checkFiluHome()
 
   // In case of first run is filuHome = ".Filu/"
   // In case of any run is filuHome = "/home/steve/.Filu/"
-  if(!filuHome.startsWith('/') or !QDir().exists(filuHome))
-  {
-    mConsole << "RcFile::checkFiluHome() ..." << endl;
+  if(filuHome.startsWith('/') and QDir().exists(filuHome)) return;
+
+    mNewswire->verbose(FFI_, "Check FiluHome ...", Newswire::eEver);
 
     QString dir;
     if(!filuHome.startsWith('/')) // ".Filu/" ?
@@ -194,24 +242,20 @@ void RcFile::checkFiluHome()
     setFullPath("FiluHome", "IndiFilterSetPath");
     setFullPath("FiluHome", "LogFile");
 
-    mConsole << "RcFile::checkFiluHome() " << tr("...done.") << endl;
+    mNewswire->verbose(FFI_, tr("Check FiluHome...done."), Newswire::eEver);
 
     sync();
-  }
-
 }
 
 bool RcFile::createDir(const QString& d)
 {
-  mConsole << "RcFile::createDir() " + tr("Create... ") + d;;
+  mNewswire->verbose(FFI_, tr("Create... %1").arg(d), Newswire::eEver);
   QDir dir;
   if(!dir.mkpath(d))
   {
-    mConsole << tr(" ...FAIL!") << endl;
+    mNewswire->error(FFI_, tr("FAIL! to create %1").arg(d));
     return false;
   }
-
-  mConsole << endl;
 
   return true;
 }

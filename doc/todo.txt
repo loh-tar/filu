@@ -84,8 +84,6 @@ M: add a split browse table to FI page, editable of course.
 M: add the possibility to define action(scripts) which will executed after an
    event. e.g. a new FI was added: download quotes. Or search for more info
    about the FI on the inet like full name, more symbols etc...
-M: save/restore window position and size
-L: redesign Managerf.cpp from QDialog to QApplicaton
 L: add syntax highlightning to indicator editor
 L: add picker menu for available functions/commands like for TA-LIB. This means
    PLOTFOO, SETFOO, CROSS etc. and, more important, also FiluPower-Indicators
@@ -128,6 +126,8 @@ L: logarithmic Y-Scaling
 
 Indicator
 ===========
+H: fix parsing, MUP() doesn't got operators 'or'/'and'. Since when??? I'm sure
+   that has worked.
 M: change the parsing, split it just after the reading from file into parts
    with the algorithm used at function parsing. Include the original line number
    of the indicator file as first parameter given to CalcFoo to improve error

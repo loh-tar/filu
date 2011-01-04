@@ -18,14 +18,15 @@
 //
 
 #include "ManagerF.h"
+
 //#include "ConfigPage.h"
 #include "FiPage.h"
 #include "IndicatorPage.h"
 #include "AddFiPage.h"
 #include "LogBookPage.h"
 
-ManagerF::ManagerF(const QString connectionName/* = "ManagerF"*/)
-        : FMainWindow(connectionName)
+ManagerF::ManagerF(QApplication& app)
+        : FMainApp("ManagerF", app)
 {
   mPageIcons = new QListWidget;
   mPageIcons->setViewMode(QListView::IconMode);

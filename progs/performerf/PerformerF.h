@@ -32,12 +32,13 @@ class IndiWidgetSimple;
 *
 *
 ************************************************************************/
-class PerformerF : public FMainWindow
+
+class PerformerF : public FMainApp
 {
   Q_OBJECT
 
   public:
-                    PerformerF();
+                    PerformerF(QApplication& app);
     virtual        ~PerformerF();
 
   public slots:

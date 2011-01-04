@@ -34,6 +34,8 @@ class FiluU : public Filu
                 FiluU(const QString& connectionName, RcFile* rcFile);
     virtual    ~FiluU();
 
+    void        openDB();
+
     QSqlQuery*  searchFi(const QString& name, const QString& type);
 
     QSqlQuery*  getGroups(int motherId = -1); // -1 returns all groups

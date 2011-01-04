@@ -22,14 +22,12 @@
 
 #include <QtCore>
 
-#include "FTool.h"
-
-using namespace std;
+class Newswire;
 
 class RcFile : public QSettings
 {
   public:
-                  RcFile();
+                  RcFile(Newswire* parent);
     virtual      ~RcFile();
 
     void set(const QString& key, const QVariant& val);
@@ -47,15 +45,23 @@ class RcFile : public QSettings
 
     void          saveGroup();
     void          restoreGroup();
+    void          takeFiluParms(QStringList& cmdLine);
 
   protected:
+    QVariant      getValue(const QString& key)
+                  {
+                    if(mForced.contains(key)) return mForced.value(key);
+                    else return value(key, mDefault.value(key));
+                  };
+
     void          checkFiluHome();
     bool          createDir(const QString& d);
     void          setFullPath(const QString& path, const QString& key);
 
-    QTextStream   mConsole;/*(stdout);*/
+    Newswire*     mNewswire;
 
     QHash<QString, QVariant>  mDefault;
+    QHash<QString, QVariant>  mForced;
 };
 
 #endif

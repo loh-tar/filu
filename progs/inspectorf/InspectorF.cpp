@@ -22,9 +22,8 @@
 #include "Trader.h"
 #include "BackTester.h"
 
-InspectorF::InspectorF()
-          : QMainWindow()
-          , FClass("InspectorF")
+InspectorF::InspectorF(QApplication& app)
+          : FMainApp("InspectorF", app)
 {
   FWidget* cw = new FWidget(this);
   setCentralWidget(cw);

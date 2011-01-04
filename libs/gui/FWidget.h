@@ -30,22 +30,23 @@
 *
 ************************************************************************/
 
-class FMainWindow : public QMainWindow, public FClass
-{
-  public:
-              FMainWindow(const QString& name);
-    virtual  ~FMainWindow(){}
-};
-
 class FWidget : public QWidget, public FClass
 {
   public:
               // Here no 'const FFoo' because QWidget don't take const
               FWidget(FClass* parent);
               FWidget(FWidget* parent);
-              FWidget(FMainWindow* parent);
-              FWidget(const QString& connectionName, QWidget* parent = 0);
-    virtual  ~FWidget(){}
+    virtual  ~FWidget();
+};
+
+class FMainApp : public QMainWindow, public FClass
+{
+  public:
+              FMainApp(const QString& connectionName, QApplication& app);
+    virtual  ~FMainApp();
+
+  protected:
+    QStringList mCommandLine;
 };
 
 #endif

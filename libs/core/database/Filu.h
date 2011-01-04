@@ -76,6 +76,9 @@ class Filu
       eOnlyNonProvider = 3
     };
 
+    virtual void openDB();
+            void closeDB();
+
     // Set Functions
     void setFiName(const QString& name);   // Deprecated, only at FiPage.cpp:129
     void setFiType(const QString& type);   // Deprecated, only like mFilu->setFiType("");
@@ -225,9 +228,6 @@ class Filu
     QHash<QString, StringSet>   mSqlParmNames; // Holds all parameter names to a sql
 
   private:
-    void        openDB();
-    void        closeDB();
-
     BarTuple*   fillQuoteTuple(QSqlQuery*);
     FiTuple*    fillFiTuple(QSqlQuery*);
 

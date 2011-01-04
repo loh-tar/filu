@@ -42,12 +42,12 @@ class MsgLabel : public QLabel // MessageLabel
 
 };
 
-class ManagerF : public FMainWindow
+class ManagerF : public FMainApp
 {
   Q_OBJECT
 
   public:
-                ManagerF(const QString connectionName = "ManagerF");
+                ManagerF(QApplication& app);
     virtual    ~ManagerF();
 
   public slots:

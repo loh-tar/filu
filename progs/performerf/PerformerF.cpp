@@ -28,8 +28,8 @@
 #include "IndiWidgetSimple.h"
 #include "IndiSetPad.h"
 
-PerformerF::PerformerF()
-          : FMainWindow("PerformerF")
+PerformerF::PerformerF(QApplication& app)
+          : FMainApp("PerformerF", app)
 {
   mWindowTitel = tr("PerformerF - The Filu Chart Tool");
   setWindowTitle(mWindowTitel);

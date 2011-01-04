@@ -19,11 +19,6 @@
 
 #include "FWidget.h"
 
-FMainWindow::FMainWindow(const QString& name)
-           : QMainWindow(0)
-           , FClass(name)
-{}
-
 FWidget::FWidget(FClass* parent)
        : QWidget(0)
        , FClass(parent)
@@ -34,12 +29,17 @@ FWidget::FWidget(FWidget* parent)
        , FClass(parent)
 {}
 
-FWidget::FWidget(FMainWindow* parent)
-       : QWidget(parent)
-       , FClass(parent)
+FWidget::~FWidget()
 {}
 
-FWidget::FWidget(const QString& connectionName, QWidget* parent)
-       : QWidget(parent)
-       , FClass(connectionName)
+FMainApp::FMainApp(const QString& connectionName, QApplication& app)
+        : QMainWindow()
+        , FClass(connectionName)
+{
+  mCommandLine = app.arguments();
+  mRcFile->takeFiluParms(mCommandLine);
+  mFilu->openDB();
+}
+
+FMainApp::~FMainApp()
 {}

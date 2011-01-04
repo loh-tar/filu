@@ -33,14 +33,12 @@ class Scanner;
 *
 ************************************************************************/
 
-using namespace std;
-
-class AgentF : public FObject
+class AgentF : public FCoreApp
 {
   Q_OBJECT
 
   public:
-    AgentF(QCoreApplication* app);
+    AgentF(QCoreApplication& app);
    ~AgentF();
 
     void  execCmd(const QStringList& parm);

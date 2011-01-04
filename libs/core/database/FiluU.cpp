@@ -23,20 +23,25 @@
 
 FiluU::FiluU(const QString& connectionName, RcFile* rcFile)
      : Filu(connectionName, rcFile)
+{}
+
+FiluU::~FiluU()
+{}
+
+void FiluU::openDB()
 {
+  Filu::openDB();
+
   mUserSchema = "user_" + qgetenv("USER");
 
   QString sql("select nspname from pg_namespace where nspname = ':user'");
   sql.replace(":user", mUserSchema);
 
-  QSqlQuery query(QSqlDatabase::database(connectionName));
+  QSqlQuery query(QSqlDatabase::database(mConnectionName));
   query.prepare(sql);
   execute(&query);
   if(query.size() == 0) createTables();
 }
-
-FiluU::~FiluU()
-{}
 
 QSqlQuery* FiluU::searchFi(const QString& name, const QString& type)
 {

@@ -25,8 +25,8 @@ int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
-  InspectorF inspector;
+  InspectorF inspector(app);
   inspector.show();
-  //return inspector.exec();
+
   return app.exec();
 }

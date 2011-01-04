@@ -27,7 +27,6 @@ Filu::Filu(const QString& cn, RcFile* rcFile)
     , mHasError(false)
 {
   mToDate = QDate::currentDate().toString(Qt::ISODate); // In case someone forget to set it...
-  openDB();
 }
 
 Filu::~Filu()
@@ -1321,7 +1320,6 @@ int Filu::getNextId(const QString& schema, const QString& table)
 void Filu::openDB()
 {
   readSettings();
-
   QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", mConnectionName);
   db.setHostName(mRcFile->getST("HostName"));
   db.setPort(mRcFile->getIT("HostPort"));

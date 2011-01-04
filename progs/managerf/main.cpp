@@ -18,6 +18,7 @@
 //
 
 #include <QApplication>
+
 #include "ManagerF.h"
 
 int main(int argc, char* argv[])
@@ -25,7 +26,9 @@ int main(int argc, char* argv[])
   Q_INIT_RESOURCE(icons);
 
   QApplication app(argc, argv);
-  ManagerF managerf;
+
+  ManagerF managerf(app);
   managerf.show();
+
   return app.exec();
 }

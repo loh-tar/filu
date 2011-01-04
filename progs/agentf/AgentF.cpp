@@ -24,8 +24,8 @@
 #include "Exporter.h"
 #include "Scanner.h"
 
-AgentF::AgentF(QCoreApplication* app)
-      : FObject ("AgentF", app)
+AgentF::AgentF(QCoreApplication& app)
+      : FCoreApp("AgentF", app)
       , mScript(0)
       , mImporter(0)
       , mExporter(0)
@@ -37,7 +37,7 @@ AgentF::AgentF(QCoreApplication* app)
 {
   readSettings();
 
-  execCmd(app->arguments());
+  execCmd(mCommandLine);
 
   QTimer::singleShot(500, this, SLOT(run()));
 }

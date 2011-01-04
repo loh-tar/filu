@@ -34,10 +34,20 @@ class FObject : public QObject, public FClass
               // Here no 'const FFoo' because QObject don't take const
               FObject(FClass* parent);
               FObject(FObject* parent);
-              FObject(const QString& connectionName, QObject* parent = 0);
+              FObject(const QString& connectionName, QCoreApplication& app);
     virtual  ~FObject();
 
   protected:
+};
+
+class FCoreApp : public FObject
+{
+  public:
+              FCoreApp(const QString& connectionName, QCoreApplication& app);
+    virtual  ~FCoreApp();
+
+  protected:
+    QStringList mCommandLine;
 };
 
 #endif

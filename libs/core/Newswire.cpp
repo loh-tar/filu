@@ -18,15 +18,58 @@
 //
 
 #include "Newswire.h"
+#include "RcFile.h"
 
-Newswire::Newswire()
-        : mVerboseLevel(eNoVerbose)
+Newswire::Newswire(const QString& connectionName)
+        : mRoot(true)
+        , mVerboseLevel(eNoVerbose)
+        , mErrConsole(new QTextStream(stderr))
+        , mLogFileFile(0)
+        , mLogFile(0)
+        , mRawFuncRegex("\\w+(?=::)")
+        , mConnName(connectionName)
+
+{}
+
+Newswire::Newswire(const Newswire* parent)
+        : mRoot(false)
+        , mVerboseLevel(eNoVerbose)  // Don't parent->mVerboseLevel, or should?
+        , mErrConsole(parent->mErrConsole)
+        , mLogFileFile(0)
+        , mLogFile(0)
+        , mRawFuncRegex("\\w+::\\w+")
 {}
 
 Newswire::~Newswire()
-{}
+{
+  if(isRoot())
+  {
+    delete mErrConsole;
+    if(mLogFileFile) delete mLogFileFile;
+    if(mLogFile) delete mLogFile;
+  }
+}
 
-void Newswire::setVerboseLevel(const NewsType level)
+void Newswire::setLogFile(const QString& path)
+{
+  if(!isRoot()) return;
+  if(mLogFileFile) delete mLogFileFile;
+
+  mLogFileFile = new QFile(path);
+  if(!mLogFileFile->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+  {
+    delete mLogFileFile;
+    mLogFileFile = 0;
+    fatal(FFI_, tr("Can't open log file '%1'").arg(path));
+  }
+  else
+  {
+    mLogFile = new QTextStream(mLogFileFile);
+    verbose(FFI_, tr("Open log file '%1'").arg(path), eMax);
+  }
+}
+
+void Newswire::setVerboseLevel(const VerboseLevel level)
 {
   mVerboseLevel = level;
 }
@@ -34,7 +77,7 @@ void Newswire::setVerboseLevel(const NewsType level)
 void Newswire::setVerboseLevel(const QString& func, const QString& level)
 {
   bool ok;
-  mVerboseLevel = NewsType(level.toInt(&ok));
+  mVerboseLevel = VerboseLevel(level.toInt(&ok));
 
   if(ok and (mVerboseLevel >= eNoVerbose) and (mVerboseLevel <= eMax)) return;
 
@@ -44,51 +87,59 @@ void Newswire::setVerboseLevel(const QString& func, const QString& level)
   else if(levelName == "MAX")  mVerboseLevel = eMax;
   else
   {
-    setError(func, tr("Verbose level unknown: %1").arg(level), eError);
+    error(func, tr("Verbose level unknown: %1").arg(level));
   }
 }
 
-void Newswire::verbose(const QString& func, const QString& txt, const NewsType type/* = eInfo*/)
+void Newswire::errInfo(const QString& func, const QString& txt)
 {
-  if(mVerboseLevel < type) return;
-
-  qDebug() << buildFullText(func, txt);
+  addError(func, txt, eErrInfo);
+  logError(func, txt, "Info ");
 }
 
-void Newswire::setError(const QString& func, const QString& txt, const NewsType type/* = eError*/)
+void Newswire::warning(const QString& func, const QString& txt)
 {
-  mHasError = true;
+  addError(func, txt, eWarning);
+  logError(func, txt, "Warning");
+}
 
-  QString errMsg;
-  if(mVerboseLevel == eMax) errMsg = txt;
-  else errMsg = buildFullText(func, txt);
+void Newswire::error(const QString& func, const QString& txt)
+{
+  addError(func, txt, eError);
+  logError(func, txt, "Error");
+}
 
-  if(!mErrorMessage.contains(errMsg))  mErrorMessage.append(errMsg);
+void Newswire::fatal(const QString& func, const QString& txt)
+{
+  addError(func, txt, eFatal);
+  logError(func, txt, "Fatal");
+}
 
-  if(type == eCritical)
+void Newswire::setError(const QString& func, const QString& txt, const ErrorType type/* = eError*/)
+{
+  switch(type)
   {
-    qDebug() << "*";
-    qDebug() << "*** Critical ***" << errMsg;
-    qDebug() << "*";
-  }
-  else if(type == eError)
-  {
-    qDebug() << "*";
-    qDebug() << "*** Error ***" << errMsg;
-    qDebug() << "*";
-  }
-  else if(mVerboseLevel == eMax)
-  {
-    qDebug() << errMsg;
+    case eErrInfo: errInfo(func, txt); break;
+    case eError:   error(func, txt);   break;
+    case eWarning: warning(func, txt); break;
+    case eFatal:   fatal(func, txt);   break;
+    default:
+      fatal(func, QString("Oops, unknown ErrorType: %1, ErrorText is: %2").arg(type).arg(txt));
   }
 }
 
 void Newswire::removeError(const QString& txt)
 {
-  int exist = mErrorMessage.indexOf(txt);
-  if(exist > -1) mErrorMessage.removeAt(exist);
+  int exist = -1;
+  for(int i = 0; i < mErrors.size(); ++i)
+  {
+    if(mErrors.at(i).text != txt) continue;
+    exist = i;
+  }
 
-  if(mErrorMessage.size() == 0) mHasError = false;
+  if(exist > -1) mErrors.removeAt(exist);
+
+  if(mErrors.size() == 0) mHasError = false;
 }
 /*
 bool Newswire::check4FiluError(const QString& errorMessage)
@@ -106,6 +157,35 @@ bool Newswire::check4FiluError(const QString& errorMessage)
 
 void Newswire::clearErrors()
 {
-  mErrorMessage.clear();
+  mErrors.clear();
   mHasError = false;
-}*/
+}
+*/
+
+void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLevel type/* = eInfo*/)
+{
+  *mErrConsole << rawFunc(func) << " " << txt << endl;
+}
+
+void Newswire::addError(const QString& func, const QString& txt, const ErrorType type)
+{
+  mHasError = true;
+
+  bool exist = false;
+  for(int i = 0; i < mErrors.size(); ++i)
+  {
+    if(mErrors.at(i).text != txt) continue;
+    exist = true;
+  }
+
+  Error error = { rawFunc(func), txt, type };
+
+  mErrors.append(error);
+}
+
+void Newswire::logError(const QString& func, const QString& txt, const QString& type)
+{
+  *mErrConsole << QString("%1 *** %3 *** %2").arg(rawFunc(func), txt, type) << endl;
+
+  if(mLogFile) *mLogFile << QString("%4 *** %3 *** %1 %2").arg(rawFunc(func), txt, type, mConnName) << endl;
+}

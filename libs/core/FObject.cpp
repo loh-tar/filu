@@ -31,11 +31,22 @@ FObject::FObject(FObject* parent)
 
 {}
 
-FObject::FObject(const QString& connectionName, QObject* parent)
-       : QObject(parent)
+FObject::FObject(const QString& connectionName, QCoreApplication& app)
+       : QObject(&app)
        , FClass(connectionName)
 
 {}
 
 FObject::~FObject()
+{}
+
+FCoreApp::FCoreApp(const QString& connectionName, QCoreApplication& app)
+        : FObject(connectionName, app)
+{
+  mCommandLine = app.arguments();
+  mRcFile->takeFiluParms(mCommandLine);
+  mFilu->openDB();
+}
+
+FCoreApp::~FCoreApp()
 {}

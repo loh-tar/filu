@@ -20,17 +20,15 @@
 #include <QApplication>
 
 #include "PerformerF.h"
-//#include "FiluU.h"
 
 int main(int argc, char* argv[])
 {
   //Q_INIT_RESOURCE(icons);
 
   QApplication app(argc, argv);
-  PerformerF performer;
+
+  PerformerF performer(app);
   performer.show();
-//FiluU f("test");
-//f.createTables();
-//f.getCOs();
+
   return app.exec();
 }

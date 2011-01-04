@@ -20,27 +20,26 @@
 #include "FClass.h"
 
 FClass::FClass(const FClass* parent)
-      : Newswire()
+      : Newswire(parent)
       , mRcFile(parent->mRcFile)
       , mFilu(parent->mFilu)
       , mDebugLevel(parent->mDebugLevel)
       , mHasError(false)
-      , mRoot(false)
 {}
 
 FClass::FClass(const QString& connectionName)
-      : Newswire()
-      , mRcFile(new RcFile())
-      , mFilu(new FiluU(connectionName, mRcFile))
+      : Newswire(connectionName)
+      , mRcFile(new RcFile(this))
+      , mFilu(0)
+      , mDebugLevel(mRcFile->getIT("DebugLevel"))
       , mHasError(false)
-      , mRoot(true)
 {
-  mDebugLevel = mRcFile->getIT("DebugLevel");
+  mFilu = new FiluU(connectionName, mRcFile);
 }
 
 FClass::~FClass()
 {
-  if(mRoot)
+  if(isRoot())
   {
     delete mFilu;
     delete mRcFile;

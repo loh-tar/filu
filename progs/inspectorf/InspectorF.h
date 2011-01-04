@@ -20,7 +20,6 @@
 #ifndef INSPECTORF_HPP
 #define INSPECTORF_HPP
 
-//#include "FClass.h"
 #include "FWidget.h"
 
 #include "SqlTableView.h"
@@ -29,7 +28,7 @@
 class Trader;
 class BackTester;
 
-class InspectorF : public QMainWindow, public FClass
+class InspectorF : public FMainApp
 {
   Q_OBJECT
 
@@ -40,7 +39,7 @@ class InspectorF : public QMainWindow, public FClass
   };
 
   public:
-                    InspectorF();
+                    InspectorF(QApplication& app);
     virtual        ~InspectorF();
 
   protected slots:

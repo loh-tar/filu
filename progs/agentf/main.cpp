@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 {
   QCoreApplication app(argc, argv);
 
-  AgentF agentf(&app);
+  AgentF agentf(app);
 
   return app.exec();
 }
