@@ -32,8 +32,6 @@ AgentF::AgentF(QCoreApplication& app)
       , mScanner(0)
       , mQuit(true)
       , mIamEvil(false)
-      , mConsole(stdout)
-      , mErrConsole(stderr)
 {
   readSettings();
 
@@ -61,7 +59,7 @@ void AgentF::run()
 
 void AgentF::quit()
 {
-  mConsole << "agentf: Done\n";
+  verbose(FFI_, "Done", eEver);
   QCoreApplication::exit(0);
 }
 
@@ -69,27 +67,13 @@ void AgentF::check4FiluError(const QString message)
 {
   if(mFilu->hadTrouble())
   {
-    printError(message);
-    printError(mFilu->errorText());
+    error(FFI_, message);
+    error(FFI_, mFilu->errorText());
   }
-}
-
-void AgentF::printError(const QString message)
-{
-  QStringList errLines = message.split("\n");
-  for(int i = 0; i < errLines.size(); ++i)
-    mErrConsole << "agentf: " << errLines.at(i) << endl;
 }
 
 void AgentF::readSettings()
 {
-  mMaxClones   = mRcFile->getIT("MaxClones");
-  mLogFile     = mRcFile->getST("LogFile");
-
-  QString home = QDir::homePath();
-
-  mLogFile.replace("~", home);
-
   if(mRcFile->getIT("DebugLevel")) printSettings();
 }
 
@@ -98,7 +82,7 @@ bool AgentF::dateIsNotValid(QString& date)
   if(date == "auto") return false;  // We accept "auto" as valid
   if(QDate::fromString(date, Qt::ISODate).isValid()) return false;
 
-  printError("Bad date: " + date);
+  error(FFI_, "Bad date: " + date);
   return true;
 }
 
@@ -158,7 +142,7 @@ void AgentF::addEODBarData(const QStringList& parm)
   SymbolTuple* st = mFilu->searchSymbol(parm[2], parm[3], parm[4]);
   if(!st)
   {
-    printError(QString("Symbol not found: %1, %2, %3").arg(parm[2], parm[3], parm[4]));
+    error(FFI_, QString("Symbol not found: %1, %2, %3").arg(parm[2], parm[3], parm[4]));
     return;
   }
 
@@ -182,7 +166,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
   if(parm.size() < 9)
   {
-    printError("addEODBarDataFull: To less arguments.");
+    error(FFI_, "addEODBarDataFull: To less arguments.");
     return;
   }
 
@@ -206,7 +190,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
     if(date > QDate::currentDate())
     {
-      printError("Nothing todo, last bar is up to date: " + date.toString(Qt::ISODate));
+      verbose(FFI_, "Nothing todo, last bar is up to date: " + date.toString(Qt::ISODate), eInfo);
       return;
     }
 
@@ -244,7 +228,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
   if(!data)
   {
-    printError("No data from script");
+    warning(FFI_, "No data from script");
     return;
   }
 
@@ -278,7 +262,7 @@ void AgentF::updateAllBars(const QStringList& parm)
   SymbolTuple* symbols = mFilu->getAllProviderSymbols();
   if(!symbols)
   {
-    printError("No provider symbols found.");
+    warning(FFI_, "No provider symbols found.");
     QCoreApplication::exit(1);
     return;
   }
@@ -296,7 +280,7 @@ void AgentF::updateAllBars(const QStringList& parm)
   parameters.append("");
   parameters.append("");
 
-  printError("Processing...");
+  verbose(FFI_, "Processing...", eInfo);
 
   while (symbols->next())
   {
@@ -325,7 +309,7 @@ void AgentF::addFi(const QStringList& parm)
 
   if(((parm.count() - 4) % 3 > 0) or parm.count() < 7)
   {
-    printError("addFi: Wrong parameter count");
+    error(FFI_, "addFi: Wrong parameter count.");
     return;
   }
 
@@ -392,14 +376,14 @@ void AgentF::readCommandFile(const QStringList& parm)
 
   if(parm.count() != 3)
   {
-    printError("rcf: Wrong parameter count");
+    error(FFI_, "rcf: Wrong parameter count.");
     return;
   }
 
   QFile file(parm[2]);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    printError("rcf: Can't open file: " + parm[2]);
+    error(FFI_, "rcf: Can't open file: " + parm[2]);
     return;
   }
 
@@ -425,11 +409,11 @@ void AgentF::beEvil(const QStringList &/*parm*/) //FIXME: improvemts possible to
 
   mIamEvil = true;
 
+  QTextStream console(stdout);
   QTextStream in(stdin);
   while (!in.atEnd())
   {
-    mConsole << "[READY] (Ctrl+D or \"quit\" for quit)\n";
-    mConsole.flush();
+    console << "[READY] (Ctrl+D or \"quit\" for quit)" << endl;
     QString line = in.readLine();
     QStringList cmd;
     if(!lineToCommand(line, cmd)) continue;
@@ -452,7 +436,7 @@ void AgentF::import(const QStringList& parm)
     file = new QFile(parm[2]);
     if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      printError("imp: Can't open file:" + parm[2]);
+      error(FFI_, "imp: Can't open file: " + parm[2]);
       return;
     }
 
@@ -504,7 +488,7 @@ void AgentF::scan(const QStringList& parm)
 
   mScanner->exec(parm);
 
-  if(mScanner->hasError()) printError(mScanner->errorText().join("\n"));
+  if(mScanner->hasError()) error(FFI_, mScanner->errorText().join("\n"));
 }
 
 void AgentF::addSplit(const QStringList& parm)
@@ -561,75 +545,81 @@ void AgentF::execCmd(const QStringList& parm)
   }
   else
   {
-    printError("Unknown command: " + cmd);
-    printError("Call me without any command for help.");
+    error(FFI_, "Unknown command: " + cmd);
+    errInfo(FFI_, "Call me without any command for help.");
   }
 }
 
 void AgentF::printUsage()
 {
-  qDebug() << "agentf: Hello! I'm part of Filu. Please call me this way:";
-  qDebug();
-  qDebug() << "  agentf <command> [<parameter list>]";
-  qDebug();
-  qDebug() << "  agentf this <symbol> <market> <provider> [<fromDate> [<toDate>]]";
-  qDebug() << "    agentf this AAPL NYSE Yahoo";
-  qDebug() << "    agentf this AAPL NYSE Yahoo 2007-04-01";
-  qDebug();
-  qDebug() << "  agentf full [<fromDate>] [<toDate>]";
-  qDebug() << "    agentf full 2001-01-01";
-  qDebug();
-  qDebug() << "  agentf scan <parameter list> (see doc/first-steps.txt)";
-  qDebug() << "    agentf scan --group all --indi MyNewIdea --verbose Info";
-  qDebug() << "    agentf scan --group all --auto --force --timeFrame Quarter";
-  qDebug();
-  qDebug() << "  agentf addFi <longName> <fiType> <symbol> <market> <symbolType>[<symbol> <market> <symbolType> ...]";
-  qDebug() << "    agentf addFi \"Apple Computer\" Stock AAPL NYSE Yahoo ";
-  qDebug();
-  qDebug() << "  agentf rcf <fileName>";
-  qDebug() << "  agentf imp [<fileName>] (if no fileName is given then will read from stdin)";
-  qDebug() << "  agentf exp <parameter list> (see doc/export-data.txt)";
-  qDebug() << "  agentf addSplit <symbol> <date> <splitPre:Post>";
-  qDebug() << "    agentf addSplit AAPL 2005-02-28 1:2";
-  qDebug();
-  qDebug() << "  agentf daemon";
-  qDebug() << "  agentf printSettings";
-  qDebug();
+  print("Hello! I'm part of Filu. Please call me this way:");
+  print("");
+  print("  agentf <command> [<parameter list>]");
+  print("");
+  print("  agentf this <symbol> <market> <provider> [<fromDate> [<toDate>]]");
+  print("    agentf this AAPL NYSE Yahoo");
+  print("    agentf this AAPL NYSE Yahoo 2007-04-01");
+  print("");
+  print("  agentf full [<fromDate>] [<toDate>]");
+  print("    agentf full 2001-01-01");
+  print("");
+  print("  agentf scan <parameter list> (see doc/first-steps.txt)");
+  print("    agentf scan --group all --indi MyNewIdea --verbose Info");
+  print("    agentf scan --group all --auto --force --timeFrame Quarter");
+  print("");
+  print("  agentf addFi <longName> <fiType> <symbol> <market> <symbolType>[<symbol> <market> <symbolType> ...]");
+  print("    agentf addFi \"Apple Computer\" Stock AAPL NYSE Yahoo ");
+  print("");
+  print("  agentf rcf <fileName>");
+  print("  agentf imp [<fileName>] (if no fileName is given then will read from stdin)");
+  print("  agentf exp <parameter list> (see doc/export-data.txt)");
+  print("  agentf addSplit <symbol> <date> <splitPre:Post>");
+  print("    agentf addSplit AAPL 2005-02-28 1:2");
+  print("");
+  print("  agentf daemon");
+  print("  agentf printSettings");
+  print("");
 }
 
 void AgentF::printSettings()
 {
-  mConsole << "AgentF::printSettings: ..."  << endl;
-  mConsole << "Settings file\t= "       << mRcFile->fileName() << endl;
-  mConsole << "Fallback file\t= /etc/xdg/Filu.conf" << endl; //FIXME: how to make system independent?
-  mConsole << "ProviderPath\t= "        << mRcFile->getST("ProviderPath") << endl;
-  mConsole << "MaxClones\t= "           << mMaxClones /*mRcFile->getIT("MaxClones")*/ << endl;
-  mConsole << "DebugLevel\t= "          << mRcFile->getIT("DebugLevel") << endl;
-  mConsole << "LogFile  \t= "           << mLogFile /*mRcFile->getST("LogFile")*/ << endl;
+  QString txt = "%1 = %2";
+  int width = -15; // Negative value = left-aligned
+  print("AgentF settings are:");
+  print(txt.arg("Settings file", width).arg(mRcFile->fileName()));
+  print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf")); //FIXME: how to make system independent?
+  print(txt.arg("ProviderPath", width).arg(mRcFile->getST("ProviderPath")));
+  print(txt.arg("MaxClones", width).arg(mRcFile->getIT("MaxClones")));
+  print(txt.arg("DebugLevel", width).arg(mRcFile->getIT("DebugLevel")));
+  print(txt.arg("LogFile", width).arg(mRcFile->getST("LogFile")));
 
   mFilu->printSettings();
 }
 
 void AgentF::startClones()
 {
-  if(mCommands.size() < mMaxClones)
+  int maxClones = mRcFile->getIT("MaxClones");
+
+  if(mCommands.size() < maxClones)
   {
     // Don't create more clones as useful
-    mMaxClones = mCommands.size();
+    maxClones = mCommands.size();
   }
 
-  for(int i = 0; i < mMaxClones; ++i)
+  QString logFile = mRcFile->getST("LogFile");
+
+  for(int i = 0; i < maxClones; ++i)
   {
     QProcess* clone = new QProcess;
     clone->setReadChannel(QProcess::StandardOutput);
-    clone->setStandardErrorFile(mLogFile, QIODevice::Append);
+    clone->setStandardErrorFile(logFile, QIODevice::Append);
     //clone->setProcessChannelMode(QProcess::MergedChannels);
     connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
     clone->start(QCoreApplication::applicationFilePath() + " daemon");
     if(!clone->waitForStarted())
     {
-      printError("startClones: Error! Clone not started");
+      error(FFI_, "Clone not started.");
       clone->kill();
       delete clone;
       QCoreApplication::exit(1);
@@ -637,7 +627,7 @@ void AgentF::startClones()
     }
 
     mClones.append(clone);
-    printError(QString("Clone %1 started").arg(i + 1));
+    verbose(FFI_, QString("Clone %1 started").arg(i + 1), eInfo);
     //qDebug() << QCoreApplication::hasPendingEvents (); always true, I give up :-(
     //QCoreApplication::flush();// Do not take effect
     //QCoreApplication::sendPostedEvents();// Do not take effect
@@ -661,17 +651,12 @@ void AgentF::cloneIsReady() // Slot
 
   if(!clone)
   {
-    printError("cloneIsReady: Curious, no clone found");
+    error(FFI_, "cloneIsReady: Curious, no clone found.");
     return; // No more todo
   }
 
   QString text(clone->readAllStandardOutput());
   //qDebug() << "AgentF::cloneIsReady: text :" << text;
-
-  if(text.contains("agentf: Done"))
-  {
-    return;
-  }
 
   if(!text.contains("[READY]")) return;
 
@@ -681,7 +666,7 @@ void AgentF::cloneIsReady() // Slot
   if(mCommands.size() > 0)
   {
     QString cmd = mCommands.at(0).join(" ");
-    printError(feedTxt + cmd.toUtf8());
+    verbose(FFI_, feedTxt + cmd.toUtf8(), eInfo);
 
     cmd.append("\n");
     clone->write(cmd.toUtf8());
@@ -691,7 +676,7 @@ void AgentF::cloneIsReady() // Slot
   else
   {
     // Clean up and exit
-    printError(feedTxt + "quit");
+    verbose(FFI_, feedTxt + "quit");
     clone->write("quit\n");
   }
 
@@ -713,7 +698,7 @@ void AgentF::check4MasterCMD()
   }
   else
   {
-    printError("check4MasterCMD: Unknown cmd: " + mCommands.at(0).at(1));
+    error(FFI_, "Unknown MasterCMD: " + mCommands.at(0).at(1));
   }
 
   mCommands.removeAt(0);
