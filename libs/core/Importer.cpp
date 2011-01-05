@@ -498,7 +498,7 @@ void Importer::prepare()
       continue;
     }
 
-    qDebug() << "Importer::prepare: Oops?! What's that? :" << rawKey;
+    fatal(FFI_, "Oops?! What's that? :" + rawKey);
 
   }
   //qDebug() << "Importer::prepare:" <<  mTotalSymbolCount << "symbols total used";

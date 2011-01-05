@@ -88,7 +88,7 @@ bool CalcCross::calc()
     }
     else
     {
-      qDebug() << "CalcCross::calc: oops!?!? unknown variable-1 found, should never heappens" << operand1;
+      fatal(FFI_, QString("Oops!?!? Unknown variable-1 '%1' found, should never heappens.").arg(operand1));
       return false;
     }
   }
@@ -107,7 +107,7 @@ bool CalcCross::calc()
     }
     else
     {
-      qDebug() << "CalcCross::calc: oops!?!? unknown variable-2 not found, should never heappens" << operand2;
+      fatal(FFI_, QString("Oops!?!? Unknown variable-2 '%1' found, should never heappens.").arg(operand2));
       return false;
     }
   }

@@ -63,16 +63,15 @@ void IndicatorPicker::raiseTree()
     new QTreeWidgetItem(top, QStringList(files.at(i)));
 
     QFile file(mIndicatorPath + files.at(i));
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      qDebug() << "IndicatorPicker::raiseTree: can't open indicator file:"
-               << files.at(i);
+      fatal(FFI_, tr("Can't open indicator file: %1").arg(files.at(i)));
       continue;
     }
 
     // Read the indicator
     QTextStream in(&file);
-    while (!in.atEnd())
+    while(!in.atEnd())
     {
       QString line = in.readLine();
       line.remove(" ");

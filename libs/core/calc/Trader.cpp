@@ -65,7 +65,7 @@ bool Trader::useRuleFile(const QString& fileName)
     mOrigRule.append(fileStream.readLine());
   }
 
-  qDebug() << "Trader::useRuleFile: read in" << time.elapsed() << "milliseconds";
+  verbose(FFI_, tr("File read in %1 milliseconds.").arg(time.elapsed()));
 
   mAutoLoadIndicator = true;
 
@@ -129,7 +129,7 @@ bool Trader::parseRule()
 
   if(!hasError())
   {
-    qDebug() << "Trader::parseRule: Rule setup in" << time.elapsed() << "milliseconds";
+    verbose(FFI_, tr("Rule setup in %1 milliseconds.").arg(time.elapsed()));
     return true;
   }
 
@@ -161,7 +161,7 @@ bool Trader::nextLine(bool nextBlock/* = false*/)
     return true;
   }
 
-  qDebug() << "Trader::nextLine: ??? you should never read this";
+  fatal(FFI_, "??? you should never read this.");
   return false;
 }
 
@@ -476,7 +476,7 @@ bool Trader::simulate(DataTupleSet* data)
   int fiId, marketId;
   if(!mData->getIDs("THIS", fiId, marketId))
   {
-   qDebug() << "Trader::simulate: No IDs in mData (!?)";
+    fatal(FFI_, "No IDs in mData (!?)");
     return false;
   }
 
@@ -641,11 +641,11 @@ int Trader::simulateNext()
 
   if(!mFi)
   {
-   qDebug() << "Trader::simulateNext: No mFi";
+    fatal(FFI_, "No mFi");
     return 0;
   }
 
-  if(!mFi->next())return 0;
+  if(!mFi->next()) return 0;
 
   //qDebug() << "simsalabim" << mFi->value(2).toString() << mFi->value(3).toString();
 
@@ -656,7 +656,7 @@ int Trader::simulateNext()
 
   if(!bars)
   {
-   qDebug() << "Trader::simulateNext: No bars for:" << mFi->value(2).toString() << mFi->value(3).toString();
+    verbose(FFI_, QString("No bars for: %1, %2").arg(mFi->value(2).toString(), mFi->value(3).toString()), eEver);
     return 2; // Don't break complete simulation
   }
 

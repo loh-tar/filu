@@ -95,12 +95,12 @@ bool CalcMuParser::calc()
     int ret = mParser->calc(result);
     if(ret == 1)
     {
-      qDebug()   << "CalcMuParser::calc: Oops?!? No valid value in mData, should never happens!";
+      fatal(FFI_, "Oops?!? No valid value in mData, should never happens!");
       continue;
     }
     else if(ret == 2)
     {
-      qDebug()   << "CalcMuParser::calc: Bad value from mu::Parser";
+      error(FFI_, "Bad value from mu::Parser");
       continue;
     }
 

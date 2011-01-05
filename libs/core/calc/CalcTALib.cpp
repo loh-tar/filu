@@ -200,7 +200,7 @@ bool CalcTALib::calc()
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    qDebug() << "CalcTALib::calc: TALib returned error code" << retCode;
+    error(FFI_, QString("TALib returned error code %1.").arg(retCode));
     freesParmHolder(parmHolder);
     return false;
   }
@@ -337,7 +337,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
     }
     else if(mInfo.value(key) == "INTEGER")
     {
-        qDebug() << "CalcTALib::calc: oops...'integer' as input is not implemented";
+        fatal(FFI_, "Oops...'integer' as input is not implemented.");
         return false;
     }
   }
@@ -390,7 +390,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
     {
       //TA_Integer* out = mData->valueArray(mOutput.value(key));
       //retCode = TA_SetOutputParamIntegerPtr(*parmHolder, i, out);
-      qDebug() << "CalcTALib::calc: oops...'integer' as output is not implemented";
+      fatal(FFI_, "Oops...'integer' as output is not implemented.");
       return false;
     }
   }
@@ -407,7 +407,7 @@ void CalcTALib::freesParmHolder(TA_ParamHolder* parmHolder)
   if(!retCode == TA_SUCCESS)
   {
     // Error
-    qDebug() << "CalcTALib::freesParmHolder: TALib returned error code: " << retCode;
+    error(FFI_, QString("TALib returned error code %1.").arg(retCode));
   }
 }
 

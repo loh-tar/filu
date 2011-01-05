@@ -117,7 +117,7 @@ void BackTester::run()
 //    qDebug() << "BackTester::run: nach forever mutex";
     if(mNewJob)
     {
-      qDebug() << "BackTester::run: aha, new job";
+      verbose(FFI_, "Aha, new job.");
       mMutex.unlock();
       if(!detectConstants())
       {
@@ -126,7 +126,7 @@ void BackTester::run()
     }
     else if(mRun)
     {
-      qDebug() << "BackTester::run: I go do my job";
+      verbose(FFI_, "I go, do my job.");
       mMutex.unlock();
       if(!backtest())
       {
@@ -140,9 +140,9 @@ void BackTester::run()
     }
     else if(!mRun)
     {
-     qDebug() << "BackTester::run: I go sleep";
+     verbose(FFI_, "I go sleep.");
       mWaitCondition.wait(&mMutex);
-     qDebug() << "BackTester::run: wake up";
+     verbose(FFI_, "Wake Up.");
       mMutex.unlock();
     }
 
@@ -292,7 +292,14 @@ bool BackTester::detectConstants()
     mConst.append(cl);
     mCType.append(eIndicator);
   }
-  qDebug() << "BackTester::detectConstants: constants to change" << mConst;
+
+  if(verboseLevel() >= eInfo)
+  {
+    for(int i = 0; i < mConst.size(); ++i)
+    {
+      verbose(FFI_, QString("Constant to change: %1").arg(mConst.at(i).join(" ")));
+    }
+  }
 
   mLoopsNeeded = 1;
   for(int i = 0; i < mConst.size(); ++i)

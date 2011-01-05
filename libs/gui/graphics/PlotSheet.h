@@ -63,7 +63,6 @@ class PlotSheet : public FWidget
 
   public:
                   PlotSheet(FClass* parent);
-                  PlotSheet(const QString& connectionName, QWidget* parent = 0);
     virtual      ~PlotSheet();
 
     QSize         minimumSizeHint() const;

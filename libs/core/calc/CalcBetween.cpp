@@ -76,7 +76,7 @@ bool CalcBetween::calc()
       }
       else
       {
-        qDebug() << "CalcBetween::calc: oops!?!? unknown variable" << i << "found, should never heappens" << mIns.at(i);
+        fatal(FFI_, QString("Oops!?!? Unknown variable No.%1 '%2' found, should never heappens.").arg(i).arg(mIns.at(i)));
         return false;
       }
     }

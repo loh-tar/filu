@@ -237,10 +237,10 @@ bool CalcFilu::calc()
     {
       if(!query->next())
       {
-        if(mDebugLevel)
-        {
-          qDebug() << "CalcFilu::calc: NOTICE! Data not in sync: EODBarDate=" << mdataDate
-                   << ", IndicatorDate=" << resultDate << ", Now adjusted";
+        if(verboseLevel() >= eInfo)
+        { // Looks so expensive, that's why we check self if verbose or not
+          QString txt = "NOTICE! Data not in sync: EODBarDate=%1, IndicatorDate=%2, Now adjusted.";
+          verbose(FFI_, txt.arg(mdataDate.toString(Qt::ISODate)).arg(resultDate.toString(Qt::ISODate)));
         }
         break;
       }
@@ -255,10 +255,11 @@ bool CalcFilu::calc()
         lastQueryData[i] = query->value(2).toDouble();
         mData->setValue(mOuts.at(i), lastQueryData[i]);
       }
-      if(mDebugLevel)
-      {
-        qDebug() << "CalcFilu::calc:: NOTICE! Data not in sync: EODBarDate=" << mdataDate
-                 << ", IndicatorDate=" << resultDate << ", Now adjusted";
+
+      if(verboseLevel() >= eInfo)
+      { // Looks so expensive, that's why we check self if verbose or not
+        QString txt = "NOTICE! Data not in sync: EODBarDate=%1, IndicatorDate=%2, Now adjusted.";
+        verbose(FFI_, txt.arg(mdataDate.toString(Qt::ISODate)).arg(resultDate.toString(Qt::ISODate)));
       }
       continue;
     }

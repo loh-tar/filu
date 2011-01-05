@@ -28,12 +28,6 @@ PlotSheet::PlotSheet(FClass* parent)
   init();
 }
 
-PlotSheet::PlotSheet(const QString& connectionName, QWidget* parent)
-         : FWidget(connectionName, parent)
-{
-  init();
-}
-
 void PlotSheet::init()
 {
   mMouseEvent.sender = this;
@@ -397,7 +391,7 @@ bool PlotSheet::event(QEvent* event)
         if(!mPainter->mCOInProcess)
         {
           // You should never read this
-         qDebug() << "PlotSheet::event: New chart object type" << mNewCOType << "unknown";
+         fatal(FFI_, QString("New chart object type '%1'unknown").arg(mNewCOType));
         }
         else
         {

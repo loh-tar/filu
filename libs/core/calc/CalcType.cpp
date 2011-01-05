@@ -95,7 +95,7 @@ bool CalcType::addToDataSet(const QString& key)
   if(!mData->append(key)) return false;
   else
   {
-    if(mDebugLevel == 2) qDebug() << "CalcType::addToDataSet: Variable name already exist: " << key;
+    verbose(FFI_, QString("Variable name already exist: %1").arg(key), eMax);
     return true;
   }
 }
