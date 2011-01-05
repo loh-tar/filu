@@ -111,7 +111,7 @@ There should not print any error message but a lot of other stuff. Furthermore
 you have the programs:
   performerf
   managerf
-  diggerf
+  inspectorf
 
 
 2- Customizing

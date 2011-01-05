@@ -285,12 +285,6 @@ ComboBox of the IndiSetPad 'ZoomOutWidget', select a different indicator and
 restart PerformerF.
 
 
-DiggerF
-=========
-The scanner tool. If the variable 'SCAN4' in an indicator is greater null the
-FI will added to the PerformerF group 'ScanResults/<indicatorName>'.
-
-
 InspectorF
 ============
 Is the young and sketchy back tester of Filu with automated substitute of rule
