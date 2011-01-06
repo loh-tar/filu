@@ -1,5 +1,13 @@
 2011-01-06
 ============
+All Progs
+-----------
+ - Take on the command line now the parameter '--Filu key=value [key=value...]'.
+   Whereas 'key' a config file key is. That mean you could overwrite any config
+   setting on the command line. To be on the save side only append these as last
+   parameter, e.g. agentf full 2001-01-01 --Filu DatabaseName=MyNewTestDB
+ - New config setting 'VerboseLevel', see doc/first-steps.txt.
+
 DiggerF
 ---------
  - Rest in peace. Removed from progs.

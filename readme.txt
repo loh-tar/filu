@@ -116,25 +116,7 @@ you have the programs:
 
 2- Customizing
 ================
-If you need different settings as the defaults, you can modify some by create
-a system wide config file /etc/xdg/Filu.conf
-or an user config file ~/.config/Filu.conf
-with contents like these.
-NOTE: DON'T include some remarks as showing below, it's only to docu here!
-
-  [General]
-  SqlPath=/usr/local/lib/Filu/sqls/
-  HostName=localhost
-  HostPort=5432
-  DatabaseName=filu
-  FiluSchema=filu
-  UserName=filu
-  Password=filu           // Yes, of course pw in clear text is not as save
-  CommitBlockSize=500     // Sadly not supported by the Qt4 Postgres driver
-  DaysToFetchIfNoData=365 // Fetch one year from the inet
-  SqlDebugLevel=1         // 0:no extra debug info
-                          // 1:extra after an error
-                          // 2:print each processed sql
+See doc/first-steps.txt, Appendix A - Customizing.
 
 
 3- Further Readings

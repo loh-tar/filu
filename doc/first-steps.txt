@@ -94,6 +94,16 @@ I hope that all Filu programs are self-explanatory. But some things may hidden
 or be known to be improved.
 
 
+All Progs
+===========
+...take on the command line the parameter '--Filu key=value [key=value...]'.
+Where as 'key' a config file key is. That mean you could overwrite any config
+setting on the command line. To be on the save side only append these as last
+parameter, e.g.
+
+  agentf full 2001-01-01 --Filu DatabaseName=MyNewTestDB VerboseLevel=Max
+
+
 AgentF
 ========
 He is like the Swiss knife of Filu. He starts multiple instances to do a big job
@@ -140,8 +150,8 @@ mark
   Save the scan date in the settings file ~/.config/Filu.conf.
 
 verbose <levelName>|number
-  Set the verbosity, possible names are Quiet, Info and Max or 0/1/2. The names
-  are not case sensitive.
+  Set the verbosity, values are the same as for global 'VerboseLevel', see
+  readme.txt, 2- Customizing.
 
 NOTE: Each time the bars of an FI are be updated a scan will automatic performed
       with the '--auto' switch. So you normally not have to scan directly except
@@ -320,3 +330,33 @@ All these trading analyses are very experimental. Suggestions for improvements
 are welcome.
 
 See also doc/trading-rule-file-format.txt.
+
+
+Appendix A - Customizing
+==========================
+If you need different settings as the defaults (listed below), you can modify
+some by create a system wide config file /etc/xdg/Filu.conf or an user config
+file ~/.config/Filu.conf with contents like these.
+
+NOTE: DON'T include some remarks as showing below, it's only to docu here!
+
+  [General]
+  SqlPath=/usr/local/lib/Filu/sqls/
+  HostName=localhost
+  HostPort=5432
+  DatabaseName=filu
+  FiluSchema=filu
+  UserName=filu
+  Password=filu           // Yes, of course pw in clear text is not as save.
+
+  CommitBlockSize=500     // Sadly not supported by the Qt4 Postgres driver
+                          // because of the bug.
+
+  DaysToFetchIfNoData=365 // Fetch one year from the inet.
+
+  SqlDebugLevel=1         // 0:no extra debug info
+                          // 1:extra after an error
+                          // 2:print each processed sql
+
+  VerboseLevel=Info       // Possible values are Quiet, Info and Max or 0/1/2.
+                          // The names are not case sensitive.
