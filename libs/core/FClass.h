@@ -41,7 +41,7 @@ class FClass : public Newswire
     virtual       ~FClass();
 
   protected:
-    bool           check4FiluError(const QString& func, const QString& txt, const ErrorType type = eError);  // True if error
+    bool           check4FiluError(const QString& func, const QString& txt, const MsgType type = eError);  // True if error
 
     RcFile*        mRcFile;
     FiluU*         mFilu;

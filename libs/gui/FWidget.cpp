@@ -37,7 +37,7 @@ FMainApp::FMainApp(const QString& connectionName, QApplication& app)
         , FClass(connectionName)
 {
   mCommandLine = app.arguments();
-  mRcFile->takeFiluParms(mCommandLine);
+  mFiluParms   = mRcFile->takeFiluParms(mCommandLine);
   mFilu->openDB();
 }
 

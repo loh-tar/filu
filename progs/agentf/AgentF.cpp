@@ -607,7 +607,7 @@ void AgentF::startClones()
     //clone->setProcessChannelMode(QProcess::MergedChannels);
     connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
-    clone->start(QCoreApplication::applicationFilePath() + " daemon");
+    clone->start(QCoreApplication::applicationFilePath() + " daemon" + mFiluParms.join(" "));
     if(!clone->waitForStarted())
     {
       error(FFI_, "Clone not started.");

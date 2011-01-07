@@ -44,11 +44,11 @@ FClass::~FClass()
   }
 }
 
-bool FClass::check4FiluError(const QString& func, const QString& txt, const ErrorType type/* = eError*/)
+bool FClass::check4FiluError(const QString& func, const QString& txt, const MsgType type/* = eError*/)
 {
   if(mFilu->hasError())
   {
-    setError(func, txt, type);
+    setMessage(func, txt, type);
     errInfo(func, tr("Filu says..."));
     addErrors(mFilu->errors());
     return true;

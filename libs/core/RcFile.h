@@ -45,7 +45,7 @@ class RcFile : public QSettings
 
     void          saveGroup();
     void          restoreGroup();
-    void          takeFiluParms(QStringList& cmdLine);
+    QStringList   takeFiluParms(QStringList& cmdLine);
 
   protected:
     QVariant      getValue(const QString& key)

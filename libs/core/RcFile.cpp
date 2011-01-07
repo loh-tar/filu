@@ -157,16 +157,18 @@ void RcFile::restoreGroup()
   beginGroup(mDefault.value("_SavedGroup").toString());
 }
 
-void RcFile::takeFiluParms(QStringList& cmdLine)
+QStringList RcFile::takeFiluParms(QStringList& cmdLine)
 {
   mNewswire->setVerboseLevel(FFI_, getST("VerboseLevel"));
+
+  QStringList filuParms;
 
   int pos = cmdLine.indexOf("--Filu");
 
   if(-1 == pos)
   {
     mNewswire->setLogFile(getST("LogFile"));
-    return;
+    return filuParms;
   }
 
   cmdLine.takeAt(pos); // Remove --Filu
@@ -182,6 +184,7 @@ void RcFile::takeFiluParms(QStringList& cmdLine)
     if(keyVal.size() < 2) continue;
 
     mForced.insert(keyVal.at(0), keyVal.at(1));
+    filuParms.append(parm);
     parm.clear();
   }
 
@@ -197,6 +200,8 @@ void RcFile::takeFiluParms(QStringList& cmdLine)
     foreach(QString key, keys)
       mNewswire->verbose(FFI_, tr("Taken Filu parm: Set  '%1' to '%2'").arg(key).arg(mForced.value(key).toString()), Newswire::eInfo);
   }
+
+  return filuParms;
 }
 
 /***********************************************************************
