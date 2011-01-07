@@ -91,7 +91,7 @@ bool PlotSheet::useIndicator(const QString& file)
     return true;
   }
 
-  addErrorText(mPainter->errorText());
+  addErrors(mPainter->errors());
   update();
   return false;
 }
@@ -131,7 +131,7 @@ void PlotSheet::setDateRange(const QDate& fromDate, const QDate& toDate)
 void PlotSheet::paintEvent(QPaintEvent * /*event*/)
 {
   mPainter->paint();
-  addErrorText(mPainter->errorText());
+  addErrors(mPainter->errors());
 
   printError(); // Only if some happend
   return;
@@ -192,7 +192,7 @@ void PlotSheet::printError()
 {
   if(!hasError()) return;
 
-  QString error = errorText().join("\n");
+  QString error = "FIXME:PlotSheet::printError()";//errorText().join("\n");
 
   int x = size().width() / 2;
   int y = size().height() / 2;

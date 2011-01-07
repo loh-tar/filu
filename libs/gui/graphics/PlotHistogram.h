@@ -31,10 +31,8 @@
 class PlotHistogram : public PlotType
 {
   public:
-                  PlotHistogram();
+                  PlotHistogram(Newswire* parent);
     virtual      ~PlotHistogram();
-
-    virtual PlotHistogram* createNew(const QString& type = "");
 
     virtual bool  prepare(QStringList& command, QStringList& plotDataKeys);
     virtual bool  paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);

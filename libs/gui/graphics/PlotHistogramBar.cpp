@@ -19,7 +19,7 @@
 
 #include "PlotHistogramBar.h"
 
-PlotHistogramBar::PlotHistogramBar() : PlotType()
+PlotHistogramBar::PlotHistogramBar(Newswire* parent) : PlotType(parent)
 {
   mType = "HistogramBar";
 }
@@ -27,16 +27,11 @@ PlotHistogramBar::PlotHistogramBar() : PlotType()
 PlotHistogramBar::~PlotHistogramBar()
 {}
 
-PlotHistogramBar* PlotHistogramBar::createNew(const QString &/*type*/)
-{
-  return new PlotHistogramBar;
-}
-
 bool PlotHistogramBar::prepare(QStringList& command, QStringList& plotDataKeys)
 {
   if(command.size() < 2)
   {
-    mErrorMessage.append("PlotHistogramBar::prepare: to less parameter");
+    error(FFI_, tr("To less parameter."));
     return false;
   }
 
@@ -50,7 +45,7 @@ bool PlotHistogramBar::paint(QPaintDevice* sheet, QRect& chartArea,
 {
   if(!data)
   {
-    mErrorMessage.append("PlotHistogramBar::paint: no data");
+    error(FFI_, tr("No data."));
     return false;
   }
 

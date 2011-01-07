@@ -19,12 +19,11 @@
 
 #include "FClass.h"
 
-FClass::FClass(const FClass* parent)
+FClass::FClass(FClass* parent)
       : Newswire(parent)
       , mRcFile(parent->mRcFile)
       , mFilu(parent->mFilu)
       , mDebugLevel(parent->mDebugLevel)
-      , mHasError(false)
 {}
 
 FClass::FClass(const QString& connectionName)
@@ -32,7 +31,6 @@ FClass::FClass(const QString& connectionName)
       , mRcFile(new RcFile(this))
       , mFilu(0)
       , mDebugLevel(mRcFile->getIT("DebugLevel"))
-      , mHasError(false)
 {
   mFilu = new FiluU(connectionName, mRcFile);
 }
@@ -46,53 +44,15 @@ FClass::~FClass()
   }
 }
 
-void FClass::addErrorText(const QStringList& errorMessage, MsgType type/* = eNotice*/)
+bool FClass::check4FiluError(const QString& func, const QString& txt, const ErrorType type/* = eError*/)
 {
-  for(int i = 0; i < errorMessage.size(); i++)
+  if(mFilu->hasError())
   {
-    addErrorText(errorMessage.at(i), type);
-  }
-}
-
-void FClass::addErrorText(const QString& errorMessage, MsgType type/* = eNotice*/)
-{
-  mHasError = true;
-
-  QString errMsg = errorMessage;
-  if(mDebugLevel < 1) errMsg.remove(QRegExp("^\\w+::\\w+: "));
-
-  if(!mErrorMessage.contains(errMsg))
-    mErrorMessage.append(errMsg);
-
-  if((type == eCritical) or (mDebugLevel == 2)) qDebug() << errorMessage;
-}
-
-void FClass::removeErrorText(const QString& errorMessage)
-{
-  QString errMsg = errorMessage;
-  if(mDebugLevel < 1) errMsg.remove(QRegExp("^\\w+::\\w+: "));
-
-  int exist = mErrorMessage.indexOf(errMsg);
-  if(exist > -1) mErrorMessage.removeAt(exist);
-
-  if(mErrorMessage.size() == 0) mHasError = false;
-}
-
-bool FClass::check4FiluError(const QString& errorMessage)
-{
-  if(mFilu->hadTrouble())
-  {
-    addErrorText(errorMessage, eCritical);
-    addErrorText(mFilu->errorText(), eCritical);
-
+    setError(func, txt, type);
+    errInfo(func, tr("Filu says..."));
+    addErrors(mFilu->errors());
     return true;
   }
 
   return false;
-}
-
-void FClass::clearErrors()
-{
-  mErrorMessage.clear();
-  mHasError = false;
 }

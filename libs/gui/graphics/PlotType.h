@@ -22,6 +22,8 @@
 
 #include <QtGui>
 
+#include "Newswire.h"
+
 // #include not class, each derived need these
 #include "DataTupleSet.h"
 #include "Scaler.h"
@@ -32,23 +34,21 @@
 *
 ************************************************************************/
 
-class PlotType
+class PlotType : public Newswire
 {
   public:
-                  PlotType();
+                  PlotType(Newswire* parent);
     virtual      ~PlotType();
 
-    virtual       PlotType* createNew(const QString& type = "");
+                  PlotType* createNew(const QString& type = "");
     virtual bool  prepare(QStringList& command, QStringList& plotDataKeys);
     virtual bool  paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);
 
     QString       getType();
-    const QStringList& errorText() const { return mErrorMessage; };
 
   protected:
     QString       mType;
     QStringList   mCommand;
-    QStringList   mErrorMessage;
 
   private:
     PlotType*     createNewType(const QString& type);

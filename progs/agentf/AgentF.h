@@ -70,7 +70,6 @@ class AgentF : public FCoreApp
     void addSplit(const QStringList& parm);
     void printUsage();
     void printSettings();
-    void check4FiluError(const QString message);
     void printError(const QString message);
     void check4MasterCMD();
 

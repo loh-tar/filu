@@ -40,7 +40,7 @@ class Grip;
 ************************************************************************/
 
 class IndicatorPainter : public FWidget
-{
+{Q_DECLARE_TR_FUNCTIONS(IndicatorPainter)
   public:
          IndicatorPainter(PlotSheet* parent);
         ~IndicatorPainter();

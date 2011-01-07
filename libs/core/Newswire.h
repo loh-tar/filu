@@ -38,7 +38,7 @@ class Newswire
 
   public:
                    Newswire(const QString& connectionName);
-                   Newswire(const Newswire* parent);
+                   Newswire(Newswire* parent);
     virtual       ~Newswire();
 
     enum VerboseLevel
@@ -58,9 +58,19 @@ class Newswire
       eFatal      =  3   // Should *never* happens
     };
 
+    struct Error  // It's a typedef
+    {
+      QString   func;
+      QString   text;
+      ErrorType type;
+    };
+
     void            setVerboseLevel(const VerboseLevel level);
     void            setVerboseLevel(const QString& func, const QString& level);
     VerboseLevel    verboseLevel() { return mVerboseLevel; };
+
+    const QList<Error>& errors() const { return mErrors; };
+    bool                hasError() const { return mHasError; };
 
     friend class RcFile;
 
@@ -70,6 +80,7 @@ class Newswire
     void            verbose(const QString& func, const QString& txt, const VerboseLevel type = eInfo)
                            { if(mVerboseLevel >= type) verboseP(func, txt, type); };
 
+    void            addErrors(const QList<Error>& error);
     void            errInfo(const QString& func, const QString& txt);
     void            warning(const QString& func, const QString& txt);
     void            error(const QString& func, const QString& txt);
@@ -77,10 +88,7 @@ class Newswire
     void            setError(const QString& func, const QString& txt, const ErrorType type);
     void            removeError(const QString& txt);
     bool            isRoot() { return mRoot; };
-
-//     void           addErrorText(const QStringList& errorMessage, MsgType type = eNotice);
-//     bool           check4FiluError(const QString& errMessage);  // True if error
-//     void           clearErrors();
+    void            clearErrors();
 
   private:
                         // P for private
@@ -95,13 +103,6 @@ class Newswire
                       mRawFuncRegex.indexIn(func);
                       return mRawFuncRegex.cap() + ":";
                     };
-
-    struct Error  // it's a typedef
-    {
-      QString   func;
-      QString   text;
-      ErrorType type;
-    };
 
     bool           mRoot;
     VerboseLevel   mVerboseLevel;

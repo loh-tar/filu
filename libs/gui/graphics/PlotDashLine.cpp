@@ -19,7 +19,7 @@
 
 #include "PlotDashLine.h"
 
-PlotDashLine::PlotDashLine() : PlotLine()
+PlotDashLine::PlotDashLine(Newswire* parent) : PlotLine(parent)
 {
   mType = "DashLine";
 
@@ -32,17 +32,12 @@ PlotDashLine::PlotDashLine() : PlotLine()
 PlotDashLine::~PlotDashLine()
 {}
 
-PlotDashLine* PlotDashLine::createNew(const QString &/*type*/)
-{
-  return new PlotDashLine;
-}
-
 bool PlotDashLine::paint(QPaintDevice* sheet, QRect& chartArea,
                      DataTupleSet* data, Scaler* scaler)
 {
   if(!data)
   {
-    mErrorMessage.append("PlotDashLine::paint: no data");
+    error(FFI_, tr("No data."));
     return false;
   }
 

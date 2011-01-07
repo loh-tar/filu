@@ -22,6 +22,7 @@
 
 #include <QtCore>
 #include "muParser.h"
+#include "Newswire.h"
 
 #include "DataTupleSet.h"
 
@@ -31,10 +32,10 @@
 *
 ************************************************************************/
 
-class MyParser
+class MyParser : public Newswire
 {
   public:
-                MyParser();
+                MyParser(Newswire* parent);
     virtual    ~MyParser();
 
     bool        setExp(const QString& expr);
@@ -43,7 +44,6 @@ class MyParser
     void        useData(DataTupleSet* data);
     void        appendUsedVariables(QSet<QString>& variables);
     int         calc(double& result);
-    const QStringList& errorText() const { return mErrorMessage; };
 
   protected:
     QHash<const QString, double>* mVariables;
@@ -52,6 +52,5 @@ class MyParser
     DataTupleSet*   mData;
     QSet<QString>*  mUsedMData; // Holds name of variables to be read from mData
     mu::Parser      mParser;
-    QStringList     mErrorMessage;
 };
 #endif

@@ -23,7 +23,7 @@ CalcMuParser::CalcMuParser(Indicator* parent)
             : CalcType(parent)
 {
   mType   = "muParser";
-  mParser = new MyParser;
+  mParser = new MyParser(this);
 }
 
 CalcMuParser::~CalcMuParser()
@@ -41,7 +41,7 @@ bool CalcMuParser::prepare(CalcParms& parms)
 
   if(!mParser->setExp(exp))
   {
-    addErrorText(mParser->errorText());
+    addErrors(mParser->errors());
     return false;
   }
 
@@ -74,7 +74,7 @@ bool CalcMuParser::calc()
   {
     if(!list.contains(var))
     {
-      addErrorText("CalcMuParser::calc: Variable not found: " + var);
+      error(FFI_, tr("Variable not found: %1").arg(var));
       continue;
     }
     mData->getValidRange(var, outBegIdx, outNbElement);

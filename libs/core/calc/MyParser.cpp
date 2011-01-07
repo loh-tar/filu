@@ -33,7 +33,8 @@ static mu::value_type* MyAddVariable(const mu::char_type */*a_szName*/, void * /
   return &dummy;
 }
 
-MyParser::MyParser()
+MyParser::MyParser(Newswire* parent)
+        : Newswire(parent)
 {
   mParser.DefineOprt("&", &MyAndFunc, 0);
 
@@ -64,18 +65,12 @@ bool MyParser::setExp(const QString& expr)
   }
   catch(mu::Parser::exception_type& e)
   {
-    QString err;
-    mErrorMessage << "MyParser::setExp: Error...";
-    err = "  Message: " + QString(e.GetMsg().data());
-    mErrorMessage << err;
-    err = "  Formula: " + QString(e.GetExpr().data());
-    mErrorMessage << err ;
+    error(FFI_, tr("Message: %1").arg(e.GetMsg().data()));
+    errInfo(FFI_, tr("Formula: %1").arg(e.GetExpr().data()));
+    errInfo(FFI_, tr("Token: %1").arg(e.GetToken().data()));
+    errInfo(FFI_, tr("Position: %1").arg(e.GetPos()));
+    errInfo(FFI_, tr("ErrCode: %1").arg(e.GetCode()));
 
-    qDebug() << "Message:  " << e.GetMsg().data();
-    qDebug() << "Formula:  " << e.GetExpr().data();
-    qDebug() << "Token:    " << e.GetToken().data();
-    qDebug() << "Position: " << e.GetPos();
-    qDebug() << "Errc:     " << e.GetCode();
     return false;
   }
 
@@ -170,18 +165,12 @@ int MyParser::calc(double& result)
   }
   catch(mu::Parser::exception_type& e)
   {
-    QString err;
-    mErrorMessage << "MyParser::calc: Error...";
-    err = "  Message: " + QString(e.GetMsg().data());
-    mErrorMessage << err;
-    err = "  Formula: " + QString(e.GetExpr().data());
-    mErrorMessage << err ;
+    error(FFI_, tr("Message: %1").arg(e.GetMsg().data()));
+    errInfo(FFI_, tr("Formula: %1").arg(e.GetExpr().data()));
+    errInfo(FFI_, tr("Token: %1").arg(e.GetToken().data()));
+    errInfo(FFI_, tr("Position: %1").arg(e.GetPos()));
+    errInfo(FFI_, tr("ErrCode: %1").arg(e.GetCode()));
 
-    qDebug() << "Message:  " << e.GetMsg().data();
-    qDebug() << "Formula:  " << e.GetExpr().data();
-    qDebug() << "Token:    " << e.GetToken().data();
-    qDebug() << "Position: " << e.GetPos();
-    qDebug() << "Errc:     " << e.GetCode();
     return 2;
   }
 

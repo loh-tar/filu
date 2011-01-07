@@ -155,7 +155,7 @@ void LogBookPage::clearLogFile()
   }
   else
   {
-    addErrorText("LogBookPage::clearLogFile: " + tr("Can't remove LogFile"), eCritical);
+    fatal(FFI_, tr("Can't remove LogFile"));
     emit message(Q_FUNC_INFO, tr("Can't remove LogFile"));
   }
 

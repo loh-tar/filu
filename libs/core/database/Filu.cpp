@@ -22,9 +22,9 @@
 #include "RcFile.h"
 
 Filu::Filu(const QString& cn, RcFile* rcFile)
-    : mRcFile(rcFile)
+    : Newswire(cn)
+    , mRcFile(rcFile)
     , mConnectionName(cn)
-    , mHasError(false)
 {
   mToDate = QDate::currentDate().toString(Qt::ISODate); // In case someone forget to set it...
 }
@@ -148,9 +148,9 @@ int Filu::setSymbolCaption(const QString& caption)
     setSqlParm(":fiId", mFiId);
     return mFiId;
   }
-  if(retVal ==  0) addErrorText("Filu::setSymbolCaption: Symbol not found: " + caption);
-  if(retVal == -1) addErrorText("Filu::setSymbolCaption: Symbol associated to different FIs: " + caption);
-  if(retVal == -2) addErrorText("Filu::setSymbolCaption: Symbol is empty.");
+  if(retVal ==  0) error(FFI_, tr("Symbol not found: %1").arg(caption));
+  if(retVal == -1) error(FFI_, tr("Symbol associated to different FIs: %1").arg(caption));
+  if(retVal == -2) error(FFI_, tr("Symbol is empty."));
 
   return (eError + retVal);
 }
@@ -536,7 +536,7 @@ int Filu::getFiType(QStringList& type)
   if(result <= eError)  return eExecError;
   if(result == eNoData)
   {
-    addErrorText("Filu::getFiTypes: No FiTypes found.");
+    error(FFI_, tr("No FiTypes found."));
     return eNoData;
   }
 
@@ -588,7 +588,7 @@ int Filu::getIndicatorNames(QStringList* names, const QString& like /* = "" */)
   if(result <= eError)  return eExecError;
   if(result == eNoData)
   {
-    addErrorText("Filu::getIndicatorNames: No Indicator match: " + like);
+    error(FFI_, tr("No Indicator match: %1").arg(like));
     return eNoData;
   }
 
@@ -614,7 +614,7 @@ int Filu::getIndicatorInfo(KeyVal* info, const QString& name)
   if(result <= eError)  return eExecError;
   if(result == eNoData)
   {
-    addErrorText("Filu::getIndicatorInfo: Indicator not found: " + name);
+    error(FFI_, tr("Indicator not found: %1").arg(name));
     return eNoData;
   }
 
@@ -710,7 +710,7 @@ int Filu::prepareIndicator(const QString& name, const QString& call /* = "" */)
   bool ok = query->prepare(sql);
   if(!ok)
   {
-    addErrorText("Filu::prepareIndicator: Can't prepare indicator: " + name);
+    error(FFI_, tr("Can't prepare indicator: %1").arg(name));
     return eInitError;
   }
 
@@ -778,9 +778,9 @@ int Filu::searchCaption(const QString& table, const QString& caption)
 
   QString errParm = QString(" Table: %1, Caption: %2").arg(table).arg(caption);
 
-  if(retVal ==  0) addErrorText("Filu::searchCaption: Caption not found: " + errParm);
-  if(retVal == -1) addErrorText("Filu::searchCaption: Caption is more than one times in table: " + errParm);
-  if(retVal == -2) addErrorText("Filu::searchCaption: Caption was empty.");
+  if(retVal ==  0) error(FFI_, tr("Caption not found: %1").arg(errParm));
+  if(retVal == -1) error(FFI_, tr("Caption is more than one times in table: %1").arg(errParm));
+  if(retVal == -2) error(FFI_, tr("Caption was empty."));
 
   return (eError + retVal);
 }
@@ -807,7 +807,7 @@ int Filu::addSymbolType(const QString& type
 
   if(retVal >= eData) return retVal;
 
-  if(retVal == -1) addErrorText("Filu::addSymbolType: Type was empty.");
+  if(retVal == -1) error(FFI_, tr("Type was empty."));
 
   return (eError + retVal);
 }
@@ -826,7 +826,7 @@ int Filu::addMarket(const QString& market
 
   if(execute(query) <= eError)
   {
-    addErrorText(QString("Filu::addMarket: Error while add market: %1, %2, %3").arg(market).arg(currency).arg(currSymbol));
+    error(FFI_, tr("Error while add market: %1, %2, %3").arg(market, currency, currSymbol));
     return eExecError;
   }
 
@@ -925,8 +925,8 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
     if(execute(query) <= eError)
     {
       QSqlDatabase::database(mConnectionName).rollback();
-      addErrorText("Filu::addEODBarData: Error while add EODBar with date: " + values[0]);
-      if(barCount) addErrorText("Filu::addEODBarData: " + QString::number(barCount) + " bars previus added without trouble");
+      error(FFI_, tr("Error while add EODBar with date: %1").arg(values[0]));
+      if(barCount) errInfo(FFI_, tr("%1 bars previus added without trouble").arg(barCount));
       return eExecError;
     }
 
@@ -961,14 +961,14 @@ int Filu::addFiCareful(FiTuple& fi)
   fi.rewind(0);
   if(fi.isInvalid())
   {
-    addErrorText("Filu::addFiCareful: FI unvalid.", eCritical); // You should never read this
+    fatal(FFI_, "FI unvalid."); // You should never read this
     return eError;
   }
 
   SymbolTuple* symbol = fi.symbol();
   if(!symbol)
   {
-    addErrorText("Filu::addFiCareful: Can't add FI without Symbol.");
+    error(FFI_, tr("Can't add FI without Symbol."));
     return eError;
   }
 
@@ -984,7 +984,7 @@ int Filu::addFiCareful(FiTuple& fi)
     if(retVal > 0) break;
     if(retVal == -3)
     {
-       addErrorText("Filu::addFiCareful: Error while searching Symbol: " + symbol->caption());
+       error(FFI_, tr("Error while searching Symbol: %1").arg(symbol->caption()));
        return eExecError;
     }
   }
@@ -1012,7 +1012,7 @@ int Filu::addFiCareful(FiTuple& fi)
 
     if(retVal == eNoData)
     {
-      addErrorText("Filu::addFiCareful: No valid symbol to add FI.");
+      error(FFI_, tr("No valid symbol to add FI."));
       return eError;
     }
 
@@ -1051,10 +1051,9 @@ int Filu::addFiCareful(FiTuple& fi)
     ++count;
   }
 
-  if(mHasError and (count > 0))
+  if(hasError() and (count > 0))
   {
-    QString errorText = QString("Filu::addFiCareful: %1 Symbols added without trouble.").arg(count);
-    addErrorText(errorText);
+    errInfo(FFI_, tr("%1 Symbols added without trouble.").arg(count));
   }
 
   return fi.id();
@@ -1105,12 +1104,12 @@ int Filu::addFi(const QString& name
 
   if(name.isEmpty())
   {
-    addErrorText("Filu::addFi: FI Name is empty.");
+    error(FFI_, tr("FI Name is empty."));
     return (eError -2);
   }
   if(type.isEmpty())
   {
-    addErrorText("Filu::addFi: FI Type  is empty.");
+    error(FFI_, tr("FI Type  is empty."));
     return (eError -1);
   }
 
@@ -1134,14 +1133,14 @@ int Filu::addFi(const QString& name
 
   QString errParm = QString(" FI: %1, %2, Symbol: %3, %4, %5").arg(name).arg(type).arg(symbol).arg(market).arg(stype);
 
-  if(retVal == -1) addErrorText("Filu::addFi: Fi Type not valid." + type);
-  if(retVal == -3) addErrorText("Filu::addFi: Fi not known and Symbol was empty." + errParm);
-  if(retVal == -4) addErrorText("Filu::addFi: Symbol Type not valid: " + stype);
-  if(retVal == -5) addErrorText("Filu::addFi: Market not valid: " + market);
-  if(retVal == -6) addErrorText("Filu::addFi: Unique violation." + errParm);
-  if(retVal == -7) addErrorText("Filu::addFi: Symbol was found more than one time and was associated to different FIs" + errParm);
-  if(retVal == -8) addErrorText("Filu::addFi: Foreign Key Violation." + errParm);
-  if(retVal == -9) addErrorText("Filu::addFi: Error, No idea what's wrong." + errParm);
+  if(retVal == -1) error(FFI_, tr("Fi Type not valid: %1").arg(type));
+  if(retVal == -3) error(FFI_, tr("Fi not known and Symbol was empty: %1").arg(errParm));
+  if(retVal == -4) error(FFI_, tr("Symbol Type not valid: %1").arg(stype));
+  if(retVal == -5) error(FFI_, tr("Market not valid: %1").arg(market));
+  if(retVal == -6) error(FFI_, tr("Unique violation: %1").arg(errParm));
+  if(retVal == -7) error(FFI_, tr("Symbol was found more than one time and was associated to different FI: %1").arg(errParm));
+  if(retVal == -8) error(FFI_, tr("Foreign Key Violation: %1").arg(errParm));
+  if(retVal == -9) error(FFI_, tr("Error, No idea what's wrong: %1").arg(errParm));
 
   return (eError + retVal);
 }
@@ -1180,11 +1179,11 @@ int Filu::addSymbol(const QString& symbol
 
   QString errParm = QString(" %1, %2, %3").arg(symbol).arg(market).arg(stype);
 
-  if(retVal ==  0) addErrorText("Filu::addSymbol: Symbol looks good, but got no FiId:" + errParm);
-  if(retVal == -1) addErrorText("Filu::addSymbol: Symbol Type not valid: " + stype);
-  if(retVal == -2) addErrorText("Filu::addSymbol: Market not valid: " + market);
-  if(retVal == -3) addErrorText("Filu::addSymbol: FI has already a Symbol with that Market and Provider: " + errParm);
-  if(retVal == -4) addErrorText("Filu::addSymbol: Foreign Key violation:" + errParm);
+  if(retVal ==  0) error(FFI_, tr("Symbol looks good, but got no FiId: %1").arg(errParm));
+  if(retVal == -1) error(FFI_, tr("Symbol Type not valid: %1").arg(stype));
+  if(retVal == -2) error(FFI_, tr("Market not valid: %1").arg(market));
+  if(retVal == -3) error(FFI_, tr("FI has already a Symbol with that Market and Provider: %1").arg(errParm));
+  if(retVal == -4) error(FFI_, tr("Foreign Key violation: %1").arg(errParm));
 
   return (eError + retVal);
 }
@@ -1216,10 +1215,10 @@ int Filu::addUnderlying(const QString& mother
 
   QString errParm = QString(" Mother: %1, Underlying: %2").arg(mother).arg(symbol);
 
-  if(retVal == -1) addErrorText("Filu::addUnderlying: MotherSymbol not found.");
-  if(retVal == -2) addErrorText("Filu::addUnderlying: MotherSymbol exist more than one times.");
-  if(retVal == -3) addErrorText("Filu::addUnderlying: UnderlyingSymbol not found.");
-  if(retVal == -4) addErrorText("Filu::addUnderlying: UnderlyingSymbol exist more than one times.");
+  if(retVal == -1) error(FFI_, tr("MotherSymbol not found."));
+  if(retVal == -2) error(FFI_, tr("MotherSymbol exist more than one times."));
+  if(retVal == -3) error(FFI_, tr("UnderlyingSymbol not found."));
+  if(retVal == -4) error(FFI_, tr("UnderlyingSymbol exist more than one times."));
 
   return (eError + retVal);
 }
@@ -1250,26 +1249,6 @@ int Filu::addSplit(const QString& symbol
   if(retVal >= eData) return retVal; // (new or existing)SplitId
 
   return (eError + retVal);
-}
-
-bool Filu::hadTrouble()
-{
-  if(mHasError)
-  {
-    mHasError = false;
-    return true;
-  }
-  return false;
-}
-
-QString Filu::errorText()
-{
-  QString txt = mErrorText.join("\n");
-
-  mErrorText.clear();
-  mHasError = false;
-
-  return txt;
 }
 
 QString Filu::getLastQuery()
@@ -1331,8 +1310,8 @@ void Filu::openDB()
   {
     printSettings();
     QSqlError err = db.lastError();
-    addErrorText("Filu::openDB: Error :-(", eCritical);
-    addErrorText(err.databaseText(), eCritical);
+    fatal(FFI_, tr("Can't open DB :-("));
+    errInfo(FFI_, err.databaseText());
   }
   else
   {
@@ -1421,9 +1400,9 @@ bool Filu::initQuery(const QString& name)
   bool ok = query->prepare(sql);
   if(!ok)
   {
-    addErrorText("Filu::initQuery: Can't prepare: " + sql, eCritical);
+    fatal(FFI_, tr("Can't prepare: %1").arg(sql));
     QSqlError err = query->lastError();
-    addErrorText(err.databaseText(), eCritical);
+    errInfo(FFI_, err.databaseText());
 
     return false;
   }
@@ -1439,14 +1418,14 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
   // Build the fulpath to the file where the sql is stored
   QString fileName(mSqlPath);
   fileName.append(name + ".sql");
-
+qDebug() << ":?:" << mSqlPath << fileName << name;
   // Make sure we have no garbage in the statement
   sqlStatement.clear();
 
   QFile file(fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    addErrorText("Filu::readSqlStatement: " + QObject::tr("Can't open file: ") + fileName, eError);
+    error(FFI_, tr("Can't open file: %1").arg(fileName));
     return false;
   }
 
@@ -1491,18 +1470,6 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
   return true;
 }
 
-void Filu::addErrorText(const QString& errorText, int type/* = eNotice*/)
-{
-  mHasError = true;
-
-  QString errTxt = errorText;
-  if(mSqlDebugLevel < 1) errTxt.remove(QRegExp("^\\w+::\\w+: "));
-
-  if(!mErrorText.contains(errorText)) mErrorText.append(errTxt);
-
-  if((type == eCritical) or (mSqlDebugLevel == 2)) qDebug() << errorText;
-}
-
 int Filu::execute(QSqlQuery* query)
 {
   query->exec();
@@ -1510,8 +1477,8 @@ int Filu::execute(QSqlQuery* query)
   // Save the query statement, anyway if error or not
   mLastQuery = query->executedQuery();
   mLastError = query->lastError().databaseText();
-  //mHasError = query->lastError().type();
-  mHasError = !query->isActive();
+  //isError = query->lastError().type();
+  bool isError = !query->isActive();
 
   if(mSqlDebugLevel == 2) // For heavy debuging print each sql
   {
@@ -1545,15 +1512,15 @@ int Filu::execute(QSqlQuery* query)
     qDebug() << "END debug code for qt4.5 bug :-(";
     */
 
-    if(mHasError) return eError;
+    if(isError) return eError;
   }
 
-  if(mHasError)
+  if(isError)
   {
     if(mSqlDebugLevel == 1)
-      addErrorText("Filu::execute: Executed query was:\n" + mLastQuery, eCritical);
+      error(FFI_, tr("Executed query was: %1").arg(mLastQuery));
 
-    addErrorText("Filu::execute: Error text:\n" + mLastError, eCritical);
+    error(FFI_, tr("Error text: %1").arg(mLastError));
     return eError;
   }
 
@@ -1563,7 +1530,7 @@ int Filu::execute(QSqlQuery* query)
     {
       qDebug() << "Filu::execute: Size of Select SQL is -1";
       if(mSqlDebugLevel == 1) qDebug() << mLastError;
-      //mHasError = true;
+      //isError = true;
       return eError;
     }
     else if(query->size() == 0)
@@ -1576,8 +1543,8 @@ int Filu::execute(QSqlQuery* query)
     if(query->numRowsAffected() < 0)
     {
       qDebug() << "Filu::execute: Error while non select sql";
-      if(mSqlDebugLevel == 1) addErrorText("Filu::execute: LastQuery:\n" + mLastQuery, eCritical);
-      //mHasError = true;
+      if(mSqlDebugLevel == 1) error(FFI_, tr("LastQuery: %1").arg(mLastQuery));
+      //isError = true;
       return eNoSuccess;
     }
   }

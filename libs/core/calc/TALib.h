@@ -22,6 +22,8 @@
 
 #include <QtCore>
 
+#include "Newswire.h"
+
 /***********************************************************************
 *
 *   Support the full functionality of TA-Lib but don't calculate.
@@ -37,10 +39,10 @@
 typedef QHash<QString, QVariant> FunctionInfo;
 typedef QHashIterator<QString, QVariant> FunctionInfoIterator;
 
-class TALib
+class TALib : public Newswire
 {
   public:
-                    TALib();
+                    TALib(Newswire* parent);
     virtual        ~TALib();
 
     void            getAllFunctionNames(QStringList& names);
@@ -48,7 +50,6 @@ class TALib
     void            getFunctionInfo(const QString& function, FunctionInfo& info);
 
     bool            getIndicator(const QString& inclCmd, QStringList& indicator);
-    const QString&  errorText() const { return mErrorMessage; } ;
 
   protected:
     void        getFunctionUsage(FunctionInfo& info);
@@ -56,7 +57,6 @@ class TALib
     void        init();
 
     QStringList mFunctionNames;
-    QString     mErrorMessage;
 };
 
 #endif

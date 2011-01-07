@@ -44,7 +44,7 @@ bool CalcRef::prepare(CalcParms& parms)
   mBackRef = mIns.at(1).toInt(&ok);
   if(!ok)
   {
-    addErrorText("CalcRef::prepare: BackRef value is not an integer");
+    error(FFI_, tr("BackRef value is not an integer."));
   }
 
   if(hasError()) return false;

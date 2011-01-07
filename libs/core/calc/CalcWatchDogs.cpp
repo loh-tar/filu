@@ -36,7 +36,7 @@ bool CalcWatchDogs::prepare(CalcParms& parms)
 
   if(!isUnknown("WATCHDOG1"))
   {
-    addErrorText("CalcWatchDogs::prepare: Only one watchdog call is supported per indicator");
+    error(FFI_, tr("Only one watchdog call is supported per indicator."));
     return false;
   }
 
@@ -55,9 +55,9 @@ bool CalcWatchDogs::prepare(CalcParms& parms)
 
 bool CalcWatchDogs::calc()
 {
-  static const char* noDogTxt("No watchdog on patrol");
+  static const char* noDogTxt("No watchdog on patrol.");
 
-  removeErrorText(noDogTxt);
+  removeError(noDogTxt);
 
   if(hasError()) return false;
 
@@ -68,7 +68,7 @@ bool CalcWatchDogs::calc()
   bool exist = mData->getIDs("THIS", fiId, marketId);
   if(!exist)
   {
-    addErrorText("CalcWatchDogs::calc: FI alias not used: " + mIns.at(1));
+    error(FFI_, tr("FI alias not used: %1").arg(mIns.at(1)));
     return false;
   }
 
@@ -100,7 +100,7 @@ bool CalcWatchDogs::calc()
 
   if(!cot)
   {
-    addErrorText(noDogTxt);
+    error(FFI_, noDogTxt);
     return false;
   }
 
@@ -196,7 +196,7 @@ bool CalcWatchDogs::calc()
     CalcCross dog(mIndicator);
     if(!dog.prepare(dogParm))
     {
-      addErrorText(dog.errorText());
+      addErrors(dog.errors());
       return false;
     }
     dog.calc();
@@ -215,7 +215,7 @@ bool CalcWatchDogs::calc()
 
   if(!dogFound)
   {
-    addErrorText(noDogTxt);
+    error(FFI_, noDogTxt);
     return false;
   }
 

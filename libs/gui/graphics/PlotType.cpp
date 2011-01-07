@@ -24,7 +24,8 @@
 #include "PlotHistogramBar.h"
 #include "PlotDashLine.h"
 
-PlotType::PlotType()
+PlotType::PlotType(Newswire* parent)
+        : Newswire(parent)
 {
   mType = "BaseType";
 }
@@ -34,22 +35,20 @@ PlotType::~PlotType()
 
 PlotType* PlotType::createNew(const QString& type)
 {
-  if(type.isEmpty()) return new PlotType;
+  if(type.isEmpty()) return new PlotType(this);
   else return createNewType(type);
 }
 
 bool PlotType::prepare(QStringList &/*command*/, QStringList &/*plotDataKeys*/)
 {
-  qDebug() << "PlotType::prepare";
-  mErrorMessage.append("PlotType::prepare: oops!? base type never can prepare");
+  error(FFI_, tr("Oops!? Base type never can prepare."));
   return false;
 }
 
 bool PlotType::paint(QPaintDevice */*sheet*/, QRect &/*chartArea*/,
                      DataTupleSet */*data*/, Scaler */*scaler*/)
 {
-  qDebug() << "PlotType::paint";
-  mErrorMessage.append("PlotType::paint: oops?! base type nerver can paint");
+  error(FFI_, tr("Oops?! Base type nerver can paint."));
   return false;
 }
 
@@ -60,11 +59,11 @@ QString PlotType::getType()
 
 PlotType* PlotType::createNewType(const QString& type)
 {
-  if(!type.compare("LINE"))         return new PlotLine;
-  if(!type.compare("CANDLE"))       return new PlotCandle;
-  if(!type.compare("HISTOGRAM"))    return new PlotHistogram;
-  if(!type.compare("HISTOGRAMBAR")) return new PlotHistogramBar;
-  if(!type.compare("DASHLINE"))     return new PlotDashLine;
+  if(!type.compare("LINE"))         return new PlotLine(this);
+  if(!type.compare("CANDLE"))       return new PlotCandle(this);
+  if(!type.compare("HISTOGRAM"))    return new PlotHistogram(this);
+  if(!type.compare("HISTOGRAMBAR")) return new PlotHistogramBar(this);
+  if(!type.compare("DASHLINE"))     return new PlotDashLine(this);
 
   /*FIXME: these plot types has to be implemented
 
@@ -79,8 +78,8 @@ PlotType* PlotType::createNewType(const QString& type)
 
   // TA-Lib does sometime not say what kind auf plot should be use.
   // In that case delivers TALib.cpp "???" and we use "Line" instead.
-  if(!type.compare("???")) return new PlotLine;
+  if(!type.compare("???")) return new PlotLine(this);
 
-  mErrorMessage.append("PlotType::createNewType: Type not found: " + type);
+  error(FFI_, tr("Type not found: %1").arg(type));
   return 0;
 }

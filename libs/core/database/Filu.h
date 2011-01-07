@@ -23,6 +23,8 @@
 #include <QtCore>
 #include <QtSql>
 
+#include "Newswire.h"
+
 // Here "#include" and not "class" all stuff interested by Filu.
 // So all classes which use Filu will knows the data types.
 #include "BarTuple.h"
@@ -37,7 +39,7 @@ typedef QHash<QString, QDate> DateRange;
 typedef QSet<QString> StringSet;
 typedef QHash<QString, QString> KeyVal;
 
-class Filu
+class Filu : public Newswire
 {
   public:
          Filu(const QString&, RcFile*);
@@ -45,11 +47,6 @@ class Filu
 
     enum SomeEnums
     {
-      // Error Message Quality
-      eNotice,
-      eWarning,
-      eCritical,
-
       // Return values for functions returning an intenger, mostly a data Id
       // Do *not* use it for functions returning fooTuple
       // FIXME: Did you know how to solve this with usual && || operators?
@@ -187,8 +184,6 @@ class Filu
 
     int         searchCaption(const QString& table, const QString& caption);
 
-    bool        hadTrouble();   // Calling this clears error flag
-    QString     errorText();    // Calling this clears error text
     QString     getLastQuery(); // Unused
 
     void        deleteRecord(const QString& schema, const QString& table, int id);
@@ -197,7 +192,6 @@ class Filu
     int         getNextId(const QString& schema, const QString& table);
     bool        initQuery(const QString& name);
     bool        readSqlStatement(const QString& name, QString& sqlStatement);
-    void        addErrorText(const QString& errorText, int type = eNotice);
     int         execute(QSqlQuery* query);
 
     RcFile*     mRcFile;
@@ -220,8 +214,7 @@ class Filu
     int         mSqlDebugLevel;
     QString     mLastError;
     QString     mLastQuery;
-    bool        mHasError;
-    QStringList mErrorText;
+
     QHash<QString, QSqlQuery*>  mSQLs;
     QHash<QString, QVariant>    mSqlParm;      // Holds all values of ':foo' sql parameters
                                                // to all SQLs

@@ -48,7 +48,7 @@ void AddFiPage::createPage()
           , this, SLOT(scriptFinished()));
 
   mImporter = new Importer(this);
-  if(mImporter->hasError()) addErrorText(mImporter->errorText(), eWarning);
+  if(mImporter->hasError()) addErrors(mImporter->errors());
 
   QGroupBox* searchGroup = new QGroupBox(tr("Add a new FI to the Data Base"));
 
@@ -121,11 +121,7 @@ void AddFiPage::createPage()
   }
   else
   {
-    QString msg = tr("No Markets found");
-    if(!check4FiluError("AddFiPage::createPage: " + msg))
-    {
-      addErrorText("AddFiPage::createPage: " + msg);
-    }
+    check4FiluError(FFI_, tr("No Markets found"));
   }
 
   // Build the edit line layout
@@ -148,11 +144,7 @@ void AddFiPage::createPage()
   SymbolTypeTuple* symbolTypes = mFilu->getSymbolTypes(Filu::eAllTypes);
   if(!symbolTypes)
   {
-    QString msg = tr("No SymbolTypes found");
-    if(!check4FiluError("AddFiPage::createPage1: " + msg))
-    {
-      addErrorText("AddFiPage::createPage2: " + tr("No SymbolTypes found"));
-    }
+    check4FiluError(FFI_, tr("No SymbolTypes found"));
   }
 
   for(int i = 0; i < 3; ++i)
@@ -732,7 +724,7 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
     // Here is the beef
     mFilu->addFiCareful(fi);
 
-    if(mFilu->hadTrouble())
+    if(mFilu->hasError())
     {
       //printError("-addfi");
       qDebug() << "agentf -addFi: Oops! new FI not added to DB";

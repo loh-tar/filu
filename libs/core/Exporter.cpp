@@ -159,7 +159,7 @@ bool Exporter::expFiTypes()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expFiTypes: ERROR while exec GetAllFiTypes.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetAllFiTypes.sql"))) return false;
 
     mConsole << " no FI types match settings." << endl;
     *mOutput << "* No FI types match settings." << endl;
@@ -197,7 +197,7 @@ bool Exporter::expSymbolTypes()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expSymbolTypes: ERROR while exec GetAllSymbolTypes.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetAllSymbolTypes.sql"))) return false;
 
     mConsole << "no symbol types match settings." << endl;
     *mOutput << "* No symbol types match settings." << endl;
@@ -237,7 +237,7 @@ bool Exporter::expMarkets()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expMarkets: ERROR while exec GetAllMarkets.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetAllMarkets.sql"))) return false;
 
     mConsole << "no markets match settings." << endl;
     *mOutput << "* No markets match settings." << endl;
@@ -280,7 +280,7 @@ bool Exporter::expFiNames()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expFiNames: ERROR while exec GetAllFi.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetAllFi.sql"))) return false;
 
     mConsole << "no FIs match settings." << endl;
     *mOutput << "* No FIs match settings." << endl;
@@ -346,7 +346,7 @@ bool Exporter::expSymbols()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expSymbols: ERROR while exec GetAllSymbols.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetAllSymbols.sql"))) return false;
 
     mConsole << "no symbols match settings." << endl;
     *mOutput << "* No symbols match settings." << endl;
@@ -418,7 +418,7 @@ bool Exporter::expEODRaw()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expEODRaw: ERROR while exec .sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec .sql"))) return false;
 
     mConsole << "no eod bar data match settings." << endl;
     *mOutput << "* No eod bar data match settings." << endl;
@@ -484,7 +484,7 @@ bool Exporter::expSplits()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expSplits: ERROR while exec GetAllSplits.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetAllSplits.sql"))) return false;
 
     mConsole << "no split data match settings." << endl;
     *mOutput << "* No split data match settings." << endl;
@@ -525,7 +525,7 @@ bool Exporter::expCOs()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expCOs: ERROR while exec GetCOs.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetCOs.sql"))) return false;
 
     mConsole << "no chart objects match settings." << endl;
     *mOutput << "* No chart objects match settings." << endl;
@@ -572,7 +572,7 @@ bool Exporter::expGroups()
 
   if(!query)
   {
-    if(check4FiluError("Exporter::expGroups: ERROR while exec GetAllGroups.sql")) return false;
+    if(check4FiluError(FFI_, tr("ERROR while exec GetAllGroups.sql"))) return false;
 
     mConsole << "no groups match settings." << endl;
     *mOutput << "* No groups match settings." << endl;
@@ -597,7 +597,7 @@ bool Exporter::expGroups()
 
     if(!query)
     {
-      if(check4FiluError("Exporter::expGroups: ERROR while exec GetAllGroups.sql")) return false;
+      if(check4FiluError(FFI_, tr("ERROR while exec GetAllGroups.sql"))) return false;
     }
     else
     {

@@ -19,7 +19,7 @@
 
 #include "PlotHistogram.h"
 
-PlotHistogram::PlotHistogram() : PlotType()
+PlotHistogram::PlotHistogram(Newswire* parent) : PlotType(parent)
 {
   mType = "Histogram";
 }
@@ -27,16 +27,11 @@ PlotHistogram::PlotHistogram() : PlotType()
 PlotHistogram::~PlotHistogram()
 {}
 
-PlotHistogram* PlotHistogram::createNew(const QString &/*type*/)
-{
-  return new PlotHistogram;
-}
-
 bool PlotHistogram::prepare(QStringList& command, QStringList& plotDataKeys)
 {
   if(command.size() < 2)
   {
-    mErrorMessage.append("PlotHistogram::prepare: to less parameter");
+    error(FFI_, tr("To less parameter."));
     return false;
   }
 
@@ -50,7 +45,7 @@ bool PlotHistogram::paint(QPaintDevice* sheet, QRect& chartArea,
 {
   if(!data)
   {
-    mErrorMessage.append("PlotHistogram::paint: no data");
+    error(FFI_, tr("No data."));
     return false;
   }
 

@@ -49,7 +49,7 @@ bool Trader::useRuleFile(const QString& fileName)
   QFile file(mTradingRulePath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    addErrorText("Trader::useFile: Can't load file: " + file.fileName());
+    error(FFI_, tr("Can't load file: %1").arg(file.fileName()));
     return false;
   }
 
@@ -95,7 +95,7 @@ bool Trader::useIndicator(const QStringList& indicator)
 
   if(!mIndicator->useIndicator(indicator))
   {
-    addErrorText(mIndicator->errorText());
+    addErrors(mIndicator->errors());
     return false;
   }
 
@@ -124,8 +124,8 @@ bool Trader::parseRule()
     else if(mLine.startsWith("[Rules]")) readRules();
   }
 
-  if(!mOkSettings) addErrorText("Trader::parseRule: No [Settings] in rule file.");
-  if(!mOkRules)    addErrorText("Trader::parseRule: No [Rules] in rule file.");
+  if(!mOkSettings) error(FFI_, tr("No [Settings] in rule file."));
+  if(!mOkRules)    error(FFI_, tr("No [Rules] in rule file."));
 
   if(!hasError())
   {
@@ -185,7 +185,7 @@ void Trader::readSettings()
   {
     if(!mLine.contains("="))
     {
-      addErrorText("Trader::readSettings: No equal sign at line: " + QString::number(mLineNumber));
+      error(FFI_, tr("No equal sign at line: %1").arg(QString::number(mLineNumber)));
       continue;
     }
 
@@ -193,14 +193,14 @@ void Trader::readSettings()
     QStringList setting = mLine.split("=");
     if(setting.size() < 2)
     {
-      addErrorText("Trader::readSettings: No right argument at line: " + QString::number(mLineNumber));
+      error(FFI_, tr("No right argument at line: %1").arg(QString::number(mLineNumber)));
       //qDebug() << mErrorMessage;
       continue;
     }
 
     if(!mSettings.contains(setting.at(0)))
     {
-      addErrorText("Trader::readSettings: Unknown setting at line: " + QString::number(mLineNumber));
+      error(FFI_, tr("Unknown setting at line: %1").arg(QString::number(mLineNumber)));
       //qDebug() << mErrorMessage;
       continue;
     }
@@ -219,8 +219,8 @@ void Trader::readSettings()
 
     if(!mIndicator->useFile(mSettings.value("UseIndicator")))
     {
-      addErrorText("Trader::readSettings: Problem while loading used indicator.");
-      addErrorText(mIndicator->errorText());
+      error(FFI_, tr("Problem while loading used indicator."));
+      addErrors(mIndicator->errors());
       return;
     }
 
@@ -247,7 +247,7 @@ void Trader::readRules()
   {
     if(!mLine.contains(":"))
     {
-      addErrorText("Trader::readRules: Missing colon at line: " + QString::number(mLineNumber));
+      error(FFI_, tr("Missing colon at line: %1").arg(mLineNumber));
       continue;
     }
 
@@ -255,13 +255,13 @@ void Trader::readRules()
     QStringList rule = mLine.split(":");
     if(rule.size() < 2)
     {
-      addErrorText("Trader::readRules: No right argument at line: " + QString::number(mLineNumber));
+      error(FFI_, tr("No right argument at line: %1").arg(mLineNumber));
       //qDebug() << mErrorMessage;
       continue;
     }
 
     mRules.append(Rule());                    // Append an empty new rule
-    MyParser* parser = new MyParser;
+    MyParser* parser = new MyParser(this);
     parser->useVariables(&mVariable);
     parser->setExp(rule.at(0).trimmed());
 
@@ -282,7 +282,7 @@ void Trader::readRules()
 
       if(!knownActions.contains(action.at(0)))
       {
-        addErrorText("Trader::readRules: Unknown action ' " + action.at(0) + " ' at line: " + QString::number(mLineNumber));
+        error(FFI_, tr("Unknown action '%1' at line: %2").arg(action.at(0)).arg(mLineNumber));
         continue;
       }
 
@@ -290,8 +290,8 @@ void Trader::readRules()
       if(action.size() == 4) action << "20";
       if(action.size() != 5)
       {
-        addErrorText("Trader::readRules: Wrong parameter count at line: " + QString::number(mLineNumber));
-        addErrorText(mOrigLine);
+        error(FFI_, tr("Wrong parameter count at line: %1").arg(mLineNumber));
+        errInfo(FFI_, mOrigLine);
         //qDebug() << mErrorMessage;
         continue;
       }
@@ -346,7 +346,7 @@ bool Trader::simulate(DataTupleSet* data)
 
   if(data->dataTupleSize() < mBarsNeeded)
   {
-    addErrorText("Trader::simulate: Too less bars for simulation");
+    error(FFI_, tr("Too less bars for simulation."));
     return false;
   }
 
@@ -450,7 +450,7 @@ bool Trader::simulate(DataTupleSet* data)
       if(ret == 1) continue; // No valid value in mData
       else if(ret == 2)
       {
-        qDebug() << "Trader::simulate() bad value from mu::Parser";
+        error(FFI_, "Bad value from mu::Parser");
         continue;
       }
 
@@ -483,7 +483,7 @@ bool Trader::simulate(DataTupleSet* data)
   SymbolTuple* st = mFilu->getSymbols(fiId);
   if(!st)
   {
-    addErrorText("Trader::simulate: Could not find symbols to Fi (!?)");
+    error(FFI_, tr("Could not find symbols to Fi (!?)."));
     //qDebug() << mErrorMessage;
     return false;
   }
@@ -587,14 +587,14 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(group.isEmpty())
   {
-    addErrorText("Trader::prepare: No group set to use");
+    error(FFI_, tr("No group set to use."));
     return -1;
   }
 
   QSqlQuery* allGroups = mFilu->getGroups();
   if(!allGroups)
   {
-    addErrorText("Trader::prepare: No groups found");
+    error(FFI_, tr("No groups found."));
     return -1;
   }
 
@@ -610,7 +610,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(!found)
   {
-    addErrorText("Trader::prepare: Group not found: " + group);
+    error(FFI_, tr("Group not found: %1").arg(group));
     return -1;
   }
 
@@ -618,7 +618,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(!mFi)
   {
-    addErrorText("Trader::prepare: No FI found in group " + group);
+    error(FFI_, tr("No FI found in group: %1").arg(group));
     return -1;
   }
 

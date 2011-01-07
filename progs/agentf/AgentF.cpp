@@ -63,15 +63,6 @@ void AgentF::quit()
   QCoreApplication::exit(0);
 }
 
-void AgentF::check4FiluError(const QString message)
-{
-  if(mFilu->hadTrouble())
-  {
-    error(FFI_, message);
-    error(FFI_, mFilu->errorText());
-  }
-}
-
 void AgentF::readSettings()
 {
   if(mRcFile->getIT("DebugLevel")) printSettings();
@@ -336,7 +327,7 @@ void AgentF::addFi(const QStringList& parm)
   // Here is the beef
   mFilu->addFiCareful(fi);
 
-  check4FiluError("FAIL! FI not added.");
+  check4FiluError(FFI_, tr("FAIL! FI not added."));
 }
 
 bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
@@ -488,7 +479,7 @@ void AgentF::scan(const QStringList& parm)
 
   mScanner->exec(parm);
 
-  if(mScanner->hasError()) error(FFI_, mScanner->errorText().join("\n"));
+  if(mScanner->hasError()) addErrors(mScanner->errors());
 }
 
 void AgentF::addSplit(const QStringList& parm)

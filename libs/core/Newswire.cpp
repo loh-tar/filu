@@ -23,6 +23,7 @@
 Newswire::Newswire(const QString& connectionName)
         : mRoot(true)
         , mVerboseLevel(eNoVerbose)
+        , mHasError(false)
         , mErrConsole(new QTextStream(stderr))
         , mLogFileFile(0)
         , mLogFile(0)
@@ -31,9 +32,10 @@ Newswire::Newswire(const QString& connectionName)
 
 {}
 
-Newswire::Newswire(const Newswire* parent)
+Newswire::Newswire(Newswire* parent)
         : mRoot(false)
         , mVerboseLevel(eNoVerbose)  // Don't parent->mVerboseLevel, or should?
+        , mHasError(false)
         , mErrConsole(parent->mErrConsole)
         , mLogFileFile(0)
         , mLogFile(0)
@@ -91,6 +93,21 @@ void Newswire::setVerboseLevel(const QString& func, const QString& level)
   }
 }
 
+void Newswire::addErrors(const QList<Error>& errors)
+{
+  foreach(Error error, errors)
+  {
+    for(int i = 0; i < mErrors.size(); ++i)
+    {
+      if(mErrors.at(i).text != error.text) continue;
+      return;
+    }
+
+    mErrors.append(error);
+    mHasError = true;
+  }
+}
+
 void Newswire::errInfo(const QString& func, const QString& txt)
 {
   addError(func, txt, eErrInfo);
@@ -141,26 +158,12 @@ void Newswire::removeError(const QString& txt)
 
   if(mErrors.size() == 0) mHasError = false;
 }
-/*
-bool Newswire::check4FiluError(const QString& errorMessage)
-{
-  if(mFilu->hadTrouble())
-  {
-    addErrorText(errorMessage, eCritical);
-    addErrorText(mFilu->errorText(), eCritical);
-
-    return true;
-  }
-
-  return false;
-}
 
 void Newswire::clearErrors()
 {
   mErrors.clear();
   mHasError = false;
 }
-*/
 
 void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLevel type/* = eInfo*/)
 {
@@ -169,18 +172,16 @@ void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLe
 
 void Newswire::addError(const QString& func, const QString& txt, const ErrorType type)
 {
-  mHasError = true;
-
-  bool exist = false;
   for(int i = 0; i < mErrors.size(); ++i)
   {
     if(mErrors.at(i).text != txt) continue;
-    exist = true;
+    return;
   }
 
   Error error = { rawFunc(func), txt, type };
 
   mErrors.append(error);
+  mHasError = true;
 }
 
 void Newswire::logError(const QString& func, const QString& txt, const QString& type)

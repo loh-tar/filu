@@ -31,10 +31,8 @@
 class PlotDashLine : public PlotLine
 {
   public:
-                   PlotDashLine();
+                   PlotDashLine(Newswire* parent);
     virtual       ~PlotDashLine();
-
-    virtual PlotDashLine* createNew(const QString& type = "");
 
     virtual bool  paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);
 

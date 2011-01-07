@@ -106,7 +106,7 @@ DataTupleSet* Indicator::calculate(BarTuple* bars)
 
   if(!mData->appendBarTuple(bars)) //FIXME: add also extra FIs
   {
-    addErrorText("Indicator::calculate: Fail to create mData");
+    error(FFI_, tr("Fail to create mData."));
     delete mData;
     mData = 0;
     return 0;
@@ -199,7 +199,7 @@ DataTupleSet* Indicator::calculate(DataTupleSet* data)
     //qDebug() << "Indicator::calculate()" << mCalcCommands.at(i)->getType();
     if(!mCalcCommands.at(i)->calc())
     {
-      addErrorText(mCalcCommands.at(i)->errorText());
+      addErrors(mCalcCommands.at(i)->errors());
     }
   }
 
@@ -229,7 +229,7 @@ int Indicator::barsNeeded()
 
   if(!data.appendBarTuple(&bars))
   {
-    addErrorText("Indicator::barsNeeded: Fail to create data");
+    error(FFI_, tr("Fail to create data."));
     return -1;
   }
 
@@ -254,7 +254,7 @@ int Indicator::scanFreq(bool trueDays/* = false*/)
   frame = FTool::timeFrame(mScanFreq, trueDays);
   if(-1 == frame)
   {
-    addErrorText(QString("Indicator::scanFreq: ScanFreq of indicator '%1' unknown: %2").arg(fileName(), mScanFreq), eWarning);
+    warning(FFI_, tr("ScanFreq of indicator '%1' unknown: %2").arg(fileName(), mScanFreq));
   }
 
   return frame;
@@ -280,14 +280,14 @@ bool Indicator::readIndicator(const QString& fileName, QStringList& indicator)
 
   if (fileName.isEmpty())
   {
-    addErrorText("Indicator::readIndicator: No indicator file name given");
+    error(FFI_, tr("No indicator file name given."));
     return false;
   }
 
   QFile file(mIndicatorPath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    addErrorText("Indicator::readIndicator: Can't load indicator: " + fileName);
+    error(FFI_, tr("Can't load indicator: %1").arg(fileName));
     return false;
   }
 
@@ -365,7 +365,7 @@ bool Indicator::parse(QStringList& indicator)
     parms.replaceInStrings(" ", "");
     if(parms.size() == 0)
     {
-      addErrorText("Indicator::parse: No parameter at INCLUDE()");
+      error(FFI_, tr("No parameter at INCLUDE()."));
       ++i;
       continue;
     }
@@ -380,7 +380,7 @@ bool Indicator::parse(QStringList& indicator)
       }
       else
       {
-        addErrorText("Indicator::parse: 2nd INCLUDE() parameter unknown: " + parms.at(1));
+        error(FFI_, tr("2nd INCLUDE() parameter unknown: %1").arg(parms.at(1)));
         ++i;
         continue;
       }
@@ -398,7 +398,7 @@ bool Indicator::parse(QStringList& indicator)
     QStringList list;
     if(!readIndicator(parms.at(0), list))
     {
-      addErrorText("Indicator::parse: Fail to INCLUDE() file");
+      error(FFI_, tr("Fail to INCLUDE() file."));
       mIgnorePlot = ignorePlot;
       ++i;
       continue;
@@ -421,13 +421,13 @@ bool Indicator::parse(QStringList& indicator)
   i = 0;
   while((i = indicator.indexOf(QRegExp("INCLTALIB\\(.*"), i)) >= 0)
   {
-    if(!mTALib) mTALib = new TALib();
+    if(!mTALib) mTALib = new TALib(this);
 
     // Prepare for battle...
     QStringList list;
     if(!mTALib->getIndicator(indicator.at(i), list))
     {
-      addErrorText(mTALib->errorText());
+      addErrors(mTALib->errors());
       ++i;
       continue;
     }
@@ -493,7 +493,7 @@ bool Indicator::prepare(QStringList& indicator)
     CalcType* newCalcType = calcType.createNew("SIMTRADE");
     if(!newCalcType)
     {
-      addErrorText(calcType.errorText());
+      addErrors(calcType.errors());
       return false;
     }
 
@@ -501,7 +501,7 @@ bool Indicator::prepare(QStringList& indicator)
 
     if(!newCalcType->prepare(parms))
     {
-      addErrorText(newCalcType->errorText());
+      addErrors(newCalcType->errors());
       return false;
     }
     ++i;
@@ -518,13 +518,13 @@ bool Indicator::prepare(QStringList& indicator)
 qDebug() << "Indicator::prepare:load extra FIs" << parameters;
     // Load the bars to the FI
     //FIXME: has to be implemented
-    addErrorText("Indicator::prepare: Not yet supported: " + indicator.at(i));
+    error(FFI_, tr("Not yet supported: %1").arg(indicator.at(i)));
     return false;
 
     BarTuple bars(1); // = mFilu->getBars();
     if(!mData->appendBarTuple(&bars))
     {
-      addErrorText("Indicator::prepare: Fail to create mData");
+      error(FFI_, tr("Fail to create mData."));
       return 0;
     }
 
@@ -596,7 +596,7 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
 
     if(ins.size() < 3)
     {
-      addErrorText("Indicator::prepare: Something wrong with equation");
+      error(FFI_, tr("Something wrong with equation."));
       continue;
     }
 
@@ -625,13 +625,13 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
     CalcType* newCalcType = calcType.createNew(func);
     if(!newCalcType)
     {
-      addErrorText(calcType.errorText());
+      addErrors(calcType.errors());
       continue;
     }
 
     mCalcCommands.append(newCalcType);
 
-    if(!newCalcType->prepare(parms)) addErrorText(newCalcType->errorText());
+    if(!newCalcType->prepare(parms)) addErrors(newCalcType->errors());
    }
 
 // for(int i = 0; i < mCalcCommands.size(); i++)

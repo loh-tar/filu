@@ -95,7 +95,7 @@ void Importer::reset()
   // Read all symbol types out of the DB
   SymbolTypeTuple* symbolTypes = mFilu->getSymbolTypes(Filu::eAllTypes);
 
-  if(!check4FiluError("Importer::reset: ERROR while exec GetSymbolTypes.sql"))
+  if(!check4FiluError(FFI_, tr("ERROR while exec GetSymbolTypes.sql")))
   {
     if(symbolTypes)
     {
@@ -143,7 +143,7 @@ void Importer::reset()
 
         if(parts.size() < 2)
         {
-          addErrorText("Importer::reset: " + errorMsg1.arg(ln), eError);
+          error(FFI_, errorMsg1.arg(ln));
           continue;
         }
 
@@ -152,7 +152,7 @@ void Importer::reset()
         QRegExp regExp(parts.at(0));
         if(!regExp.isValid())
         {
-          addErrorText("Importer::reset: " + errorMsg2.arg(ln).arg(regExp.errorString()), eError);
+          error(FFI_, errorMsg2.arg(ln).arg(regExp.errorString()));
           continue;
         }
         mNiceSearch  <<  parts.at(0);
@@ -161,7 +161,7 @@ void Importer::reset()
     }
     else
     {
-      addErrorText("Importer::reset: " + QObject::tr("No file 'MakeNameNice.conf' found."), eWarning);
+      warning(FFI_, QObject::tr("No file 'MakeNameNice.conf' found."));
     }
   }
 
@@ -728,21 +728,21 @@ void Importer::addFi()
     if(newFiId >= Filu::eData)
     {
       // Success
-      mFilu->errorText(); // Clear potential messages
+  //    mFilu->errorText(); // Clear potential messages
       break;
     }
   }
 
   if(newFiId < Filu::eData)
   {
-//     if(check4FiluError("Importer::import: fail to add FI"))
+//     if(check4FiluError(FFI_, tr("fail to add FI")))
 //     {
 //       mConsole << "fail to add FI " << mData.value("Name") <<  " "
 //                << mData.value("Type") << endl;
 //     }
-    if(mFilu->hadTrouble())
+    if(mFilu->hasError())
     {
-      mConsole << endl << mFilu->errorText();
+      mConsole << endl << "FIXME:mFilu->errorText()";
     }
   }
 
@@ -771,7 +771,7 @@ void Importer::addSymbol()
       msg.append(mSymbol->caption() + ", ");
     }
     msg.chop(2);
-    addErrorText("Importer::addSymbol: " + msg, eError);
+    error(FFI_, msg);
     mConsole << endl << msg << endl;
     return;
   }
@@ -790,9 +790,9 @@ void Importer::addSymbol()
                                   , fiId);
 
     //qDebug() << "Importer::addSymbol: retVal=" << retVal << mSymbol->caption() << mSymbol->market() << mSymbol->owner() << fiId;
-    if(mFilu->hadTrouble())
+    if(mFilu->hasError())
     {
-      mConsole << endl << mFilu->errorText() << endl;
+      mConsole << endl << "FIXME:mFilu->errorText()" << endl;
     }
   }
 
@@ -810,7 +810,7 @@ void Importer::addUnderlying()
     {
       mToDo.remove("addUnderlying");
       QString msg = QObject::tr("Mother not found: ") + mData.value("Mother");
-      addErrorText("Importer::addUnderlying: " + msg, eError);
+      error(FFI_, msg);
       mConsole << endl << msg << endl;
       return;
     }
@@ -837,7 +837,7 @@ void Importer::addUnderlying()
   {
     mConsole << endl
              << "Importer::addUnderlying: Fail to add underlying: [BEGIN MESSAGE]\n"
-             << mFilu->errorText() << endl
+             << "FIXME:mFilu->errorText()" << endl
              << "[END MESSAGE]" << endl;
   }
 }
@@ -1011,7 +1011,7 @@ void Importer::addCO()
 
   if(!query)
   {
-    if(check4FiluError("Importer::addCO: ERROR while exec PutCOs.sql")) return;// false;
+    if(check4FiluError(FFI_, tr("ERROR while exec PutCOs.sql"))) return;// false;
 
     mConsole << "no chart objects match settings." << endl;
     return /*true*/;
@@ -1034,7 +1034,7 @@ void Importer::addGroup()
     if(!query)
     {
       mPendingData.clear();
-      if(check4FiluError("Importer::addGroup: ERROR while exec AddGroup.sql"))
+      if(check4FiluError(FFI_, tr("ERROR while exec AddGroup.sql")))
       {
         mConsole << "could not create group!?" << endl;
         return;// false;

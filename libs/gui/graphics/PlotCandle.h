@@ -31,10 +31,8 @@
 class PlotCandle : public PlotType
 {
   public:
-                  PlotCandle();
+                  PlotCandle(Newswire* parent);
     virtual      ~PlotCandle();
-
-    virtual PlotCandle* createNew(const QString& type = "");
 
     virtual bool  prepare(QStringList& command, QStringList& plotDataKeys);
     virtual bool  paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);

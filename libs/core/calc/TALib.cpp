@@ -20,9 +20,9 @@
 #include "TALib.h"
 #include "ta_abstract.h"
 
-TALib::TALib()
+TALib::TALib(Newswire* parent)
+     : Newswire(parent)
 {
-  mErrorMessage.clear();
   readSettings();
   init();
 }
@@ -222,7 +222,7 @@ bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
 
   if(!mFunctionNames.contains(parms.at(0)))
   {
-    mErrorMessage= "TALib::prepare: unknown function: " + parms.at(0);
+    error(FFI_, tr("Unknown function: %1").arg(parms.at(0)));
     return false;
   }
 

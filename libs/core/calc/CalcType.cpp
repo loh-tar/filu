@@ -57,19 +57,19 @@ CalcType* CalcType::createNew(const QString& type)
 
   if(type.isEmpty()) return new CalcType(mIndicator); // Needed???
 
-  addErrorText("CalcType::createNewType: Type not found: " + type);
+  error(FFI_, tr("Type not found: %1").arg(type));
   return 0;
 }
 
 bool CalcType::prepare(CalcParms &/*parms*/)
 {
-  addErrorText("CalcType::prepare: Oops!? base type never can prepare");
+  error(FFI_, tr("Oops!? base type never can prepare."));
   return false;
 }
 
 bool CalcType::calc()
 {
-  addErrorText("CalcType::calc: Oops?! base type nerver can calc");
+  error(FFI_, tr("Oops?! base type nerver can calc."));
   return false;
 }
 
@@ -118,24 +118,19 @@ bool CalcType::isUnknown(const QString& key)
 
 bool CalcType::checkOutputCount(int count)
 {
-  bool ok = true;
-  QString err = "Calc" + mType + "::prepare: ";
-
   if(mOuts.size() < count)
   {
     if(1 == count)
     {
-      err += "No out variable found.";
+      error(FFI_, tr("'%1': No output variable found.").arg(mType));
     }
     else
     {
-      err += "Too less output variables.\n\t"
-               "Found: " + QString::number(mOuts.size())
-             + ", Expect: " + QString::number(count);
+      error(FFI_, tr("'%1': Too less output variables.").arg(mType));
+      errInfo(FFI_, tr("Found: %1, Expect: %2").arg(mOuts.size()).arg(count));
     }
 
-    addErrorText(err);
-    ok = false;
+    return false; // Error
   }
   else
   {
@@ -143,38 +138,31 @@ bool CalcType::checkOutputCount(int count)
     for(int i = 0; i < count; ++i) mUsedVariables->insert(mOuts.at(i));
   }
 
-  return ok;
+  return true; // Ok
 }
 
 bool CalcType::checkInputCount(int count)
 {
-  bool ok = true;
-  QString err = "Calc" + mType + "::prepare: ";
-
   if(mIns.size() < count)
   {
     if(1 == count)
     {
-      err += "No input parameter found.";
+      error(FFI_, tr("'%1': No input parameter found.").arg(mType));
     }
     else
     {
-      err += "Too less input parameters.\n\t"
-               "Found: " + QString::number(mIns.size())
-             + ", Expect: " + QString::number(count);
+      error(FFI_, tr("'%1': Too less input parameters.").arg(mType));
+      errInfo(FFI_, tr("Found: %1, Expect: %2").arg(mOuts.size()).arg(count));
     }
 
-    addErrorText(err);
-    ok = false;
+    return false; // Error
   }
 
-  return ok;
+  return true; // Ok
 }
 
 bool CalcType::checkInputVariable(int i)
 {
-  QString err = "Calc" + mType + "::prepare: ";
-
   if(isUnknown(mIns.at(i)))
   {
     QString help = mIns.at(i);
@@ -183,7 +171,7 @@ bool CalcType::checkInputVariable(int i)
     if(isNumber) mIns.append(QString("Operand-%1-IsNumber").arg(i));
     else
     {
-      addErrorText(err + QString("Variable at position %1 not found: %2").arg(i + 1).arg(mIns.at(i)));
+      error(FFI_, tr("'%1': Variable at position %1 not found: %2").arg(i + 1).arg(mIns.at(i)).arg(mType));
       return false;
     }
   }

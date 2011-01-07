@@ -55,7 +55,7 @@ IndicatorPainter::IndicatorPainter(PlotSheet* parent)
                 , mShowGrid(true)
                 , mShowPercentScale(false)
 {
-  mPlotType  = new PlotType();
+  mPlotType  = new PlotType(this);
   mScaler    = new Scaler(this);
   mIndicator = new Indicator(this);
   mIndicator->ignorePlot(false);
@@ -103,7 +103,7 @@ bool IndicatorPainter::useIndicatorFile(const QString& file)
 
   if(!indiFile)
   {
-    addErrorText(mIndicator->errorText());
+    addErrors(mIndicator->errors());
     return false;
   }
 
@@ -122,7 +122,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
 
   if(plotCommands.isEmpty())
   {
-    addErrorText("IndicatorPainter::prepare: No plot statements found");
+    error(FFI_, tr("No plot statements found."));
     return false;
   }
 
@@ -135,7 +135,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
     PlotType* newPlotType = mPlotType->createNew(command.at(0));
     if(!newPlotType)
     {
-      addErrorText(mPlotType->errorText());
+      addErrors(mPlotType->errors());
       continue;
     }
 
@@ -143,7 +143,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
 
     if(!newPlotType->prepare(command, mPlotDataKeys))
     {
-      addErrorText(newPlotType->errorText());
+      addErrors(newPlotType->errors());
       continue;
     }
   }
@@ -166,7 +166,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
   }
   else if(!mPlotDataKeys.contains(mPrimaryValue))
   {
-    addErrorText("IndicatorPainter::prepare: PRIMARY not found: " + mPrimaryValue);
+    error(FFI_, tr("PRIMARY not found: %1").arg(mPrimaryValue));
   }
 
   if(hasError())
@@ -182,7 +182,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
 
 bool IndicatorPainter::useIndicator(QStringList &/*indicator*/)
 {
-  addErrorText("IndicatorPainter::useIndicator: Not yet implemented");
+  error(FFI_, tr("Not yet implemented."));
   return false;
   //FIXME:use an already parsed indicator,
   //could be useful while interactive design
@@ -229,7 +229,7 @@ bool IndicatorPainter::calculate()
 
   if(!mData)
   {
-    addErrorText(mIndicator->errorText());
+    addErrors(mIndicator->errors());
     return false;
   }
 
@@ -356,7 +356,7 @@ bool IndicatorPainter::densityChanged(int step)
   if(mFirstBarToShow > mBars->count() - 1)
   {
     mFirstBarToShow = mBars->count() - 1;
-    addErrorText("IndicatorPainter::densityChanged: ??? should never heappens", eCritical);
+    fatal(FFI_, "??? should never heappens");
   }
 
   mUpdateStaticSheet = true;
@@ -436,17 +436,17 @@ void IndicatorPainter::setIndicatingRange(int from, int count)
 
 bool IndicatorPainter::paint()
 {
-  static const char* errTxt("IndicatorPainter::paint: No data to paint something");
+  static const char* errTxt("No data to paint something");
 
   if(!mBars)
   {
-    addErrorText(errTxt);
+    error(FFI_, errTxt);
   }
   else
   {
     if(hasError())
     {
-      removeErrorText(errTxt);
+      removeError(errTxt);
     }
   }
 

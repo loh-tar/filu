@@ -20,20 +20,17 @@
 #include "FObject.h"
 
 FObject::FObject(FClass* parent)
-       : QObject(0)
-       , FClass(parent)
+       : FClass(parent)
 
 {}
 
 FObject::FObject(FObject* parent)
-       : QObject(parent)
-       , FClass(parent)
+       : FClass(parent)
 
 {}
 
 FObject::FObject(const QString& connectionName, QCoreApplication& app)
-       : QObject(&app)
-       , FClass(connectionName)
+       : FClass(connectionName)
 
 {}
 

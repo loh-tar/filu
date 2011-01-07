@@ -34,16 +34,15 @@ bool CalcTALib::prepare(CalcParms& parms)
 
   if(mIns.size() < 1)
   {
-    addErrorText("CalcTALib::prepare: No functionName found");
+    error(FFI_, tr("No FunctionName found."));
     return false;
   }
 
-  TALib talib;
+  TALib talib(this);
 
   if(talib.functionIsUnknown(mIns.at(0)))
   {
-    addErrorText("CalcTALib::prepare: Unknown TA function: "
-                          + mIns.at(0));
+    error(FFI_, tr("Unknown TA function: %1").arg(mIns.at(0)));
     return false;
   }
 
@@ -55,8 +54,7 @@ bool CalcTALib::prepare(CalcParms& parms)
 
   if(mOuts.size() < mInfo.value("nbOutput").toInt())
   {
-    addErrorText("CalcTALib::prepare: Too less output variables, function '"
-                        + mIns.at(0) + "' expect " + mInfo.value("nbOutput").toString());
+    error(FFI_, tr("Too less output variables, function '%1' expect %2.").arg(mIns.at(0), mInfo.value("nbOutput").toString()));
     return false;
   }
 
@@ -78,7 +76,7 @@ bool CalcTALib::prepare(CalcParms& parms)
         // mIns looks like: "AD", "FI" "(", "alias", ")"
         if(mIns.size() < 4)
         {
-          addErrorText("CalcTALib::prepare: Missing ) at FI()");
+          error(FFI_, tr("Missing ) at FI()."));
           return false;
         }
 
@@ -109,8 +107,7 @@ bool CalcTALib::prepare(CalcParms& parms)
           mIns.at(1 + j).toDouble(&isNumber);
           if((mIns.at(1 + j) == "=") or isNumber)
           {
-            addErrorText("CalcTALib::prepare: Not enough input variables:\n\t"
-                         "Found to early an optional input.");
+            error(FFI_, tr("Not enough input variables. Found to early an optional input."));
             return false;
           }
 
@@ -133,7 +130,7 @@ bool CalcTALib::prepare(CalcParms& parms)
     QString var =  hit.next().value();
     if(isUnknown(var))
     {
-      addErrorText("CalcTALib::prepare: Unknown input variable: " + var);
+      error(FFI_, tr("Unknown input variable: %1").arg(var));
       return false;
     }
   }
@@ -145,13 +142,13 @@ bool CalcTALib::prepare(CalcParms& parms)
   {
     if((i + 3) > mIns.size())
     {
-      addErrorText("CalcTALib::prepare: Something wrong with optional parameter list" );
+      error(FFI_, tr("Something wrong with optional parameter list." ));
       return false;
     }
 
     if(!mInfo.contains(mIns.at(i)))
     {
-      addErrorText("CalcTALib::prepare: Unknown optional parameter: " + mIns.at(i));
+      error(FFI_, tr("Unknown optional parameter: %1").arg(mIns.at(i)));
       return false;
     }
 
@@ -159,8 +156,7 @@ bool CalcTALib::prepare(CalcParms& parms)
     double value = mIns.at(i + 2).toDouble(&isNumber);
     if(!isNumber)
     {
-      addErrorText("CalcTALib::prepare: Optional parameter "
-                           + mIns.at(i) + " is not a number: " + mIns.at(i + 2));
+      error(FFI_, tr("Optional parameter '%1' is not a number: %2").arg(mIns.at(i), mIns.at(i + 2)));
       return false;
     }
 
@@ -200,7 +196,7 @@ bool CalcTALib::calc()
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    error(FFI_, QString("TALib returned error code %1.").arg(retCode));
+    error(FFI_, tr("TALib returned error code %1.").arg(retCode));
     freesParmHolder(parmHolder);
     return false;
   }
@@ -239,7 +235,7 @@ int CalcTALib::barsNeeded(DataTupleSet* data)
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    qDebug() << "error 7";
+    fatal(FFI_, "Unhandled error 7, sorry but feel free to fix me ;-)");
     mData = save;
     freesParmHolder(parmHolder);
     return -1;
@@ -271,7 +267,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    qDebug() << "error 1";
+    fatal(FFI_, "Unhandled error 1, sorry but feel free to fix me ;-)");
     return false;
   }
 
@@ -279,7 +275,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    qDebug() << "error 2";
+    fatal(FFI_, "Unhandled error 2, sorry but feel free to fix me ;-)");
     return false;
   }
 
@@ -319,7 +315,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
       if(!retCode == TA_SUCCESS )
       {
         // Error
-        qDebug() << "error 3";
+        fatal(FFI_, "Unhandled error 3, sorry but feel free to fix me ;-)");
         return false;
       }
     }
@@ -331,7 +327,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
       if(!retCode == TA_SUCCESS )
       {
         // Error
-        qDebug() << "error 4";
+        fatal(FFI_, "Unhandled error 4, sorry but feel free to fix me ;-)");
         return false;
       }
     }
@@ -382,7 +378,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
       if(!retCode == TA_SUCCESS )
       {
         // Error
-        qDebug() << "error 5";
+        fatal(FFI_, "Unhandled error 5, sorry but feel free to fix me ;-)");
         return false;
       }
     }
@@ -407,7 +403,7 @@ void CalcTALib::freesParmHolder(TA_ParamHolder* parmHolder)
   if(!retCode == TA_SUCCESS)
   {
     // Error
-    error(FFI_, QString("TALib returned error code %1.").arg(retCode));
+    error(FFI_, tr("TALib returned error code %1.").arg(retCode));
   }
 }
 

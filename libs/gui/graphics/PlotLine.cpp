@@ -19,7 +19,7 @@
 
 #include "PlotLine.h"
 
-PlotLine::PlotLine() : PlotType()
+PlotLine::PlotLine(Newswire* parent) : PlotType(parent)
 {
   mType = "Line";
   //mPen.setStyle(Qt::SolidLine);
@@ -28,16 +28,11 @@ PlotLine::PlotLine() : PlotType()
 PlotLine::~PlotLine()
 {}
 
-PlotLine* PlotLine::createNew(const QString &/*type*/)
-{
-  return new PlotLine;
-}
-
 bool PlotLine::prepare(QStringList& command, QStringList& plotDataKeys)
 {
   if(command.size() < 2)
   {
-    mErrorMessage.append("PlotLine::prepare: to less parameter");
+    error(FFI_, tr("To less parameter."));
     return false;
   }
 
@@ -51,7 +46,7 @@ bool PlotLine::paint(QPaintDevice* sheet, QRect& chartArea,
 {
   if(!data)
   {
-    mErrorMessage.append("PlotLine::paint: no data");
+    error(FFI_, tr("No data."));
     return false;
   }
 

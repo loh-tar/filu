@@ -44,7 +44,7 @@ bool CalcTrade::prepare(CalcParms& parms)
 
   if(!mTrader->useRuleFile(mIns.at(0)))
   {
-    addErrorText(mTrader->errorText());
+    addErrors(mTrader->errors());
     return false;
   }
 
@@ -66,7 +66,7 @@ bool CalcTrade::calc()
 
   if(!mTrader->simulate(mData))
   {
-    addErrorText(mTrader->errorText());
+    addErrors(mTrader->errors());
     return false;
   }
 

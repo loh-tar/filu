@@ -31,10 +31,8 @@
 class PlotLine : public PlotType
 {
   public:
-                  PlotLine();
+                  PlotLine(Newswire* parent);
     virtual      ~PlotLine();
-
-    virtual PlotLine* createNew(const QString& type = "");
 
     virtual bool  prepare(QStringList& command, QStringList& plotDataKeys);
     virtual bool  paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);

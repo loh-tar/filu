@@ -44,7 +44,7 @@ bool CalcCross::prepare(CalcParms& parms)
         and mIns.at(2) != "DOWN"
         and mIns.at(2) != "BOTH")
     {
-      addErrorText("CalcCross::prepare: Unknown operator: " + mIns.at(2));
+      error(FFI_, tr("Unknown operator: %1").arg(mIns.at(2)));
     }
   }
   else

@@ -36,7 +36,7 @@ bool CalcFilu::prepare(CalcParms& parms)
 
   if(mIns.size() < 1)
   {
-    addErrorText("CalcFilu::prepare: No functionName found");
+    error(FFI_, tr("No functionName found."));
     return false;
   }
 
@@ -46,18 +46,18 @@ bool CalcFilu::prepare(CalcParms& parms)
   {
     if(retVal == Filu::eNoData)
     {
-      addErrorText("CalcFilu::prepare: Unknown indicator: " + mIns.at(0));
+      error(FFI_, tr("Unknown indicator: %1").arg(mIns.at(0)));
       return false;
     }
-    addErrorText("CalcFilu::prepare: Error while getting info to indicator: " + mIns.at(0));
-    addErrorText(mFilu->errorText());
+    error(FFI_, tr("Error while getting info to indicator: %1").arg(mIns.at(0)));
+    addErrors(mFilu->errors());
     return false;
   }
 
   if(mFilu->prepareIndicator(mIns.at(0), info.value("Call")) != Filu::eSuccess)
   {
-    addErrorText("CalcFilu::prepare: Can't prepare indicator: " + mIns.at(0));
-    addErrorText(mFilu->errorText());
+    error(FFI_, tr("Can't prepare indicator: %1").arg(mIns.at(0)));
+    addErrors(mFilu->errors());
     return false;
   }
 
@@ -85,7 +85,7 @@ bool CalcFilu::prepare(CalcParms& parms)
 
     if(idx > mIns.size() - 1)
     {
-      addErrorText("CalcFilu::prepare: Too less input parameters.");
+      error(FFI_, tr("Too less input parameters."));
       return false;
     }
     // Veryfy if the call is correct filled
@@ -93,13 +93,13 @@ bool CalcFilu::prepare(CalcParms& parms)
     {
       if(!(mIns.at(idx) == "FI"))
       {
-        addErrorText("CalcFilu::prepare: FI() expected but found: " + mIns.at(idx));
+        error(FFI_, tr("FI() expected but found: %1").arg(mIns.at(idx)));
         return false;
       }
       idx += 2;
       if(idx > mIns.size() - 1)
       {
-        addErrorText("CalcFilu::prepare: Something wrong with parameter list.");
+        error(FFI_, tr("Something wrong with parameter list."));
         return false;
       }
       if(mIns.at(idx) == ")")
@@ -164,7 +164,7 @@ bool CalcFilu::calc()
       bool ok = mData->getIDs(mFiRefAlias.at(j), fiId, marketId);
       if(!ok)
       {
-        addErrorText("CalcFilu::calc: Can't find FI: " + mFiRefAlias.at(j));
+        error(FFI_, tr("Can't find FI: %1").arg(mFiRefAlias.at(j)));
         return false;
       }
       ++j;
@@ -200,8 +200,8 @@ bool CalcFilu::calc()
 
   if(!query)
   {
-    addErrorText("CalcFilu::calc: Trouble while exec Filu indicator: " + mIns.at(0));
-    addErrorText(mFilu->errorText());
+    error(FFI_, tr("Trouble while exec Filu indicator: %1").arg(mIns.at(0)));
+    addErrors(mFilu->errors());
     return false;
   }
 
@@ -212,11 +212,11 @@ bool CalcFilu::calc()
     int errNo = query->value(2).toInt();
     if((mIndiErrorText.size() < errNo) or (mIndiErrorText.size() == 0))
     {
-      addErrorText("Unknown ErrorNo " + QString::number(errNo) + " from Filu indicator " + mIns.at(0));
+      error(FFI_, tr("Unknown ErrorNo '%1' from Filu indicator '%2'.").arg(errNo).arg(mIns.at(0)));
     }
     else
     {
-      addErrorText(mIndiErrorText.at(errNo - 1));
+      error(FFI_, mIndiErrorText.at(errNo - 1));
     }
 
     return false;

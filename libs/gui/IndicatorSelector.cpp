@@ -21,7 +21,9 @@
 
 #include "SearchField.h"
 
-IndicatorSelector::IndicatorSelector(FClass* parent) : FWidget(parent)
+IndicatorSelector::IndicatorSelector(FClass* parent)
+                 : FWidget(parent)
+                 , mTALib(this)
 {
   createPage();
 }

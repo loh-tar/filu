@@ -275,7 +275,8 @@ void InspectorF::loadRule(const QString& fileName)
 
   if (!mTrader->useRuleFile(fileName))
   {
-    QStringList error = mTrader->errorText();
+    QStringList error;
+    error << "FIXME:mTrader->errorText()";
     QMessageBox::critical(this, tr("Indicator Editor"),
                          error.join("\n"),
                          QMessageBox::Close);
@@ -479,8 +480,8 @@ void InspectorF::resultSelected(const QModelIndex& index)
 void InspectorF::backTestError()
 {
   clearErrors();
-  addErrorText(mBackTester->errorText());
-  mReport.insertPlainText(errorText().join("\n") + "\n");
+  addErrors(mBackTester->errors());
+  mReport.insertPlainText("FIXME:errorText().join..");//(errorText().join("\n") + "\n");
   mReport.moveCursor(QTextCursor::Start);
 
   mTabWidget->setCurrentWidget(&mReport);

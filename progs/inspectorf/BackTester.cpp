@@ -182,13 +182,13 @@ bool BackTester::backtest()
 
     if(!mTrader->useRule(mTestRule))
     {
-      addErrorText(mTrader->errorText());
+      addErrors(mTrader->errors());
       return false;
     }
 
     if(!mTrader->useIndicator(mTestIndicator))
     {
-      addErrorText(mTrader->errorText());
+      addErrors(mTrader->errors());
       return false;
     }
 
@@ -198,7 +198,7 @@ bool BackTester::backtest()
 
     if(fiCount == -1)
     {
-      addErrorText(mTrader->errorText());
+      addErrors(mTrader->errors());
       mRun = false;
       mMutex.unlock();
       return false;
@@ -214,7 +214,7 @@ bool BackTester::backtest()
       ++loop;
       if(ret == 2)
       {
-        addErrorText(mTrader->errorText());
+        addErrors(mTrader->errors());
         emit loopDone(loop);
         continue; // Any problem while simulation, but go ahead
       }
@@ -318,13 +318,13 @@ bool BackTester::detectConstants()
 
   if(!mTrader->useRule(mTestRule))
   {
-    addErrorText(mTrader->errorText());
+    addErrors(mTrader->errors());
     return false;
   }
 
   if(!mTrader->useIndicator(mTestIndicator))
   {
-    addErrorText(mTrader->errorText());
+    addErrors(mTrader->errors());
     return false;
   }
 
@@ -332,7 +332,7 @@ bool BackTester::detectConstants()
 
   if(fiCount == -1)
   {
-    addErrorText(mTrader->errorText());
+    addErrors(mTrader->errors());
     return false;
   }
 

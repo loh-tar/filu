@@ -97,20 +97,20 @@ void Scanner::loadIndicator(const QStringList& parm)
 
     if(indicator->hasError())
     {
-      addErrorText(indicator->errorText());
+      addErrors(indicator->errors());
       continue;
     }
 
     if(!indicator->hasScan4())
     {
-      addErrorText(QString("Scanner::loadIndicator: No 'SCAN4' variable in indicator %1").arg(indi));
+      error(FFI_, tr("No 'SCAN4' variable in indicator '%1'.").arg(indi));
       continue;
     }
 
     int frame = indicator->scanFreq(); // In fake days
     if(-1 == frame)
     {
-      addErrorText(indicator->errorText().join("\n"));
+      addErrors(indicator->errors());
       continue;
     }
 
@@ -169,7 +169,7 @@ void Scanner::setTimeFrame(const QStringList& parm)
   QStringList frame;
   if(FTool::getParameter(parm, "--timeFrame", frame) < 1)
   {
-    addErrorText("Scanner::setTimeFrame: No frame given.");
+    error(FFI_, tr("No frame given."));
     return;
   }
 
@@ -177,7 +177,7 @@ void Scanner::setTimeFrame(const QStringList& parm)
 
   if(mForcedFrame == -1)
   {
-    addErrorText(QString("Scanner::setTimeFrame: Frame unknown: %1").arg(frame.at(0)));
+    error(FFI_, tr("Frame unknown: %1").arg(frame.at(0)));
   }
 }
 
@@ -208,7 +208,7 @@ void Scanner::autoSetup()
     QFile file(indicatorPath + files.at(i));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      addErrorText(QString("Scanner::autoSetup: Can't open indicator file: %1").arg(files.at(i)));
+      fatal(FFI_, tr("Can't open indicator file: %1").arg(files.at(i)));
       continue;
     }
 
@@ -248,7 +248,7 @@ void Scanner::scanGroup(const QStringList& parm)
   QStringList arg;
   if(FTool::getParameter(parm, "--group", arg) < 1)
   {
-    addErrorText("Scanner::scanGroup: No group given.");
+    error(FFI_, tr("No group given."));
     return;
   }
 
@@ -287,7 +287,7 @@ void Scanner::scanAll()
   SymbolTuple* symbols = mFilu->getAllProviderSymbols();
   if(!symbols)
   {
-    addErrorText("Scanner::scanAll: No symbols found.");
+    error(FFI_, tr("No symbols found."));
     return;
   }
 
@@ -312,7 +312,7 @@ void Scanner::scanThis(const QStringList& parm)
   QStringList arg;
   if(FTool::getParameter(parm, "--this", arg) < 2)
   {
-    addErrorText("Scanner::scanThis: Too less arguments.");
+    error(FFI_, tr("Too less arguments."));
     return;
   }
 
@@ -364,7 +364,7 @@ void Scanner::scan(BarTuple* bars)
     }
     //else if(mIndicators.at(i)->hasError())
     //{
-    //  addErrorText(mIndicators.at(i)->errorText().join("\n"));
+    //  addErrors(mIndicators.at(i)->errors());
     //  removeErrorText("No watchdog on patrol");
     //  //return;
     //}

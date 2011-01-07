@@ -31,10 +31,8 @@
 class PlotHistogramBar : public PlotType
 {
   public:
-                  PlotHistogramBar();
+                  PlotHistogramBar(Newswire* parent);
     virtual      ~PlotHistogramBar();
-
-    virtual PlotHistogramBar* createNew(const QString& type = "");
 
     virtual bool  prepare(QStringList& command, QStringList& plotDataKeys);
     virtual bool  paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);

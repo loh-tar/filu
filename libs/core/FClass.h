@@ -35,38 +35,19 @@
 
 class FClass : public Newswire
 {
-  Q_DECLARE_TR_FUNCTIONS(FClass)
-
   public:
-                   FClass(const FClass* parent);
+                   FClass(FClass* parent);
                    FClass(const QString& connectionName);
     virtual       ~FClass();
 
-    enum MsgType
-    {
-      eNotice,
-      eWarning,
-      eError,
-      eCritical
-    };
-
-    const QStringList& errorText() const { return mErrorMessage; };
-    bool               hasError() const { return mHasError; };
-
   protected:
-    void           addErrorText(const QStringList& errorMessage, MsgType type = eNotice);
-    void           addErrorText(const QString& errorMessage, MsgType type = eNotice);
-    void           removeErrorText(const QString& errorMessage);
-    bool           check4FiluError(const QString& errMessage);  // True if error
-    void           clearErrors();
+    bool           check4FiluError(const QString& func, const QString& txt, const ErrorType type = eError);  // True if error
 
     RcFile*        mRcFile;
     FiluU*         mFilu;
     int            mDebugLevel;
 
   private:
-    QStringList    mErrorMessage;
-    bool           mHasError;
     bool           mRoot;
 };
 

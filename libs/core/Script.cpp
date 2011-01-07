@@ -36,12 +36,12 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 {
   clearErrors();
 
-  //addErrorText("Script::execute: " + script + " " + parameters.join(" "), eNotice);
+  //error(FFI_, script + " " + parameters.join(" "), eNotice);
   //qDebug() << "Script::execute: " + script + " " + parameters.join(" ");
 
   if(!script.length())
   {
-    addErrorText("Script::execute: " + tr("No script name"), eError);
+    error(FFI_, tr("No script name"));
     return 0;
   }
 
@@ -59,7 +59,7 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      addErrorText("Script::execute: Script not started:" + script, eCritical);
+      fatal(FFI_, tr("Script not started: %1").arg(script));
       mRunning = false;
       mProc->kill();
     }
@@ -74,13 +74,13 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      addErrorText("Script::execute: " + tr("Script not started:") + script, eCritical);
+      fatal(FFI_, tr("Script not started:") + script);
       return 0;
     }
 
     if(!mProc->waitForFinished())
     {
-      addErrorText("Script::execute: " + tr("Script not finished:") + script, eCritical);
+      fatal(FFI_, tr("Script not finished:") + script);
       mProc->kill();
       return 0;
     }
@@ -104,8 +104,7 @@ QStringList* Script::askProvider(const QString& provider
 
   if(script.isEmpty())
   {
-    addErrorText("Script::askProvider: " + tr("Provider '") + provider
-             + tr("' has no script for function '") + function + "'");
+    error(FFI_, tr("Provider '%1' has no script for function '%2'.").arg(provider, function));
 
     emit finished();
 
