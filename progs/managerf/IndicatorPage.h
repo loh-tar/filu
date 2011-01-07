@@ -21,7 +21,6 @@
 #define INDICATORPAGE_H
 
 #include "ManagerPage.h"
-#include "TALib.h"
 
 class IndicatorEditor;
 class IndicatorSelector;
@@ -50,7 +49,6 @@ class IndicatorPage : public ManagerPage
 
 //    QStringList mTheIndicator;
 
-    TALib mTALib;
 };
 
 #endif

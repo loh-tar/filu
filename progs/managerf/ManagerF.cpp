@@ -117,7 +117,7 @@ void ManagerF::createIcons()
     mp->setPageIcon(icon);
 
     // Fetch errors happens while page construction
-    QString msg = mp->errorText().join("\n");
+    QString msg = mp->formatErrors();
     if(!msg.isEmpty())
     {
       msg.prepend(mp->iconText() + " Page: ");
@@ -140,32 +140,29 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
   mPageStack->setCurrentIndex(mPageIcons->row(current));
 }
 
-void ManagerF::messageBox(const QString& func, const QString& msg, const MsgType type/* = eNotice*/)
+void ManagerF::messageBox(const QString& func, const QString& msg, const MsgType type/* = eInfoMsg*/)
 {
-  // func looks like "void ManagerF::messageBox(...)"
-  QRegExp regex("\\w+::\\w+");
-  regex.indexIn(func);          // Extract to "ManagerF::messageBox"
-  QString message = regex.cap() + ": " + msg;
+  QString message = formatMessage(func, msg, type, "%f %x");
 
-  addErrorText(message, type);
+  setMessage(func, msg, type);
   mMsgLabel->setMessage(message, type);
   mLogBookPage->addToLog(message, type);
 }
 
 MsgLabel::MsgLabel()
         : QLabel()
-        , mLastMsgType(FClass::eNotice)
+        , mLastMsgType(Newswire::eInfoMsg)
 {
   connect(&mRolex, SIGNAL(timeout()), this, SLOT(resetMessage()));
 }
 
-void MsgLabel::setMessage(const QString& msg, const FClass::MsgType type/* = eNotice*/)
+void MsgLabel::setMessage(const QString& msg, const Newswire::MsgType type/* = eInfoMsg*/)
 {
   // Don't overwirte an important message with a less important one
   if(type < mLastMsgType) return;
   mLastMsgType = type;
 
-  if(type > FClass::eNotice) setStyleSheet("background: yellow");
+  if(type > Newswire::eInfoMsg) setStyleSheet("background: yellow");
 
   setText(msg);
   repaint();    // Force an update as soon as possible
@@ -175,7 +172,7 @@ void MsgLabel::setMessage(const QString& msg, const FClass::MsgType type/* = eNo
 
 void MsgLabel::resetMessage()
 {
-  mLastMsgType = FClass::eNotice;
+  mLastMsgType = Newswire::eInfoMsg;
   setStyleSheet("");
   setText("");
 }

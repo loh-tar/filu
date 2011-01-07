@@ -23,24 +23,7 @@
 #include "FWidget.h"
 
 class LogBookPage;
-
-class MsgLabel : public QLabel // MessageLabel
-{
-  Q_OBJECT
-
-  public:
-                    MsgLabel();
-    virtual        ~MsgLabel() {};
-
-  public slots:
-    void            setMessage(const QString& msg, const FClass::MsgType type = FClass::eNotice);
-    void            resetMessage();
-
-  protected:
-    FClass::MsgType mLastMsgType;
-    QTimer          mRolex;
-
-};
+class MsgLabel;
 
 class ManagerF : public FMainApp
 {
@@ -52,7 +35,7 @@ class ManagerF : public FMainApp
 
   public slots:
     void        changePage(QListWidgetItem* current, QListWidgetItem* previous);
-    void        messageBox(const QString& func, const QString& msg, const MsgType type = eNotice);
+    void        messageBox(const QString& func, const QString& msg, const MsgType type = eInfoMsg);
 
   private:
     void        createIcons();
@@ -61,6 +44,24 @@ class ManagerF : public FMainApp
     QStackedWidget* mPageStack;
     MsgLabel*       mMsgLabel;
     LogBookPage*    mLogBookPage;
+};
+
+class MsgLabel : public QLabel // MessageLabel
+{
+  Q_OBJECT
+
+  public:
+                    MsgLabel();
+    virtual        ~MsgLabel() {};
+
+  public slots:
+    void            setMessage(const QString& msg, const Newswire::MsgType type = Newswire::eInfoMsg);
+    void            resetMessage();
+
+  protected:
+    Newswire::MsgType mLastMsgType;
+    QTimer            mRolex;
+
 };
 
 #endif

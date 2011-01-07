@@ -26,6 +26,7 @@
 
 AddFiPage::AddFiPage(FClass* parent)
          : ManagerPage(parent)
+         , mHitCounter(this)
 {
   createPage();
 }
@@ -220,7 +221,7 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
 
   QString val = mPreparedHeaderData.value("Type");
   int idx = mType->findText(val);
-  if((idx < 0) and !val.isEmpty()) emit message(Q_FUNC_INFO, tr("Unknown FiType: ") + val, eWarning);
+  if((idx < 0) and !val.isEmpty()) emit message(FFI_, tr("Unknown FiType: %1").arg(val), eWarning);
   mType->setCurrentIndex(idx);
 
   // Search for Symbol/Market/Provider with or without a number suffix
@@ -238,12 +239,12 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
 
     val = mPreparedHeaderData.value("Market" + suffix);
     idx = mPSMGrp.market(i)->findText(val);
-    if((idx < 0) and !val.isEmpty()) emit message(Q_FUNC_INFO, tr("Unknown Market: ") + val, eWarning);
+    if((idx < 0) and !val.isEmpty()) emit message(FFI_, tr("Unknown Market: %1").arg(val), eWarning);
     mPSMGrp.market(i)->setCurrentIndex(idx);
 
     val = mPreparedHeaderData.value("Provider" + suffix);
     idx = mPSMGrp.provider(i)->findText(val);
-    if((idx < 0) and !val.isEmpty()) emit message(Q_FUNC_INFO, tr("Unknown SymbolType: ") + val, eWarning);
+    if((idx < 0) and !val.isEmpty()) emit message(FFI_, tr("Unknown SymbolType: %1").arg(val), eWarning);
     mPSMGrp.provider(i)->setCurrentIndex(idx);
 
     bool isProvider = mPSMGrp.provider(i)->itemData(idx).toBool();
@@ -305,7 +306,7 @@ void AddFiPage::removeRow()
 void AddFiPage::searchFi()
 {
   QString msg = tr("Search FI at %1 matched to '%2'...");
-  emit message(Q_FUNC_INFO, msg.arg(mProvider).arg(mSearchField->text()));
+  emit message(FFI_, msg.arg(mProvider).arg(mSearchField->text()));
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
   mScripter->askProvider(mProvider, "fetchFi", parms);
@@ -314,7 +315,7 @@ void AddFiPage::searchFi()
 void AddFiPage::searchIdx()
 {
   QString msg = tr("Search Components at %1 for '%2'...");
-  emit message(Q_FUNC_INFO, msg.arg(mProvider).arg(mSearchField->text()));
+  emit message(FFI_, msg.arg(mProvider).arg(mSearchField->text()));
   QStringList parms(mSearchField->text());
   mScripter->showWaitWindow();
   mScripter->askProvider(mProvider, "fetchCompList", parms);
@@ -335,7 +336,7 @@ bool AddFiPage::importFails(const QString& func, const QString& data)
 
   if(mImporter->hasError())
   {
-    emit message(func, mImporter->errorText().join("\n"), eError);
+    emit message(func, mImporter->formatErrors(), eError);
     return true;
   }
 
@@ -365,7 +366,7 @@ void AddFiPage::fillResultTable(QStringList* data)
       // mPreparedHeader will became: "Symbol0", "Name", "Symbol1", "Market1", "Quality", "Notice", "Provider0", "Market0", "Provider1"
       // mPreparedHeaderData will became: QHash(("Market0", "NoMarket")("Market1", "")("Provider0", "Reuters")("Symbol0", "")("Provider1", "Yahoo")("Symbol1", "")("Notice", "")("Quality", "")("Name", ""))
       mImporter->reset();
-      importFails(Q_FUNC_INFO, data->at(r)); // Only to check for wrong MakeNameNice.conf.
+      importFails(FFI_, data->at(r)); // Only to check for wrong MakeNameNice.conf.
                                              // But ignore the error if some
       mImporter->getPreparedHeaderData(mPreparedHeader, mPreparedHeaderData);
       //qDebug() << data->at(r);
@@ -487,7 +488,7 @@ void AddFiPage::searchOrCancel()
     if(mSearchCancelBtn->text() == "Cancel")
     {
       mScripter->stopRunning();
-      emit message(Q_FUNC_INFO, tr("Script canceled"));
+      emit message(FFI_, tr("Script canceled."));
     }
     else search();
   }
@@ -501,18 +502,18 @@ void AddFiPage::scriptFinished()
   {
     // For 'historical reasons', and because it looks so cool,
     // we fill the result table with the error message...
-    QString errorMsg = mScripter->errorText().at(0); // We keep it simple, assume no more than one line
+    QString errorMsg = mScripter->formatErrors();
     QStringList* result = new QStringList;
     result->append("[Header]Error");
     result->append(errorMsg);
     fillResultTable(result);
 
     // ...and of cause the log book
-    emit message(Q_FUNC_INFO, errorMsg, eError);
+    emit message(FFI_, errorMsg, eError);
   }
   else
   {
-    emit message(Q_FUNC_INFO, mHitCounter.text());
+    emit message(FFI_, mHitCounter.text());
   }
 }
 
@@ -560,7 +561,7 @@ void AddFiPage::addToDB()
   QString last = msg.at(msg.size() - 1);
   last.chop(2);
   msg.replace((msg.size() - 1), last);
-  emit message(Q_FUNC_INFO, msg.join(""));
+  emit message(FFI_, msg.join(""));
 
   // Build Header and Data Line
   QString header = "[Header]";
@@ -594,8 +595,8 @@ void AddFiPage::addToDB()
 
   // Import the stuff
   mImporter->reset();
-  if(importFails(Q_FUNC_INFO, header)) return;
-  if(importFails(Q_FUNC_INFO, data)) return;
+  if(importFails(FFI_, header)) return;
+  if(importFails(FFI_, data)) return;
 
   // Looks good, clear the edit fields
   mRefSymbol->setText("");
@@ -606,7 +607,7 @@ void AddFiPage::addToDB()
     mPSMGrp.searchBtn(i)->hide();
   }
 
-  emit message(Q_FUNC_INFO, tr("New FI added to DB"));
+  emit message(FFI_, tr("New FI added to DB."));
 }
 
 void AddFiPage::addAllToDB()
@@ -621,7 +622,7 @@ void AddFiPage::addAllToDB()
   if(ret != QMessageBox::Ok) return;
 
   txt = tr("Going to add %1 FIs...").arg(mResultList->rowCount());
-  emit message(Q_FUNC_INFO, txt);
+  emit message(FFI_, txt);
 
   QString header = "[Header]";
   header.append(mResultList->horizontalHeaderItem(0)->text());
@@ -630,15 +631,15 @@ void AddFiPage::addAllToDB()
     header.append(";" + mResultList->horizontalHeaderItem(i)->text());
   }
 
-  emit message(Q_FUNC_INFO, header);
+  emit message(FFI_, header);
   mImporter->reset();
-  if(importFails(Q_FUNC_INFO, header)) return;
+  if(importFails(FFI_, header)) return;
 
   if("Index" == mDisplayType)
   {
     txt = tr("FIs will added as components of %1").arg(mSearchField->text());
-    emit message(Q_FUNC_INFO, txt);
-    if(importFails(Q_FUNC_INFO, "[CompList]" + mSearchField->text())) return;
+    emit message(FFI_, txt);
+    if(importFails(FFI_, "[CompList]" + mSearchField->text())) return;
   }
 
   for(int r = 0; r < mResultList->rowCount(); ++r)
@@ -648,14 +649,14 @@ void AddFiPage::addAllToDB()
     {
       data.append(mResultList->item(r, c)->text());
     }
-    emit message(Q_FUNC_INFO, data.join(";"));
-    if(importFails(Q_FUNC_INFO, data.join(";")) and ("Index" == mDisplayType)) return; // Ignore the Error if no ComponentList
+    emit message(FFI_, data.join(";"));
+    if(importFails(FFI_, data.join(";")) and ("Index" == mDisplayType)) return; // Ignore the Error if no ComponentList
   }
 
   if("Index" == mDisplayType)
   {
-    emit message(Q_FUNC_INFO, tr("End of Component list"));
-    if(importFails(Q_FUNC_INFO, "[CompListEnd]")) return;
+    emit message(FFI_, tr("End of Component list."));
+    if(importFails(FFI_, "[CompListEnd]")) return;
   }
 }
 

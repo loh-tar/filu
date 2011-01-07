@@ -22,8 +22,6 @@
 
 #include "FWidget.h"
 
-class ManagerF;
-
 class ManagerPage : public FWidget
 {
   Q_OBJECT
@@ -41,7 +39,7 @@ class ManagerPage : public FWidget
     signals:
     void            message(const QString& func
                           , const QString& msg
-                          , const MsgType type = eNotice);
+                          , const MsgType type = eInfoMsg);
 
   protected:
     QIcon           mIcon;

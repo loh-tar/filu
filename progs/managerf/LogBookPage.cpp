@@ -71,7 +71,7 @@ void LogBookPage::createPage()
 void LogBookPage::addToLog(const QString& msg, const MsgType type)
 {
   mLogBook.moveCursor(QTextCursor::End);
-  if(type == eNotice) mLogBook.setTextBackgroundColor(QColor("white"));
+  if(type == eInfoMsg) mLogBook.setTextBackgroundColor(QColor("white"));
   else mLogBook.setTextBackgroundColor(QColor("yellow"));
 //   if(type == eWarning) mLogBook.setTextBackgroundColor(QColor("yellow"));
 //   if(type == eError) mLogBook.setTextBackgroundColor(QColor("red"));
@@ -120,14 +120,14 @@ void LogBookPage::readLogFile()
     QString msg = tr("File is big, have a little patience...");
     mLogFile.clear();
     mLogFile.insertPlainText(msg);
-    emit message(Q_FUNC_INFO, msg);
+    emit message(FFI_, msg);
   }
 
   mLogFile.clear();
   mLogFile.insertPlainText(messages.join("\n"));
   mLogFile.moveCursor(QTextCursor::End);
 
-  if(file.size() > 10000) emit message(Q_FUNC_INFO, tr("...Done."));
+  if(file.size() > 10000) emit message(FFI_, tr("...Done."));
 
   file.close();
 }
@@ -156,8 +156,8 @@ void LogBookPage::clearLogFile()
   else
   {
     fatal(FFI_, tr("Can't remove LogFile"));
-    emit message(Q_FUNC_INFO, tr("Can't remove LogFile"));
+    emit message(FFI_, tr("Can't remove LogFile."));
   }
 
-  emit message(Q_FUNC_INFO, tr("LogFile cleared."));
+  emit message(FFI_, tr("LogFile cleared."));
 }

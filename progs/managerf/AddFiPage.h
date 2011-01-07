@@ -61,13 +61,21 @@ class HitCountLabel : public QLabel
 {
 
   public:
-       HitCountLabel() : QLabel() { setPrefix(tr("Found"));
-                                    setCount(0);
-                                    /*setFrameStyle(QFrame::Panel | QFrame::Sunken);*/ };
+          HitCountLabel(QWidget* p) : QLabel(p)
+          {
+            setPrefix(tr("Found"));
+            setCount(0);
+            /*setFrameStyle(QFrame::Panel | QFrame::Sunken);*/
+          };
 
-  void setPrefix(const QString& pf) { mPrefix = pf + ": "; };
-  void setCount(const int c) { setText(mPrefix + QString::number(c)); mCount = c; };
-  int  count() const { return mCount; };
+    void  setPrefix(const QString& pf) { mPrefix = pf + ": "; };
+    void  setCount(const int c)
+          {
+            setText(mPrefix + QString::number(c));
+            mCount = c;
+          };
+
+    int  count() const { return mCount; };
 
   protected:
     QString mPrefix;
