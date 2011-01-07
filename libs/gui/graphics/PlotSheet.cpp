@@ -192,7 +192,7 @@ void PlotSheet::printError()
 {
   if(!hasError()) return;
 
-  QString error = "FIXME:PlotSheet::printError()";//errorText().join("\n");
+  QString error = formatErrors("%x");
 
   int x = size().width() / 2;
   int y = size().height() / 2;

@@ -433,11 +433,11 @@ void IndicatorPainter::setIndicatingRange(int from, int count)
 
 bool IndicatorPainter::paint()
 {
-  static const char* errTxt("No data to paint something");
+  static const QString errTxt = tr("No data to paint something.");
 
   if(!mBars)
   {
-    error(FUNC, errTxt);
+    errInfo(FUNC, errTxt);
   }
   else
   {

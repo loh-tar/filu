@@ -127,8 +127,8 @@ void Importer::reset()
     QFile file(mRcFile->getGlobalST("FiluHome") + "MakeNameNice.conf");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      const QString errorMsg1 = QObject::tr("Wrong \"=\" in line %1 of file 'MakeNameNice.conf'.");
-      const QString errorMsg2 = QObject::tr("Invalid RegExp in line %1 of file 'MakeNameNice.conf', ErrTxt: %2.");
+      const QString errorMsg1 = tr("Wrong \"=\" in line %1 of file 'MakeNameNice.conf'.");
+      const QString errorMsg2 = tr("Invalid RegExp in line %1 of file 'MakeNameNice.conf', ErrTxt: %2.");
 
       QTextStream in(&file);
       int ln = 0; // Count lines
@@ -725,12 +725,7 @@ void Importer::addFi()
     //qDebug() << "Importer::addFi: " << mData.value("Name") <<  mData.value("Type")
     //         << mSymbol->caption() << mSymbol->market() <<  mSymbol->owner() << newFiId;
 
-    if(newFiId >= Filu::eData)
-    {
-      // Success
-  //    mFilu->errorText(); // Clear potential messages
-      break;
-    }
+    if(newFiId >= Filu::eData) return; // Success
   }
 
   if(newFiId < Filu::eData)
@@ -763,7 +758,7 @@ void Importer::addSymbol()
 
   if(fiId < Filu::eData)
   {
-    QString msg = QObject::tr("Fail to add symbol. No fitting RefSymbol found: ");
+    QString msg = tr("Fail to add symbol. No fitting RefSymbol found: ");
     mSymbol->rewind();
     while(mSymbol->next())
     {

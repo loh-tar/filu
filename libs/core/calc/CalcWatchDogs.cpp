@@ -55,7 +55,7 @@ bool CalcWatchDogs::prepare(CalcParms& parms)
 
 bool CalcWatchDogs::calc()
 {
-  static const char* noDogTxt("No watchdog on patrol.");
+  static const QString noDogTxt = tr("No watchdog on patrol.");
 
   removeError(noDogTxt);
 
@@ -100,7 +100,7 @@ bool CalcWatchDogs::calc()
 
   if(!cot)
   {
-    error(FUNC, noDogTxt);
+    errInfo(FUNC, noDogTxt);
     return false;
   }
 
@@ -215,7 +215,7 @@ bool CalcWatchDogs::calc()
 
   if(!dogFound)
   {
-    error(FUNC, noDogTxt);
+    errInfo(FUNC, noDogTxt);
     return false;
   }
 

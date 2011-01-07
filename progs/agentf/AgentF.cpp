@@ -577,6 +577,7 @@ void AgentF::printSettings()
   QString txt = "%1 = %2";
   int width = -15; // Negative value = left-aligned
   print("AgentF settings are:");
+  print(txt.arg("Using QtVersion", width).arg(qVersion()));
   print(txt.arg("Settings file", width).arg(mRcFile->fileName()));
   print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf")); //FIXME: how to make system independent?
   print(txt.arg("ProviderPath", width).arg(mRcFile->getST("ProviderPath")));
