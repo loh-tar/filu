@@ -49,43 +49,57 @@ class Newswire
       eMax        =  2
     };
 
-    enum ErrorType
+    enum MsgType
     {
       eNoError    =  0,
-      eErrInfo    =  0,
+      eInfoMsg    =  0,
       eWarning    =  1,  // We expect something else, but go on
-      eError      =  2,  // Really bad, we can't go on
-      eFatal      =  3   // Should *never* happens
+      eErrInfo    =  2,
+      eError      =  3,  // Really bad, we can't go on
+      eFatal      =  4   // Should *never* happens
     };
 
-    struct Error  // It's a typedef
+    struct Message  // It's a typedef
     {
       QString   func;
       QString   text;
-      ErrorType type;
+      MsgType   type;
     };
+
+    typedef QList<Message> MessageLst;
 
     void            setVerboseLevel(const VerboseLevel level);
     void            setVerboseLevel(const QString& func, const QString& level);
     VerboseLevel    verboseLevel() { return mVerboseLevel; };
 
-    const QList<Error>& errors() const { return mErrors; };
+    void                setRawFuncRegex(const QRegExp& regex);
+    void                setNoErrorLogging(bool noErrorLogging);
+    void                setLogFile(const QString& path);
+    const MessageLst&   errors() const { return mErrors; };
+    QString             formatErrors(const QString& format = "%f *** %t *** %x");
     bool                hasError() const { return mHasError; };
+    QString             messageTypeName(const MsgType type);
 
     friend class RcFile;
 
   protected:
-    void            setLogFile(const QString& path);
     void            print(const QString& txt) { *mErrConsole << txt << endl; };
     void            verbose(const QString& func, const QString& txt, const VerboseLevel type = eInfo)
                            { if(mVerboseLevel >= type) verboseP(func, txt, type); };
 
-    void            addErrors(const QList<Error>& error);
+    void            addErrors(const MessageLst& errors);
     void            errInfo(const QString& func, const QString& txt);
     void            warning(const QString& func, const QString& txt);
     void            error(const QString& func, const QString& txt);
     void            fatal(const QString& func, const QString& txt);
-    void            setError(const QString& func, const QString& txt, const ErrorType type);
+    void            setMessage(const QString& func, const QString& txt, const MsgType type);
+
+    QString         formatMessage(const QString& func                          // The % place holder means:
+                                , const QString& txt                           // %f function name
+                                , const MsgType type                           // %t message type
+                                , const QString& format = "%f *** %t *** %x"); // %x text
+                                                                               // %c connection name
+
     void            removeError(const QString& txt);
     bool            isRoot() { return mRoot; };
     void            clearErrors();
@@ -94,8 +108,8 @@ class Newswire
                         // P for private
     void            verboseP(const QString& func, const QString& txt, const VerboseLevel type = eInfo);
 
-    void            addError(const QString& func, const QString& txt, const ErrorType type);
-    void            logError(const QString& func, const QString& txt, const QString& type);
+    void            addError(const QString& func, const QString& txt, const MsgType type);
+    void            logError(const QString& func, const QString& txt, const MsgType type);
 
     QString         rawFunc(const QString& func)
                     {
@@ -106,11 +120,12 @@ class Newswire
 
     bool           mRoot;
     VerboseLevel   mVerboseLevel;
-    QList<Error>   mErrors;
+    MessageLst     mErrors;
     bool           mHasError;
     QTextStream*   mErrConsole;
     QFile*         mLogFileFile;
     QTextStream*   mLogFile;
+    bool           mNoErrorLogging;
     QRegExp        mRawFuncRegex;
     QString        mConnName;       // ConnectionName/ProgramName for logfile entries
 };

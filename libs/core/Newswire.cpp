@@ -27,6 +27,7 @@ Newswire::Newswire(const QString& connectionName)
         , mErrConsole(new QTextStream(stderr))
         , mLogFileFile(0)
         , mLogFile(0)
+        , mNoErrorLogging(false)
         , mRawFuncRegex("\\w+(?=::)")
         , mConnName(connectionName)
 
@@ -39,6 +40,7 @@ Newswire::Newswire(Newswire* parent)
         , mErrConsole(parent->mErrConsole)
         , mLogFileFile(0)
         , mLogFile(0)
+        , mNoErrorLogging(false)
         , mRawFuncRegex("\\w+::\\w+")
 {}
 
@@ -93,9 +95,58 @@ void Newswire::setVerboseLevel(const QString& func, const QString& level)
   }
 }
 
-void Newswire::addErrors(const QList<Error>& errors)
+void Newswire::setRawFuncRegex(const QRegExp& regex)
 {
-  foreach(Error error, errors)
+  mRawFuncRegex = regex;
+}
+
+void Newswire::setNoErrorLogging(bool noErrorLogging)
+{
+  mNoErrorLogging = noErrorLogging;
+}
+
+QString Newswire::formatErrors(const QString& format/* = "%f *** %t *** %x"*/)
+{
+  QString errors;
+  foreach(Message error, mErrors)
+  {
+    errors.append(formatMessage(error.func, error.text, error.type, format) + "\n");
+  }
+
+  errors.chop(1); // Remove last newline
+  return errors;
+}
+
+QString Newswire::formatMessage(const QString& func, const QString& txt, const MsgType type, const QString& format/* = "%f *** %t *** %x"*/)
+{
+  QString message = format;
+
+  message.replace("%f", rawFunc(func));
+  message.replace("%t", messageTypeName(type));
+  message.replace("%c", mConnName);
+  message.replace("%x", txt); // Replace at last, maybe is '%foo' in txt
+//   message.replace("%d", QDate...);
+//   message.replace("", );
+
+  return message;
+}
+
+QString Newswire::messageTypeName(const MsgType type)
+{
+  switch(type)
+  {
+    case eInfoMsg: return tr("Info");    break;
+    case eErrInfo: return tr("Info ");   break; // Um, yes one blank to became same lenght as "Error"
+    case eError:   return tr("Error");   break;
+    case eWarning: return tr("Warning"); break;
+    case eFatal:   return tr("Fatal");   break;
+    default:       return "UnknownMessageTypeName"; // Um, yes no tr(), should you never read
+  }
+}
+
+void Newswire::addErrors(const MessageLst& errors)
+{
+  foreach(Message error, errors)
   {
     for(int i = 0; i < mErrors.size(); ++i)
     {
@@ -111,37 +162,38 @@ void Newswire::addErrors(const QList<Error>& errors)
 void Newswire::errInfo(const QString& func, const QString& txt)
 {
   addError(func, txt, eErrInfo);
-  logError(func, txt, "Info ");
+  logError(func, txt, eErrInfo);
 }
 
 void Newswire::warning(const QString& func, const QString& txt)
 {
   addError(func, txt, eWarning);
-  logError(func, txt, "Warning");
+  logError(func, txt, eWarning);
 }
 
 void Newswire::error(const QString& func, const QString& txt)
 {
   addError(func, txt, eError);
-  logError(func, txt, "Error");
+  logError(func, txt, eError);
 }
 
 void Newswire::fatal(const QString& func, const QString& txt)
 {
   addError(func, txt, eFatal);
-  logError(func, txt, "Fatal");
+  logError(func, txt, eFatal);
 }
 
-void Newswire::setError(const QString& func, const QString& txt, const ErrorType type/* = eError*/)
+void Newswire::setMessage(const QString& func, const QString& txt, const MsgType type/* = eError*/)
 {
   switch(type)
   {
+    case eInfoMsg: verbose(func, txt, eInfo); break;
     case eErrInfo: errInfo(func, txt); break;
     case eError:   error(func, txt);   break;
     case eWarning: warning(func, txt); break;
     case eFatal:   fatal(func, txt);   break;
     default:
-      fatal(func, QString("Oops, unknown ErrorType: %1, ErrorText is: %2").arg(type).arg(txt));
+      fatal(func, QString("Oops, unknown MsgType: %1, ErrorText is: %2").arg(type).arg(txt));
   }
 }
 
@@ -170,7 +222,7 @@ void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLe
   *mErrConsole << rawFunc(func) << " " << txt << endl;
 }
 
-void Newswire::addError(const QString& func, const QString& txt, const ErrorType type)
+void Newswire::addError(const QString& func, const QString& txt, const MsgType type)
 {
   for(int i = 0; i < mErrors.size(); ++i)
   {
@@ -178,15 +230,21 @@ void Newswire::addError(const QString& func, const QString& txt, const ErrorType
     return;
   }
 
-  Error error = { rawFunc(func), txt, type };
+  Message error = { rawFunc(func), txt, type };
 
   mErrors.append(error);
   mHasError = true;
 }
 
-void Newswire::logError(const QString& func, const QString& txt, const QString& type)
+void Newswire::logError(const QString& func, const QString& txt, const MsgType type)
 {
-  *mErrConsole << QString("%1 *** %3 *** %2").arg(rawFunc(func), txt, type) << endl;
+  if(!mNoErrorLogging)
+  {
+    *mErrConsole << formatMessage(func, txt, type) << endl;
+  }
 
-  if(mLogFile) *mLogFile << QString("%4 *** %3 *** %1 %2").arg(rawFunc(func), txt, type, mConnName) << endl;
+  if(!mNoErrorLogging or (type == eFatal))
+  {
+    if(mLogFile) *mLogFile << formatMessage(func, txt, type, "%c *** %t *** %f %x") << endl;
+  }
 }
