@@ -80,7 +80,6 @@ class Filu : public Newswire
     void setFiName(const QString& name);   // Deprecated, only at FiPage.cpp:129
     void setFiType(const QString& type);   // Deprecated, only like mFilu->setFiType("");
     void setFiId(int);
-    bool setIdsByNameSettings();           // Deprecated, I hate it, only used intern
     void setMarketId(int);
     int  setMarketName(const QString&);    // Returns marketId or < eError
     int  setSymbolCaption(const QString&); // Returns FiId to symbol or < eError
@@ -211,7 +210,6 @@ class Filu : public Newswire
     QString     mToDate;
     int         mLimit;  // To limit the count of rows at SELECT xyz FROM abc...
     bool        mOnlyProviderSymbols;
-    int         mSqlDebugLevel;
     QString     mLastError;
     QString     mLastQuery;
 

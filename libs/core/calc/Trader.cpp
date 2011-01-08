@@ -65,7 +65,7 @@ bool Trader::useRuleFile(const QString& fileName)
     mOrigRule.append(fileStream.readLine());
   }
 
-  verbose(FUNC, tr("File read in %1 milliseconds.").arg(time.elapsed()));
+  //verbose(FUNC, tr("File read in %1 milliseconds.").arg(time.elapsed()));
 
   mAutoLoadIndicator = true;
 
@@ -129,7 +129,7 @@ bool Trader::parseRule()
 
   if(!hasError())
   {
-    verbose(FUNC, tr("Rule setup in %1 milliseconds.").arg(time.elapsed()));
+    //verbose(FUNC, tr("Rule setup in %1 milliseconds.").arg(time.elapsed()));
     return true;
   }
 
@@ -193,15 +193,13 @@ void Trader::readSettings()
     QStringList setting = mLine.split("=");
     if(setting.size() < 2)
     {
-      error(FUNC, tr("No right argument at line: %1").arg(QString::number(mLineNumber)));
-      //qDebug() << mErrorMessage;
+      error(FUNC, tr("No right argument at line %1.").arg(QString::number(mLineNumber)));
       continue;
     }
 
     if(!mSettings.contains(setting.at(0)))
     {
-      error(FUNC, tr("Unknown setting at line: %1").arg(QString::number(mLineNumber)));
-      //qDebug() << mErrorMessage;
+      error(FUNC, tr("Unknown setting at line %1.").arg(QString::number(mLineNumber)));
       continue;
     }
 
@@ -227,11 +225,14 @@ void Trader::readSettings()
     mBarsNeeded = mIndicator->barsNeeded();
   }
 
-//   QHashIterator<QString, QString> i(mSettings);
-//   while (i.hasNext())
+//   if(verboseLevel() == eMax)
 //   {
-//     i.next();
-//    qDebug() << "Trader::readSettings:" << i.key() << ":" << i.value();
+//     QHashIterator<QString, QString> i(mSettings);
+//     while(i.hasNext())
+//     {
+//       i.next();
+//       verbose(FUNC, QString("Key:%1, Valule:%2").arg(i.key(), i.value()));
+//     }
 //   }
 }
 
@@ -247,7 +248,7 @@ void Trader::readRules()
   {
     if(!mLine.contains(":"))
     {
-      error(FUNC, tr("Missing colon at line: %1").arg(mLineNumber));
+      error(FUNC, tr("Missing colon at line %1.").arg(mLineNumber));
       continue;
     }
 
@@ -255,8 +256,7 @@ void Trader::readRules()
     QStringList rule = mLine.split(":");
     if(rule.size() < 2)
     {
-      error(FUNC, tr("No right argument at line: %1").arg(mLineNumber));
-      //qDebug() << mErrorMessage;
+      error(FUNC, tr("No right argument at line %1.").arg(mLineNumber));
       continue;
     }
 
@@ -282,7 +282,7 @@ void Trader::readRules()
 
       if(!knownActions.contains(action.at(0)))
       {
-        error(FUNC, tr("Unknown action '%1' at line: %2").arg(action.at(0)).arg(mLineNumber));
+        error(FUNC, tr("Unknown action '%1' at line %2.").arg(action.at(0)).arg(mLineNumber));
         continue;
       }
 
@@ -290,9 +290,8 @@ void Trader::readRules()
       if(action.size() == 4) action << "20";
       if(action.size() != 5)
       {
-        error(FUNC, tr("Wrong parameter count at line: %1").arg(mLineNumber));
+        error(FUNC, tr("Wrong parameter count at line %1.").arg(mLineNumber));
         errInfo(FUNC, mOrigLine);
-        //qDebug() << mErrorMessage;
         continue;
       }
       action[2].remove("%");
@@ -306,12 +305,16 @@ void Trader::readRules()
     mRules.last().second = actions;           // Set the actions
   }//while(nextLine());
 
-//   for(int i = 0; i < mRules.size(); ++i)
+//   if(verboseLevel() == eMax)
 //   {
-//     qDebug() << "Condition:" << mRules.at(i).first->getExp();
-//     qDebug() << "Action:" << mRules.at(i).second;
-//     qDebug();
+//     for(int i = 0; i < mRules.size(); ++i)
+//     {
+//       verbose(FUNC, "Condition:" + mRules.at(i).first->getExp());
+//       verbose(FUNC, "Action:" + mRules.at(i).second);
+//       verbose(FUNC, "");
+//     }
 //   }
+
 }
 
 void Trader::appendMData()
@@ -367,7 +370,7 @@ bool Trader::simulate(DataTupleSet* data)
 
   if(!mIndicator->calculate(mData)) return false;
 
-  //qDebug() << "Trader::simulate: indicator calculated in" << time.restart() << "milliseconds";
+//   verbose(FUNC, tr("Indicator calculated in %1 ms.").arg(time.restart()));
 
   // Give each Parser at this point mData. Here includes mData only
   // indicator variables. So the Parser can check which of the variables
@@ -423,7 +426,7 @@ bool Trader::simulate(DataTupleSet* data)
   setTo("TotalCommission", 0.0);
   //setTo("", 0.0);
 
-  //qDebug() << "Trader::simulate() variables setup in" << time.restart() << "milliseconds";
+//   verbose(FUNC, tr("Variables setup in").arg(time.restart()));
 
   QDate date;
   QStringList report;
@@ -484,7 +487,6 @@ bool Trader::simulate(DataTupleSet* data)
   if(!st)
   {
     error(FUNC, tr("Could not find symbols to Fi (!?)."));
-    //qDebug() << mErrorMessage;
     return false;
   }
 
@@ -567,9 +569,9 @@ bool Trader::simulate(DataTupleSet* data)
 //    v1 = mVariable.value("");
 //    appendReport("", v1);
 
-  //qDebug() << "Trader::simulate() simulation done in" << time.restart() << "milliseconds";
+  //verbose(FUNC, "Trader::simulate() simulation done in" << time.restart() << "milliseconds";
 
-//    for(int i = 0; i < mReport.size(); ++i) qDebug() << mReport.at(i);
+//    for(int i = 0; i < mReport.size(); ++i) verbose(FUNC, mReport.at(i);
 
   return true;
 }
@@ -610,7 +612,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(!found)
   {
-    error(FUNC, tr("Group not found: %1").arg(group));
+    error(FUNC, tr("Group '%1'not found.").arg(group));
     return -1;
   }
 
@@ -618,7 +620,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(!mFi)
   {
-    error(FUNC, tr("No FI found in group: %1").arg(group));
+    error(FUNC, tr("No FI found in group '%1'.").arg(group));
     return -1;
   }
 
@@ -647,12 +649,11 @@ int Trader::simulateNext()
 
   if(!mFi->next()) return 0;
 
-  //qDebug() << "simsalabim" << mFi->value(2).toString() << mFi->value(3).toString();
+  //verbose(FUNC, "simsalabim" << mFi->value(2).toString() << mFi->value(3).toString();
 
   BarTuple* bars = mFilu->getBars( mFi->value(1).toInt(), mFi->value(4).toInt(),
                                    mFromDate.toString(Qt::ISODate),
-                                   mToDate.toString(Qt::ISODate)
-                                 );
+                                   mToDate.toString(Qt::ISODate) );
 
   if(!bars)
   {
@@ -768,7 +769,7 @@ void Trader::actionBuy(const QStringList& action)
 
 //     if(orderVolume < mVariable.value("MinPositionSize"))
 //     {
-//       //qDebug() << "Trader::actionBuy() not enough cash left";
+//       //verbose(FUNC, "Trader::actionBuy() not enough cash left";
 //     }
 //     else
 //     {
@@ -804,7 +805,7 @@ void Trader::actionBuy(const QStringList& action)
   }
   else
   {
-    qDebug() << "FIXME: Trader::actionBuy: Short orders not implemented";
+    error(FUNC, "FIXME: Short orders not implemented.");
   }
 }
 
@@ -890,7 +891,7 @@ void Trader::actionSell(const QStringList& action)
   }
   else
   {
-    qDebug() << "FIXME: Trader::actionSell: Short orders not implemented";
+    error(FUNC, "FIXME: Short orders not implemented.");
   }
 }
 
@@ -975,7 +976,7 @@ void Trader::checkOpenBuyOrder(QStringList& order)
   }
   else // Type = "Short"
   {
-    qDebug() << "FIXME: Trader::checkOpenBuyOrder: Short orders not implemented";
+    error(FUNC, "FIXME: Short orders not implemented.");
   }
 
   bool isNumber;
@@ -1084,7 +1085,7 @@ void Trader::checkOpenSellOrder(QStringList& order)
   }
   else // Type = "Short"
   {
-    qDebug() << "FIXME: Trader::checkOpenSellOrder: Short orders not implemented";
+    error(FUNC, "FIXME: Short orders not implemented.");
   }
 
   bool isNumber;

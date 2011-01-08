@@ -20,8 +20,6 @@ H: finish cmake build system. I think there need some modifications in use of
    variables
 H: add dbus support to the progs. Send messages whats going on and react on such
    message, e.g. agentf."FI updated" -> performerf "ah, reload chart"
-M: review code and use for error messages/handling from FClass addErrorText(),
-   errorText() and check4FiluError()
 L: replace all text what the user could read with tr(...) so that localised
    versions are possible
 L: create and use fancy Icons in the user interfaces. But do it conform with
@@ -41,7 +39,7 @@ H: consult an expert to decide if its really better to switch from trigger
    cause, its not really a problem but ugly anyway
 M: consider commit 860a392f91
 M: change market_insert function, return an ID/Error and take market_id. Maybe
-   is a 2nd function appropriate
+   is a 2nd function appropriate, see addMarket()
 M: write new GetSymbols.sql, now is too complicate an delivers not ever what
    expected.
 M: add automatic new added FIs to the users FI group "New FIs". But that need a
@@ -60,8 +58,6 @@ L: change in the creation *.sqls all function variables from absolute type
 
 AgentF
 ========
-M: use the existing printError() function for error messages. Check in the
-   function if filu had trouble and print the message too or not.
 M: print more precise info when something goes wrong.
 
 
@@ -76,6 +72,7 @@ M: improve drag&drop. when drop an index to the group list of the navi, create
 M: add an "about" button with copyright and other stuff
 L: add buttons to change the density quickly. Since the new IndiSetPad might
    this no longer needed.
+
 
 ManagerF
 ==========
@@ -92,22 +89,12 @@ L: add a help page to display all (or most) available docu, copyright and other
    stuff
 
 
-DiggerF
-=========
-H: change switches from - to --
-H: add --timeFrame foo, foo= day,week, month or n for any count of days. Then
-   expand the signal from SCAN4 so that is no need to hardcode in the indicator.
-   No idea how complicate that will be.
-
-
 Libf
 ======
 H: merge Filu.cpp and FiluU.cpp to Filu.cpp
 M: new class CmdOptions, see FTool.h
 M: redesign FiGroupWidget signals/slots. use QModelIndex for slots and
    QHash<QString, QString> for signals. (hmm...)
-M: clean up Filu.cpp. redesign, remove almost all setXXX() functions. Of course
-   needs then the progs to fit the new lib. (unsure if a good idea)
 L: short selling in Trader.cpp.
 
 
@@ -132,7 +119,7 @@ M: change the parsing, split it just after the reading from file into parts
    with the algorithm used at function parsing. Include the original line number
    of the indicator file as first parameter given to CalcFoo to improve error
    messages.
-M  change SETFOO as noted in indivator-file-format.txt
+M  change SETFOO as noted in indicator-file-format.txt
 M: auto detect math expressions, that is no need to write every time "MUP"
 M: change PLOT(CANDLE,FI()) to PLOT(CANDLE) (auto detect FI())
 M: fix LOADFI(...)

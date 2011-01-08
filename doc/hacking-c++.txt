@@ -294,22 +294,20 @@ Class Definitions
 
 Error Messages
 ================
-Include the class and function name into the error message like this.
-
   void Trader::readRules()
   {
     ...
     if(!mLine.contains(":"))
     {
-      addErrorText("Trader::readRules: " + tr("Missing colon at line: ") + QString::number(mLineNumber));
+      error(FUNC, tr("Missing colon at line %1.").arg(mLineNumber));
       continue;
     }
     ...
   }
 
-As you see there are no parentheses after "readRules" but a colon and the
-essence message text begin with an uppercase letter and is encapsulated in
-tr(""). Furthermore is the FClass function addErrorText() used as preferred.
+As you see the message text begin with an uppercase letter and is encapsulated in
+tr(""). Furthermore is the Newswire function error(FUNC, ...) used as preferred.
+For more available error and verbose functions see Newswire.cpp
 
 
 Footnotes

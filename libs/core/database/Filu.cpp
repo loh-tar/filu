@@ -49,55 +49,6 @@ void Filu::setFiId(int id)
   mFiId = id;
 }
 
-bool Filu::setIdsByNameSettings()
-{
-  mFiId = -1; // Mark as unvalid
-
-  FiTuple* fi = getFi();
-
-  if(!fi or fi->count() == 0)
-  {
-    qDebug() << "Filu::setIdsByNameSettings: fail to set FiId";
-    qDebug() << "\tno fittings for" << mSymbolCaption << mMarketName;
-    if(mSqlDebugLevel == 1) qDebug() << mLastError;
-    return false;
-  }
-  if(fi->count() > 1)
-  {
-    qDebug() << "Filu::setIdsByNameSettings: fail to set FiId";
-    qDebug() << "\tto much(" << fi->count() << ") fittings for" << mSymbolCaption << mMarketName;
-    if(mSqlDebugLevel == 1) qDebug() << mLastError;
-    return false;
-  }
-
-  fi->next();
-  mFiId = fi->id();
-
-  mMarketId = -1;
-  MarketTuple* market = getMarket();
-  if(!market)
-  {
-    qDebug() << "Filu::setIdsByNameSettings: fail to set MarketId";
-    qDebug() << "\tno fittings for" << mMarketName;
-    if(mSqlDebugLevel == 1) qDebug() << mLastError;
-    return false;
-  }
-  if(market->count() != 1)
-  {
-    qDebug() << "Filu::setIdsByNameSettings: fail to set MarketId";
-    qDebug() << "\tto much fittings for" << mMarketName;
-    if(mSqlDebugLevel == 1) qDebug() << mLastError;
-    return false;
-  }
-  market->next();
-  mMarketId = market->id();
-
-  delete fi;
-  delete market;
-
-  return true;
-}
-
 void Filu::setMarketId(int id)
 {
   mMarketId = id;
@@ -778,9 +729,9 @@ int Filu::searchCaption(const QString& table, const QString& caption)
 
   QString errParm = QString(" Table: %1, Caption: %2").arg(table).arg(caption);
 
-  if(retVal ==  0) error(FUNC, tr("Caption not found: %1").arg(errParm));
-  if(retVal == -1) error(FUNC, tr("Caption is more than one times in table: %1").arg(errParm));
-  if(retVal == -2) error(FUNC, tr("Caption was empty."));
+  if(retVal ==  0) errInfo(FUNC, tr("Caption '%1' not found.").arg(errParm));
+  if(retVal == -1) warning(FUNC, tr("Caption '%1' is more than one times in table '%2'.").arg(errParm, table));
+  if(retVal == -2) errInfo(FUNC, tr("Caption was empty."));
 
   return (eError + retVal);
 }
@@ -807,7 +758,7 @@ int Filu::addSymbolType(const QString& type
 
   if(retVal >= eData) return retVal;
 
-  if(retVal == -1) error(FUNC, tr("Type was empty."));
+  if(retVal == -1) errInfo(FUNC, tr("Type was empty."));
 
   return (eError + retVal);
 }
@@ -957,6 +908,8 @@ int Filu::addFiCareful(FiTuple& fi)
   // To be sure, test each given Symbol if it is already known.
   // Test the FI name with FiType if it is already known.
 
+  clearErrors();
+
   // Make sure is set on first entry
   fi.rewind(0);
   if(fi.isInvalid())
@@ -1102,6 +1055,8 @@ int Filu::addFi(const QString& name
   //   -8 if foreign key violation (should impossible?)
   //   -9 if other error (should impossible?)
 
+  clearErrors();
+
   if(name.isEmpty())
   {
     error(FUNC, tr("FI Name is empty."));
@@ -1131,12 +1086,12 @@ int Filu::addFi(const QString& name
 
   if(retVal >= eData) return retVal;
 
-  QString errParm = QString(" FI: %1, %2, Symbol: %3, %4, %5").arg(name).arg(type).arg(symbol).arg(market).arg(stype);
+  QString errParm = QString(" FI: %1, %2 Symbol: %3, %4, %5").arg(name, type, symbol, market, stype);
 
-  if(retVal == -1) error(FUNC, tr("Fi Type not valid: %1").arg(type));
-  if(retVal == -3) error(FUNC, tr("Fi not known and Symbol was empty: %1").arg(errParm));
-  if(retVal == -4) error(FUNC, tr("Symbol Type not valid: %1").arg(stype));
-  if(retVal == -5) error(FUNC, tr("Market not valid: %1").arg(market));
+  if(retVal == -1) error(FUNC, tr("FiType '%1' unknown.").arg(type));
+  if(retVal == -3) error(FUNC, tr("FI not known and Symbol was empty: %1").arg(errParm));
+  if(retVal == -4) error(FUNC, tr("Symbol Type '%1' unknown.").arg(stype));
+  if(retVal == -5) error(FUNC, tr("Market '%1' unknown.").arg(market));
   if(retVal == -6) error(FUNC, tr("Unique violation: %1").arg(errParm));
   if(retVal == -7) error(FUNC, tr("Symbol was found more than one time and was associated to different FI: %1").arg(errParm));
   if(retVal == -8) error(FUNC, tr("Foreign Key Violation: %1").arg(errParm));
@@ -1177,11 +1132,11 @@ int Filu::addSymbol(const QString& symbol
 
   if(retVal >= eData) return retVal;
 
-  QString errParm = QString(" %1, %2, %3").arg(symbol).arg(market).arg(stype);
+  QString errParm = QString(" %1, %2, %3").arg(symbol, market, stype);
 
   if(retVal ==  0) error(FUNC, tr("Symbol looks good, but got no FiId: %1").arg(errParm));
-  if(retVal == -1) error(FUNC, tr("Symbol Type not valid: %1").arg(stype));
-  if(retVal == -2) error(FUNC, tr("Market not valid: %1").arg(market));
+  if(retVal == -1) error(FUNC, tr("Symbol Type '%1' unknown.").arg(stype));
+  if(retVal == -2) error(FUNC, tr("Market '%1' unknown.").arg(market));
   if(retVal == -3) error(FUNC, tr("FI has already a Symbol with that Market and Provider: %1").arg(errParm));
   if(retVal == -4) error(FUNC, tr("Foreign Key violation: %1").arg(errParm));
 
@@ -1308,16 +1263,15 @@ void Filu::openDB()
   bool ok = db.open();
   if(!ok)
   {
-    printSettings();
     QSqlError err = db.lastError();
-    fatal(FUNC, tr("Can't open DB :-("));
+    fatal(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
+    printSettings();
   }
   else
   {
-    if(mSqlDebugLevel > 1) qDebug("Filu::openDB: Successful connected to Filu :-)");
+    verbose(FUNC, "Successful connected to Filu :-)");
   }
-
 }
 
 void Filu::closeDB()
@@ -1483,18 +1437,17 @@ int Filu::execute(QSqlQuery* query)
   // Save the query statement, anyway if error or not
   mLastQuery = query->executedQuery();
   mLastError = query->lastError().databaseText();
-  //isError = query->lastError().type();
   bool isError = !query->isActive();
 
-  if(mSqlDebugLevel == 2) // For heavy debuging print each sql
+  if(verboseLevel() == eMax) // For heavy debuging print each sql
   {
-    qDebug() << "ExecutedQuery:" << mLastQuery;
-    qDebug() << "DatabaseText:" << query->lastError().databaseText();
-    qDebug() << "DriverText:" << query->lastError().driverText();
-    qDebug() << "ErrorNo:" << query->lastError().number();
-    qDebug() << "ErrorType:" << query->lastError().type();
-    qDebug() << "QueryIsAktiv:" << query->isActive();
-    qDebug() << "NumRowsAffected:" << query->numRowsAffected();
+    verbose(FUNC, QString("ExecutedQuery: %1").arg(mLastQuery));
+    verbose(FUNC, QString("DatabaseText: %1").arg(query->lastError().databaseText()));
+    verbose(FUNC, QString("DriverText: %1").arg(query->lastError().driverText()));
+    verbose(FUNC, QString("ErrorNo: %1").arg(query->lastError().number()));
+    verbose(FUNC, QString("ErrorType: %1").arg(query->lastError().type()));
+    verbose(FUNC, QString("QueryIsAktiv: %1").arg(query->isActive()));
+    verbose(FUNC, QString("NumRowsAffected: %1").arg(query->numRowsAffected()));
 
     /*
     qDebug() << "BEGIN debug code for qt4.5 bug :-(";
@@ -1523,9 +1476,7 @@ int Filu::execute(QSqlQuery* query)
 
   if(isError)
   {
-    if(mSqlDebugLevel == 1)
-      error(FUNC, tr("Executed query was: %1").arg(mLastQuery));
-
+    //verbose(FUNC, tr("Executed query was: %1").arg(mLastQuery));
     error(FUNC, tr("Error text: %1").arg(mLastError));
     return eError;
   }
@@ -1534,9 +1485,9 @@ int Filu::execute(QSqlQuery* query)
   {
     if(query->size() < 0)
     {
-      qDebug() << "Filu::execute: Size of Select SQL is -1";
-      if(mSqlDebugLevel == 1) qDebug() << mLastError;
-      //isError = true;
+      // Should never read this
+      fatal(FUNC, "Size of Select SQL is -1");
+      fatal(FUNC, mLastError);
       return eError;
     }
     else if(query->size() == 0)
@@ -1548,9 +1499,12 @@ int Filu::execute(QSqlQuery* query)
   {
     if(query->numRowsAffected() < 0)
     {
-      qDebug() << "Filu::execute: Error while non select sql";
-      if(mSqlDebugLevel == 1) error(FUNC, tr("LastQuery: %1").arg(mLastQuery));
-      //isError = true;
+      fatal(FUNC, "Number of rows affected < 0");
+      return eNoSuccess;
+    }
+    else if(query->numRowsAffected() == 0)
+    {
+      errInfo(FUNC, "No rows affected by sql.");
       return eNoSuccess;
     }
   }
@@ -1564,30 +1518,26 @@ void Filu::readSettings()
   mFiluSchema = mRcFile->getST("FiluSchema");
   mCommitBlockSize = mRcFile->getIT("CommitBlockSize");
   mDaysToFetchIfNoData = mRcFile->getIT("DaysToFetchIfNoData");
-  mSqlDebugLevel = mRcFile->getIT("SqlDebugLevel");
 
   setLogFile(/*FIXME:FUNC, */mRcFile->getST("LogFile"));
-  //setVerboseLevel(FUNC, mRcFile->getST("VerboseLevel"));
   setVerboseLevel(FUNC, mRcFile->getST("SqlDebugLevel"));
 
-  if(mSqlDebugLevel > 1) printSettings();
+  if(verboseLevel() == eMax) printSettings();
 }
 
 void Filu::printSettings()
 {
-  QTextStream  console(stdout);
-  console << "Filu::printSettings()" << endl;
-  console << "Using QtVersion\t= " << qVersion()  << endl;
-  console << "Settings file\t= " << mRcFile->fileName() << endl;
-  console << "Fallback file\t= /etc/xdg/Filu.conf" << endl; //FIXME: how to make system independent?
-  console << "SqlPath \t= " << mSqlPath << endl;
-  console << "HostName\t= " << mRcFile->getST("HostName") << endl;
-  console << "HostPort\t= " << mRcFile->getIT("HostPort") << endl;
-  console << "DatabaseName\t= " << mRcFile->getST("DatabaseName") << endl;
-  console << "FiluSchema\t= " << mFiluSchema << endl;
-  console << "UserName\t= " << mRcFile->getST("UserName") << endl;
-  console << "Password\t= " << mRcFile->getST("Password") << endl;
-  console << "CommitBlockSize\t= " << mCommitBlockSize << endl;
-  console << "DaysToFetchIfNoData\t= " << mDaysToFetchIfNoData << endl;
-  console << "SqlDebugLevel\t= " << mSqlDebugLevel << endl;
+  QString txt = "%1 = %2";
+  int width = -15; // Negative value = left-aligned
+  print("Filu settings are:");
+  print(txt.arg("SqlPath ", width).arg(mSqlPath));
+  print(txt.arg("HostName", width).arg(mRcFile->getST("HostName")));
+  print(txt.arg("HostPort", width).arg(mRcFile->getIT("HostPort")));
+  print(txt.arg("DatabaseName", width).arg(mRcFile->getST("DatabaseName")));
+  print(txt.arg("FiluSchema", width).arg(mFiluSchema));
+  print(txt.arg("UserName", width).arg(mRcFile->getST("UserName")));
+  print(txt.arg("Password", width).arg(mRcFile->getST("Password")));
+  print(txt.arg("CommitBlockSize", width).arg(mCommitBlockSize));
+  print(txt.arg("DaysToFetchIfNoData", width).arg(mDaysToFetchIfNoData));
+  print(txt.arg("SqlDebugLevel", width).arg(verboseLevel()));
 }
