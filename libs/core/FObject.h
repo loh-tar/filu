@@ -32,8 +32,8 @@ class FObject : public QObject, public FClass
 {
   public:
               // Here no 'const FFoo' because QObject don't take const
-              FObject(FClass* parent);
-              FObject(FObject* parent);
+              FObject(FClass* parent, const QString& className);
+              FObject(FObject* parent, const QString& className);
               FObject(const QString& connectionName, QCoreApplication& app);
     virtual  ~FObject();
 

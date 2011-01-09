@@ -25,7 +25,7 @@
 InspectorF::InspectorF(QApplication& app)
           : FMainApp("InspectorF", app)
 {
-  FWidget* cw = new FWidget(this);
+  QWidget* cw = new QWidget(this);
   setCentralWidget(cw);
 
   // Create the tab pages...

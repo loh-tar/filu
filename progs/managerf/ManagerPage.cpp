@@ -20,8 +20,8 @@
 #include "ManagerPage.h"
 #include "ManagerF.h"
 
-ManagerPage::ManagerPage(FClass* parent)
-           : FWidget(parent)
+ManagerPage::ManagerPage(FClass* parent, const QString& className)
+           : FWidget(parent, className)
 {
   //createPage();
 }

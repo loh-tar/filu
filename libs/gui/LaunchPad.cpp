@@ -21,7 +21,7 @@
 #include "DialogButton.h"
 
 LaunchPad::LaunchPad(const QString& name, FClass* parent)
-         : ButtonPad(name, parent)
+         : ButtonPad(name, parent, FUNC)
 {}
 
 LaunchPad::~LaunchPad()

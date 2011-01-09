@@ -22,7 +22,7 @@
 #include "CalcTrade.h"
 
 CalcTrade::CalcTrade(Indicator* parent)
-         : CalcType(parent)
+         : CalcType(parent, FUNC)
 {
   mType   = "Trade";
   mTrader = new Trader(this);

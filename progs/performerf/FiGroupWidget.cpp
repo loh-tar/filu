@@ -20,7 +20,7 @@
 #include "FiGroupWidget.h"
 
 FiGroupWidget::FiGroupWidget(FClass* parent)
-             : FWidget(parent)
+             : FWidget(parent, FUNC)
 {
   mEditing = false;
 

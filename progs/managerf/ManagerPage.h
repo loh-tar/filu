@@ -27,7 +27,7 @@ class ManagerPage : public FWidget
   Q_OBJECT
 
   public:
-                    ManagerPage(FClass* parent);
+                    ManagerPage(FClass* parent, const QString& className);
     virtual        ~ManagerPage();
 
     virtual void    loadSettings();
@@ -36,10 +36,13 @@ class ManagerPage : public FWidget
     void            setPageIcon(QListWidgetItem* button);
     const QString&  iconText() { return mIconText; };
 
+    void            emitMessage(const QString& func, const QString& txt, const MsgType type = eInfoMsg)
+                    {
+                      emit message(makeMessage(func, txt, type));
+                    };
+
     signals:
-    void            message(const QString& func
-                          , const QString& msg
-                          , const MsgType type = eInfoMsg);
+    void            message(const Message& message);
 
   protected:
     QIcon           mIcon;

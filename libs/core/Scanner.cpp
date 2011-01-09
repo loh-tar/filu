@@ -22,7 +22,7 @@
 #include "DataTupleSet.h"
 
 Scanner::Scanner(FClass* parent)
-       : FClass(parent)
+       : FClass(parent, FUNC)
        , mBarsToLoad(0)
        , mForce(false)
        , mForcedFrame(0)
@@ -103,7 +103,7 @@ void Scanner::loadIndicator(const QStringList& parm)
 
     if(!indicator->hasScan4())
     {
-      error(FFI_, tr("No 'SCAN4' variable in indicator '%1'.").arg(indi));
+      error(FUNC, tr("No 'SCAN4' variable in indicator '%1'.").arg(indi));
       continue;
     }
 
@@ -123,7 +123,7 @@ void Scanner::loadIndicator(const QStringList& parm)
 
       if(days < frame)
       {
-        verbose(FFI_, tr("Today is no need to scan:") + indi, eMax);
+        verbose(FUNC, tr("Today is no need to scan '%1'").arg(indi), eMax);
         continue;
       }
 
@@ -156,11 +156,11 @@ void Scanner::loadIndicator(const QStringList& parm)
     QString txt = tr("Loaded Indi: %1 Frame: %2");
     for(int i = 0; i < mIndicators.size(); ++i)
     {
-      verbose(FFI_, txt.arg(mIndicators.at(i)->fileName()).arg(mTimeFrames.at(i)), eMax);
+      verbose(FUNC, txt.arg(mIndicators.at(i)->fileName()).arg(mTimeFrames.at(i)), eMax);
     }
 
-    if(mIndicators.size() > 0) verbose(FFI_, tr("BarsToLoad: %1").arg(mBarsToLoad), eMax);
-    else verbose(FFI_, tr("No indicators loaded!"), eMax);
+    if(mIndicators.size() > 0) verbose(FUNC, tr("BarsToLoad: %1").arg(mBarsToLoad), eMax);
+    else verbose(FUNC, tr("No indicators loaded!"), eMax);
   }
 }
 
@@ -169,7 +169,7 @@ void Scanner::setTimeFrame(const QStringList& parm)
   QStringList frame;
   if(FTool::getParameter(parm, "--timeFrame", frame) < 1)
   {
-    error(FFI_, tr("No frame given."));
+    error(FUNC, tr("No frame given."));
     return;
   }
 
@@ -177,7 +177,7 @@ void Scanner::setTimeFrame(const QStringList& parm)
 
   if(mForcedFrame == -1)
   {
-    error(FFI_, tr("Frame unknown: %1").arg(frame.at(0)));
+    error(FUNC, tr("Frame unknown: %1").arg(frame.at(0)));
   }
 }
 
@@ -186,7 +186,7 @@ void Scanner::setVerboseLevel(const QStringList& parm)
   QStringList level;
   if(FTool::getParameter(parm, "--verbose", level) < 1) return; // We ignore that fault
 
-  Newswire::setVerboseLevel(FFI_, level.at(0));
+  Newswire::setVerboseLevel(FUNC, level.at(0));
 }
 
 void Scanner::autoSetup()
@@ -208,7 +208,7 @@ void Scanner::autoSetup()
     QFile file(indicatorPath + files.at(i));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      fatal(FFI_, tr("Can't open indicator file: %1").arg(files.at(i)));
+      fatal(FUNC, tr("Can't open indicator file: %1").arg(files.at(i)));
       continue;
     }
 
@@ -231,10 +231,10 @@ void Scanner::autoSetup()
   {
     for(int i = 2; i < indiList.size(); ++i)
     {
-      verbose(FFI_, tr("Select indicator:") + indiList.at(i), eMax);
+      verbose(FUNC, tr("Select indicator: %1").arg(indiList.at(i)), eMax);
     }
 
-    if(indiList.size() == 2) verbose(FFI_, tr("None selected!"), eMax);
+    if(indiList.size() == 2) verbose(FUNC, tr("None selected!"), eMax);
   }
 
   loadIndicator(indiList);
@@ -248,7 +248,7 @@ void Scanner::scanGroup(const QStringList& parm)
   QStringList arg;
   if(FTool::getParameter(parm, "--group", arg) < 1)
   {
-    error(FFI_, tr("No group given."));
+    error(FUNC, tr("No group given."));
     return;
   }
 
@@ -263,14 +263,14 @@ void Scanner::scanGroup(const QStringList& parm)
     QSqlQuery* query = mFilu->getGMembers(mFilu->getGroupId(group));
     if(!query)
     {
-      verbose(FFI_, tr("No FIs in group:") + group, eMax);
+      verbose(FUNC, tr("No FIs in group '%1'.").arg(group), eMax);
       continue;
     }
 
     if(verboseLevel() == eMax)
     {
       QString txt = tr("%1 FIs to scan in group %2");
-      verbose(FFI_, txt.arg(query->size()).arg(group), eMax);
+      verbose(FUNC, txt.arg(query->size()).arg(group), eMax);
     }
 
     while(query->next())
@@ -287,14 +287,14 @@ void Scanner::scanAll()
   SymbolTuple* symbols = mFilu->getAllProviderSymbols();
   if(!symbols)
   {
-    error(FFI_, tr("No symbols found."));
+    error(FUNC, tr("No symbols found."));
     return;
   }
 
   if(verboseLevel() == eMax)
   {
     QString txt = tr("%1 FIs to scan.");
-    verbose(FFI_, txt.arg(symbols->count()), eMax);
+    verbose(FUNC, txt.arg(symbols->count()), eMax);
   }
 
   while(symbols->next())
@@ -312,7 +312,7 @@ void Scanner::scanThis(const QStringList& parm)
   QStringList arg;
   if(FTool::getParameter(parm, "--this", arg) < 2)
   {
-    error(FFI_, tr("Too less arguments."));
+    error(FUNC, tr("Too less arguments."));
     return;
   }
 
@@ -356,7 +356,7 @@ void Scanner::scan(BarTuple* bars)
         FiTuple* fi = mFilu->getFi(bars->fiId());
         fi->next(); // No need to check if !0
 
-        verbose(FFI_, info.arg(mIndicators.at(i)->fileName()).arg(bars->fiId(), 4).arg(fi->name()), Newswire::eNoVerbose);
+        verbose(FUNC, info.arg(mIndicators.at(i)->fileName()).arg(bars->fiId(), 4).arg(fi->name()), Newswire::eNoVerbose);
         delete fi;
       }
 
@@ -379,7 +379,7 @@ void Scanner::mark()
 
   foreach(Indicator* indi, mIndicators)
   {
-    verbose(FFI_, indi->fileName() + mToday.toString(Qt::ISODate), eMax);
+    verbose(FUNC, indi->fileName() + mToday.toString(Qt::ISODate), eMax);
 
     mRcFile->set(indi->fileName(), mToday);
   }

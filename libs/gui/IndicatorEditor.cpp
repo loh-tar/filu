@@ -20,7 +20,7 @@
 #include "IndicatorEditor.h"
 
 IndicatorEditor::IndicatorEditor(FClass* parent)
-               : FWidget(parent)
+               : FWidget(parent, FUNC)
 {
   mButton = new QToolButton;
   mButton->setToolTip(tr("Save File"));

@@ -125,8 +125,8 @@ void ManagerF::createIcons()
       mLogBookPage->addToLog(msg, eWarning);
     }
 
-    connect(mp, SIGNAL(message(const QString&, const QString&, const MsgType))
-          , this, SLOT(messageBox(const QString&, const QString&, const MsgType)));
+    connect(mp, SIGNAL(message(const Message&))
+          , this, SLOT(messageBox(const Message&)));
   }
 
   connect(mPageIcons, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *))
@@ -140,13 +140,12 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
   mPageStack->setCurrentIndex(mPageIcons->row(current));
 }
 
-void ManagerF::messageBox(const QString& func, const QString& msg, const MsgType type/* = eInfoMsg*/)
+void ManagerF::messageBox(const Message& message)
 {
-  QString message = formatMessage(func, msg, type, "%f %x");
+  QString msg = formatMessage(message, "%F %x");
 
-  setMessage(func, msg, type);
-  mMsgLabel->setMessage(message, type);
-  mLogBookPage->addToLog(message, type);
+  mMsgLabel->setMessage(msg, message.type);
+  mLogBookPage->addToLog(msg, message.type);
 }
 
 MsgLabel::MsgLabel()

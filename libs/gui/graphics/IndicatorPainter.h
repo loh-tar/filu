@@ -40,7 +40,9 @@ class Grip;
 ************************************************************************/
 
 class IndicatorPainter : public FWidget
-{Q_DECLARE_TR_FUNCTIONS(IndicatorPainter)
+{
+  Q_DECLARE_TR_FUNCTIONS(IndicatorPainter)
+
   public:
          IndicatorPainter(PlotSheet* parent);
         ~IndicatorPainter();
@@ -80,7 +82,6 @@ class IndicatorPainter : public FWidget
     Indicator*       mIndicator;
 
     QList<PlotType*> mPlotCommands;      // Rehashed plot statements, now objects
-    PlotType*        mPlotType;          // Base type to create special types
     QStringList      mPlotDataKeys;      // Holds all names of plotted variables
     QString          mPrimaryValue;
     bool             mPrepareError;

@@ -25,7 +25,7 @@
 #include "FiTableView.h"
 
 FiPage::FiPage(FClass* parent)
-      : ManagerPage(parent)
+      : ManagerPage(parent, FUNC)
       , mSymbols(0)
       , mSymbolView(0)
       , mFi(0)

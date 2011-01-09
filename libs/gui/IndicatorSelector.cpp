@@ -22,7 +22,7 @@
 #include "SearchField.h"
 
 IndicatorSelector::IndicatorSelector(FClass* parent)
-                 : FWidget(parent)
+                 : FWidget(parent, FUNC)
                  , mTALib(this)
 {
   createPage();

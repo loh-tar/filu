@@ -34,7 +34,7 @@ static mu::value_type* MyAddVariable(const mu::char_type */*a_szName*/, void * /
 }
 
 MyParser::MyParser(Newswire* parent)
-        : Newswire(parent)
+        : Newswire(parent, FUNC)
 {
   mParser.DefineOprt("&", &MyAndFunc, 0);
 
@@ -65,11 +65,11 @@ bool MyParser::setExp(const QString& expr)
   }
   catch(mu::Parser::exception_type& e)
   {
-    error(FFI_, tr("Message: %1").arg(e.GetMsg().data()));
-    errInfo(FFI_, tr("Formula: %1").arg(e.GetExpr().data()));
-    errInfo(FFI_, tr("Token: %1").arg(e.GetToken().data()));
-    errInfo(FFI_, tr("Position: %1").arg(e.GetPos()));
-    errInfo(FFI_, tr("ErrCode: %1").arg(e.GetCode()));
+    error(FUNC, tr("Message: %1").arg(e.GetMsg().data()));
+    errInfo(FUNC, tr("Formula: %1").arg(e.GetExpr().data()));
+    errInfo(FUNC, tr("Token: %1").arg(e.GetToken().data()));
+    errInfo(FUNC, tr("Position: %1").arg(e.GetPos()));
+    errInfo(FUNC, tr("ErrCode: %1").arg(e.GetCode()));
 
     return false;
   }
@@ -165,11 +165,11 @@ int MyParser::calc(double& result)
   }
   catch(mu::Parser::exception_type& e)
   {
-    error(FFI_, tr("Message: %1").arg(e.GetMsg().data()));
-    errInfo(FFI_, tr("Formula: %1").arg(e.GetExpr().data()));
-    errInfo(FFI_, tr("Token: %1").arg(e.GetToken().data()));
-    errInfo(FFI_, tr("Position: %1").arg(e.GetPos()));
-    errInfo(FFI_, tr("ErrCode: %1").arg(e.GetCode()));
+    error(FUNC, tr("Message: %1").arg(e.GetMsg().data()));
+    errInfo(FUNC, tr("Formula: %1").arg(e.GetExpr().data()));
+    errInfo(FUNC, tr("Token: %1").arg(e.GetToken().data()));
+    errInfo(FUNC, tr("Position: %1").arg(e.GetPos()));
+    errInfo(FUNC, tr("ErrCode: %1").arg(e.GetCode()));
 
     return 2;
   }

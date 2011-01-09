@@ -19,7 +19,7 @@
 
 #include "PlotDashLine.h"
 
-PlotDashLine::PlotDashLine(Newswire* parent) : PlotLine(parent)
+PlotDashLine::PlotDashLine(Newswire* parent) : PlotLine(parent, FUNC)
 {
   mType = "DashLine";
 
@@ -37,7 +37,7 @@ bool PlotDashLine::paint(QPaintDevice* sheet, QRect& chartArea,
 {
   if(!data)
   {
-    error(FFI_, tr("No data."));
+    error(FUNC, tr("No data."));
     return false;
   }
 

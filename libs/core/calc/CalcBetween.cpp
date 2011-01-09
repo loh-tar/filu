@@ -20,7 +20,7 @@
 #include "CalcBetween.h"
 
 CalcBetween::CalcBetween(Indicator* parent)
-           : CalcType(parent)
+           : CalcType(parent, FUNC)
 {
   mType = "Between";
 }
@@ -76,7 +76,7 @@ bool CalcBetween::calc()
       }
       else
       {
-        fatal(FFI_, QString("Oops!?!? Unknown variable No.%1 '%2' found, should never heappens.").arg(i).arg(mIns.at(i)));
+        fatal(FUNC, QString("Oops!?!? Unknown variable No.%1 '%2' found, should never heappens.").arg(i).arg(mIns.at(i)));
         return false;
       }
     }

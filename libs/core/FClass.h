@@ -36,7 +36,7 @@
 class FClass : public Newswire
 {
   public:
-                   FClass(FClass* parent);
+                   FClass(FClass* parent, const QString& className);
                    FClass(const QString& connectionName);
     virtual       ~FClass();
 

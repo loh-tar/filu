@@ -57,7 +57,7 @@ class COType : public FObject
     typedef QHash<QString, QVariant> Attributes;
     typedef QHash<Grip::Type, Grip*> Grips;
 
-                    COType(IndicatorPainter* painter);
+                    COType(IndicatorPainter* painter, const QString& className);
     virtual        ~COType();
 
     static void     getAllTypes(QStringList& list);

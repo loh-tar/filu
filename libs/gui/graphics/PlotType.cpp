@@ -23,9 +23,10 @@
 #include "PlotHistogram.h"
 #include "PlotHistogramBar.h"
 #include "PlotDashLine.h"
+#include "IndicatorPainter.h"
 
-PlotType::PlotType(Newswire* parent)
-        : Newswire(parent)
+PlotType::PlotType(Newswire* parent, const QString& className)
+        : Newswire(parent, className)
 {
   mType = "BaseType";
 }
@@ -33,37 +34,13 @@ PlotType::PlotType(Newswire* parent)
 PlotType::~PlotType()
 {}
 
-PlotType* PlotType::createNew(const QString& type)
+PlotType* PlotType::createNew(IndicatorPainter* painter, const QString& type)
 {
-  if(type.isEmpty()) return new PlotType(this);
-  else return createNewType(type);
-}
-
-bool PlotType::prepare(QStringList &/*command*/, QStringList &/*plotDataKeys*/)
-{
-  error(FFI_, tr("Oops!? Base type never can prepare."));
-  return false;
-}
-
-bool PlotType::paint(QPaintDevice */*sheet*/, QRect &/*chartArea*/,
-                     DataTupleSet */*data*/, Scaler */*scaler*/)
-{
-  error(FFI_, tr("Oops?! Base type nerver can paint."));
-  return false;
-}
-
-QString PlotType::getType()
-{
-  return mType;
-}
-
-PlotType* PlotType::createNewType(const QString& type)
-{
-  if(!type.compare("LINE"))         return new PlotLine(this);
-  if(!type.compare("CANDLE"))       return new PlotCandle(this);
-  if(!type.compare("HISTOGRAM"))    return new PlotHistogram(this);
-  if(!type.compare("HISTOGRAMBAR")) return new PlotHistogramBar(this);
-  if(!type.compare("DASHLINE"))     return new PlotDashLine(this);
+  if(!type.compare("LINE"))         return new PlotLine(painter);
+  if(!type.compare("CANDLE"))       return new PlotCandle(painter);
+  if(!type.compare("HISTOGRAM"))    return new PlotHistogram(painter);
+  if(!type.compare("HISTOGRAMBAR")) return new PlotHistogramBar(painter);
+  if(!type.compare("DASHLINE"))     return new PlotDashLine(painter);
 
   /*FIXME: these plot types has to be implemented
 
@@ -78,8 +55,25 @@ PlotType* PlotType::createNewType(const QString& type)
 
   // TA-Lib does sometime not say what kind auf plot should be use.
   // In that case delivers TALib.cpp "???" and we use "Line" instead.
-  if(!type.compare("???")) return new PlotLine(this);
+  if(!type.compare("???")) return new PlotLine(painter);
 
-  error(FFI_, tr("Type not found: %1").arg(type));
   return 0;
+}
+
+bool PlotType::prepare(QStringList &/*command*/, QStringList &/*plotDataKeys*/)
+{
+  error(FUNC, tr("Oops!? Base type never can prepare."));
+  return false;
+}
+
+bool PlotType::paint(QPaintDevice */*sheet*/, QRect &/*chartArea*/,
+                     DataTupleSet */*data*/, Scaler */*scaler*/)
+{
+  error(FUNC, tr("Oops?! Base type nerver can paint."));
+  return false;
+}
+
+QString PlotType::getType()
+{
+  return mType;
 }

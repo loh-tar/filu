@@ -20,7 +20,7 @@
 #include "ConfigPage.h"
 
 ConfigPage::ConfigPage(FClass* parent)
-          : ManagerPage(parent)
+          : ManagerPage(parent, FUNC)
 {
 //qDebug() << "ConfigPage::ConfigPage(FClass* parent) : ManagerPage(parent)";
   mIcon = QIcon(":/icons/configure.xpm");

@@ -34,8 +34,8 @@ class FWidget : public QWidget, public FClass
 {
   public:
               // Here no 'const FFoo' because QWidget don't take const
-              FWidget(FClass* parent);
-              FWidget(FWidget* parent);
+              FWidget(FClass* parent, const QString& className);
+              FWidget(FWidget* parent, const QString& className);
     virtual  ~FWidget();
 };
 

@@ -27,7 +27,7 @@
 *
 *
 ************************************************************************/
-SearchFiWidget::SearchFiWidget(FClass* parent) : FWidget(parent)
+SearchFiWidget::SearchFiWidget(FClass* parent) : FWidget(parent, FUNC)
 {
   init();
 }
@@ -142,7 +142,7 @@ bool SearchFiWidget::eventFilter(QObject* pFilterObj, QEvent* event)
 ************************************************************************/
 FiTypeSelBtn::FiTypeSelBtn(FClass* parent)
              : QToolButton(0)
-             , FClass(parent)
+             , FClass(parent, FUNC)
              , mType("")
 {
   QStringList types;

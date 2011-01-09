@@ -19,14 +19,14 @@
 
 #include "FWidget.h"
 
-FWidget::FWidget(FClass* parent)
+FWidget::FWidget(FClass* parent, const QString& className)
        : QWidget(0)
-       , FClass(parent)
+       , FClass(parent, className)
 {}
 
-FWidget::FWidget(FWidget* parent)
+FWidget::FWidget(FWidget* parent, const QString& className)
        : QWidget(parent)
-       , FClass(parent)
+       , FClass(parent, className)
 {}
 
 FWidget::~FWidget()

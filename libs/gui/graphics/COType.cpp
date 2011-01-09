@@ -28,8 +28,8 @@
 // All available types
 #include "COLine.h"
 
-COType::COType(IndicatorPainter* painter)
-      : FObject(painter)
+COType::COType(IndicatorPainter* painter, const QString& className)
+      : FObject(painter, className)
       , mAnchor(0)
       , mStatus(eBrandNew)
       , mHover(false)
@@ -274,7 +274,7 @@ void COType::showEditWindow()
 
     if(!widget)
     {
-      error(FFI_, QString("Oops!, Attribute '%1' has type '%2' but is not here supported.").arg(name, attribute.typeName()));
+      error(FUNC, QString("Oops!, Attribute '%1' has type '%2' but is not here supported.").arg(name, attribute.typeName()));
       continue;
     }
 

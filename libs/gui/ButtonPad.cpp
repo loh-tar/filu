@@ -21,7 +21,19 @@
 #include "DialogButton.h"
 
 ButtonPad::ButtonPad(const QString& name, FClass* parent)
-         : FWidget(parent)
+         : FWidget(parent, FUNC)
+         , mSettings(0)
+{
+  setObjectName(name);
+  mLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+
+  setLayout(mLayout);
+
+  connect(&mButtons, SIGNAL(buttonClicked(int)), this, SLOT(buttonClicked(int)));
+}
+
+ButtonPad::ButtonPad(const QString& name, FClass* parent, const QString& className)
+         : FWidget(parent, className)
          , mSettings(0)
 {
   setObjectName(name);

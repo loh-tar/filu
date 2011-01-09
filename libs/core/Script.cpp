@@ -20,7 +20,7 @@
 #include "Script.h"
 
 Script::Script(FClass* parent)
-      : FObject(parent)
+      : FObject(parent, FUNC)
       , mProviderPath(mRcFile->getST("ProviderPath"))
       , mShowWaitWindow(false)
       , mProc(0)
@@ -36,12 +36,11 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 {
   clearErrors();
 
-  //error(FFI_, script + " " + parameters.join(" "), eNotice);
-  //qDebug() << "Script::execute: " + script + " " + parameters.join(" ");
+  verbose(FUNC, script + " " + parameters.join(" "), eMax);
 
   if(!script.length())
   {
-    error(FFI_, tr("No script name"));
+    error(FUNC, tr("No script name."));
     return 0;
   }
 
@@ -59,7 +58,7 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      fatal(FFI_, tr("Script not started: %1").arg(script));
+      fatal(FUNC, tr("Script not started: %1").arg(script));
       mRunning = false;
       mProc->kill();
     }
@@ -74,13 +73,13 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      fatal(FFI_, tr("Script not started:") + script);
+      fatal(FUNC, tr("Script '%1' not started.").arg(script));
       return 0;
     }
 
     if(!mProc->waitForFinished())
     {
-      fatal(FFI_, tr("Script not finished:") + script);
+      fatal(FUNC, tr("Script '%1' not finished.").arg(script));
       mProc->kill();
       return 0;
     }
@@ -104,7 +103,7 @@ QStringList* Script::askProvider(const QString& provider
 
   if(script.isEmpty())
   {
-    error(FFI_, tr("Provider '%1' has no script for function '%2'.").arg(provider, function));
+    error(FUNC, tr("Provider '%1' has no script for function '%2'.").arg(provider, function));
 
     emit finished();
 

@@ -28,6 +28,8 @@
 #include "DataTupleSet.h"
 #include "Scaler.h"
 
+class IndicatorPainter;
+
 /***********************************************************************
 *
 *   This is the base class of all kind of PLOT(....) objects
@@ -37,21 +39,20 @@
 class PlotType : public Newswire
 {
   public:
-                  PlotType(Newswire* parent);
-    virtual      ~PlotType();
+                      PlotType(Newswire* parent, const QString& className);
+    virtual          ~PlotType();
 
-                  PlotType* createNew(const QString& type = "");
-    virtual bool  prepare(QStringList& command, QStringList& plotDataKeys);
-    virtual bool  paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);
+    static PlotType*  createNew(IndicatorPainter* painter, const QString& type);
+    virtual bool      prepare(QStringList& command, QStringList& plotDataKeys);
+    virtual bool      paint(QPaintDevice* sheet, QRect& chartArea, DataTupleSet* data, Scaler* scaler);
 
-    QString       getType();
+    QString           getType();
 
   protected:
     QString       mType;
     QStringList   mCommand;
 
   private:
-    PlotType*     createNewType(const QString& type);
 
 };
 

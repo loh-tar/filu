@@ -26,7 +26,7 @@
 using namespace std;
 
 Importer::Importer(FClass* parent)
-        : FClass(parent)
+        : FClass(parent, FUNC)
         , mFi(0)
         , mSymbol(0)
         , mConsole(stdout)
@@ -95,7 +95,7 @@ void Importer::reset()
   // Read all symbol types out of the DB
   SymbolTypeTuple* symbolTypes = mFilu->getSymbolTypes(Filu::eAllTypes);
 
-  if(!check4FiluError(FFI_, tr("ERROR while exec GetSymbolTypes.sql")))
+  if(!check4FiluError(FUNC, tr("ERROR while exec GetSymbolTypes.sql")))
   {
     if(symbolTypes)
     {
@@ -143,7 +143,7 @@ void Importer::reset()
 
         if(parts.size() < 2)
         {
-          error(FFI_, errorMsg1.arg(ln));
+          error(FUNC, errorMsg1.arg(ln));
           continue;
         }
 
@@ -152,7 +152,7 @@ void Importer::reset()
         QRegExp regExp(parts.at(0));
         if(!regExp.isValid())
         {
-          error(FFI_, errorMsg2.arg(ln).arg(regExp.errorString()));
+          error(FUNC, errorMsg2.arg(ln).arg(regExp.errorString()));
           continue;
         }
         mNiceSearch  <<  parts.at(0);
@@ -161,7 +161,7 @@ void Importer::reset()
     }
     else
     {
-      warning(FFI_, QObject::tr("No file 'MakeNameNice.conf' found."));
+      warning(FUNC, tr("No file 'MakeNameNice.conf' found."));
     }
   }
 
@@ -498,7 +498,7 @@ void Importer::prepare()
       continue;
     }
 
-    fatal(FFI_, "Oops?! What's that? :" + rawKey);
+    fatal(FUNC, "Oops?! What's that? :" + rawKey);
 
   }
   //qDebug() << "Importer::prepare:" <<  mTotalSymbolCount << "symbols total used";
@@ -735,7 +735,7 @@ void Importer::addFi()
 
   if(newFiId < Filu::eData)
   {
-//     if(check4FiluError(FFI_, tr("fail to add FI")))
+//     if(check4FiluError(FUNC, tr("fail to add FI")))
 //     {
 //       mConsole << "fail to add FI " << mData.value("Name") <<  " "
 //                << mData.value("Type") << endl;
@@ -771,7 +771,7 @@ void Importer::addSymbol()
       msg.append(mSymbol->caption() + ", ");
     }
     msg.chop(2);
-    error(FFI_, msg);
+    error(FUNC, msg);
     mConsole << endl << msg << endl;
     return;
   }
@@ -809,8 +809,8 @@ void Importer::addUnderlying()
     if(momId < Filu::eData)
     {
       mToDo.remove("addUnderlying");
-      QString msg = QObject::tr("Mother not found: ") + mData.value("Mother");
-      error(FFI_, msg);
+      QString msg = tr("Mother not found: %1").arg(mData.value("Mother"));
+      error(FUNC, msg);
       mConsole << endl << msg << endl;
       return;
     }
@@ -1011,7 +1011,7 @@ void Importer::addCO()
 
   if(!query)
   {
-    if(check4FiluError(FFI_, tr("ERROR while exec PutCOs.sql"))) return;// false;
+    if(check4FiluError(FUNC, tr("ERROR while exec PutCOs.sql"))) return;// false;
 
     mConsole << "no chart objects match settings." << endl;
     return /*true*/;
@@ -1034,7 +1034,7 @@ void Importer::addGroup()
     if(!query)
     {
       mPendingData.clear();
-      if(check4FiluError(FFI_, tr("ERROR while exec AddGroup.sql")))
+      if(check4FiluError(FUNC, tr("ERROR while exec AddGroup.sql")))
       {
         mConsole << "could not create group!?" << endl;
         return;// false;

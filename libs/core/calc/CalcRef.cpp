@@ -20,7 +20,7 @@
 #include "CalcRef.h"
 
 CalcRef::CalcRef(Indicator* parent)
-       : CalcType(parent)
+       : CalcType(parent, FUNC)
 {
   mType = "Ref";
 }
@@ -44,7 +44,7 @@ bool CalcRef::prepare(CalcParms& parms)
   mBackRef = mIns.at(1).toInt(&ok);
   if(!ok)
   {
-    error(FFI_, tr("BackRef value is not an integer."));
+    error(FUNC, tr("BackRef value is not an integer."));
   }
 
   if(hasError()) return false;

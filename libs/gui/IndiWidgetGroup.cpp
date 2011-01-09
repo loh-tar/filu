@@ -23,7 +23,7 @@
 #include "PlotSheet.h"
 
 IndiWidgetGroup::IndiWidgetGroup(FClass* parent)
-               : FWidget(parent)
+               : FWidget(parent, FUNC)
                , mSetName("")
                , mBars(0)
 {
@@ -31,7 +31,7 @@ IndiWidgetGroup::IndiWidgetGroup(FClass* parent)
 }
 
 IndiWidgetGroup::IndiWidgetGroup(const QString& name, FClass* parent)
-               : FWidget(parent)
+               : FWidget(parent, FUNC)
                , mSetName(name)
                , mBars(0)
 {

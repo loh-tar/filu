@@ -20,7 +20,7 @@
 #include "CalcSetColor.h"
 
 CalcSetColor::CalcSetColor(Indicator* parent)
-            : CalcType(parent)
+            : CalcType(parent, FUNC)
 {
   mType = "SetColor";
 }
@@ -41,7 +41,7 @@ bool CalcSetColor::prepare(CalcParms& parms)
     c.setNamedColor(mIns.at(0));
     if(!c.isValid())
     {
-      error(FFI_, tr("Color not valid: %1").arg(mIns.at(0)));
+      error(FUNC, tr("Color not valid: %1").arg(mIns.at(0)));
     }
   }
   else if(3 == mIns.size())
@@ -55,18 +55,18 @@ bool CalcSetColor::prepare(CalcParms& parms)
     c.setNamedColor(mIns.at(1));
     if(!c.isValid())
     {
-      error(FFI_, tr("Color No.1 not valid: %1").arg(mIns.at(1)));
+      error(FUNC, tr("Color No.1 not valid: %1").arg(mIns.at(1)));
     }
 
     c.setNamedColor(mIns.at(2));
     if(!c.isValid())
     {
-      error(FFI_, tr("Color No.2 not valid: %1").arg(mIns.at(2)));
+      error(FUNC, tr("Color No.2 not valid: %1").arg(mIns.at(2)));
     }
   }
   else
   {
-    error(FFI_, tr("Wrong parameter count."));
+    error(FUNC, tr("Wrong parameter count."));
   }
 
   if(hasError()) return false;

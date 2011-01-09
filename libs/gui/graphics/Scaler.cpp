@@ -181,7 +181,7 @@ bool Scaler::beginYTicking()
   double valueRange = mMaxHigh - mMinLow;
   if(valueRange == 0.0)
   {
-    //error(FFI_, tr("Can't paint, mMaxHigh = mMinLow."));
+    //error(FUNC, tr("Can't paint, mMaxHigh = mMinLow."));
     return false;
   }
 

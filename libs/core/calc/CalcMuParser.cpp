@@ -20,7 +20,7 @@
 #include "CalcMuParser.h"
 
 CalcMuParser::CalcMuParser(Indicator* parent)
-            : CalcType(parent)
+            : CalcType(parent, FUNC)
 {
   mType   = "muParser";
   mParser = new MyParser(this);
@@ -74,7 +74,7 @@ bool CalcMuParser::calc()
   {
     if(!list.contains(var))
     {
-      error(FFI_, tr("Variable not found: %1").arg(var));
+      error(FUNC, tr("Variable not found: %1").arg(var));
       continue;
     }
     mData->getValidRange(var, outBegIdx, outNbElement);
@@ -95,12 +95,12 @@ bool CalcMuParser::calc()
     int ret = mParser->calc(result);
     if(ret == 1)
     {
-      fatal(FFI_, "Oops?!? No valid value in mData, should never happens!");
+      fatal(FUNC, "Oops?!? No valid value in mData, should never happens!");
       continue;
     }
     else if(ret == 2)
     {
-      error(FFI_, "Bad value from mu::Parser");
+      error(FUNC, "Bad value from mu::Parser");
       continue;
     }
 

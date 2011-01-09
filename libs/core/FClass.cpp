@@ -19,8 +19,8 @@
 
 #include "FClass.h"
 
-FClass::FClass(FClass* parent)
-      : Newswire(parent)
+FClass::FClass(FClass* parent, const QString& className)
+      : Newswire(parent, className)
       , mRcFile(parent->mRcFile)
       , mFilu(parent->mFilu)
       , mDebugLevel(parent->mDebugLevel)

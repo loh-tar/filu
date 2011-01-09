@@ -20,7 +20,7 @@
 #include "COLine.h"
 
 COLine::COLine(IndicatorPainter* painter)
-      : COType(painter)
+      : COType(painter, FUNC)
 {
   mClicksLeftTillNewIsPlaced = 2;
 

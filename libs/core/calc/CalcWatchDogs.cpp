@@ -22,7 +22,7 @@
 #include "CalcWatchDogs.h"
 
 CalcWatchDogs::CalcWatchDogs(Indicator* parent)
-             : CalcType(parent)
+             : CalcType(parent, FUNC)
 {
   mType = "WatchDog";
 }
@@ -36,7 +36,7 @@ bool CalcWatchDogs::prepare(CalcParms& parms)
 
   if(!isUnknown("WATCHDOG1"))
   {
-    error(FFI_, tr("Only one watchdog call is supported per indicator."));
+    error(FUNC, tr("Only one watchdog call is supported per indicator."));
     return false;
   }
 
@@ -68,7 +68,7 @@ bool CalcWatchDogs::calc()
   bool exist = mData->getIDs("THIS", fiId, marketId);
   if(!exist)
   {
-    error(FFI_, tr("FI alias not used: %1").arg(mIns.at(1)));
+    error(FUNC, tr("FI alias not used: %1").arg(mIns.at(1)));
     return false;
   }
 
@@ -100,7 +100,7 @@ bool CalcWatchDogs::calc()
 
   if(!cot)
   {
-    error(FFI_, noDogTxt);
+    error(FUNC, noDogTxt);
     return false;
   }
 
@@ -215,7 +215,7 @@ bool CalcWatchDogs::calc()
 
   if(!dogFound)
   {
-    error(FFI_, noDogTxt);
+    error(FUNC, noDogTxt);
     return false;
   }
 

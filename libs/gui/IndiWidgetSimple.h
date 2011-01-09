@@ -39,7 +39,9 @@ class IndiWidgetSimple : public FWidget
 
   public:
                   IndiWidgetSimple(const QString& name, FClass* parent);
+                  IndiWidgetSimple(const QString& name, FClass* parent, const QString& className);
                   IndiWidgetSimple(const QString& name, const int number, FClass* parent);
+                  IndiWidgetSimple(const QString& name, const int number, FClass* parent, const QString& className);
     virtual      ~IndiWidgetSimple();
 
     void          setName(const QString& name);

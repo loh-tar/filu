@@ -20,7 +20,7 @@
 #include "CalcFilu.h"
 
 CalcFilu::CalcFilu(Indicator* parent)
-        : CalcType(parent)
+        : CalcType(parent, FUNC)
 {
   mType = "Filu";
 }
@@ -36,7 +36,7 @@ bool CalcFilu::prepare(CalcParms& parms)
 
   if(mIns.size() < 1)
   {
-    error(FFI_, tr("No functionName found."));
+    error(FUNC, tr("No functionName found."));
     return false;
   }
 
@@ -46,17 +46,17 @@ bool CalcFilu::prepare(CalcParms& parms)
   {
     if(retVal == Filu::eNoData)
     {
-      error(FFI_, tr("Unknown indicator: %1").arg(mIns.at(0)));
+      error(FUNC, tr("Unknown indicator: %1").arg(mIns.at(0)));
       return false;
     }
-    error(FFI_, tr("Error while getting info to indicator: %1").arg(mIns.at(0)));
+    error(FUNC, tr("Error while getting info to indicator: %1").arg(mIns.at(0)));
     addErrors(mFilu->errors());
     return false;
   }
 
   if(mFilu->prepareIndicator(mIns.at(0), info.value("Call")) != Filu::eSuccess)
   {
-    error(FFI_, tr("Can't prepare indicator: %1").arg(mIns.at(0)));
+    error(FUNC, tr("Can't prepare indicator: %1").arg(mIns.at(0)));
     addErrors(mFilu->errors());
     return false;
   }
@@ -85,7 +85,7 @@ bool CalcFilu::prepare(CalcParms& parms)
 
     if(idx > mIns.size() - 1)
     {
-      error(FFI_, tr("Too less input parameters."));
+      error(FUNC, tr("Too less input parameters."));
       return false;
     }
     // Veryfy if the call is correct filled
@@ -93,13 +93,13 @@ bool CalcFilu::prepare(CalcParms& parms)
     {
       if(!(mIns.at(idx) == "FI"))
       {
-        error(FFI_, tr("FI() expected but found: %1").arg(mIns.at(idx)));
+        error(FUNC, tr("FI() expected but found: %1").arg(mIns.at(idx)));
         return false;
       }
       idx += 2;
       if(idx > mIns.size() - 1)
       {
-        error(FFI_, tr("Something wrong with parameter list."));
+        error(FUNC, tr("Something wrong with parameter list."));
         return false;
       }
       if(mIns.at(idx) == ")")
@@ -164,7 +164,7 @@ bool CalcFilu::calc()
       bool ok = mData->getIDs(mFiRefAlias.at(j), fiId, marketId);
       if(!ok)
       {
-        error(FFI_, tr("Can't find FI: %1").arg(mFiRefAlias.at(j)));
+        error(FUNC, tr("Can't find FI: %1").arg(mFiRefAlias.at(j)));
         return false;
       }
       ++j;
@@ -200,7 +200,7 @@ bool CalcFilu::calc()
 
   if(!query)
   {
-    error(FFI_, tr("Trouble while exec Filu indicator: %1").arg(mIns.at(0)));
+    error(FUNC, tr("Trouble while exec Filu indicator: %1").arg(mIns.at(0)));
     addErrors(mFilu->errors());
     return false;
   }
@@ -212,11 +212,11 @@ bool CalcFilu::calc()
     int errNo = query->value(2).toInt();
     if((mIndiErrorText.size() < errNo) or (mIndiErrorText.size() == 0))
     {
-      error(FFI_, tr("Unknown ErrorNo '%1' from Filu indicator '%2'.").arg(errNo).arg(mIns.at(0)));
+      error(FUNC, tr("Unknown ErrorNo '%1' from Filu indicator '%2'.").arg(errNo).arg(mIns.at(0)));
     }
     else
     {
-      error(FFI_, mIndiErrorText.at(errNo - 1));
+      error(FUNC, mIndiErrorText.at(errNo - 1));
     }
 
     return false;
@@ -240,7 +240,7 @@ bool CalcFilu::calc()
         if(verboseLevel() >= eInfo)
         { // Looks so expensive, that's why we check self if verbose or not
           QString txt = "NOTICE! Data not in sync: EODBarDate=%1, IndicatorDate=%2, Now adjusted.";
-          verbose(FFI_, txt.arg(mdataDate.toString(Qt::ISODate)).arg(resultDate.toString(Qt::ISODate)));
+          verbose(FUNC, txt.arg(mdataDate.toString(Qt::ISODate)).arg(resultDate.toString(Qt::ISODate)));
         }
         break;
       }
@@ -259,7 +259,7 @@ bool CalcFilu::calc()
       if(verboseLevel() >= eInfo)
       { // Looks so expensive, that's why we check self if verbose or not
         QString txt = "NOTICE! Data not in sync: EODBarDate=%1, IndicatorDate=%2, Now adjusted.";
-        verbose(FFI_, txt.arg(mdataDate.toString(Qt::ISODate)).arg(resultDate.toString(Qt::ISODate)));
+        verbose(FUNC, txt.arg(mdataDate.toString(Qt::ISODate)).arg(resultDate.toString(Qt::ISODate)));
       }
       continue;
     }

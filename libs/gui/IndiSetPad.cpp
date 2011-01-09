@@ -21,7 +21,7 @@
 #include "DialogButton.h"
 
 IndiSetPad::IndiSetPad(const QString& name, FClass* parent)
-          : ButtonPad(name, parent)
+          : ButtonPad(name, parent, FUNC)
 {
   mSetSelector = new QComboBox;
   mSetSelector->setObjectName("SetSelector");

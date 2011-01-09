@@ -31,9 +31,8 @@
 #include "COType.h"
 
 IndicatorPainter::IndicatorPainter(PlotSheet* parent)
-                : FWidget(parent)
+                : FWidget(parent, FUNC)
                 , mIndicator(0)
-                , mPlotType(0)
                 , mPrepareError(false)
                 , mCOInProcess(0)
                 , mBars(0)
@@ -55,7 +54,6 @@ IndicatorPainter::IndicatorPainter(PlotSheet* parent)
                 , mShowGrid(true)
                 , mShowPercentScale(false)
 {
-  mPlotType  = new PlotType(this);
   mScaler    = new Scaler(this);
   mIndicator = new Indicator(this);
   mIndicator->ignorePlot(false);
@@ -78,7 +76,6 @@ IndicatorPainter::~IndicatorPainter()
   }
 
   if(mXSTicker)      delete mXSTicker;
-  delete mPlotType;
   delete mScaler;
   delete mIndicator;
   if(mStaticSheet)   delete mStaticSheet;
@@ -122,7 +119,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
 
   if(plotCommands.isEmpty())
   {
-    error(FFI_, tr("No plot statements found."));
+    error(FUNC, tr("No plot statements found."));
     return false;
   }
 
@@ -132,10 +129,10 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
     command[0].remove("PLOT(");
     command[(command.size() - 1)].remove(")");
 
-    PlotType* newPlotType = mPlotType->createNew(command.at(0));
+    PlotType* newPlotType = PlotType::createNew(this, command.at(0));
     if(!newPlotType)
     {
-      addErrors(mPlotType->errors());
+      error(FUNC, tr("PlotType '%1' not found.").arg(command.at(0)));
       continue;
     }
 
@@ -166,7 +163,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
   }
   else if(!mPlotDataKeys.contains(mPrimaryValue))
   {
-    error(FFI_, tr("PRIMARY not found: %1").arg(mPrimaryValue));
+    error(FUNC, tr("PRIMARY not found: %1").arg(mPrimaryValue));
   }
 
   if(hasError())
@@ -182,7 +179,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
 
 bool IndicatorPainter::useIndicator(QStringList &/*indicator*/)
 {
-  error(FFI_, tr("Not yet implemented."));
+  error(FUNC, tr("Not yet implemented."));
   return false;
   //FIXME:use an already parsed indicator,
   //could be useful while interactive design
@@ -356,7 +353,7 @@ bool IndicatorPainter::densityChanged(int step)
   if(mFirstBarToShow > mBars->count() - 1)
   {
     mFirstBarToShow = mBars->count() - 1;
-    fatal(FFI_, "??? should never heappens");
+    fatal(FUNC, "??? should never heappens");
   }
 
   mUpdateStaticSheet = true;
@@ -440,7 +437,7 @@ bool IndicatorPainter::paint()
 
   if(!mBars)
   {
-    error(FFI_, errTxt);
+    error(FUNC, errTxt);
   }
   else
   {

@@ -24,7 +24,7 @@
 #include "CalcType.h"
 
 Indicator::Indicator(FClass* parent)
-         : FClass(parent)
+         : FClass(parent, FUNC)
          , mTALib(0)
          , mData(0)
          , mIgnorePlot(true)
@@ -106,7 +106,7 @@ DataTupleSet* Indicator::calculate(BarTuple* bars)
 
   if(!mData->appendBarTuple(bars)) //FIXME: add also extra FIs
   {
-    error(FFI_, tr("Fail to create mData."));
+    error(FUNC, tr("Fail to create mData."));
     delete mData;
     mData = 0;
     return 0;
@@ -229,7 +229,7 @@ int Indicator::barsNeeded()
 
   if(!data.appendBarTuple(&bars))
   {
-    error(FFI_, tr("Fail to create data."));
+    error(FUNC, tr("Fail to create data."));
     return -1;
   }
 
@@ -254,7 +254,7 @@ int Indicator::scanFreq(bool trueDays/* = false*/)
   frame = FTool::timeFrame(mScanFreq, trueDays);
   if(-1 == frame)
   {
-    warning(FFI_, tr("ScanFreq of indicator '%1' unknown: %2").arg(fileName(), mScanFreq));
+    warning(FUNC, tr("ScanFreq of indicator '%1' unknown: %2").arg(fileName(), mScanFreq));
   }
 
   return frame;
@@ -280,14 +280,14 @@ bool Indicator::readIndicator(const QString& fileName, QStringList& indicator)
 
   if (fileName.isEmpty())
   {
-    error(FFI_, tr("No indicator file name given."));
+    error(FUNC, tr("No indicator file name given."));
     return false;
   }
 
   QFile file(mIndicatorPath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FFI_, tr("Can't load indicator: %1").arg(fileName));
+    error(FUNC, tr("Can't load indicator: %1").arg(fileName));
     return false;
   }
 
@@ -365,7 +365,7 @@ bool Indicator::parse(QStringList& indicator)
     parms.replaceInStrings(" ", "");
     if(parms.size() == 0)
     {
-      error(FFI_, tr("No parameter at INCLUDE()."));
+      error(FUNC, tr("No parameter at INCLUDE()."));
       ++i;
       continue;
     }
@@ -380,7 +380,7 @@ bool Indicator::parse(QStringList& indicator)
       }
       else
       {
-        error(FFI_, tr("2nd INCLUDE() parameter unknown: %1").arg(parms.at(1)));
+        error(FUNC, tr("2nd INCLUDE() parameter unknown: %1").arg(parms.at(1)));
         ++i;
         continue;
       }
@@ -398,7 +398,7 @@ bool Indicator::parse(QStringList& indicator)
     QStringList list;
     if(!readIndicator(parms.at(0), list))
     {
-      error(FFI_, tr("Fail to INCLUDE() file."));
+      error(FUNC, tr("Fail to INCLUDE() file."));
       mIgnorePlot = ignorePlot;
       ++i;
       continue;
@@ -489,11 +489,10 @@ bool Indicator::prepare(QStringList& indicator)
     parms.setIns(ins);
     parms.setOuts(outs);
 
-    CalcType calcType(this);
-    CalcType* newCalcType = calcType.createNew("SIMTRADE");
+    CalcType* newCalcType = CalcType::createNew(this, "SIMTRADE");
     if(!newCalcType)
     {
-      addErrors(calcType.errors());
+      fatal(FUNC, tr("Could not create calc type 'SIMTRADE'."));
       return false;
     }
 
@@ -518,13 +517,13 @@ bool Indicator::prepare(QStringList& indicator)
 qDebug() << "Indicator::prepare:load extra FIs" << parameters;
     // Load the bars to the FI
     //FIXME: has to be implemented
-    error(FFI_, tr("Not yet supported: %1").arg(indicator.at(i)));
+    error(FUNC, tr("Not yet supported: %1").arg(indicator.at(i)));
     return false;
 
     BarTuple bars(1); // = mFilu->getBars();
     if(!mData->appendBarTuple(&bars))
     {
-      error(FFI_, tr("Fail to create mData."));
+      error(FUNC, tr("Fail to create mData."));
       return 0;
     }
 
@@ -596,7 +595,7 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
 
     if(ins.size() < 3)
     {
-      error(FFI_, tr("Something wrong with equation."));
+      error(FUNC, tr("Something wrong with equation."));
       continue;
     }
 
@@ -621,11 +620,10 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
     //qDebug() << "ins2: " << ins;
     parms.setIns(ins);
 
-    CalcType calcType(this);
-    CalcType* newCalcType = calcType.createNew(func);
+    CalcType* newCalcType = CalcType::createNew(this, func);
     if(!newCalcType)
     {
-      addErrors(calcType.errors());
+      error(FUNC, tr("Could not find calc type '%1'.").arg(func));
       continue;
     }
 

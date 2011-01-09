@@ -26,7 +26,7 @@
 
 IndicatorDataView::IndicatorDataView(PlotSheet* parent)
                  : QTabWidget(parent)
-                 , FClass(parent)
+                 , FClass(parent, FUNC)
 {
   setTabPosition(QTabWidget::West);
   setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);

@@ -23,7 +23,7 @@
 #include "COType.h"
 
 PlotSheet::PlotSheet(FClass* parent)
-         : FWidget(parent)
+         : FWidget(parent, FUNC)
 {
   init();
 }
@@ -391,7 +391,7 @@ bool PlotSheet::event(QEvent* event)
         if(!mPainter->mCOInProcess)
         {
           // You should never read this
-         fatal(FFI_, QString("New chart object type '%1'unknown").arg(mNewCOType));
+         fatal(FUNC, QString("New chart object type '%1'unknown").arg(mNewCOType));
         }
         else
         {

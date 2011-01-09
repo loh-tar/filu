@@ -19,7 +19,7 @@
 
 #include "PlotCandle.h"
 
-PlotCandle::PlotCandle(Newswire* parent) : PlotType(parent)
+PlotCandle::PlotCandle(Newswire* parent) : PlotType(parent, FUNC)
 {
   mType = "Candles";
 }
@@ -31,7 +31,7 @@ bool PlotCandle::prepare(QStringList& command, QStringList& plotDataKeys)
 {
   if(command.size() < 2)
   {
-    error(FFI_, tr("To less parameter."));
+    error(FUNC, tr("To less parameter."));
     return false;
   }
 
@@ -59,7 +59,7 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
 {
   if(!data)
   {
-    error(FFI_, tr("No data."));
+    error(FUNC, tr("No data."));
     return false;
   }
 

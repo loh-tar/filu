@@ -21,7 +21,7 @@
 
 FToolBar::FToolBar(const QString& title, FClass* parent)
            : QToolBar(title)
-           , FClass(parent)
+           , FClass(parent, FUNC)
            , mDragedAct(0)
 {
   setAcceptDrops(true);

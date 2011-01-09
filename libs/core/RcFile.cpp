@@ -159,7 +159,7 @@ void RcFile::restoreGroup()
 
 QStringList RcFile::takeFiluParms(QStringList& cmdLine)
 {
-  mNewswire->setVerboseLevel(FFI_, getST("VerboseLevel"));
+  mNewswire->setVerboseLevel(FUNC, getST("VerboseLevel"));
 
   QStringList filuParms;
 
@@ -194,11 +194,11 @@ QStringList RcFile::takeFiluParms(QStringList& cmdLine)
       mNewswire->setLogFile(getST("LogFile"));
 
     if(mForced.contains("VerboseLevel"))
-      mNewswire->setVerboseLevel(FFI_, mForced.value("VerboseLevel").toString());
+      mNewswire->setVerboseLevel(FUNC, mForced.value("VerboseLevel").toString());
 
     QStringList keys = mForced.keys();
     foreach(QString key, keys)
-      mNewswire->verbose(FFI_, tr("Taken Filu parm: Set  '%1' to '%2'").arg(key).arg(mForced.value(key).toString()), Newswire::eInfo);
+      mNewswire->verbose(FUNC, tr("Taken Filu parm: Set  '%1' to '%2'").arg(key).arg(mForced.value(key).toString()), Newswire::eInfo);
   }
 
   return filuParms;
@@ -217,7 +217,7 @@ void RcFile::checkFiluHome()
   // In case of any run is filuHome = "/home/steve/.Filu/"
   if(filuHome.startsWith('/') and QDir().exists(filuHome)) return;
 
-    mNewswire->verbose(FFI_, "Check FiluHome ...", Newswire::eEver);
+    mNewswire->verbose(FUNC, "Check FiluHome ...", Newswire::eEver);
 
     QString dir;
     if(!filuHome.startsWith('/')) // ".Filu/" ?
@@ -247,18 +247,18 @@ void RcFile::checkFiluHome()
     setFullPath("FiluHome", "IndiFilterSetPath");
     setFullPath("FiluHome", "LogFile");
 
-    mNewswire->verbose(FFI_, tr("Check FiluHome...done."), Newswire::eEver);
+    mNewswire->verbose(FUNC, tr("Check FiluHome...done."), Newswire::eEver);
 
     sync();
 }
 
 bool RcFile::createDir(const QString& d)
 {
-  mNewswire->verbose(FFI_, tr("Create... %1").arg(d), Newswire::eEver);
+  mNewswire->verbose(FUNC, tr("Create... %1").arg(d), Newswire::eEver);
   QDir dir;
   if(!dir.mkpath(d))
   {
-    mNewswire->error(FFI_, tr("FAIL! to create %1").arg(d));
+    mNewswire->error(FUNC, tr("FAIL! to create %1").arg(d));
     return false;
   }
 

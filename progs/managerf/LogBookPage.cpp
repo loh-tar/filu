@@ -20,7 +20,7 @@
 #include "LogBookPage.h"
 
 LogBookPage::LogBookPage(FClass* parent)
-           : ManagerPage(parent)
+           : ManagerPage(parent, FUNC)
 {
   createPage();
 }
@@ -120,14 +120,14 @@ void LogBookPage::readLogFile()
     QString msg = tr("File is big, have a little patience...");
     mLogFile.clear();
     mLogFile.insertPlainText(msg);
-    emit message(FFI_, msg);
+    emitMessage(FUNC, msg);
   }
 
   mLogFile.clear();
   mLogFile.insertPlainText(messages.join("\n"));
   mLogFile.moveCursor(QTextCursor::End);
 
-  if(file.size() > 10000) emit message(FFI_, tr("...Done."));
+  if(file.size() > 10000) emitMessage(FUNC, tr("...Done."));
 
   file.close();
 }
@@ -155,9 +155,9 @@ void LogBookPage::clearLogFile()
   }
   else
   {
-    fatal(FFI_, tr("Can't remove LogFile"));
-    emit message(FFI_, tr("Can't remove LogFile."));
+    fatal(FUNC, tr("Can't remove LogFile"));
+    emitMessage(FUNC, tr("Can't remove LogFile."));
   }
 
-  emit message(FFI_, tr("LogFile cleared."));
+  emitMessage(FUNC, tr("LogFile cleared."));
 }

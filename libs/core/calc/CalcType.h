@@ -47,10 +47,10 @@ class CalcParms : public QPair<QStringList, QStringList>
 class CalcType : public FClass
 {
   public:
-                      CalcType(Indicator* parent);
+                      CalcType(Indicator* parent, const QString& className);
     virtual          ~CalcType();
 
-    virtual CalcType* createNew(const QString& type = "");
+    static  CalcType* createNew(Indicator* indi, const QString& type);
     virtual bool      prepare(CalcParms& parms);
     virtual bool      calc();
     virtual int       barsNeeded(DataTupleSet* data);

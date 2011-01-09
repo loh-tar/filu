@@ -22,7 +22,7 @@
 #include "IndicatorSelector.h"
 
 IndicatorPage::IndicatorPage(FClass* parent)
-             : ManagerPage(parent)
+             : ManagerPage(parent, FUNC)
 {
   createPage();
 }

@@ -22,7 +22,7 @@
 
 IndicatorPicker::IndicatorPicker(FClass* parent)
                : QTreeWidget(0)
-               , FClass(parent)
+               , FClass(parent, FUNC)
 {
   setColumnCount(1);
   readSettings();
@@ -65,7 +65,7 @@ void IndicatorPicker::raiseTree()
     QFile file(mIndicatorPath + files.at(i));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      fatal(FFI_, tr("Can't open indicator file: %1").arg(files.at(i)));
+      fatal(FUNC, tr("Can't open indicator file: %1").arg(files.at(i)));
       continue;
     }
 

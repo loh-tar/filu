@@ -27,7 +27,7 @@
 // FIXME: should accept as it is with caution
 
 Trader::Trader(FClass* parent)
-      : FClass(parent)
+      : FClass(parent, FUNC)
       , mIndicator(0)
       , mData(0)
       , mFi(0)
@@ -49,7 +49,7 @@ bool Trader::useRuleFile(const QString& fileName)
   QFile file(mTradingRulePath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FFI_, tr("Can't load file: %1").arg(file.fileName()));
+    error(FUNC, tr("Can't load file: %1").arg(file.fileName()));
     return false;
   }
 
@@ -65,7 +65,7 @@ bool Trader::useRuleFile(const QString& fileName)
     mOrigRule.append(fileStream.readLine());
   }
 
-  verbose(FFI_, tr("File read in %1 milliseconds.").arg(time.elapsed()));
+  verbose(FUNC, tr("File read in %1 milliseconds.").arg(time.elapsed()));
 
   mAutoLoadIndicator = true;
 
@@ -124,12 +124,12 @@ bool Trader::parseRule()
     else if(mLine.startsWith("[Rules]")) readRules();
   }
 
-  if(!mOkSettings) error(FFI_, tr("No [Settings] in rule file."));
-  if(!mOkRules)    error(FFI_, tr("No [Rules] in rule file."));
+  if(!mOkSettings) error(FUNC, tr("No [Settings] in rule file."));
+  if(!mOkRules)    error(FUNC, tr("No [Rules] in rule file."));
 
   if(!hasError())
   {
-    verbose(FFI_, tr("Rule setup in %1 milliseconds.").arg(time.elapsed()));
+    verbose(FUNC, tr("Rule setup in %1 milliseconds.").arg(time.elapsed()));
     return true;
   }
 
@@ -161,7 +161,7 @@ bool Trader::nextLine(bool nextBlock/* = false*/)
     return true;
   }
 
-  fatal(FFI_, "??? you should never read this.");
+  fatal(FUNC, "??? you should never read this.");
   return false;
 }
 
@@ -185,7 +185,7 @@ void Trader::readSettings()
   {
     if(!mLine.contains("="))
     {
-      error(FFI_, tr("No equal sign at line: %1").arg(QString::number(mLineNumber)));
+      error(FUNC, tr("No equal sign at line: %1").arg(QString::number(mLineNumber)));
       continue;
     }
 
@@ -193,14 +193,14 @@ void Trader::readSettings()
     QStringList setting = mLine.split("=");
     if(setting.size() < 2)
     {
-      error(FFI_, tr("No right argument at line: %1").arg(QString::number(mLineNumber)));
+      error(FUNC, tr("No right argument at line: %1").arg(QString::number(mLineNumber)));
       //qDebug() << mErrorMessage;
       continue;
     }
 
     if(!mSettings.contains(setting.at(0)))
     {
-      error(FFI_, tr("Unknown setting at line: %1").arg(QString::number(mLineNumber)));
+      error(FUNC, tr("Unknown setting at line: %1").arg(QString::number(mLineNumber)));
       //qDebug() << mErrorMessage;
       continue;
     }
@@ -219,7 +219,7 @@ void Trader::readSettings()
 
     if(!mIndicator->useFile(mSettings.value("UseIndicator")))
     {
-      error(FFI_, tr("Problem while loading used indicator."));
+      error(FUNC, tr("Problem while loading used indicator."));
       addErrors(mIndicator->errors());
       return;
     }
@@ -247,7 +247,7 @@ void Trader::readRules()
   {
     if(!mLine.contains(":"))
     {
-      error(FFI_, tr("Missing colon at line: %1").arg(mLineNumber));
+      error(FUNC, tr("Missing colon at line: %1").arg(mLineNumber));
       continue;
     }
 
@@ -255,7 +255,7 @@ void Trader::readRules()
     QStringList rule = mLine.split(":");
     if(rule.size() < 2)
     {
-      error(FFI_, tr("No right argument at line: %1").arg(mLineNumber));
+      error(FUNC, tr("No right argument at line: %1").arg(mLineNumber));
       //qDebug() << mErrorMessage;
       continue;
     }
@@ -282,7 +282,7 @@ void Trader::readRules()
 
       if(!knownActions.contains(action.at(0)))
       {
-        error(FFI_, tr("Unknown action '%1' at line: %2").arg(action.at(0)).arg(mLineNumber));
+        error(FUNC, tr("Unknown action '%1' at line: %2").arg(action.at(0)).arg(mLineNumber));
         continue;
       }
 
@@ -290,8 +290,8 @@ void Trader::readRules()
       if(action.size() == 4) action << "20";
       if(action.size() != 5)
       {
-        error(FFI_, tr("Wrong parameter count at line: %1").arg(mLineNumber));
-        errInfo(FFI_, mOrigLine);
+        error(FUNC, tr("Wrong parameter count at line: %1").arg(mLineNumber));
+        errInfo(FUNC, mOrigLine);
         //qDebug() << mErrorMessage;
         continue;
       }
@@ -346,7 +346,7 @@ bool Trader::simulate(DataTupleSet* data)
 
   if(data->dataTupleSize() < mBarsNeeded)
   {
-    error(FFI_, tr("Too less bars for simulation."));
+    error(FUNC, tr("Too less bars for simulation."));
     return false;
   }
 
@@ -450,7 +450,7 @@ bool Trader::simulate(DataTupleSet* data)
       if(ret == 1) continue; // No valid value in mData
       else if(ret == 2)
       {
-        error(FFI_, "Bad value from mu::Parser");
+        error(FUNC, "Bad value from mu::Parser");
         continue;
       }
 
@@ -476,14 +476,14 @@ bool Trader::simulate(DataTupleSet* data)
   int fiId, marketId;
   if(!mData->getIDs("THIS", fiId, marketId))
   {
-    fatal(FFI_, "No IDs in mData (!?)");
+    fatal(FUNC, "No IDs in mData (!?)");
     return false;
   }
 
   SymbolTuple* st = mFilu->getSymbols(fiId);
   if(!st)
   {
-    error(FFI_, tr("Could not find symbols to Fi (!?)."));
+    error(FUNC, tr("Could not find symbols to Fi (!?)."));
     //qDebug() << mErrorMessage;
     return false;
   }
@@ -587,14 +587,14 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(group.isEmpty())
   {
-    error(FFI_, tr("No group set to use."));
+    error(FUNC, tr("No group set to use."));
     return -1;
   }
 
   QSqlQuery* allGroups = mFilu->getGroups();
   if(!allGroups)
   {
-    error(FFI_, tr("No groups found."));
+    error(FUNC, tr("No groups found."));
     return -1;
   }
 
@@ -610,7 +610,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(!found)
   {
-    error(FFI_, tr("Group not found: %1").arg(group));
+    error(FUNC, tr("Group not found: %1").arg(group));
     return -1;
   }
 
@@ -618,7 +618,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(!mFi)
   {
-    error(FFI_, tr("No FI found in group: %1").arg(group));
+    error(FUNC, tr("No FI found in group: %1").arg(group));
     return -1;
   }
 
@@ -641,7 +641,7 @@ int Trader::simulateNext()
 
   if(!mFi)
   {
-    fatal(FFI_, "No mFi");
+    fatal(FUNC, "No mFi");
     return 0;
   }
 
@@ -656,7 +656,7 @@ int Trader::simulateNext()
 
   if(!bars)
   {
-    verbose(FFI_, QString("No bars for: %1, %2").arg(mFi->value(2).toString(), mFi->value(3).toString()), eEver);
+    verbose(FUNC, QString("No bars for: %1, %2").arg(mFi->value(2).toString(), mFi->value(3).toString()), eEver);
     return 2; // Don't break complete simulation
   }
 

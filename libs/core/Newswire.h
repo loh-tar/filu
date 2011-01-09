@@ -24,7 +24,7 @@
 
 class RcFile;
 
-#define FFI_ Q_FUNC_INFO
+#define FUNC __FUNCTION__
 
 /***********************************************************************
 *
@@ -38,7 +38,7 @@ class Newswire
 
   public:
                    Newswire(const QString& connectionName);
-                   Newswire(Newswire* parent);
+                   Newswire(Newswire* parent, const QString& className);
     virtual       ~Newswire();
 
     enum VerboseLevel
@@ -61,6 +61,7 @@ class Newswire
 
     struct Message  // It's a typedef
     {
+      QString   clas; // Class name, one s less
       QString   func;
       QString   text;
       MsgType   type;
@@ -72,13 +73,11 @@ class Newswire
     void            setVerboseLevel(const QString& func, const QString& level);
     VerboseLevel    verboseLevel() { return mVerboseLevel; };
 
-    void                setRawFuncRegex(const QRegExp& regex);
     void                setNoErrorLogging(bool noErrorLogging);
     void                setLogFile(const QString& path);
     const MessageLst&   errors() const { return mErrors; };
-    QString             formatErrors(const QString& format = "%f *** %t *** %x");
+    QString             formatErrors(const QString& format = "%F *** %t *** %x");
     bool                hasError() const { return mHasError; };
-    QString             messageTypeName(const MsgType type);
 
     friend class RcFile;
 
@@ -94,11 +93,9 @@ class Newswire
     void            fatal(const QString& func, const QString& txt);
     void            setMessage(const QString& func, const QString& txt, const MsgType type);
 
-    QString         formatMessage(const QString& func                          // The % place holder means:
-                                , const QString& txt                           // %f function name
-                                , const MsgType type                           // %t message type
-                                , const QString& format = "%f *** %t *** %x"); // %x text
-                                                                               // %c connection name
+    QString         messageTypeName(const MsgType type);
+    Message         makeMessage(const QString& func, const QString& txt, const MsgType type);
+    QString         formatMessage(const Message& msg, const QString& format = "%F *** %t *** %x");
 
     void            removeError(const QString& txt);
     bool            isRoot() { return mRoot; };
@@ -108,17 +105,12 @@ class Newswire
                         // P for private
     void            verboseP(const QString& func, const QString& txt, const VerboseLevel type = eInfo);
 
-    void            addError(const QString& func, const QString& txt, const MsgType type);
-    void            logError(const QString& func, const QString& txt, const MsgType type);
-
-    QString         rawFunc(const QString& func)
-                    {
-                      // func looks like "void Newswire::verbose(...)"
-                      mRawFuncRegex.indexIn(func);
-                      return mRawFuncRegex.cap() + ":";
-                    };
+    void            addError(const Message& msg);
+    void            logError(const Message& msg);
 
     bool           mRoot;
+    QString        mConnName;       // ConnectionName/ProgramName for logfile entries
+    QString        mClass;
     VerboseLevel   mVerboseLevel;
     MessageLst     mErrors;
     bool           mHasError;
@@ -126,8 +118,7 @@ class Newswire
     QFile*         mLogFileFile;
     QTextStream*   mLogFile;
     bool           mNoErrorLogging;
-    QRegExp        mRawFuncRegex;
-    QString        mConnName;       // ConnectionName/ProgramName for logfile entries
+
 };
 
 #endif

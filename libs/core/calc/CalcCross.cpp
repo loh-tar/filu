@@ -20,7 +20,7 @@
 #include "CalcCross.h"
 
 CalcCross::CalcCross(Indicator* parent)
-         : CalcType(parent)
+         : CalcType(parent, FUNC)
 {
   mType = "Cross";
 }
@@ -44,7 +44,7 @@ bool CalcCross::prepare(CalcParms& parms)
         and mIns.at(2) != "DOWN"
         and mIns.at(2) != "BOTH")
     {
-      error(FFI_, tr("Unknown operator: %1").arg(mIns.at(2)));
+      error(FUNC, tr("Unknown operator: %1").arg(mIns.at(2)));
     }
   }
   else
@@ -88,7 +88,7 @@ bool CalcCross::calc()
     }
     else
     {
-      fatal(FFI_, QString("Oops!?!? Unknown variable-1 '%1' found, should never heappens.").arg(operand1));
+      fatal(FUNC, QString("Oops!?!? Unknown variable-1 '%1' found, should never heappens.").arg(operand1));
       return false;
     }
   }
@@ -107,7 +107,7 @@ bool CalcCross::calc()
     }
     else
     {
-      fatal(FFI_, QString("Oops!?!? Unknown variable-2 '%1' found, should never heappens.").arg(operand2));
+      fatal(FUNC, QString("Oops!?!? Unknown variable-2 '%1' found, should never heappens.").arg(operand2));
       return false;
     }
   }

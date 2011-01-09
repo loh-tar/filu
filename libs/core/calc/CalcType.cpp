@@ -28,8 +28,8 @@
 #include "CalcMuParser.h"
 #include "CalcWatchDogs.h"
 
-CalcType::CalcType(Indicator* parent)
-        : FClass(parent)
+CalcType::CalcType(Indicator* parent, const QString& className)
+        : FClass(parent, className)
         , mType("BaseType")
         , mIndicator(parent)
 {}
@@ -37,39 +37,36 @@ CalcType::CalcType(Indicator* parent)
 CalcType::~CalcType()
 {}
 
-CalcType* CalcType::createNew(const QString& type)
+CalcType* CalcType::createNew(Indicator* indi, const QString& type)
 {
-  if(!type.compare("SETCOLOR"))  return new CalcSetColor(mIndicator);
-  if(!type.compare("TALIB"))     return new CalcTALib(mIndicator);
-  if(!type.compare("CROSS"))     return new CalcCross(mIndicator);
-  if(!type.compare("REF"))       return new CalcRef(mIndicator);
-  if(!type.compare("FILU"))      return new CalcFilu(mIndicator);
-  if(!type.compare("BETWEEN"))   return new CalcBetween(mIndicator);
-  if(!type.compare("SIMTRADE"))  return new CalcTrade(mIndicator);
-  if(!type.compare("MUP"))       return new CalcMuParser(mIndicator);
-  if(!type.compare("WATCHDOGS")) return new CalcWatchDogs(mIndicator);
+  if(!type.compare("SETCOLOR"))  return new CalcSetColor(indi);
+  if(!type.compare("TALIB"))     return new CalcTALib(indi);
+  if(!type.compare("CROSS"))     return new CalcCross(indi);
+  if(!type.compare("REF"))       return new CalcRef(indi);
+  if(!type.compare("FILU"))      return new CalcFilu(indi);
+  if(!type.compare("BETWEEN"))   return new CalcBetween(indi);
+  if(!type.compare("SIMTRADE"))  return new CalcTrade(indi);
+  if(!type.compare("MUP"))       return new CalcMuParser(indi);
+  if(!type.compare("WATCHDOGS")) return new CalcWatchDogs(indi);
 
   /*FIXME: add new fancy CalcTypes
 
-  if(!type.compare(""))  return new (mIndicator);
+  if(!type.compare(""))  return new (indi);
 
   */
 
-  if(type.isEmpty()) return new CalcType(mIndicator); // Needed???
-
-  error(FFI_, tr("Type not found: %1").arg(type));
   return 0;
 }
 
 bool CalcType::prepare(CalcParms &/*parms*/)
 {
-  error(FFI_, tr("Oops!? base type never can prepare."));
+  error(FUNC, tr("Oops!? base type never can prepare."));
   return false;
 }
 
 bool CalcType::calc()
 {
-  error(FFI_, tr("Oops?! base type nerver can calc."));
+  error(FUNC, tr("Oops?! base type nerver can calc."));
   return false;
 }
 
@@ -95,7 +92,7 @@ bool CalcType::addToDataSet(const QString& key)
   if(!mData->append(key)) return false;
   else
   {
-    verbose(FFI_, QString("Variable name already exist: %1").arg(key), eMax);
+    verbose(FUNC, QString("Variable name already exist: %1").arg(key), eMax);
     return true;
   }
 }
@@ -122,12 +119,12 @@ bool CalcType::checkOutputCount(int count)
   {
     if(1 == count)
     {
-      error(FFI_, tr("'%1': No output variable found.").arg(mType));
+      error(FUNC, tr("'%1': No output variable found.").arg(mType));
     }
     else
     {
-      error(FFI_, tr("'%1': Too less output variables.").arg(mType));
-      errInfo(FFI_, tr("Found: %1, Expect: %2").arg(mOuts.size()).arg(count));
+      error(FUNC, tr("'%1': Too less output variables.").arg(mType));
+      errInfo(FUNC, tr("Found: %1, Expect: %2").arg(mOuts.size()).arg(count));
     }
 
     return false; // Error
@@ -147,12 +144,12 @@ bool CalcType::checkInputCount(int count)
   {
     if(1 == count)
     {
-      error(FFI_, tr("'%1': No input parameter found.").arg(mType));
+      error(FUNC, tr("'%1': No input parameter found.").arg(mType));
     }
     else
     {
-      error(FFI_, tr("'%1': Too less input parameters.").arg(mType));
-      errInfo(FFI_, tr("Found: %1, Expect: %2").arg(mOuts.size()).arg(count));
+      error(FUNC, tr("'%1': Too less input parameters.").arg(mType));
+      errInfo(FUNC, tr("Found: %1, Expect: %2").arg(mOuts.size()).arg(count));
     }
 
     return false; // Error
@@ -171,7 +168,7 @@ bool CalcType::checkInputVariable(int i)
     if(isNumber) mIns.append(QString("Operand-%1-IsNumber").arg(i));
     else
     {
-      error(FFI_, tr("'%1': Variable at position %1 not found: %2").arg(i + 1).arg(mIns.at(i)).arg(mType));
+      error(FUNC, tr("'%1': Variable at position %1 not found: %2").arg(i + 1).arg(mIns.at(i)).arg(mType));
       return false;
     }
   }

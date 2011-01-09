@@ -32,6 +32,7 @@ class PlotLine : public PlotType
 {
   public:
                   PlotLine(Newswire* parent);
+                  PlotLine(Newswire* parent, const QString& className);
     virtual      ~PlotLine();
 
     virtual bool  prepare(QStringList& command, QStringList& plotDataKeys);

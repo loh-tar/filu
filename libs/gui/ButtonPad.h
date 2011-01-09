@@ -38,6 +38,7 @@ class ButtonPad : public FWidget
 
   public:
                     ButtonPad(const QString& name, FClass* parent);
+                    ButtonPad(const QString& name, FClass* parent, const QString& className);
     virtual        ~ButtonPad();
 
     virtual int     loadSettings();

@@ -20,7 +20,7 @@
 #include "CalcTALib.h"
 
 CalcTALib::CalcTALib(Indicator* parent)
-         : CalcType(parent)
+         : CalcType(parent, FUNC)
 {
   mType = "TALib";
 }
@@ -34,7 +34,7 @@ bool CalcTALib::prepare(CalcParms& parms)
 
   if(mIns.size() < 1)
   {
-    error(FFI_, tr("No FunctionName found."));
+    error(FUNC, tr("No FunctionName found."));
     return false;
   }
 
@@ -42,7 +42,7 @@ bool CalcTALib::prepare(CalcParms& parms)
 
   if(talib.functionIsUnknown(mIns.at(0)))
   {
-    error(FFI_, tr("Unknown TA function: %1").arg(mIns.at(0)));
+    error(FUNC, tr("Unknown TA function: %1").arg(mIns.at(0)));
     return false;
   }
 
@@ -54,7 +54,7 @@ bool CalcTALib::prepare(CalcParms& parms)
 
   if(mOuts.size() < mInfo.value("nbOutput").toInt())
   {
-    error(FFI_, tr("Too less output variables, function '%1' expect %2.").arg(mIns.at(0), mInfo.value("nbOutput").toString()));
+    error(FUNC, tr("Too less output variables, function '%1' expect %2.").arg(mIns.at(0), mInfo.value("nbOutput").toString()));
     return false;
   }
 
@@ -76,7 +76,7 @@ bool CalcTALib::prepare(CalcParms& parms)
         // mIns looks like: "AD", "FI" "(", "alias", ")"
         if(mIns.size() < 4)
         {
-          error(FFI_, tr("Missing ) at FI()."));
+          error(FUNC, tr("Missing ) at FI()."));
           return false;
         }
 
@@ -107,7 +107,7 @@ bool CalcTALib::prepare(CalcParms& parms)
           mIns.at(1 + j).toDouble(&isNumber);
           if((mIns.at(1 + j) == "=") or isNumber)
           {
-            error(FFI_, tr("Not enough input variables. Found to early an optional input."));
+            error(FUNC, tr("Not enough input variables. Found to early an optional input."));
             return false;
           }
 
@@ -130,7 +130,7 @@ bool CalcTALib::prepare(CalcParms& parms)
     QString var =  hit.next().value();
     if(isUnknown(var))
     {
-      error(FFI_, tr("Unknown input variable: %1").arg(var));
+      error(FUNC, tr("Unknown input variable: %1").arg(var));
       return false;
     }
   }
@@ -142,13 +142,13 @@ bool CalcTALib::prepare(CalcParms& parms)
   {
     if((i + 3) > mIns.size())
     {
-      error(FFI_, tr("Something wrong with optional parameter list." ));
+      error(FUNC, tr("Something wrong with optional parameter list." ));
       return false;
     }
 
     if(!mInfo.contains(mIns.at(i)))
     {
-      error(FFI_, tr("Unknown optional parameter: %1").arg(mIns.at(i)));
+      error(FUNC, tr("Unknown optional parameter: %1").arg(mIns.at(i)));
       return false;
     }
 
@@ -156,7 +156,7 @@ bool CalcTALib::prepare(CalcParms& parms)
     double value = mIns.at(i + 2).toDouble(&isNumber);
     if(!isNumber)
     {
-      error(FFI_, tr("Optional parameter '%1' is not a number: %2").arg(mIns.at(i), mIns.at(i + 2)));
+      error(FUNC, tr("Optional parameter '%1' is not a number: %2").arg(mIns.at(i), mIns.at(i + 2)));
       return false;
     }
 
@@ -196,7 +196,7 @@ bool CalcTALib::calc()
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    error(FFI_, tr("TALib returned error code %1.").arg(retCode));
+    error(FUNC, tr("TALib returned error code %1.").arg(retCode));
     freesParmHolder(parmHolder);
     return false;
   }
@@ -235,7 +235,7 @@ int CalcTALib::barsNeeded(DataTupleSet* data)
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    fatal(FFI_, "Unhandled error 7, sorry but feel free to fix me ;-)");
+    fatal(FUNC, "Unhandled error 7, sorry but feel free to fix me ;-)");
     mData = save;
     freesParmHolder(parmHolder);
     return -1;
@@ -267,7 +267,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    fatal(FFI_, "Unhandled error 1, sorry but feel free to fix me ;-)");
+    fatal(FUNC, "Unhandled error 1, sorry but feel free to fix me ;-)");
     return false;
   }
 
@@ -275,7 +275,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
   if(!retCode == TA_SUCCESS )
   {
     // Error
-    fatal(FFI_, "Unhandled error 2, sorry but feel free to fix me ;-)");
+    fatal(FUNC, "Unhandled error 2, sorry but feel free to fix me ;-)");
     return false;
   }
 
@@ -315,7 +315,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
       if(!retCode == TA_SUCCESS )
       {
         // Error
-        fatal(FFI_, "Unhandled error 3, sorry but feel free to fix me ;-)");
+        fatal(FUNC, "Unhandled error 3, sorry but feel free to fix me ;-)");
         return false;
       }
     }
@@ -327,13 +327,13 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
       if(!retCode == TA_SUCCESS )
       {
         // Error
-        fatal(FFI_, "Unhandled error 4, sorry but feel free to fix me ;-)");
+        fatal(FUNC, "Unhandled error 4, sorry but feel free to fix me ;-)");
         return false;
       }
     }
     else if(mInfo.value(key) == "INTEGER")
     {
-        fatal(FFI_, "Oops...'integer' as input is not implemented.");
+        fatal(FUNC, "Oops...'integer' as input is not implemented.");
         return false;
     }
   }
@@ -378,7 +378,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
       if(!retCode == TA_SUCCESS )
       {
         // Error
-        fatal(FFI_, "Unhandled error 5, sorry but feel free to fix me ;-)");
+        fatal(FUNC, "Unhandled error 5, sorry but feel free to fix me ;-)");
         return false;
       }
     }
@@ -386,7 +386,7 @@ bool CalcTALib::initTALib(TA_ParamHolder** parmHolder)
     {
       //TA_Integer* out = mData->valueArray(mOutput.value(key));
       //retCode = TA_SetOutputParamIntegerPtr(*parmHolder, i, out);
-      fatal(FFI_, "Oops...'integer' as output is not implemented.");
+      fatal(FUNC, "Oops...'integer' as output is not implemented.");
       return false;
     }
   }
@@ -403,7 +403,7 @@ void CalcTALib::freesParmHolder(TA_ParamHolder* parmHolder)
   if(!retCode == TA_SUCCESS)
   {
     // Error
-    error(FFI_, tr("TALib returned error code %1.").arg(retCode));
+    error(FUNC, tr("TALib returned error code %1.").arg(retCode));
   }
 }
 

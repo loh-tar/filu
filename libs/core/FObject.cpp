@@ -19,13 +19,13 @@
 
 #include "FObject.h"
 
-FObject::FObject(FClass* parent)
-       : FClass(parent)
+FObject::FObject(FClass* parent, const QString& className)
+       : FClass(parent, className)
 
 {}
 
-FObject::FObject(FObject* parent)
-       : FClass(parent)
+FObject::FObject(FObject* parent, const QString& className)
+       : FClass(parent, className)
 
 {}
 

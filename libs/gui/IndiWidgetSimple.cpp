@@ -23,7 +23,15 @@
 #include "IndicatorPainter.h"
 
 IndiWidgetSimple::IndiWidgetSimple(const QString& name, FClass* parent)
-                : FWidget(parent)
+                : FWidget(parent, FUNC)
+                , mName("1")
+                , mSetName(name)
+{
+  init();
+}
+
+IndiWidgetSimple::IndiWidgetSimple(const QString& name, FClass* parent, const QString& className)
+                : FWidget(parent, className)
                 , mName("1")
                 , mSetName(name)
 {
@@ -31,10 +39,18 @@ IndiWidgetSimple::IndiWidgetSimple(const QString& name, FClass* parent)
 }
 
 IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FClass* parent)
-               : FWidget(parent)
+               : FWidget(parent, FUNC + QString::number(number + 1))
+               , mName(QString::number(number + 1))
                , mSetName(name)
 {
-  mName = QString::number(number + 1);
+  init();
+}
+
+IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FClass* parent, const QString& className)
+               : FWidget(parent, className + QString::number(number + 1))
+               , mName(QString::number(number + 1))
+               , mSetName(name)
+{
   init();
 }
 

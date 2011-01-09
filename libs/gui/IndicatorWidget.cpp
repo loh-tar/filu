@@ -24,13 +24,13 @@
 #include "IndicatorDataView.h"
 
 IndicatorWidget::IndicatorWidget(const QString& name, FWidget* parent)
-               : IndiWidgetSimple(name, parent)
+               : IndiWidgetSimple(name, parent, FUNC)
 {
   init();
 }
 
 IndicatorWidget::IndicatorWidget(const QString& name, const int number, FWidget* parent)
-               : IndiWidgetSimple(name, number, parent)
+               : IndiWidgetSimple(name, number, parent, FUNC)
 {
   init();
 }
