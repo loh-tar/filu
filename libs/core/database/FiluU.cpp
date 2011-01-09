@@ -152,15 +152,17 @@ void FiluU::putGroup(int groupId, const QString& name, int motherId)
   /*int result = */execute(query);
 }
 
-COTuple* FiluU::getCOs()
+COTuple* FiluU::getCOs(int fiId, int /*marketId*/
+                     , const QString& fromDate/* = "1000-01-01"*/
+                     , const QString& toDate  /* = "3000-01-01"*/)
 {
   if(!initQuery("GetCOs")) return 0;
 
   QSqlQuery* query = mSQLs.value("GetCOs");
 
-  query->bindValue(":fiId", mFiId);
-  query->bindValue(":fromDate", mFromDate);
-  query->bindValue(":toDate", mToDate);
+  query->bindValue(":fiId", fiId);
+  query->bindValue(":fromDate", fromDate);
+  query->bindValue(":toDate", toDate);
   int result = execute(query);
   if(result < Filu::eData) return 0;
 

@@ -107,12 +107,11 @@ void AddFiPage::createPage()
 
   mType = new QComboBox;
   QStringList types;
-  mFilu->getFiType(types);
+  mFilu->getFiTypes(types);
   mType->addItems(types);
 
   // Read all markets out of the DB
-  mFilu->setMarketName("");
-  MarketTuple* markets = mFilu->getMarket();
+  MarketTuple* markets = mFilu->getMarkets();
   QStringList marketList;
   if(markets)
   {

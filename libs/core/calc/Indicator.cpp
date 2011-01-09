@@ -520,7 +520,7 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
     error(FUNC, tr("Not yet supported: %1").arg(indicator.at(i)));
     return false;
 
-    BarTuple bars(1); // = mFilu->getBars();
+    BarTuple bars(1); // = mFilu->getBars(...);
     if(!mData->appendBarTuple(&bars))
     {
       error(FUNC, tr("Fail to create mData."));

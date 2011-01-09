@@ -269,7 +269,7 @@ void PerformerF::loadData(int fiId, int marketId)
 
 void PerformerF::showWindowTitle(const QString& symbol, const QString& market)
 {
-  FiTuple* fi = mFilu->getFi(symbol);
+  FiTuple* fi = mFilu->getFiBySymbol(symbol);
   QString name;
   if(!fi)
   {

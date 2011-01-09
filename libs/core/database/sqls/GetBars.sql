@@ -1,6 +1,6 @@
 *  file name: GetBars.sql
 *  Used as query: sqlGetBars
-*  Used in function: Filu::getBars()
+*  Used in function: Filu::getBars(...)
 *
 *  Purpose:
 *     Fetch bars of a user defined time frame

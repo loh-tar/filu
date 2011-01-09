@@ -45,7 +45,10 @@ class FiluU : public Filu
     int         addGroup(const QString& path);  // Returns GroupId or error
     void        putGroup(int groupId, const QString& name, int motherId);
 
-    COTuple*    getCOs();
+    COTuple*    getCOs(int fiId, int marketId
+                     , const QString& fromDate = "1000-01-01"
+                     , const QString& toDate   = "3000-01-01");
+
     bool        putCOs(COTuple&);
 
     void        putBacktest(int& backtestId, const QDate& fromDate, const QDate& toDate

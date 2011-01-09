@@ -231,14 +231,12 @@ bool IndicatorPainter::calculate()
   }
 
   // Load chart objects
-  mFilu->setFiId(mBars->fiId());
-  mFilu->setMarketId(mBars->marketId());
   mBars->rewind(0);
-  mFilu->setFromDate(mBars->date().toString(Qt::ISODate));
+  QString fromDate = mBars->date().toString(Qt::ISODate);
   mBars->rewind(mBars->count() - 1);
-  mFilu->setToDate(mBars->date().toString(Qt::ISODate));
+  QString toDate = mBars->date().toString(Qt::ISODate);
 
-  COTuple* co = mFilu->getCOs();
+  COTuple* co = mFilu->getCOs(mBars->fiId(), mBars->marketId(), fromDate, toDate);
 
   if(co)
   {

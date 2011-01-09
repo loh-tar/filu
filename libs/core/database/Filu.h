@@ -77,17 +77,8 @@ class Filu : public Newswire
             void closeDB();
 
     // Set Functions
-    void setFiName(const QString& name);   // Deprecated, only at FiPage.cpp:129
-    void setFiType(const QString& type);   // Deprecated, only like mFilu->setFiType("");
-    void setFiId(int);
-    void setMarketId(int);
     int  setMarketName(const QString&);    // Returns marketId or < eError
     int  setSymbolCaption(const QString&); // Returns FiId to symbol or < eError
-    void setProviderId(int);               // Unusued
-    void setProviderName(const QString&);  // Deprecated, only like mFilu->setProviderName("");
-    void setOnlyProviderSymbols(bool);     // Deprecated, make extra function getProviderSymbols
-    void setFromDate(const QString& = "1000-01-01");  // Deprecated
-    void setToDate(const QString& = "3000-01-01");    // Deprecated
     void setBarsToLoad(int);
     void setDaysToFetchIfNoData(int);      // Unused
     void printSettings();
@@ -95,23 +86,27 @@ class Filu : public Newswire
     // Get Tuple Functions
     BarTuple*    getBars(const QString& symbol, const QString& market
                        , const QString& fromDate = "1000-01-01"
-                       , const QString& toDate = "3000-01-01");
+                       , const QString& toDate   = "3000-01-01");
 
     BarTuple*    getBars(int fiId, int marketId
                        , const QString& fromDate = "1000-01-01"
-                       , const QString& toDate = "3000-01-01");
+                       , const QString& toDate   = "3000-01-01");
 
     BarTuple*    getBars(const QString& symbol, const QString& market, int limit);
     BarTuple*    getBars(int fiId, int marketId, int limit);
-    BarTuple*    getBars(); // Deprecated
 
-    MarketTuple* getMarket();
+    MarketTuple* getMarkets(const QString& name = "");
 
     FiTuple*     getFi(const int fiId);
-    FiTuple*     getFi(const bool fuzzy = false);  // Rename to getFiLike(const QString& foo)
-    FiTuple*     getFi(const QString& symbol);     // Rename to getFiBySymbol(...)
+    FiTuple*     getFiLike(const QString& pattern);
+    FiTuple*     getFiBySymbol(const QString& symbol);
 
-    SymbolTuple* getSymbols();          // getSymbol stuff needs rethinking
+    SymbolTuple* getSymbols(int fiId, const QString& fiType
+                            , const QString& symbolType
+                            , const QString& symbol
+                            , const QString& market
+                            , bool onlyProviderSymbols);  // getSymbol stuff needs rethinking
+
     SymbolTuple* getSymbols(int fiId);
     SymbolTuple* getAllProviderSymbols();
 
@@ -121,7 +116,7 @@ class Filu : public Newswire
 
     SymbolTypeTuple* getSymbolTypes(int filter = eAllTypes/* FIXME, bool orderBySeq = true*/);
 
-    int          getFiType(QStringList& type);
+    int          getFiTypes(QStringList& type);
 
     int          getEODBarDateRange(DateRange& dateRange
                                   , int fiId, int marketId, int quality);
@@ -182,9 +177,7 @@ class Filu : public Newswire
     void        setSqlParm(const QString& parm, const QVariant& value);
 
     int         searchCaption(const QString& table, const QString& caption);
-
     QString     getLastQuery(); // Unused
-
     void        deleteRecord(const QString& schema, const QString& table, int id);
 
   protected:
@@ -194,18 +187,9 @@ class Filu : public Newswire
     int         execute(QSqlQuery* query);
 
     RcFile*     mRcFile;
-    QString     mSettingsFile;
     QString     mSqlPath;
     QString     mUserSchema;
     QString     mConnectionName;
-    int         mFiId;
-    QString     mFiType;
-    QString     mFiLongName;
-    QString     mSymbolCaption;
-    int         mMarketId;
-    QString     mMarketName;
-    int         mProviderId;
-    QString     mProviderName;
     QString     mFromDate;
     QString     mToDate;
     int         mLimit;  // To limit the count of rows at SELECT xyz FROM abc...

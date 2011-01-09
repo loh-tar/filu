@@ -1,6 +1,6 @@
 *  file name: GetBarsLtd.sql
 *  Used as query: sqlGetBarsLtd
-*  Used in function: Filu::getBars()
+*  Used in function: Filu::getBars(int fiId, int marketId, int limit)
 *
 *  Purpose:
 *     Fetch the most newst bars of a Fi. The amount of bars

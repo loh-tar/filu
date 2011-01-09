@@ -146,7 +146,7 @@ FiTypeSelBtn::FiTypeSelBtn(FClass* parent)
              , mType("")
 {
   QStringList types;
-  mFilu->getFiType(types);
+  mFilu->getFiTypes(types);
 
   QMenu* menu = new QMenu(this);
 

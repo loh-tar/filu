@@ -107,11 +107,10 @@ void PlotSheet::showFiIdMarketId(int fiId, int marketId)
 {
   // FIXME: only used by managerf, think remove there too
   if(mMyBars) delete mMyBars;
-  mFilu->setFromDate(mFromDate.toString(Qt::ISODate));
-  mFilu->setToDate(mToDate.toString(Qt::ISODate));
-  mFilu->setFiId(fiId);
-  mFilu->setMarketId(marketId);
-  mMyBars = mFilu->getBars();
+
+  mMyBars = mFilu->getBars(fiId, marketId
+                         , mFromDate.toString(Qt::ISODate)
+                         , mToDate.toString(Qt::ISODate));
 
   showBarData(mMyBars);
 }

@@ -103,20 +103,12 @@ void FiPage::search()
   QString text = mLook4Edit->text();
   if(text.isEmpty()) return;
 
-  mFilu->setMarketName("");
-  mFilu->setProviderName("");
-  mFilu->setFiId(0);
-  mFilu->setFiType("");
-  mFilu->setSymbolCaption(text);
-  mFilu->setOnlyProviderSymbols(false);
-  SymbolTuple* symbols;
-  symbols = mFilu->getSymbols();
+  SymbolTuple* symbols = mFilu->searchSymbol(text);
+
   if(symbols)
   {
-    symbols->next();
-    mFilu->setFiId(symbols->fiId());
     if(mFi) delete mFi;
-    mFi = mFilu->getFi();
+    mFi = mFilu->getFi(symbols->fiId());
     mFiView->setContent(mFi);
 
     if(mSymbols) delete mSymbols;
@@ -127,18 +119,14 @@ void FiPage::search()
   }
   else
   {
-    mFilu->setFiName(text);
-    //mFilu->setFiType("");
     if(mFi) delete mFi;
-    mFi = mFilu->getFi(true);
+    mFi = mFilu->getFiLike(text);
     mFiView->setContent(mFi);
 
     if(mSymbols) delete mSymbols;
     mSymbols = 0;
     mSymbolView->setContent(mSymbols);
-
   }
-
 }
 
 void FiPage::fiClicked(const QModelIndex& index)
@@ -170,13 +158,5 @@ void FiPage::symbolClicked(const QModelIndex& index)
   oldMarketId = marketId;
 
   mPlotSheet->showFiIdMarketId(fiId, marketId);
-/*
-  if(mBars) delete mBars;
-  mFilu->setFromDate("1900-01-01");
-  mFilu->setFiId(fiId);
-  mFilu->setMarketId(marketId);
-  mBars = mFilu->getBars();
-  mPlotSheet->useBarData(mBars);
-  */
 }
 

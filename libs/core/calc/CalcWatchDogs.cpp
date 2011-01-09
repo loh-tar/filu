@@ -92,11 +92,7 @@ bool CalcWatchDogs::calc()
   mData->getDateRange(fromDate, toDate);
 
   // Load chart objects
-  mFilu->setFiId(fiId);
-  mFilu->setMarketId(marketId);
-  mFilu->setFromDate();
-  mFilu->setToDate();
-  COTuple* cot = mFilu->getCOs();
+  COTuple* cot = mFilu->getCOs(fiId, marketId);
 
   if(!cot)
   {

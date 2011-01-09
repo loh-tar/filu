@@ -1,6 +1,6 @@
 *  file name: GetSymbols.sql
 *  Used as query: sqlGetSymbols
-*  Used in function: Filu::getSymbols()
+*  Used in function: Filu::getSymbols(...)
 *
 *  Purpose:
 *     To fetch a list of symbols according ...some settings
