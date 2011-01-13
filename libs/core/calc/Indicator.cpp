@@ -450,11 +450,12 @@ bool Indicator::parse(QStringList& indicator)
     return false;
   }
 
-  mParseError = false;
+  bool ok = prepare(indicator);
+  mParseError = !ok;
 
   //
   //  puh, that's all
-  return prepare(indicator);
+  return ok;
 }
 
 bool Indicator::prepare(QStringList& indicator)
