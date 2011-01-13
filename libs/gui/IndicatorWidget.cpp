@@ -63,7 +63,9 @@ void IndicatorWidget::init()
   mSplitter->addWidget(mDataView);
   mSplitter->setSizes(sizes);
 
-  readSettings();
+  // Don't call readSettings(), that would cause to load the indicator twice
+  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
+  mSplitter->restoreState(settings.value("IndicatorSplitter").toByteArray());
 
   delete layout();
   QHBoxLayout* lay = new QHBoxLayout;
