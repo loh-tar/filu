@@ -152,7 +152,7 @@ bool DataTupleSet::getValue(const QString& name, double& value)
 {
   if(!DataSet.contains(name))
   {
-   qDebug() << "DataTupleSet::getValue: key name not found:" << name;
+    qDebug() << "DataTupleSet::getValue: Key name not found:" << name;
     return false;
   }
   return DataSet.value(name)->getValue(value);

@@ -55,6 +55,12 @@ Indicator::~Indicator()
 
 QStringList* Indicator::useFile(const QString& fileName)
 {
+  if(mData)
+  {
+    delete mData;
+    mData = 0;
+  }
+
   clearErrors();
   mOrigIndicator.clear();
   mAlreadyIncluded->clear();
@@ -83,6 +89,12 @@ QString Indicator::fileName()
 
 bool Indicator::useIndicator(const QStringList& indicator)
 {
+  if(mData)
+  {
+    delete mData;
+    mData = 0;
+  }
+
   clearErrors();
   mOrigIndicator.clear();
   mAlreadyIncluded->clear();

@@ -95,6 +95,7 @@ bool IndicatorPainter::useIndicatorFile(const QString& file)
 
   mPlotDataKeys.clear();
   mPrimaryValue.clear();
+  mData = 0;
 
   QStringList* indiFile = mIndicator->useFile(file);
 
