@@ -60,13 +60,13 @@ CalcType* CalcType::createNew(Indicator* indi, const QString& type)
 
 bool CalcType::prepare(CalcParms &/*parms*/)
 {
-  error(FUNC, tr("Oops!? base type never can prepare."));
+  error(FUNC, tr("Oops!? Base type never can prepare."));
   return false;
 }
 
 bool CalcType::calc()
 {
-  error(FUNC, tr("Oops?! base type nerver can calc."));
+  error(FUNC, tr("Oops?! Base type nerver can calc."));
   return false;
 }
 
@@ -92,7 +92,7 @@ bool CalcType::addToDataSet(const QString& key)
   if(!mData->append(key)) return false;
   else
   {
-    verbose(FUNC, QString("Variable name already exist: %1").arg(key), eMax);
+    verbose(FUNC, tr("Variable name '%1' already exist.").arg(key), eMax);
     return true;
   }
 }

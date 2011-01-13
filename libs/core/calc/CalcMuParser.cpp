@@ -74,7 +74,7 @@ bool CalcMuParser::calc()
   {
     if(!list.contains(var))
     {
-      error(FUNC, tr("Variable not found: %1").arg(var));
+      error(FUNC, tr("Variable '%1' not found.").arg(var));
       continue;
     }
     mData->getValidRange(var, outBegIdx, outNbElement);

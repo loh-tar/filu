@@ -73,8 +73,8 @@ int Filu::setSymbolCaption(const QString& caption)
     setSqlParm(":fiId", retVal);
     return retVal;
   }
-  if(retVal ==  0) error(FUNC, tr("Symbol not found: %1").arg(caption));
-  if(retVal == -1) error(FUNC, tr("Symbol associated to different FIs: %1").arg(caption));
+  if(retVal ==  0) error(FUNC, tr("Symbol '%1' not found.").arg(caption));
+  if(retVal == -1) error(FUNC, tr("Symbol '%1' associated to different FIs.").arg(caption));
   if(retVal == -2) error(FUNC, tr("Symbol is empty."));
 
   return (eError + retVal);
@@ -402,7 +402,7 @@ int Filu::getIndicatorNames(QStringList* names, const QString& like /* = "" */)
   if(result <= eError)  return eExecError;
   if(result == eNoData)
   {
-    error(FUNC, tr("No Indicator match: %1").arg(like));
+    error(FUNC, tr("No Indicator match '%1'.").arg(like));
     return eNoData;
   }
 
@@ -428,7 +428,7 @@ int Filu::getIndicatorInfo(KeyVal* info, const QString& name)
   if(result <= eError)  return eExecError;
   if(result == eNoData)
   {
-    error(FUNC, tr("Indicator not found: %1").arg(name));
+    error(FUNC, tr("Indicator '%1' not found.").arg(name));
     return eNoData;
   }
 
@@ -524,7 +524,7 @@ int Filu::prepareIndicator(const QString& name, const QString& call /* = "" */)
   bool ok = query->prepare(sql);
   if(!ok)
   {
-    error(FUNC, tr("Can't prepare indicator: %1").arg(name));
+    error(FUNC, tr("Can't prepare indicator '%1'.").arg(name));
     return eInitError;
   }
 
@@ -739,7 +739,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
     if(execute(query) <= eError)
     {
       QSqlDatabase::database(mConnectionName).rollback();
-      error(FUNC, tr("Error while add EODBar with date: %1").arg(values[0]));
+      error(FUNC, tr("Error while add EODBar with date '%1'.").arg(values[0]));
       if(barCount) errInfo(FUNC, tr("%1 bars previus added without trouble.").arg(barCount));
       return eExecError;
     }
@@ -800,7 +800,7 @@ int Filu::addFiCareful(FiTuple& fi)
     if(retVal > 0) break;
     if(retVal == -3)
     {
-       error(FUNC, tr("Error while searching Symbol: %1").arg(symbol->caption()));
+       error(FUNC, tr("Error while searching Symbol '%1'.").arg(symbol->caption()));
        return eExecError;
     }
   }
@@ -1215,7 +1215,7 @@ bool Filu::initQuery(const QString& name)
   bool ok = query->prepare(sql);
   if(!ok)
   {
-    fatal(FUNC, tr("Can't prepare: %1").arg(sql));
+    fatal(FUNC, tr("Can't prepare sql '%1'.").arg(name));
     QSqlError err = query->lastError();
     errInfo(FUNC, err.databaseText());
 
@@ -1242,7 +1242,7 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
   QFile file(fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FUNC, tr("Can't open file: %1").arg(fileName));
+    error(FUNC, tr("Can't open file '%1'.").arg(fileName));
     return false;
   }
 

@@ -42,7 +42,7 @@ bool CalcTALib::prepare(CalcParms& parms)
 
   if(talib.functionIsUnknown(mIns.at(0)))
   {
-    error(FUNC, tr("Unknown TA function: %1").arg(mIns.at(0)));
+    error(FUNC, tr("TA function '%1' is unknown.").arg(mIns.at(0)));
     return false;
   }
 
@@ -130,7 +130,7 @@ bool CalcTALib::prepare(CalcParms& parms)
     QString var =  hit.next().value();
     if(isUnknown(var))
     {
-      error(FUNC, tr("Unknown input variable: %1").arg(var));
+      error(FUNC, tr("Input variable '%1' is unknown.").arg(var));
       return false;
     }
   }
@@ -148,7 +148,7 @@ bool CalcTALib::prepare(CalcParms& parms)
 
     if(!mInfo.contains(mIns.at(i)))
     {
-      error(FUNC, tr("Unknown optional parameter: %1").arg(mIns.at(i)));
+      error(FUNC, tr("Optional parameter '%1' is unknown.").arg(mIns.at(i)));
       return false;
     }
 

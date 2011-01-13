@@ -287,7 +287,7 @@ bool Indicator::readIndicator(const QString& fileName, QStringList& indicator)
   QFile file(mIndicatorPath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FUNC, tr("Can't load indicator: %1").arg(fileName));
+    error(FUNC, tr("Can't load indicator '%1'.").arg(fileName));
     return false;
   }
 
@@ -380,7 +380,7 @@ bool Indicator::parse(QStringList& indicator)
       }
       else
       {
-        error(FUNC, tr("2nd INCLUDE() parameter unknown: %1").arg(parms.at(1)));
+        error(FUNC, tr("2nd INCLUDE() parameter '%1' is unknown.").arg(parms.at(1)));
         ++i;
         continue;
       }

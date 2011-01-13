@@ -222,7 +222,7 @@ bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
 
   if(!mFunctionNames.contains(parms.at(0)))
   {
-    error(FUNC, tr("Unknown function: %1").arg(parms.at(0)));
+    error(FUNC, tr("Function '%1' is unknown.").arg(parms.at(0)));
     return false;
   }
 

@@ -91,7 +91,7 @@ void Newswire::setVerboseLevel(const QString& func, const QString& level)
   else if(levelName == "MAX")  mVerboseLevel = eMax;
   else
   {
-    error(func, tr("Verbose level unknown: %1").arg(level));
+    error(func, tr("Verbose level '%1' unknown.").arg(level));
   }
 }
 

@@ -804,7 +804,7 @@ void Importer::addUnderlying()
     if(momId < Filu::eData)
     {
       mToDo.remove("addUnderlying");
-      QString msg = tr("Mother not found: %1").arg(mData.value("Mother"));
+      QString msg = tr("Mother '%1' not found.").arg(mData.value("Mother"));
       error(FUNC, msg);
       mConsole << endl << msg << endl;
       return;

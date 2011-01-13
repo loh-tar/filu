@@ -49,7 +49,7 @@ bool Trader::useRuleFile(const QString& fileName)
   QFile file(mTradingRulePath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FUNC, tr("Can't load file: %1").arg(file.fileName()));
+    error(FUNC, tr("Can't load file '%1'.").arg(file.fileName()));
     return false;
   }
 
@@ -185,7 +185,7 @@ void Trader::readSettings()
   {
     if(!mLine.contains("="))
     {
-      error(FUNC, tr("No equal sign at line: %1").arg(QString::number(mLineNumber)));
+      error(FUNC, tr("No equal sign at line '%1'.").arg(QString::number(mLineNumber)));
       continue;
     }
 

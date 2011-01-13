@@ -177,7 +177,7 @@ void Scanner::setTimeFrame(const QStringList& parm)
 
   if(mForcedFrame == -1)
   {
-    error(FUNC, tr("Frame unknown: %1").arg(frame.at(0)));
+    error(FUNC, tr("Frame '%1' unknown.").arg(frame.at(0)));
   }
 }
 
@@ -208,7 +208,7 @@ void Scanner::autoSetup()
     QFile file(indicatorPath + files.at(i));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      fatal(FUNC, tr("Can't open indicator file: %1").arg(files.at(i)));
+      fatal(FUNC, tr("Can't open indicator file '%1'.").arg(files.at(i)));
       continue;
     }
 
@@ -231,7 +231,7 @@ void Scanner::autoSetup()
   {
     for(int i = 2; i < indiList.size(); ++i)
     {
-      verbose(FUNC, tr("Select indicator: %1").arg(indiList.at(i)), eMax);
+      verbose(FUNC, tr("Select indicator '%1'.").arg(indiList.at(i)), eMax);
     }
 
     if(indiList.size() == 2) verbose(FUNC, tr("None selected!"), eMax);

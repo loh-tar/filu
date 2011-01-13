@@ -44,7 +44,7 @@ bool CalcCross::prepare(CalcParms& parms)
         and mIns.at(2) != "DOWN"
         and mIns.at(2) != "BOTH")
     {
-      error(FUNC, tr("Unknown operator: %1").arg(mIns.at(2)));
+      error(FUNC, tr("Unknown operator '%1'.").arg(mIns.at(2)));
     }
   }
   else

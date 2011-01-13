@@ -41,7 +41,7 @@ bool CalcSetColor::prepare(CalcParms& parms)
     c.setNamedColor(mIns.at(0));
     if(!c.isValid())
     {
-      error(FUNC, tr("Color not valid: %1").arg(mIns.at(0)));
+      error(FUNC, tr("Color '%1' not valid.").arg(mIns.at(0)));
     }
   }
   else if(3 == mIns.size())
@@ -55,13 +55,13 @@ bool CalcSetColor::prepare(CalcParms& parms)
     c.setNamedColor(mIns.at(1));
     if(!c.isValid())
     {
-      error(FUNC, tr("Color No.1 not valid: %1").arg(mIns.at(1)));
+      error(FUNC, tr("Color No.1 '%1' not valid.").arg(mIns.at(1)));
     }
 
     c.setNamedColor(mIns.at(2));
     if(!c.isValid())
     {
-      error(FUNC, tr("Color No.2 not valid: %1").arg(mIns.at(2)));
+      error(FUNC, tr("Color No.2 '%1' not valid.").arg(mIns.at(2)));
     }
   }
   else

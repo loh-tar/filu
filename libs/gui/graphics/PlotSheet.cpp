@@ -191,7 +191,7 @@ void PlotSheet::printError()
 {
   if(!hasError()) return;
 
-  QString error = formatErrors("%x");
+  QString error = formatErrors("%c: %x");
 
   int x = size().width() / 2;
   int y = size().height() / 2;

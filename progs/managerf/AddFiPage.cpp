@@ -220,7 +220,7 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
 
   QString val = mPreparedHeaderData.value("Type");
   int idx = mType->findText(val);
-  if((idx < 0) and !val.isEmpty()) emitMessage(FUNC, tr("Unknown FiType: %1").arg(val), eWarning);
+  if((idx < 0) and !val.isEmpty()) emitMessage(FUNC, tr("FiType '%1' is unknown.").arg(val), eWarning);
   mType->setCurrentIndex(idx);
 
   // Search for Symbol/Market/Provider with or without a number suffix
@@ -238,12 +238,12 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
 
     val = mPreparedHeaderData.value("Market" + suffix);
     idx = mPSMGrp.market(i)->findText(val);
-    if((idx < 0) and !val.isEmpty()) emitMessage(FUNC, tr("Unknown Market: %1").arg(val), eWarning);
+    if((idx < 0) and !val.isEmpty()) emitMessage(FUNC, tr("Market '%1' is unknown.").arg(val), eWarning);
     mPSMGrp.market(i)->setCurrentIndex(idx);
 
     val = mPreparedHeaderData.value("Provider" + suffix);
     idx = mPSMGrp.provider(i)->findText(val);
-    if((idx < 0) and !val.isEmpty()) emitMessage(FUNC, tr("Unknown SymbolType: %1").arg(val), eWarning);
+    if((idx < 0) and !val.isEmpty()) emitMessage(FUNC, tr("SymbolType '%1' is unknown.").arg(val), eWarning);
     mPSMGrp.provider(i)->setCurrentIndex(idx);
 
     bool isProvider = mPSMGrp.provider(i)->itemData(idx).toBool();

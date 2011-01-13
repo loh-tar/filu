@@ -70,7 +70,7 @@ bool CalcWatchDogs::calc()
   bool exist = mData->getIDs("THIS", fiId, marketId);
   if(!exist)
   {
-    error(FUNC, tr("FI alias not used: %1").arg(mIns.at(1)));
+    error(FUNC, tr("FI alias '%1' not used.").arg(mIns.at(1)));
     return false;
   }
 

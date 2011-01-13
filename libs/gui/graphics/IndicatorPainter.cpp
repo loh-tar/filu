@@ -163,7 +163,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
   }
   else if(!mPlotDataKeys.contains(mPrimaryValue))
   {
-    error(FUNC, tr("PRIMARY not found: %1").arg(mPrimaryValue));
+    error(FUNC, tr("PRIMARY '%1' not found.").arg(mPrimaryValue));
   }
 
   if(hasError())

@@ -46,17 +46,17 @@ bool CalcFilu::prepare(CalcParms& parms)
   {
     if(retVal == Filu::eNoData)
     {
-      error(FUNC, tr("Unknown indicator: %1").arg(mIns.at(0)));
+      error(FUNC, tr("Unknown indicator '%1'.").arg(mIns.at(0)));
       return false;
     }
-    error(FUNC, tr("Error while getting info to indicator: %1").arg(mIns.at(0)));
+    error(FUNC, tr("Error while getting info to indicator '%1'.").arg(mIns.at(0)));
     addErrors(mFilu->errors());
     return false;
   }
 
   if(mFilu->prepareIndicator(mIns.at(0), info.value("Call")) != Filu::eSuccess)
   {
-    error(FUNC, tr("Can't prepare indicator: %1").arg(mIns.at(0)));
+    error(FUNC, tr("Can't prepare indicator '%1'.").arg(mIns.at(0)));
     addErrors(mFilu->errors());
     return false;
   }
@@ -93,7 +93,7 @@ bool CalcFilu::prepare(CalcParms& parms)
     {
       if(!(mIns.at(idx) == "FI"))
       {
-        error(FUNC, tr("FI() expected but found: %1").arg(mIns.at(idx)));
+        error(FUNC, tr("FI() expected but found '%1'.").arg(mIns.at(idx)));
         return false;
       }
       idx += 2;
@@ -164,7 +164,7 @@ bool CalcFilu::calc()
       bool ok = mData->getIDs(mFiRefAlias.at(j), fiId, marketId);
       if(!ok)
       {
-        error(FUNC, tr("Can't find FI: %1").arg(mFiRefAlias.at(j)));
+        error(FUNC, tr("Can't find FI '%1'.").arg(mFiRefAlias.at(j)));
         return false;
       }
       ++j;
@@ -200,7 +200,7 @@ bool CalcFilu::calc()
 
   if(!query)
   {
-    error(FUNC, tr("Trouble while exec Filu indicator: %1").arg(mIns.at(0)));
+    error(FUNC, tr("Trouble while exec Filu indicator '%1'.").arg(mIns.at(0)));
     addErrors(mFilu->errors());
     return false;
   }
