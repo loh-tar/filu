@@ -124,6 +124,12 @@ BarTuple* Filu::getBars(int fiId, int marketId
 
   BarTuple* bars = fillQuoteTuple(query);
 
+  if(bars)
+  {
+    bars->mFiId     = fiId;
+    bars->mMarketId = marketId;
+  }
+
   return bars;
 }
 
@@ -157,6 +163,12 @@ BarTuple* Filu::getBars(int fiId, int marketId, int limit)
   if(execute(query) < eData) return 0;
 
   BarTuple* bars = fillQuoteTuple(query);
+
+  if(bars)
+  {
+    bars->mFiId     = fiId;
+    bars->mMarketId = marketId;
+  }
 
   return bars;
 }
