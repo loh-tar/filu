@@ -36,7 +36,7 @@ Newswire::Newswire(Newswire* parent, const QString& className)
         : mRoot(false)
         , mConnName(parent->mConnName)
         , mClass(className)
-        , mVerboseLevel(eNoVerbose)  // Don't parent->mVerboseLevel, or should?
+        , mVerboseLevel(parent->mVerboseLevel)
         , mHasError(false)
         , mErrConsole(parent->mErrConsole)
         , mLogFileFile(0)
