@@ -122,7 +122,8 @@ QString Newswire::formatMessage(const Message& msg, const QString& format/* = "%
   message.replace("%t", messageTypeName(msg.type));
   message.replace("%C", mConnName);
   message.replace("%x", msg.text); // Replace at last, maybe is '%foo' in txt
-//   message.replace("%d", QDate...);
+  message.replace("%D", QDate::currentDate().toString(Qt::ISODate));
+  message.replace("%T", QTime::currentTime().toString(Qt::ISODate));
 //   message.replace("", );
 
   return message;
@@ -244,6 +245,6 @@ void Newswire::logError(const Message& msg)
 
   if(!mNoErrorLogging or (msg.type == eFatal))
   {
-    if(mLogFile) *mLogFile << formatMessage(msg, "%C *** %t *** %F %x") << endl;
+    if(mLogFile) *mLogFile << formatMessage(msg, "%T %C *** %t *** %F %x") << endl;
   }
 }
