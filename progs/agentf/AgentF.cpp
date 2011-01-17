@@ -34,6 +34,7 @@ AgentF::AgentF(QCoreApplication& app)
       , mIamEvil(false)
 {
   readSettings();
+  setMsgTargetFormat(eVerbose, "%C: %x");
 
   execCmd(mCommandLine);
 
