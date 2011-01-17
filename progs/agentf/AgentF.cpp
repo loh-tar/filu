@@ -624,7 +624,8 @@ void AgentF::startClones()
     }
 
     mClones.append(clone);
-    verbose(FUNC, tr("Clone %1 started").arg(i + 1), eInfo);
+    mCloneNames.append(QString::number(i + 1));
+    verbose(FUNC, tr("Clone %1 started.").arg(mCloneNames.at(i)), eInfo);
     //qDebug() << QCoreApplication::hasPendingEvents (); always true, I give up :-(
     //QCoreApplication::flush();// Do not take effect
     //QCoreApplication::sendPostedEvents();// Do not take effect
@@ -637,12 +638,13 @@ void AgentF::cloneIsReady() // Slot
 {
   // Search the clone waiting for a job
   QProcess* clone = 0;
-  int cloneNumber = 0;
-  for(; cloneNumber < mClones.size(); ++cloneNumber)
+  QString   cloneName;
+  for(int i = 0; i < mClones.size(); ++i)
   {
-    if(mClones.at(cloneNumber)->bytesAvailable() == 0) continue;
+    if(mClones.at(i)->bytesAvailable() == 0) continue;
 
-    clone = mClones.at(cloneNumber);
+    clone = mClones.at(i);
+    cloneName = mCloneNames.at(i);
     break;
   }
 
@@ -657,7 +659,7 @@ void AgentF::cloneIsReady() // Slot
 
   if(!text.contains("[READY]")) return;
 
-  QString feedTxt = tr("Feed clone %1: ").arg(cloneNumber + 1);
+  QString feedTxt = tr("Feed clone %1: ").arg(cloneName);
 
   // Feed the clone
   if(mCommands.size() > 0)
@@ -711,6 +713,7 @@ void AgentF::cloneHasFinished() // Slot
     //qDebug() << "AgentF::cloneHasFinished: found" << i;
     delete mClones.at(i);
     mClones.removeAt(i);
+    mCloneNames.removeAt(i);
     break;
   }
 

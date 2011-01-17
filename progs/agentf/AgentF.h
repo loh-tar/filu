@@ -78,6 +78,7 @@ class AgentF : public FCoreApp
     Exporter*          mExporter;
     Scanner*           mScanner;
     QList<QProcess*>   mClones;
+    QStringList        mCloneNames;
 
     bool               mQuit;
     bool               mIamEvil;   // True if in deamon mode, avoid recursive calls
