@@ -59,7 +59,7 @@ void AgentF::run()
 
 void AgentF::quit()
 {
-  verbose(FUNC, "Done", eEver);
+  verbose(FUNC, "Done.", eEver);
   QCoreApplication::exit(0);
 }
 
@@ -133,7 +133,7 @@ void AgentF::addEODBarData(const QStringList& parm)
   SymbolTuple* st = mFilu->searchSymbol(parm[2], parm[3], parm[4]);
   if(!st)
   {
-    error(FUNC, QString("Symbol not found: %1, %2, %3").arg(parm[2], parm[3], parm[4]));
+    error(FUNC, tr("Symbol not found: %1, %2, %3").arg(parm[2], parm[3], parm[4]));
     return;
   }
 
@@ -608,10 +608,14 @@ void AgentF::startClones()
     //clone->setProcessChannelMode(QProcess::MergedChannels);
     connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
-    clone->start(QCoreApplication::applicationFilePath() + " daemon" + mFiluParms.join(" "));
+
+    QString cmd = QString("%1 %2").arg(QCoreApplication::applicationFilePath(), "daemon");
+    if(mFiluParms.size()) cmd.append(" --Filu " + mFiluParms.join(" "));
+    clone->start(cmd);
+
     if(!clone->waitForStarted())
     {
-      error(FUNC, "Clone not started.");
+      fatal(FUNC, "Clone not started.");
       clone->kill();
       delete clone;
       QCoreApplication::exit(1);
@@ -619,7 +623,7 @@ void AgentF::startClones()
     }
 
     mClones.append(clone);
-    verbose(FUNC, QString("Clone %1 started").arg(i + 1), eInfo);
+    verbose(FUNC, tr("Clone %1 started").arg(i + 1), eInfo);
     //qDebug() << QCoreApplication::hasPendingEvents (); always true, I give up :-(
     //QCoreApplication::flush();// Do not take effect
     //QCoreApplication::sendPostedEvents();// Do not take effect
@@ -652,7 +656,7 @@ void AgentF::cloneIsReady() // Slot
 
   if(!text.contains("[READY]")) return;
 
-  QString feedTxt = QString("Feed clone %1: ").arg(cloneNumber + 1);
+  QString feedTxt = tr("Feed clone %1: ").arg(cloneNumber + 1);
 
   // Feed the clone
   if(mCommands.size() > 0)

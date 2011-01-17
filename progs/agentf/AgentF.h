@@ -88,9 +88,7 @@ class AgentF : public FCoreApp
     QTextStream        mErrConsole;
 
     // Setting variables
-    int                mMaxClones;
     //int                mDebugLevel;
-    QString            mLogFile;
 };
 
 #endif
