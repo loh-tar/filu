@@ -60,7 +60,7 @@ void AgentF::run()
 
 void AgentF::quit()
 {
-  verbose(FUNC, "Done.", eEver);
+  verbose(FUNC, tr("Done."), eEver);
   QCoreApplication::exit(0);
 }
 
@@ -74,7 +74,7 @@ bool AgentF::dateIsNotValid(QString& date)
   if(date == "auto") return false;  // We accept "auto" as valid
   if(QDate::fromString(date, Qt::ISODate).isValid()) return false;
 
-  error(FUNC, "Bad date: " + date);
+  error(FUNC, tr("Bad date: %1").arg(date));
   return true;
 }
 
@@ -158,7 +158,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
   if(parm.size() < 9)
   {
-    error(FUNC, "addEODBarDataFull: To less arguments.");
+    error(FUNC, "addEODBarDataFull: To less arguments."); // No tr(), should never happens
     return;
   }
 
@@ -182,7 +182,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
     if(date > QDate::currentDate())
     {
-      verbose(FUNC, "Nothing todo, last bar is up to date: " + date.toString(Qt::ISODate), eInfo);
+      verbose(FUNC, tr("Nothing todo, last bar is up to date: %1").arg(date.toString(Qt::ISODate)), eInfo);
       return;
     }
 
@@ -220,7 +220,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
   if(!data)
   {
-    warning(FUNC, "No data from script");
+    warning(FUNC, tr("No data from script."));
     return;
   }
 
@@ -254,7 +254,7 @@ void AgentF::updateAllBars(const QStringList& parm)
   SymbolTuple* symbols = mFilu->getAllProviderSymbols();
   if(!symbols)
   {
-    warning(FUNC, "No provider symbols found.");
+    warning(FUNC, tr("No provider symbols found."));
     QCoreApplication::exit(1);
     return;
   }
@@ -272,7 +272,7 @@ void AgentF::updateAllBars(const QStringList& parm)
   parameters.append("");
   parameters.append("");
 
-  verbose(FUNC, "Processing...", eInfo);
+  verbose(FUNC, tr("Processing..."), eInfo);
 
   while (symbols->next())
   {
@@ -301,7 +301,7 @@ void AgentF::addFi(const QStringList& parm)
 
   if(((parm.count() - 4) % 3 > 0) or parm.count() < 7)
   {
-    error(FUNC, "addFi: Wrong parameter count.");
+    error(FUNC, tr("addFi: Wrong parameter count."));
     return;
   }
 
@@ -368,14 +368,14 @@ void AgentF::readCommandFile(const QStringList& parm)
 
   if(parm.count() != 3)
   {
-    error(FUNC, "rcf: Wrong parameter count.");
+    error(FUNC, tr("rcf: Wrong parameter count."));
     return;
   }
 
   QFile file(parm[2]);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FUNC, "rcf: Can't open file: " + parm[2]);
+    error(FUNC, tr("rcf: Can't open file: %1").arg(parm[2]));
     return;
   }
 
@@ -428,7 +428,7 @@ void AgentF::import(const QStringList& parm)
     file = new QFile(parm[2]);
     if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      error(FUNC, "imp: Can't open file: " + parm[2]);
+      error(FUNC, tr("imp: Can't open file: %1").arg(parm[2]));
       return;
     }
 
@@ -537,14 +537,14 @@ void AgentF::execCmd(const QStringList& parm)
   }
   else
   {
-    error(FUNC, "Unknown command: " + cmd);
-    errInfo(FUNC, "Call me without any command for help.");
+    error(FUNC, tr("Unknown command: %1").arg(cmd));
+    errInfo(FUNC, tr("Call me without any command for help."));
   }
 }
 
 void AgentF::printUsage()
 {
-  print("Hello! I'm part of Filu. Please call me this way:");
+  print(tr("Hello! I'm part of Filu. Please call me this way:"));
   print("");
   print("  agentf <command> [<parameter list>]");
   print("");
@@ -577,7 +577,7 @@ void AgentF::printSettings()
 {
   QString txt = "%1 = %2";
   int width = -15; // Negative value = left-aligned
-  print("AgentF settings are:");
+  print(tr("AgentF settings are:"));
   print(txt.arg("Using QtVersion", width).arg(qVersion()));
   print(txt.arg("Settings file", width).arg(mRcFile->fileName()));
   print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf")); //FIXME: how to make system independent?
@@ -616,7 +616,7 @@ void AgentF::startClones()
 
     if(!clone->waitForStarted())
     {
-      fatal(FUNC, "Clone not started.");
+      fatal(FUNC, tr("Clone not started."));
       clone->kill();
       delete clone;
       QCoreApplication::exit(1);
@@ -650,7 +650,7 @@ void AgentF::cloneIsReady() // Slot
 
   if(!clone)
   {
-    error(FUNC, "cloneIsReady: Curious, no clone found.");
+    error(FUNC, "Curious, no clone found."); // No tr(), should never happens
     return; // No more todo
   }
 
@@ -697,7 +697,7 @@ void AgentF::check4MasterCMD()
   }
   else
   {
-    error(FUNC, "Unknown MasterCMD: " + mCommands.at(0).at(1));
+    error(FUNC, "Unknown MasterCMD: " + mCommands.at(0).at(1)); // No tr(), should never happens
   }
 
   mCommands.removeAt(0);
