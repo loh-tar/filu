@@ -30,7 +30,9 @@ Newswire::Newswire(const QString& connectionName)
         , mLogFileFile(0)
         , mLogFile(0)
         , mNoErrorLogging(false)
-{}
+{
+  init();
+}
 
 Newswire::Newswire(Newswire* parent, const QString& className)
         : mRoot(false)
@@ -42,7 +44,9 @@ Newswire::Newswire(Newswire* parent, const QString& className)
         , mLogFileFile(0)
         , mLogFile(0)
         , mNoErrorLogging(false)
-{}
+{
+  init();
+}
 
 Newswire::~Newswire()
 {
@@ -52,6 +56,14 @@ Newswire::~Newswire()
     if(mLogFileFile) delete mLogFileFile;
     if(mLogFile) delete mLogFile;
   }
+}
+
+void Newswire::init()
+{
+  mFormat.insert(eVerbose, "%F %x");
+  mFormat.insert(eConsLog, "%F *** %t *** %x");
+  mFormat.insert(eFileLog, "%T %C *** %t *** %F %x");
+  mFormat.insert(eErrFunc, "%f *** %t *** %x");
 }
 
 void Newswire::setLogFile(const QString& path)
@@ -71,6 +83,11 @@ void Newswire::setLogFile(const QString& path)
     mLogFile = new QTextStream(mLogFileFile);
     verbose(FUNC, tr("Open log file '%1'.").arg(path), eMax);
   }
+}
+
+void Newswire::setMsgTargetFormat(MsgTarget target, const QString& format)
+{
+  mFormat.insert(target, format);
 }
 
 void Newswire::setVerboseLevel(const VerboseLevel level)
@@ -100,21 +117,25 @@ void Newswire::setNoErrorLogging(bool noErrorLogging)
   mNoErrorLogging = noErrorLogging;
 }
 
-QString Newswire::formatErrors(const QString& format/* = "%f *** %t *** %x"*/)
+QString Newswire::formatErrors(const QString& format/* = ""*/)
 {
+  QString useFormat = format;
+  if(useFormat.isEmpty()) useFormat = mFormat.value(eErrFunc);
+
   QString errors;
   foreach(Message error, mErrors)
   {
-    errors.append(formatMessage(error, format) + "\n");
+    errors.append(formatMessage(error, useFormat) + "\n");
   }
 
   errors.chop(1); // Remove last newline
   return errors;
 }
 
-QString Newswire::formatMessage(const Message& msg, const QString& format/* = "%F *** %t *** %x"*/)
+QString Newswire::formatMessage(const Message& msg, const QString& format/* = ""*/)
 {
   QString message = format;
+  if(message.isEmpty()) message = mFormat.value(eErrFunc);
 
   message.replace("%F", QString("%1::%2:").arg(msg.clas, msg.func));
   message.replace("%c", msg.clas);
@@ -219,7 +240,7 @@ void Newswire::clearErrors()
 
 void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLevel type/* = eInfo*/)
 {
-  *mErrConsole << formatMessage(makeMessage(func, txt, eInfoMsg), "%F %x") << endl;
+  *mErrConsole << formatMessage(makeMessage(func, txt, eInfoMsg), mFormat.value(eVerbose)) << endl;
 }
 
 void Newswire::addError(const Message& error)
@@ -240,11 +261,11 @@ void Newswire::logError(const Message& msg)
 {
   if(!mNoErrorLogging)
   {
-    *mErrConsole << formatMessage(msg) << endl;
+    *mErrConsole << formatMessage(msg, mFormat.value(eConsLog)) << endl;
   }
 
   if(!mNoErrorLogging or (msg.type == eFatal))
   {
-    if(mLogFile) *mLogFile << formatMessage(msg, "%T %C *** %t *** %F %x") << endl;
+    if(mLogFile) *mLogFile << formatMessage(msg, mFormat.value(eFileLog)) << endl;
   }
 }

@@ -59,6 +59,14 @@ class Newswire
       eFatal      =  4   // Should *never* happens
     };
 
+    enum MsgTarget
+    {
+      eVerbose, // Verbose messages on the console
+      eConsLog, // Error logging on the console
+      eFileLog, // Error logging in file
+      eErrFunc  // The default formatErrors(...) format
+    };
+
     struct Message  // It's a typedef
     {
       QString   clas; // Class name, one s less
@@ -73,11 +81,13 @@ class Newswire
     void            setVerboseLevel(const QString& func, const QString& level);
     VerboseLevel    verboseLevel() { return mVerboseLevel; };
 
-    void                setNoErrorLogging(bool noErrorLogging);
-    void                setLogFile(const QString& path);
-    const MessageLst&   errors() const { return mErrors; };
-    QString             formatErrors(const QString& format = "%F *** %t *** %x");
-    bool                hasError() const { return mHasError; };
+    void            setNoErrorLogging(bool noErrorLogging);
+    void            setLogFile(const QString& path);
+    void            setMsgTargetFormat(MsgTarget target, const QString& format);
+    QString         formatErrors(const QString& format = "");
+    bool            hasError() const { return mHasError; };
+
+    const MessageLst& errors() const { return mErrors; };
 
     friend class RcFile;
 
@@ -95,7 +105,7 @@ class Newswire
 
     QString         messageTypeName(const MsgType type);
     Message         makeMessage(const QString& func, const QString& txt, const MsgType type);
-    QString         formatMessage(const Message& msg, const QString& format = "%F *** %t *** %x");
+    QString         formatMessage(const Message& msg, const QString& format = "");
 
     void            removeError(const QString& txt);
     bool            isRoot() { return mRoot; };
@@ -105,6 +115,7 @@ class Newswire
                         // P for private
     void            verboseP(const QString& func, const QString& txt, const VerboseLevel type = eInfo);
 
+    void            init();
     void            addError(const Message& msg);
     void            logError(const Message& msg);
 
@@ -119,6 +130,7 @@ class Newswire
     QTextStream*   mLogFile;
     bool           mNoErrorLogging;
 
+    QHash<MsgTarget, QString> mFormat;
 };
 
 #endif
