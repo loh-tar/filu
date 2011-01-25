@@ -179,6 +179,7 @@ class Filu : public Newswire
     int         searchCaption(const QString& table, const QString& caption);
     QString     getLastQuery(); // Unused
     void        deleteRecord(const QString& schema, const QString& table, int id);
+    int         updateField(const QString& field, const QVariant& newValue, const QString& schema, const QString& table, int id);
 
   protected:
     int         getNextId(const QString& schema, const QString& table);
