@@ -512,6 +512,8 @@ void AgentF::addSplit(const QStringList& parm)
 
 void AgentF::execCmd(const QStringList& parm)
 {
+  if(mFilu->hasError()) return;
+
   if(parm.size() == 1)
   {
     printUsage();

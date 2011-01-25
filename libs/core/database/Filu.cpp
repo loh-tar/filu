@@ -1141,7 +1141,7 @@ void Filu::openDB()
     QSqlError err = db.lastError();
     fatal(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
-    printSettings();
+    if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
   }
   else
   {
