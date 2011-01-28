@@ -20,6 +20,6 @@
 SELECT *  FROM
   (SELECT MIN(qdate), MAX(qdate) FROM :filu.eodbar
     WHERE market_id = :marketId
-      AND fi_id = :fiId
-      AND quality < :quality) AS foo
+      and fi_id = :fiId
+      and quality < :quality) AS foo
 WHERE max IS NOT NULL

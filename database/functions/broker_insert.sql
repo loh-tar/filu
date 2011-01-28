@@ -17,41 +17,46 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
+INSERT INTO <schema>.error(caption, etext) VALUES('BrokerNUQ', 'Broker name already exist, give me the ID for an update.');
+
 CREATE OR REPLACE FUNCTION <schema>.broker_insert
-  (
-    nbroker_id  <schema>.broker.broker_id%TYPE,-- could be 0/NULL
-    ncaption    <schema>.broker.caption%TYPE,
-    nfeeformula <schema>.broker.feeformula%TYPE
-  )
-  RETURNS <schema>.broker.broker_id%TYPE AS
+(
+  aCaption    <schema>.broker.caption%TYPE,
+  aFeeFormula <schema>.broker.feeformula%TYPE,
+  aBrokerId   <schema>.broker.broker_id%TYPE-- could be 0/NULL
+)
+RETURNS <schema>.broker.broker_id%TYPE AS
 $BODY$
 
 DECLARE
-  nid        <schema>.broker.broker_id%TYPE; -- New ID
-  numrows    int4;
+  mId        <schema>.broker.broker_id%TYPE; -- New ID
+  mNumRows    int;
 
 BEGIN
   -- Insert or update an broker position.
   -- Returns
   --  -1 if broker_id is unknown
 
-  nid := COALESCE(nbroker_id, 0);
+  mId := COALESCE(aBrokerId, 0);
 
-  IF nid = 0 THEN
-      nid := nextval('<schema>.broker_broker_id_seq');
+  IF mId = 0 THEN
+      mId := <schema>.id_from_caption('broker', aCaption);
+      IF mId > 0 THEN RETURN <schema>.error_code('BrokerNUQ'); END IF; -- FIXME add
+
+      mId := nextval('<schema>.broker_broker_id_seq');
       INSERT  INTO <schema>.broker(broker_id, caption, feeformula)
-              VALUES(nid, ncaption, nfeeformula);
+              VALUES(mId, aCaption, aFeeFormula);
 
-      RETURN nid;
+      RETURN mId;
 
   ELSE
       UPDATE <schema>.broker
-          SET caption    = ncaption,
-              feeformula = nfeeformula
-          WHERE broker_id = nbroker_id;
+          SET caption    = aCaption,
+              feeformula = aFeeFormula
+          WHERE broker_id = aBrokerId;
 
-      GET DIAGNOSTICS numrows = ROW_COUNT;
-      IF numrows > 0 THEN RETURN nbroker_id;
+      GET DIAGNOSTICS mNumRows = ROW_COUNT;
+      IF mNumRows > 0 THEN RETURN aBrokerId;
       ELSE RETURN -1;
       END IF;
 
@@ -59,7 +64,7 @@ BEGIN
 
 END;
 $BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL VOLATILE;
 --
 -- END OF FUNCTION <schema>.broker_insert
 --

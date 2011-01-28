@@ -28,7 +28,7 @@
 --
 -- FROM :user.tsr, :user.ts
 -- WHERE tsr.ts_id = ts.ts_id
--- AND ts_strategy = :strategy
+-- and ts_strategy = :strategy
 
 -- detail view
 SELECT

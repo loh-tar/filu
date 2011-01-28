@@ -20,15 +20,11 @@
 SELECT :filu.eodbar_insert
   ( :fiId
   , :marketId
-  , CAST(:date AS date)
-  , CAST(:open AS float)
-  , CAST(:high AS float)
-  , CAST(:low AS float)
-  , CAST(:close AS float)
-  , CAST(:vol AS float)
-  , CAST(:oi AS int2)
-  , CAST(:status AS int2))
-
-
-
-
+  , CAST(:date   AS date)
+  , CAST(:open   AS float4)
+  , CAST(:high   AS float4)
+  , CAST(:low    AS float4)
+  , CAST(:close  AS float4)
+  , CAST(:vol    AS float)
+  , CAST(:oi     AS int4)
+  , CAST(:status AS int2) )

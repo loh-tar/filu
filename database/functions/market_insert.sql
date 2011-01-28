@@ -17,92 +17,99 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
+--INSERT INTO <schema>.error(caption, etext) VALUES('', '');
+
 CREATE OR REPLACE FUNCTION <schema>.market_insert
-  (
-    market   <schema>.market.caption%TYPE, -- like "Nyse"
-    currency <schema>.fi.caption%TYPE,     -- like "US Dollar"
-    reuters  <schema>.symbol.caption%TYPE,  -- Reuters currency symbol like "USD"
-    marketId <schema>.market.market_id%TYPE = 0
-  )
-  RETURNS void AS
+(
+  aMarket   <schema>.market.caption%TYPE, -- like "Nyse"
+  aCurrency <schema>.fi.caption%TYPE,     -- like "US Dollar"
+  aReuters  <schema>.symbol.caption%TYPE, -- Reuters currency symbol like "USD"
+  aMarketId <schema>.market.market_id%TYPE = 0
+)
+RETURNS <schema>.market.market_id%TYPE AS
 $BODY$
 
 DECLARE
-  fiid      <schema>.fi.fi_id%TYPE;
-  symbfiid  <schema>.fi.fi_id%TYPE;
-  mid       <schema>.market.market_id%TYPE;
-  nomid     <schema>.market.market_id%TYPE;
-  query     text;
+  mFiId      <schema>.fi.fi_id%TYPE;
+  mMId       <schema>.market.market_id%TYPE; -- Market ID
+  mNoMId     int := 1;                       -- NoMarket has always ID 1
+  mNumRows   int;
 
 BEGIN
-  -- Creates a new market, the market currency and the currency Reuters symbol.
-  -- But it is possible that the currency already exist
 
-  fiid := <schema>.id_from_caption('fi', currency);
-  IF fiid > 0
-  THEN -- aha, currency name found, only add market
-    -- but do one more ckeck to be sure
-    query := $$ SELECT fi_id FROM <schema>.symbol
-                WHERE LOWER(caption) = LOWER($$ || quote_literal(reuters) || $$); $$;
+  mFiId := fiid_from_symbolcaption(aReuters);
+  IF mFiId < 1 THEN mFiId := <schema>.id_from_caption('fi', aCurrency); END IF;
 
-    EXECUTE query INTO symbfiid;
-    IF symbfiid <> fiid
-    THEN -- oh-oh...
-      RAISE EXCEPTION $$ Currency could not sure identified $$;
-      RETURN;
-    END IF;
+  IF aMarketId > 0 THEN
+    -- Ok, looks easy only update
+    IF aMarketId = mNoMId THEN RETURN mNoMId; END IF; -- Don't change NoMarket!
+    IF mFiId < 1 THEN RETURN <schema>.error_code('CurryNF'); END IF;
 
-    IF <schema>.id_from_caption('market', market) = 0
-    THEN -- make the insert
-      mid  := nextval('<schema>.market_market_id_seq');
-      INSERT  INTO <schema>.market(market_id, caption, currency_fi_id)
-              VALUES(mid, market, fiid);
-    ELSE
-      RETURN; -- do nothing, market already exist
-    END IF;
-  ELSE -- we have to create the currency fi, the symbol and the market
+    UPDATE <schema>.market
+      SET caption = aMarket, currency_fi_id = mFiId
+      WHERE market_id = aMarketId;
 
-    -- in case of very first call 'NoMarket' does not exist
-    -- we have to add all dummy stuff
-    nomid := <schema>.id_from_caption('market', 'NoMarket');
-    IF nomid < 1
-    THEN
-      fiid := nextval('<schema>.fi_fi_id_seq');
-      nomid  := nextval('<schema>.market_market_id_seq');
-
-      INSERT  INTO <schema>.fi(fi_id, caption, ftype_id)
-              VALUES(fiid, 'No Currency', <schema>.id_from_caption('ftype', 'Currency'));
-
-      INSERT  INTO <schema>.market(market_id, caption, currency_fi_id)
-              VALUES(nomid, 'NoMarket', fiid);
-
-      INSERT  INTO <schema>.symbol(fi_id, caption, stype_id, market_id)
-              VALUES(fiid, 'NoCurry'
-                    , <schema>.id_from_caption('stype', 'Reuters')
-                    , nomid);
-    END IF;
-
-    -- add the market, currency fi and the currency symbol
-    fiid := nextval('<schema>.fi_fi_id_seq');
-    mid  := nextval('<schema>.market_market_id_seq');
-
-    INSERT  INTO <schema>.fi(fi_id, caption, ftype_id)
-            VALUES(fiid, currency, <schema>.id_from_caption('ftype', 'Currency'));
-
-    INSERT  INTO <schema>.symbol(fi_id, caption, stype_id, market_id)
-            VALUES(fiid, reuters
-                      , <schema>.id_from_caption('stype', 'Reuters')
-                      , nomid); -- always to NoMarket
-
-    INSERT  INTO <schema>.market(market_id, caption, currency_fi_id)
-            VALUES(mid, market, fiid);
+    GET DIAGNOSTICS mNumRows = ROW_COUNT;
+    IF mNumRows > 0 THEN RETURN aMarketId; ELSE RETURN <schema>.error_code('MarketIdNF'); END IF;
 
   END IF;
 
+  IF mFiId > 0 THEN
+    -- Aha, currency found, only add market
+    mMId := <schema>.id_from_caption('market', aMarket);
+    IF mMId < 1 THEN
+      -- make the insert
+      mMId  := nextval('<schema>.market_market_id_seq');
+      INSERT  INTO <schema>.market(market_id, caption, currency_fi_id)
+              VALUES(mMId, aMarket, mFiId);
+    END IF;
+
+    RETURN mMId;
+
+  ELSE -- we have to create the currency fi, the symbol and the market
+
+    IF aMarketId < 0 THEN
+      -- in case of very first call 'NoMarket' does not exist
+      -- we have to add all dummy stuff
+      mFiId  := nextval('<schema>.fi_fi_id_seq');
+      mNoMId := nextval('<schema>.market_market_id_seq');
+
+      INSERT  INTO <schema>.fi(fi_id, caption, ftype_id)
+              VALUES(mFiId, 'No Currency', <schema>.id_from_caption('ftype', 'Currency'));
+
+      INSERT  INTO <schema>.market(market_id, caption, currency_fi_id)
+              VALUES(mNoMId, 'NoMarket', mFiId);
+
+      INSERT  INTO <schema>.symbol(fi_id, caption, stype_id, market_id)
+              VALUES(mFiId, 'NoCurry'
+                    , <schema>.id_from_caption('stype', 'Reuters')
+                    , mNoMId);
+
+      RAISE INFO 'Dummy stuff NoMarket and NoCurrency had been created.';
+    END IF;
+
+    -- add the market, currency fi and the currency symbol
+    mFiId := nextval('<schema>.fi_fi_id_seq');
+    mMId  := nextval('<schema>.market_market_id_seq');
+
+    INSERT  INTO <schema>.fi(fi_id, caption, ftype_id)
+            VALUES(mFiId, aCurrency, <schema>.id_from_caption('ftype', 'Currency'));
+
+    INSERT  INTO <schema>.symbol(fi_id, caption, stype_id, market_id)
+            VALUES(mFiId, aReuters
+                      , <schema>.id_from_caption('stype', 'Reuters')
+                      , mNoMId); -- always to NoMarket
+
+    INSERT  INTO <schema>.market(market_id, caption, currency_fi_id)
+            VALUES(mMId, aMarket, mFiId);
+
+  END IF;
+
+  RETURN mMId;
 
 END
 $BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL VOLATILE;
 --
 -- END OF FUNCTION <schema>.market_insert
 --

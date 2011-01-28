@@ -17,12 +17,4 @@
 *
 
 -- AddSymbol.sql
--- Insert, update or check the given Symbol.
--- Returns:
---   >0 the symbolId, if Symbol exist
---    0 if Symbol looks good but no fiId was given to add them
---   -1 SymbolType not valid
---   -2 Market not valid
---   -3 unique violation
---   -4 foreign key violation
 SELECT * FROM :filu.symbol_insert(:fiId, :symbolId, :caption, :market, :sType);

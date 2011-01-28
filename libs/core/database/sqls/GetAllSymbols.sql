@@ -49,10 +49,10 @@ WHERE
                    order by s2.fi_id, st.seq asc) and
 
       CASE WHEN length(:ftype)    = 0  THEN true ELSE ft.caption = :ftype END
-  AND CASE WHEN length(:provider) = 0  THEN true ELSE st.caption = :provider END
-  AND CASE WHEN length(:market)   = 0  THEN true ELSE m.caption = :market END
-  AND CASE WHEN length(:group)    = 0  THEN true
-           ELSE f.fi_id IN (select fi_id from :user.gmember gm, :user.group g where gm.group_id = g.group_id AND g.caption = :group) END
+  and CASE WHEN length(:provider) = 0  THEN true ELSE st.caption = :provider END
+  and CASE WHEN length(:market)   = 0  THEN true ELSE m.caption = :market END
+  and CASE WHEN length(:group)    = 0  THEN true
+           ELSE f.fi_id IN (select fi_id from :user.gmember gm, :user.group g where gm.group_id = g.group_id and g.caption = :group) END
 
 ORDER BY
   st.seq ASC,

@@ -114,7 +114,7 @@ use Getopt::Std;
 
   if ( $createtables ne '0' )
   {
-      push (@dbfiles, glob("tables/*.sql"));
+    push (@dbfiles, glob("misc/create_tables.sql"));
   }
   else
   {
@@ -124,11 +124,10 @@ use Getopt::Std;
   push (@dbfiles, glob("misc/data_types.sql"));
   push (@dbfiles, glob("functions/*.sql"));
   push (@dbfiles, glob("views/*.sql"));
-  push (@dbfiles, glob("indicators/*.sql"));
 
   if ( $createtables ne '0' )
   {
-      push (@dbfiles, glob("defaults/*.sql"));
+    push (@dbfiles, glob("misc/table_entries.sql"));
   }
 
 # define tags to be replace
@@ -164,6 +163,7 @@ use Getopt::Std;
   foreach $dbfile(@dbfiles)
   {
       print "Load $dbfile ...\n";
+      $sql .= "-- *** Included by ./configue\nSELECT 'Process file $dbfile...' AS info;\n-- ***\n";
       $sql .= load($dbfile);
   }
 
@@ -175,7 +175,9 @@ use Getopt::Std;
 # create sql file
   print "Writing SQL File... ";
   open(FILE, "> build_filu.sql");
+  print FILE "BEGIN;\n\n";
   print FILE $sql;
+  print FILE "\nEND;\n";
   close(FILE);
 
   print "done.\n";
@@ -253,8 +255,8 @@ sub load($)
 
     open( MFILE, "< $file") || die( "Makefile.template not found!" );
 
-        my @lines = <MFILE>;
-        $content = join("", @lines);
+    my @lines = <MFILE>;
+    my $content = join("", @lines);
 
     close(MFILE);
 

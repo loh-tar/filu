@@ -38,56 +38,45 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-CREATE OR REPLACE FUNCTION <schema>.id_from_caption
+CREATE OR REPLACE FUNCTION <schema>.fpi_eodBar
 (
-  stable varchar, -- search in this table
-  scap varchar    -- search this caption
+    "fiId"      int4
+  , "marketId"  int4
+  , "fdate"     date
+  , "tdate"     date
 )
-  RETURNS int8 AS
+RETURNS SETOF <schema>.fbar AS
 $BODY$
-
 DECLARE
-    my_rec      record;
-    my_id       int8;
-    my_cap      varchar;
-    query       text;
-    cnt         int8;
+  my_record    record;
+  my_result    <schema>.fbar;
 
 BEGIN
-  -- Returns:
-  --    0, if no data available(caption not found)
-  --   >0, found id to caption
-  --   -1, caption is more than one times in table
-  --   -2, caption was empty
 
-  my_cap := trim(both from scap);
-  IF char_length(my_cap) = 0 THEN RETURN -2; END IF;
+  FOR my_record IN
+      SELECT * FROM <schema>.eodbar
+       WHERE fi_id     = "fiId"
+         and market_id = "marketId"
+         and qdate BETWEEN "fdate" and "tdate"
+       ORDER BY qdate ASC
+  LOOP
+     my_result.fdate  := my_record.qdate;
+     my_result.ftime  := '23:59:59'::Time;
+     my_result.fopen  := my_record.qopen;
+     my_result.fhigh  := my_record.qhigh;
+     my_result.flow   := my_record.qlow;
+     my_result.fclose := my_record.qclose;
+     my_result.fvol   := my_record.qvol;
+     my_result.foi    := my_record.qoi;
 
-  -- go for caption
-  query := $$ SELECT $$ || stable || $$_id::int8 AS id FROM <schema>.$$ || stable ||
-          $$ WHERE LOWER(caption) LIKE LOWER($$ || quote_literal(my_cap) || $$)$$;
-
-  --RAISE NOTICE '<schema>.id_from_caption: %', query;
-  cnt := 0;
-  FOR my_rec IN EXECUTE query LOOP
-      cnt := cnt +1;
-      my_id := my_rec.id;
+     RETURN NEXT my_result;
   END LOOP;
 
-  IF my_id IS NULL THEN
-      my_id := 0;
-  END IF;
-
-  IF cnt > 1 THEN
-    --RAISE NOTICE '<schema>.id_from_caption: More than one caption >%< found. ', scap;
-    my_id := -1;
-  END IF;
-
-  RETURN my_id;
-
-END
+  RETURN;
+END;
 $BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL VOLATILE;
+
 --
--- END OF FUNCTION <schema>.id_from_caption
+-- END OF FUNCTION <schema>.fpi_eodBar(...)
 --

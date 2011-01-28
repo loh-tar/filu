@@ -1,5 +1,5 @@
 *  file name: AddAccountPos.sql
-*  Used in function:
+*  Used in function: FiluU::addAccountPos
 *
 *  Purpose:
 *     Insert or update an account postion.
@@ -15,6 +15,10 @@
 *
 *  Outputs: (order is important)
 *     accountId or ErrorNo
+*
 
 -- AddAccountPos.sql
-SELECT * FROM :user.account_insert(:accountId, :depotId, :date, CAST(:type as smallint), :text, :value);
+SELECT * FROM :user.account_insert(
+    :accountId, :depotId, :date
+  , CAST(:type as smallint), :text, :value
+);

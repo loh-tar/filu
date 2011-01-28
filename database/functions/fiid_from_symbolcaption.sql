@@ -17,48 +17,41 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
+INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNUQ', 'Symbol was found more than one times but was associated to different FIs.');
+
 CREATE OR REPLACE FUNCTION <schema>.fiid_from_symbolcaption
-  (
-    symbol <schema>.symbol.caption%TYPE   -- like "AAPL"
-  )
-  RETURNS <schema>.fi.fi_id%TYPE AS
+(
+  aSymbol <schema>.symbol.caption%TYPE   -- like "AAPL"
+)
+RETURNS <schema>.fi.fi_id%TYPE AS
 $BODY$
 
 DECLARE
-  mySymbol    <schema>.symbol.caption%TYPE;
-  fiId        <schema>.fi.fi_id%TYPE;
-  id2         <schema>.fi.fi_id%TYPE;
-  query       text;
-  myRec       record;
+  mSymbol    <schema>.symbol.caption%TYPE;
+  mFiId      <schema>.fi.fi_id%TYPE;
+  mFiId2     <schema>.fi.fi_id%TYPE := -1;
 
 BEGIN
-  -- Returns:
-  --   >0 if no problem, (the FiId)
-  --    0 if Symbol was not found
-  --   -1 if Symbol was found more than one time and was associated to different FIs
-  --   -2 if Symbol was empty
 
-  mySymbol := trim(both from symbol);
-  IF char_length(mySymbol) = 0 THEN RETURN -2; END IF;
+  mSymbol := trim(both from aSymbol);
+  IF char_length(mSymbol) = 0 THEN RETURN <schema>.error_code('SymbolEY'); END IF;
 
-  query := $$ SELECT fi_id FROM <schema>.symbol
-              WHERE LOWER(caption) LIKE LOWER($$ || quote_literal(mySymbol) || $$)$$;
-
-  id2 := -1;
-  FOR myRec IN EXECUTE query LOOP
-      fiId := myRec.fi_id;
-      IF (id2 = -1)  THEN id2 := fiId; END IF;
-      IF id2 <> fiId THEN RETURN -1; END IF;
+  FOR mFiId IN SELECT fi_id
+                 FROM <schema>.symbol
+                 WHERE lower(caption) LIKE lower(mSymbol)
+  LOOP
+      IF (mFiId2 = -1) THEN mFiId2 := mFiId; END IF;
+      IF mFiId2 <> mFiId THEN RETURN <schema>.error_code('SymbolNUQ'); END IF;
 
   END LOOP;
 
-  IF fiId IS NULL THEN RETURN 0; END IF;
+  IF mFiId IS NULL THEN RETURN <schema>.error_code('SymbolNF'); END IF;
 
-  RETURN fiId;
+  RETURN mFiId;
 
 END
 $BODY$
-  LANGUAGE 'plpgsql' STABLE;
+LANGUAGE PLPGSQL STABLE;
 --
 -- END OF FUNCTION <schema>.fiid_from_symbolcaption
 --

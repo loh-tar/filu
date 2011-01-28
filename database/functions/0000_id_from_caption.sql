@@ -38,23 +38,56 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-CREATE TABLE <schema>.eodbar(
-  eodbar_id     SERIAL8          ,
-  fi_id         INT8             NOT NULL,
-  market_id     INT8             NOT NULL,
-  qdate         DATE             NOT NULL,
-  qopen         FLOAT            ,
-  qhigh         FLOAT            ,
-  qlow          FLOAT            ,
-  qclose        FLOAT            NOT NULL,
-  qvol          FLOAT            ,
-  qoi           FLOAT            ,
-  --gap           FLOAT            ,
-  quality       INT2             DEFAULT 2, -- bronze, as tempo classified data
-  PRIMARY KEY(eodbar_id),
-  FOREIGN KEY(fi_id) REFERENCES <schema>.fi(fi_id) ON DELETE CASCADE,
-  FOREIGN KEY(market_id) REFERENCES <schema>.market(market_id) ON DELETE CASCADE,
-  UNIQUE(fi_id, market_id, qdate)
-);
+INSERT INTO <schema>.error(caption, etext) VALUES('CaptionEY', 'Caption is empty.');
+INSERT INTO <schema>.error(caption, etext) VALUES('CaptionNF', 'Caption not found.');
+INSERT INTO <schema>.error(caption, etext) VALUES('CaptionNUQ', 'Caption is not unique.');
 
--- duplicate() and trigger are replaced by eodbar_insert function
+CREATE OR REPLACE FUNCTION <schema>.id_from_caption
+(
+  aTable   varchar, -- search in this table
+  aCaption varchar  -- search this caption
+)
+RETURNS int4 AS
+$BODY$
+
+DECLARE
+  mRec        record;
+  mId         int4;
+  mCaption    varchar;
+  mQuery      text;
+  mCount      int4;
+
+BEGIN
+  --
+  -- Returns Unique Id if found, 0 if not or <1 if not unique
+  --
+  mCaption := trim(both from aCaption);
+  IF char_length(mCaption) = 0 THEN RETURN <schema>.error_code('CaptionEY'); END IF;
+
+  -- go for caption
+  mQuery := 'SELECT ' || quote_ident(aTable) || '_id::int4 AS id' ||
+            ' FROM <schema>.' || quote_ident(aTable) ||
+            ' WHERE lower(caption) LIKE lower(' || quote_literal(mCaption) || ')';
+
+  --RAISE NOTICE '<schema>.id_from_caption: %', mQuery;
+  mCount := 0;
+  FOR mRec IN EXECUTE mQuery LOOP
+      mCount := mCount +1;
+      mId := mRec.id;
+  END LOOP;
+
+  IF mId IS NULL THEN mId := <schema>.error_code('CaptionNF'); END IF;
+
+  IF mCount > 1 THEN
+    --RAISE NOTICE '<schema>.id_from_caption: More than one caption >%< found. ', aCaption;
+    mId := <schema>.error_code('CaptionNUQ');
+  END IF;
+
+  RETURN mId;
+
+END
+$BODY$
+LANGUAGE PLPGSQL STABLE;
+--
+-- END OF FUNCTION <schema>.id_from_caption
+--

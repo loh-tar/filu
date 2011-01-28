@@ -24,6 +24,6 @@
 SELECT co_id, fi_id, market_id, co_plot, co_date, co_type, co_argv
   FROM :user.co
   WHERE fi_id = :fiId
-    AND (co_date BETWEEN :fromDate AND :toDate OR co_date = '1000-01-01')
+    and (co_date BETWEEN :fromDate and :toDate or co_date = '1000-01-01')
 
   ORDER BY co_date

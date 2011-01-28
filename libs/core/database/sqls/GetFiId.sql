@@ -17,4 +17,4 @@
 SELECT f.fi_id
   FROM :filu.fi f, :filu.symbol s
  WHERE f.fi_id=s.fi_id
-   AND s.caption=:symbol
+   and s.caption=:symbol

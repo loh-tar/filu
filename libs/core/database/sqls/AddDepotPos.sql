@@ -1,5 +1,5 @@
 *  file name: AddDepotPos.sql
-*  Used in function:
+*  Used in function: FiluU::addDepotPos
 *
 *  Purpose:
 *     Insert or update a depot postion.
@@ -16,6 +16,11 @@
 *
 *  Outputs: (order is important)
 *     depotPosId or ErrorNo
+*
 
 -- AddDepotPos.sql
-SELECT * FROM :user.depotpos_insert(:depotPosId, :depotId, CAST(:date as date), :fiId, :pieces, :price, :marketId);
+SELECT * FROM :user.depotpos_insert(
+    :depotPosId, :depotId
+  , CAST(:date as date)
+  , :fiId, :pieces, :price, :marketId
+);

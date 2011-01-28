@@ -17,10 +17,6 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
--- View: lovelysymbol
-
--- DROP VIEW lovelysymbol;
-
 CREATE OR REPLACE VIEW <schema>.lovelysymbol AS
 
   SELECT DISTINCT ON (s.fi_id)
@@ -31,8 +27,6 @@ CREATE OR REPLACE VIEW <schema>.lovelysymbol AS
     FROM <schema>.symbol s
     JOIN <schema>.stype st USING (stype_id)
   ORDER BY s.fi_id, st.seq;
-
-ALTER TABLE lovelysymbol OWNER TO <user>;
 
 --
 -- END OF VIEW <schema>.lovelysymbol

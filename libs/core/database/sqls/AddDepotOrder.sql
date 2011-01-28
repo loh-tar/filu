@@ -1,5 +1,5 @@
 *  file name: AddDepotOrder.sql
-*  Used in function:
+*  Used in function: FiluU::addOrder
 *
 *  Purpose:
 *     Insert or update a order postion.
@@ -19,6 +19,7 @@
 *
 *  Outputs: (order is important)
 *     depotPosId or ErrorNo
+*
 
 -- AddDepotOrder.sql
 SELECT * FROM :user.order_insert

@@ -23,11 +23,11 @@
 SELECT f.fi_id, f.ftype_id, f.caption, t.caption
   FROM :filu.fi f, :filu.ftype t
   WHERE f.ftype_id = t.ftype_id
-   AND CASE WHEN :fiId = 0
+   and CASE WHEN :fiId = 0
              THEN CASE WHEN :fuzzy = TRUE
-                   THEN   UPPER(f.caption) LIKE '%'|| UPPER(:name) ||'%'
-                      AND UPPER(t.caption) LIKE '%'|| UPPER(:type)||'%'
-                   ELSE   f.caption = :name AND t.caption = :type
+                   THEN   lower(f.caption) LIKE '%'|| lower(:name) ||'%'
+                      and lower(t.caption) LIKE '%'|| lower(:type)||'%'
+                   ELSE   f.caption = :name and t.caption = :type
                   END
              ELSE f.fi_id = :fiId
         END

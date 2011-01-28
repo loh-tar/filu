@@ -14,10 +14,5 @@
 *
 
 -- GetFiIdBySymbol.sql
--- Returns:
---   >0 if no problem, (the FiId)
---    0 if Symbol was not found
---   -1 if Symbol was found more than one time and was associated to different FIs
---   -2 if Symbol was empty
 SELECT * FROM :filu.fiid_from_symbolcaption(:symbol)
 

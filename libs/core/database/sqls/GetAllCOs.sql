@@ -44,10 +44,10 @@ FROM
   JOIN :filu.ftype ft USING (ftype_id)
 
 WHERE
-  --AND (co_date BETWEEN :fromDate AND :toDate)
+  --AND (co_date BETWEEN :fromDate and :toDate)
       CASE WHEN length(:ftype)    = 0  THEN true ELSE ft.caption = :ftype END
-  AND CASE WHEN length(:group)    = 0  THEN true
-           ELSE f.fi_id IN (select fi_id from :user.gmember gm, :user.group g where gm.group_id = g.group_id AND g.caption = :group) END
+  and CASE WHEN length(:group)    = 0  THEN true
+           ELSE f.fi_id IN (select fi_id from :user.gmember gm, :user.group g where gm.group_id = g.group_id and g.caption = :group) END
 
 ORDER BY
 

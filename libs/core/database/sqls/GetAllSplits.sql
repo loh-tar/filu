@@ -33,10 +33,10 @@ FROM
   :filu.ftype ft
 WHERE
   sp.fi_id = f.fi_id
-  AND f.ftype_id = ft.ftype_id
-  AND CASE WHEN length(:ftype) = 0  THEN true ELSE ft.caption = :ftype END
-  AND CASE WHEN length(:group) = 0  THEN true
-            ELSE f.fi_id IN (select fi_id from :user.gmember gm, :user.group g where gm.group_id = g.group_id AND g.caption = :group) END
+  and f.ftype_id = ft.ftype_id
+  and CASE WHEN length(:ftype) = 0  THEN true ELSE ft.caption = :ftype END
+  and CASE WHEN length(:group) = 0  THEN true
+            ELSE f.fi_id IN (select fi_id from :user.gmember gm, :user.group g where gm.group_id = g.group_id and g.caption = :group) END
 
 ORDER BY
   RefSymbol,

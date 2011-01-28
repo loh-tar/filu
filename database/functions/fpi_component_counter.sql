@@ -49,7 +49,7 @@ RETURNS SETOF <schema>.fdouble AS
 $BODY$
 
 DECLARE
-  mRecord    RECORD;
+  mRecord    record;
   mResult    <schema>.fdouble;
   mULcount   int; -- underlying count
 --
@@ -78,8 +78,8 @@ BEGIN
 --     SELECT qdate
 --       FROM <schema>.eodbar
 --       WHERE market_id = marketId
---         AND qdate BETWEEN fdate AND tdate
---         AND fi_id = fiId
+--         and qdate BETWEEN fdate and tdate
+--         and fi_id = fiId
 --       ORDER BY qdate ASC
 --
 --     LOOP
@@ -103,18 +103,18 @@ BEGIN
   SELECT e1.qdate,
         (SUM(CASE WHEN e2.qopen > e2.qclose THEN -1
                   WHEN e2.qopen < e2.qclose THEN  1
-                  ELSE 0 END))::float AS beef
+                  ELSE 0 END))::float8 AS beef
 
     FROM <schema>.eodbar e1, <schema>.eodbar e2
   WHERE 1=1
-    AND e1.market_id = marketId
-    AND e1.qdate BETWEEN fdate AND tdate
-    AND e1.qdate = e2.qdate
-    AND e1.market_id = e2.market_id
-    AND e2.fi_id in (SELECT underlying_fi_id
+    and e1.market_id = marketId
+    and e1.qdate BETWEEN fdate and tdate
+    and e1.qdate = e2.qdate
+    and e1.market_id = e2.market_id
+    and e2.fi_id in (SELECT underlying_fi_id
                         FROM <schema>.underlying
                       WHERE fi_id = fiId)
-    AND e1.fi_id = fiId
+    and e1.fi_id = fiId
   GROUP BY e1.qdate
   ORDER BY e1.qdate ASC
 
@@ -128,7 +128,7 @@ BEGIN
 
 END
 $BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL VOLATILE;
 --
 -- END OF FUNCTION <schema>.fpi_ccp(...)
 --

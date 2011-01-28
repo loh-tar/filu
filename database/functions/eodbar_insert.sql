@@ -19,121 +19,117 @@
 
 -- insert / update function
 CREATE OR REPLACE FUNCTION <schema>.eodbar_insert
-  ( nfi_id int8
-  , nmarket_id int8
-  , ndate date
-  , nopen float
-  , nhigh float
-  , nlow float
-  , nclose float
-  , nvol float
-  , noi float
-  , nquality int2 )
-
-  RETURNS void AS
-
+(   aFiId       <schema>.fi.fi_id%TYPE
+  , aMarketId   <schema>.market.market_id%TYPE
+  , aDate       <schema>.eodbar.qdate%TYPE
+  , aOpen       <schema>.eodbar.qopen%TYPE
+  , aHigh       <schema>.eodbar.qhigh%TYPE
+  , aLow        <schema>.eodbar.qlow%TYPE
+  , aClose      <schema>.eodbar.qclose%TYPE
+  , aVol        <schema>.eodbar.qvol%TYPE
+  , aOi         <schema>.eodbar.qoi%TYPE        DEFAULT 0
+  , aQuality    <schema>.eodbar.quality%TYPE    DEFAULT 2 -- bronze, as tempo classified data
+)
+RETURNS void AS
 $BODY$
 
 DECLARE
-  topen         float;
-  thigh         float;
-  tlow          float;
-  tclose        float;
-  tquality      int2;
-  numrows       int4;
+  mOpen         <schema>.eodbar.qopen%TYPE;
+  mHigh         <schema>.eodbar.qhigh%TYPE;
+  mLow          <schema>.eodbar.qlow%TYPE;
+  mClose        <schema>.eodbar.qclose%TYPE;
+  mOi           <schema>.eodbar.qoi%TYPE;
+  mQuality      <schema>.eodbar.quality%TYPE;
+  mNumRows      int;
 
 BEGIN
-  -- set quality if null
-  IF nquality IS NULL
-  THEN tquality := 2; -- bronze, as tempo classified data
-  ELSE tquality := nquality;
-  END IF;
 
-  -- check plausibility, especially yahoo tends to bugs in eod data
-  topen  := nopen;
-  thigh  := nhigh;
-  tlow   := nlow;
-  tclose := nclose;
-  tquality := nquality;
+  mOpen    := COALESCE(aOpen, aClose);
+  mHigh    := COALESCE(aHigh, aClose);
+  mLow     := COALESCE(aLow,  aClose);
+  mClose   := aClose;
+  mOi      := COALESCE(aOi, 0);
+  mQuality := COALESCE(aQuality, 2);
 
-  IF thigh < tclose
-  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, close was > high', nfi_id, ndate, nopen, nhigh, nlow, nclose;
-        thigh := tclose;
-        tquality := 3;
+  -- Check plausibility, especially yahoo tends to bugs in eod data
+  IF mHigh < mClose
+  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, close was > high', aFiId, aDate, aOpen, aHigh, aLow, aClose;
+        mHigh := mClose;
+        mQuality := 3;
         END IF;
 
-  IF tclose < tlow
-  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, close was < low', nfi_id, ndate, nopen, nhigh, nlow, nclose;
-        tlow := tclose;
-        tquality := 3;
+  IF mClose < mLow
+  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, close was < low', aFiId, aDate, aOpen, aHigh, aLow, aClose;
+        mLow := mClose;
+        mQuality := 3;
         END IF;
 
-  IF topen > thigh
-  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, open was > high', nfi_id, ndate, nopen, nhigh, nlow, nclose;
-        thigh := topen;
-        tquality := 3;
+  IF mOpen > mHigh
+  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, open was > high', aFiId, aDate, aOpen, aHigh, aLow, aClose;
+        mHigh := mOpen;
+        mQuality := 3;
         END IF;
 
-  IF topen < tlow
-  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, open was < low', nfi_id, ndate, nopen, nhigh, nlow, nclose;
-        tlow := topen;
-        tquality := 3;
+  IF mOpen < mLow
+  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, open was < low', aFiId, aDate, aOpen, aHigh, aLow, aClose;
+        mLow := mOpen;
+        mQuality := 3;
         END IF;
 
-  -- try to insert data
+  -- Try to insert data
   BEGIN
     INSERT INTO <schema>.eodbar(fi_id, market_id, qdate, qopen, qhigh, qlow, qclose, qvol, qoi, quality)
-            VALUES(nfi_id, nmarket_id, ndate, topen, thigh, tlow, tclose, nvol, noi, tquality);
+           VALUES(aFiId, aMarketId, aDate, mOpen, mHigh, mLow, mClose, aVol, mOi, mQuality);
     RETURN;
   EXCEPTION WHEN unique_violation
   THEN -- make an update
-    if nvol = -1 -- in case of an update with bar data where no volume exist, like from onvista
+    if aVol = -1 -- in case of an update with bar data where no volume exist, like from onvista
     then
       update <schema>.eodbar
       set
-        qopen          = topen,
-        qhigh          = thigh,
-        qlow           = tlow,
-        qclose         = tclose,
-        --qvol           = nvol,
-        qoi            = noi,
-        quality        = tquality
-      where fi_id       = nfi_id
-        and market_id   = nmarket_id
-        and qdate       = ndate
-        and quality     >= tquality;
+        qopen          = mOpen,
+        qhigh          = mHigh,
+        qlow           = mLow,
+        qclose         = mClose,
+        --qvol           = aVol,
+        qoi            = mOi,
+        quality        = mQuality
+      where fi_id       = aFiId
+        and market_id   = aMarketId
+        and qdate       = aDate
+        and quality     >= mQuality;
     else
       update <schema>.eodbar
       set
-        qopen          = topen,
-        qhigh          = thigh,
-        qlow           = tlow,
-        qclose         = tclose,
-        qvol           = nvol,
-        qoi            = noi,
-        quality        = tquality
-      where fi_id       = nfi_id
-        and market_id   = nmarket_id
-        and qdate       = ndate
-        and quality     >= tquality;
+        qopen          = mOpen,
+        qhigh          = mHigh,
+        qlow           = mLow,
+        qclose         = mClose,
+        qvol           = aVol,
+        qoi            = mOi,
+        quality        = mQuality
+      where fi_id       = aFiId
+        and market_id   = aMarketId
+        and qdate       = aDate
+        and quality     >= mQuality;
     end if;
   END;
 
   -- check the update result
-  GET DIAGNOSTICS numrows = ROW_COUNT;
+  GET DIAGNOSTICS mNumRows = ROW_COUNT;
 
-  IF numrows > 0 THEN
-    IF (tquality <> 1) AND (tquality <> 2)
+  IF mNumRows > 0 THEN
+    IF (mQuality <> 1) and (mQuality <> 2)
     THEN -- only info if something interessting
-      RAISE NOTICE '<schema>.eodbar_insert() FI %, at date %. Updated to quality %', nfi_id, ndate, tquality;
+      --RAISE NOTICE '<schema>.eodbar_insert() FI %, at date %. Updated to quality %', aFiId, aDate, mQuality;
     END IF;
   ELSE
-    RAISE NOTICE '<schema>.eodbar_insert() Update for FI %, at date %. FAILS! new quality was %', nfi_id, ndate, tquality;
+    --RAISE NOTICE '<schema>.eodbar_insert() Update for FI %, at date %. FAILS! new quality was %', aFiId, aDate, mQuality;
   END IF;
 
 END;
 $BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL VOLATILE;
 
 --
 -- END OF FUNCTION <schema>.eodbar_insert

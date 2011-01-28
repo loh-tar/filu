@@ -17,7 +17,6 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 --
---
 -- Create The Filu Schema
 --
 CREATE SCHEMA <schema>

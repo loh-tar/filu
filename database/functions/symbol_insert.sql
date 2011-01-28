@@ -17,119 +17,106 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
+--INSERT INTO <schema>.error(caption, etext) VALUES('', '.');
+
 CREATE OR REPLACE FUNCTION <schema>.symbol_insert
-  (
-    fiId     <schema>.fi.fi_id%TYPE,
-    symbolId <schema>.symbol.symbol_id%TYPE,
-    symbol   <schema>.symbol.caption%TYPE, -- like "AAPL"
-    market   <schema>.market.caption%TYPE, -- like "NASDAQ"
-    stype    <schema>.stype.caption%TYPE   -- like "Yahoo"
-  )
-  RETURNS <schema>.symbol.symbol_id%TYPE AS
+(
+  aFiId     <schema>.fi.fi_id%TYPE,
+  aSymbolId <schema>.symbol.symbol_id%TYPE,
+  aSymbol   <schema>.symbol.caption%TYPE, -- like "AAPL"
+  aMarket   <schema>.market.caption%TYPE, -- like "NASDAQ"
+  aSType    <schema>.stype.caption%TYPE   -- like "Yahoo"
+)
+RETURNS <schema>.symbol.symbol_id%TYPE AS
 $BODY$
 
 DECLARE
-  msymbol   <schema>.symbol.caption%TYPE;   -- my symbol (a copy)
-  msymbolId <schema>.symbol.symbol_id%TYPE; -- my symbolId (a copy)
-  stypeId   <schema>.stype.stype_id%TYPE;
-  marketId  <schema>.market.market_id%TYPE;
+  mSymbol    <schema>.symbol.caption%TYPE;
+  mSymbolId  <schema>.symbol.symbol_id%TYPE;
+  mSTypeId   <schema>.stype.stype_id%TYPE;
+  mMarketId  <schema>.market.market_id%TYPE;
 
 BEGIN
-  -- Insert, update or check the given Symbol.
-  -- Returns:
-  --   >0 the symbolId, if Symbol exist
-  --    0 if Symbol looks good but no fiId was given to add them
-  --   -1 SymbolType not valid
-  --   -2 Market not valid
-  --   -3 unique violation
-  --   -4 foreign key violation
 
-  msymbol := trim(both from symbol);
-  IF char_length(msymbol) = 0 THEN RETURN -1; END IF; -- symbol caption empty, pointless
+  mSymbol := trim(both from aSymbol);
+  IF char_length(mSymbol) = 0 THEN RETURN <schema>.error_code('SymbolEY'); END IF; -- aSymbol caption empty, pointless
 
-  -- -2= empty caption, -1=more than one found, 0=unknown, >1=id
-  stypeId := <schema>.id_from_caption('stype', stype);
-  IF stypeId < 1 THEN RETURN -1; END IF;
+  mSTypeId := <schema>.id_from_caption('stype', aSType);
+  IF mSTypeId < 1 THEN RETURN <schema>.error_code('STypeNF'); END IF;
 
-  marketId  := <schema>.id_from_caption('market', market);
-  IF marketId < 1 THEN RETURN -2; END IF;
+  mMarketId  := <schema>.id_from_caption('market', aMarket);
+  IF mMarketId < 1 THEN RETURN <schema>.error_code('MarketNF'); END IF;
 
-  IF fiId < 1
-  THEN -- fiId is a must have, we don't add or update, only look if exist
-    msymbolId := <schema>.id_from_caption('symbol', msymbol);
-    IF msymbolId = -1
-    THEN --ops, really rare, symbol exist more than one time.
-      SELECT INTO msymbolId symbol_id
+  IF aFiId < 1 THEN -- aFiId is a must have, we don't add or update, only look if exist
+    mSymbolId := <schema>.id_from_caption('symbol', mSymbol);
+    IF mSymbolId = <schema>.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
+      SELECT INTO mSymbolId symbol_id
         FROM <schema>.symbol
         WHERE
-          LOWER(caption) = LOWER(symbol)
-          AND market_id = marketId
-          AND stype_id  = stypeId;
+          lower(caption) = lower(aSymbol)
+          and market_id = mMarketId
+          and stype_id  = mSTypeId;
 
-      IF msymbolId IS NULL THEN RETURN 0; END IF;
+      IF mSymbolId IS NULL THEN RETURN <schema>.error_code('SymbolNUQ'); END IF;
 
-    END IF; -- msymbolId = -1
+    END IF; -- mSymbolId = -1
 
-    RETURN msymbolId;
+    RETURN mSymbolId;
 
-  END IF; -- fiId < 1
+  END IF; -- aFiId < 1
 
-  msymbolId := symbolId;
+  mSymbolId := aSymbolId;
 
-  IF msymbolId < 1
-  THEN -- no symbolId given, we have to check if the symbol is already known
-     msymbolId := <schema>.id_from_caption('symbol', msymbol);
+  IF mSymbolId < 1 THEN -- no aSymbolId given, we have to check if the symbol is already known
+     mSymbolId := <schema>.id_from_caption('symbol', mSymbol);
 
-    IF msymbolId = -1
-    THEN --ops, really rare, symbol exist more than one time.
-      SELECT INTO msymbolId symbol_id
+    IF mSymbolId = <schema>.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
+      SELECT INTO mSymbolId symbol_id
         FROM <schema>.symbol
         WHERE
-          LOWER(caption) = LOWER(symbol)
-          AND market_id = marketId
-          AND stype_id  = stypeId;
+          lower(caption) = lower(mSymbol)
+          and market_id = mMarketId
+          and stype_id  = mSTypeId;
 
     END IF;
 
-    IF (msymbolId = 0) OR (msymbolId IS NULL)
-    THEN -- insert the new symbol
-      msymbolId := nextval('<schema>.symbol_symbol_id_seq');
+    IF (mSymbolId < 0) or (mSymbolId IS NULL) THEN -- insert the new symbol
+      mSymbolId := nextval('<schema>.symbol_symbol_id_seq');
       BEGIN
-        INSERT  INTO <schema>.symbol(symbol_id, market_id, stype_id, fi_id, caption)
-                VALUES(msymbolId, marketId, stypeId, fiId, msymbol);
+        INSERT INTO <schema>.symbol(symbol_id, market_id, stype_id, fi_id, caption)
+               VALUES(mSymbolId, mMarketId, mSTypeId, aFiId, mSymbol);
 
-        RETURN msymbolId;
+        RETURN mSymbolId;
 
-        EXCEPTION WHEN unique_violation THEN RETURN -3;
-                  WHEN foreign_key_violation THEN RETURN -4;
-
+        EXCEPTION WHEN unique_violation THEN RETURN <schema>.error_code('UniqueV');
+                  WHEN foreign_key_violation THEN RETURN <schema>.error_code('ForeignKV');
       END;
 
     END IF;
-  END IF; -- msymbolId < 1
+  END IF; -- mSymbolId < 1
 
   BEGIN
     -- ok, we have to update the symbol
     UPDATE <schema>.symbol
       SET
-        market_id    = marketId,
-        stype_id     = stypeId,
-        caption      = msymbol,
-        fi_id        = fiId
+        market_id    = mMarketId,
+        stype_id     = mSTypeId,
+        caption      = mSymbol,
+        fi_id        = aFiId
         --issuedate    = issuedate,
         --maturitydate = maturitydate
       WHERE
-        symbol_id = msymbolId;
+        symbol_id = mSymbolId;
 
-      RETURN msymbolId;
+      RETURN mSymbolId;
 
-    EXCEPTION WHEN unique_violation THEN RETURN -3;
+    EXCEPTION WHEN unique_violation THEN RETURN <schema>.error_code('UniqueV');
 
   END;
 
 END
 $BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL VOLATILE;
 --
 -- END OF FUNCTION <schema>.symbol_insert
 --

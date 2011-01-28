@@ -31,6 +31,6 @@ FROM
 
 WHERE
   g.group_id = :groupId
-  AND m.caption != 'NoMarket'
+  and m.caption != 'NoMarket'
 
 ORDER BY s.caption;

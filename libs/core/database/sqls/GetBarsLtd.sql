@@ -23,5 +23,5 @@
 
 --GetBarsLtd.sql
 SELECT *
-  FROM :filu.eodbar_get(:fiId, :marketId, null, null, :limit, 1)
+  FROM :filu.eodbar_get(:fiId, :marketId, null, null, :limit)
 

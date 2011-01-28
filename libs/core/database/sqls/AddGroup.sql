@@ -9,6 +9,7 @@
 *     :groupPath -- like: /Suggestions/Someone
 *
 *  Outputs: (order is important)
+*
 
 -- AddGroup.sql
 -- Returns mother group id, whereas 0 is a valid value for root group

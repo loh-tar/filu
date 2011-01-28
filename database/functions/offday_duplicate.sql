@@ -16,18 +16,36 @@
  *   You should have received a copy of the GNU General Public License
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
---
---
--- FI Types
---
-INSERT INTO <schema>.ftype(caption) values('Currency');
-INSERT INTO <schema>.ftype(caption) values('Stock');
-INSERT INTO <schema>.ftype(caption) values('Index');
---INSERT INTO <schema>.ftype(caption) values('Bond');
---INSERT INTO <schema>.ftype(caption) values('FutureMaster');
---INSERT INTO <schema>.ftype(caption) values('Future');
---INSERT INTO <schema>.ftype(caption) values('Option');
---INSERT INTO <schema>.ftype(caption) values('Warrant');
---INSERT INTO <schema>.ftype(caption) values('IRS');
---INSERT INTO <schema>.ftype(caption) values('CRS');
-INSERT INTO <schema>.ftype(caption) values('Generic');
+
+CREATE OR REPLACE FUNCTION <schema>.offday_duplicate()
+RETURNS TRIGGER AS
+$BODY$
+DECLARE
+  mExist  int4;
+
+BEGIN
+
+  SELECT INTO mExist offday_id
+      FROM <schema>.offday
+      WHERE market_id = new.market_id
+        and offday    = new.offday;
+
+  IF mExist IS NOT NULL THEN
+      -- It makes no sense to update a duplicate date just do nothing!
+      --RAISE WARNING ''Off day allready exists! Nothing happened'';
+      RETURN NULL;
+  ELSE
+      RETURN new;
+  END IF;
+
+END;
+$BODY$
+LANGUAGE PLPGSQL VOLATILE;
+
+DROP TRIGGER IF EXISTS <schema>_offday_duplicates ON <schema>.offday;
+
+CREATE TRIGGER <schema>_offday_duplicates
+  BEFORE INSERT
+  ON <schema>.offday
+  FOR EACH ROW
+  EXECUTE PROCEDURE <schema>.offday_duplicate();

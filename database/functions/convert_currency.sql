@@ -18,44 +18,53 @@
  */
 
 CREATE OR REPLACE FUNCTION <schema>.convert_currency
-  (
-    money   <schema>.eodbar.qclose%TYPE,
-    scurr   <schema>.fi.fi_id%TYPE,                         -- Source currency
-    dcurr   <schema>.fi.fi_id%TYPE,                         -- Destination currency
-    cdate   <schema>.eodbar.qdate%TYPE DEFAULT '3000-01-01' -- CurrencyDate, take last available date
-  )
-  RETURNS <schema>.eodbar.qclose%TYPE AS
+(
+  aMoney   <schema>.eodbar.qclose%TYPE,
+  aSCurr   <schema>.fi.fi_id%TYPE,                         -- Source currency
+  aDCurr   <schema>.fi.fi_id%TYPE,                         -- Destination currency
+  aCDate   <schema>.eodbar.qdate%TYPE DEFAULT '3000-01-01' -- CurrencyDate, take last available date
+)
+RETURNS <schema>.eodbar.qclose%TYPE AS
 $BODY$
 
 DECLARE
-  squote        <schema>.eodbar.qclose%TYPE; -- Source quote
-  dquote        <schema>.eodbar.qclose%TYPE; -- Destination quote
-  dmoney        <schema>.eodbar.qclose%TYPE; -- Destination money
-  query1        TEXT;
+  mSQuote       <schema>.eodbar.qclose%TYPE; -- Source quote
+  mDQuote       <schema>.eodbar.qclose%TYPE; -- Destination quote
+  mDMoney       <schema>.eodbar.qclose%TYPE; -- Destination aMoney
+  mUSDollar     CONSTANT int := 2;           -- US Dollar has always ID 2
 
 BEGIN
+  --
+  -- Returns (Money * -1) if no (source or destination) quote found
+  --
 
-  IF scurr = dcurr THEN RETURN money; END IF; -- Nice, nothing todo
+  IF aSCurr = aDCurr THEN RETURN aMoney; END IF; -- Nice, nothing todo
 
-  SELECT qclose INTO squote
-    FROM <schema>.eodbar
-    WHERE fi_id = scurr and qdate = cdate;
+  IF aSCurr = mUSDollar
+    THEN mSQuote = 1.0;
+    ELSE SELECT qclose INTO mSQuote
+           FROM <schema>.eodbar
+           WHERE fi_id = aSCurr and qdate = aCDate;
 
-  IF squote IS NULL THEN RETURN money; END IF; -- Money is already USD ..or date not found, shit happens
+          IF mSQuote IS NULL THEN RETURN -aMoney; END IF; -- Currency or date not found, shit happens
+  END IF;
 
-  SELECT qclose INTO dquote
-    FROM <schema>.eodbar
-    WHERE fi_id = dcurr and qdate = cdate;
+  IF aDCurr = mUSDollar
+    THEN mDQuote = 1.0;
+    ELSE SELECT qclose INTO mDQuote
+           FROM <schema>.eodbar
+           WHERE fi_id = aDCurr and qdate = aCDate;
 
-  IF dquote IS NULL THEN dquote := 1.0; END IF; --Destination is USD ..or date not found, shit happens
+          IF mDQuote IS NULL THEN RETURN -aMoney; END IF; -- Currency or date not found, shit happens
+  END IF;
 
-  dmoney := dquote * money/squote;
+  mDMoney := mDQuote * aMoney/mSQuote;
 
-  RETURN dmoney;
+  RETURN mDMoney;
 
 END;
 $BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL STABLE;
 --
 -- END OF FUNCTION <schema>.convert_currency
 --

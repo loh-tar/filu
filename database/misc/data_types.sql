@@ -17,7 +17,6 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 --
---
 -- These DataTypes are used by fpi_foo functions as handy return type.
 -- Because Filu indicators, see doc/indicator-file-format.txt, are always
 -- calculates with C++ double type, you will find here no bool, int or

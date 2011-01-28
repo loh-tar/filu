@@ -22,6 +22,9 @@
 *     oi
 
 -- GetBars.sql
-SELECT *
-  FROM :filu.eodbar_get(:fiId, :marketId, :fromDate, :toDate, null, 1)
+SELECT * FROM :filu.eodbar_get(cast(:fiId     as int)
+                             , cast(:marketId as int)
+                             , cast(:fromDate as date)
+                             , cast(:toDate   as date)
+                             , cast(null      as int) )
 

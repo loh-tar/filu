@@ -38,7 +38,6 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 --
---
 -- The ultimate power and reason to start the FiMi project by Christian Kindler
 --
 CREATE OR REPLACE VIEW <schema>.filupower_indicator
@@ -54,9 +53,9 @@ AS
   FROM
     pg_namespace ns, pg_proc proc, pg_type rt
   WHERE ns.oid = proc.pronamespace
-    AND proc.prorettype = rt.oid
-    AND ns.nspname = '<schema>'
-    AND proc.proname like 'fpi_%';
+    and proc.prorettype = rt.oid
+    and ns.nspname = '<schema>'
+    and proc.proname like 'fpi_%';
 
 --
 -- END OF VIEW <schema>.filupower_indicator

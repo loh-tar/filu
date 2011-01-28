@@ -656,13 +656,14 @@ int Filu::addMarket(const QString& market
     return eExecError;
   }
 
-// FIXME: uncomment when DB function market_insert is modified to return
-//        the id or error like the other insert functions
-//   query->next();
-//
-//   return query->value(0).toInt();
+  query->next();
+  const int retVal =  query->value(0).toInt();
 
-  return 1;
+  if(retVal >= eData) return retVal;
+
+  errInfo(FUNC, tr("Market not added."));
+
+  return (eError + retVal);
 }
 
 int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
@@ -1414,7 +1415,7 @@ int Filu::execute(QSqlQuery* query)
     }
     else if(query->numRowsAffected() == 0)
     {
-      errInfo(FUNC, "No rows affected by sql.");
+      verbose(FUNC, "No rows affected by sql.", eAmple);
       return eNoSuccess;
     }
   }

@@ -11,6 +11,7 @@
 *     :ratio
 *     :comment
 *     :quality
+*
 
 --AddSplit.sql
-SELECT :filu.split_insert(:symbol, :date, :ratio, :comment, :quality, :fiId);
+SELECT :filu.split_insert(:symbol, :date, :ratio, :comment, cast(:quality as int2), :fiId);

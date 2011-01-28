@@ -24,6 +24,5 @@
 SELECT DISTINCT f.fi_id, f.ftype_id, f.caption, t.caption
   FROM :filu.fi f, :filu.symbol s, :filu.ftype t
   WHERE f.fi_id = s.fi_id
-    AND f.ftype_id = t.ftype_id
-    AND s.caption = :symbol
-
+    and f.ftype_id = t.ftype_id
+    and s.caption = :symbol

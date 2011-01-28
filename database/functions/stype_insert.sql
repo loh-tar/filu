@@ -17,13 +17,15 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
--- unshure if the right way...still use stype_duplicates() trigger
+INSERT INTO <schema>.error(caption, etext) VALUES('STypeEY', 'SymbolType is empty.');
+--INSERT INTO <schema>.error(caption, etext) VALUES('', '.');
+
 CREATE OR REPLACE FUNCTION <schema>.stype_insert
 (
-  nstype_id    <schema>.stype.stype_id%TYPE,
-  ncaption     <schema>.stype.caption%TYPE,
-  nseq         <schema>.stype.seq%TYPE,
-  nisprovider  <schema>.stype.isprovider%TYPE
+  aSTypeId     <schema>.stype.stype_id%TYPE,
+  aCaption     <schema>.stype.caption%TYPE,
+  aSeq         <schema>.stype.seq%TYPE,
+  aIsProvider  <schema>.stype.isprovider%TYPE
 )
 
 RETURNS <schema>.stype.stype_id%TYPE AS
@@ -31,49 +33,41 @@ RETURNS <schema>.stype.stype_id%TYPE AS
 $BODY$
 
 DECLARE
-  exist <schema>.stype.stype_id%TYPE;
-  nid   <schema>.stype.stype_id%TYPE;
+  mExist <schema>.stype.stype_id%TYPE;
+  mId    <schema>.stype.stype_id%TYPE;
 
 BEGIN
-  -- Update or insert the SymbolType
-  --
-  -- Returns:
-  --   >0 if all is fine, the nstype_id
-  --   -1 if caption was empty
 
-  nid := nstype_id;
-  IF nstype_id = NULL THEN nid := 0; END IF;
+  mId := COALESCE(aSTypeId, 0);
 
-  IF nid = 0
-  THEN -- check if exist
-    -- -2= empty caption, -1=more than one found, 0=unknown, >1=id
-    nid := <schema>.id_from_caption('stype', ncaption);
-    IF nid < 0 THEN RETURN -1; END IF;
+  IF mId = 0 THEN -- check if mExist
+    mId := <schema>.id_from_caption('stype', aCaption);
+    IF mId = <schema>.error_code('CaptionEY')
+    THEN RETURN <schema>.error_code('STypeEY'); END IF;-- see ftype_insert
   END IF;
 
-  IF nid = 0
-  THEN
+  IF mId < 0 THEN
    -- make the insert
-    nid := nextval('<schema>.stype_stype_id_seq');
+    mId := nextval('<schema>.stype_stype_id_seq');
     INSERT INTO <schema>.stype(stype_id, caption, seq, isprovider)
-            VALUES(nid, ncaption, nseq, nisprovider);
-    --RAISE INFO 'stype_insert added %,  %', nid, ncaption;
+           VALUES(mId, aCaption, aSeq, aIsProvider);
+    --RAISE INFO 'stype_insert added %,  %', mId, aCaption;
 
   ELSE -- make an update
     UPDATE <schema>.stype
       SET
-        caption    = ncaption,
-        seq        = nseq,
-        isprovider = nisprovider
-      WHERE stype_id = nid;
+        caption    = aCaption,
+        seq        = aSeq,
+        isprovider = aIsProvider
+      WHERE stype_id = mId;
 
   END IF;
 
-  RETURN nid;
+  RETURN mId;
 
 END;
 $BODY$
-LANGUAGE 'plpgsql' VOLATILE;
+LANGUAGE PLPGSQL VOLATILE;
 --
 -- END OF FUNCTION <schema>.stype_insert
 --

@@ -11,7 +11,4 @@
 *     :isProvider
 
 -- AddSymbolType.sql
--- Returns:
---   >0 if all is fine, the SymbolTypeId
---   -1 if SymbolType was empty
 SELECT * FROM :filu.stype_insert(:stypeId, :symbolType, :seq, :isProvider);

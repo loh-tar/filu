@@ -1,6 +1,5 @@
 *  file name: AddUnderlying.sql
-*  Used as query:
-*  Used in function:
+*  Used in function: Filu::addUnderlying
 *
 *  Purpose:
 *     Add a underlyings
@@ -9,6 +8,7 @@
 *     :motherSymbol
 *     :symbol
 *     :weight
+*
 
 --AddUnderlying.sql
 SELECT * FROM :filu.underlying_insert(:motherSymbol, :symbol, :weight);

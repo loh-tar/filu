@@ -19,6 +19,6 @@ SELECT btlog_id, backtest_id, fi_id, market_id, btdate, event, amount, money
   WHERE backtest_id = (select MAX(backtest_id) from :user.btlog where fi_id = :fiId and market_id = :marketId)
   -- backtest_id = :backtestId
 
-    AND fi_id = :fiId
-    AND market_id = :marketId
+    and fi_id = :fiId
+    and market_id = :marketId
   ORDER BY btlog_id

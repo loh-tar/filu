@@ -17,9 +17,8 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 --
---
 -- Create the needed languages
 --
-CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql'
+CREATE TRUSTED PROCEDURAL LANGUAGE PLPGSQL
   HANDLER plpgsql_call_handler
   VALIDATOR plpgsql_validator;

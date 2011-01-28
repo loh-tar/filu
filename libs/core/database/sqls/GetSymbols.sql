@@ -37,7 +37,7 @@ FROM :filu.market m,:filu.stype t,
   ) as mysym,
 
   :filu.symbol s LEFT OUTER JOIN :filu.msymbol ms
-  ON s.market_id = ms.market_id AND s.stype_id = ms.stype_id
+  ON s.market_id = ms.market_id and s.stype_id = ms.stype_id
 
 WHERE s.maturityDate >= current_date
 AND s.market_id = m.market_id

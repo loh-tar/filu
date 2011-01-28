@@ -30,30 +30,16 @@ L: create and use fancy Icons in the user interfaces. But do it conform with
 
 Filu/Database
 ===============
-H: add a divident table and adjust the eodBar data on the fly as is done with
-   splits
-H: add "quality" row to any other table, like split and eodbar has
-H: consult an expert to decide if its really better to switch from trigger
-   functions to avoid duplicate entries to insert functions. last have the
-   advantage to return an entry ID and avoid waste of sequence numbers...yes, of
-   cause, its not really a problem but ugly anyway
-M: consider commit 860a392f91
-M: change market_insert function, return an ID/Error and take market_id. Maybe
-   is a 2nd function appropriate, see addMarket()
+H: Handle "quality" field in trigger and/or insert functions.
+H: adjust the eodBar data on the fly from dividends
 M: write new GetSymbols.sql, now is too complicate an delivers not ever what
    expected.
 M: add automatic new added FIs to the users FI group "New FIs". But that need a
    merge of Filu and FiluU.
-M: check if it is possible not only to return an error code but also an
-   errormessage. For functions which are expected to return only a number should
-   this not be possible but maybe for others. Then we can take take that message
-   and have not to write an own in Filu.cpp.
 M: Create the main DB like the user tables => No need to use the console, let it
    do ManagerF.
 L: figure out optimum postgres parameters.
 L: list all markets a specific provider provides (?)
-L: change in the creation *.sqls all function variables from absolute type
-   declaration to <schema>.<table>.<field>%TYPE
 
 
 AgentF
@@ -65,13 +51,15 @@ PerformerF
 ============
 H: add a shortcut to display/hide the toolbar, now you can disable the tb with
    right-click by the mouse, but how you can bring them back?
-M: add spin boxes to set the to be loaded date range
+M: Fix search FI widget to set cursor inside when aktivated
+M: Rename ZoomOutWidget to ZoomWidget
 M: improve drag&drop. when drop an index to the group list of the navi, create
    a group and insert all underlyings (hm, maybe it's the best *not* to insert
    the underlyings but include them on the fly when group is selected)
 M: add an "about" button with copyright and other stuff
 L: add buttons to change the density quickly. Since the new IndiSetPad might
    this no longer needed.
+L: Add spin boxes to set the to be loaded date range
 
 
 ManagerF
