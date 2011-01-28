@@ -1,3 +1,10 @@
+2011-01-29
+============
+Sundries
+----------
+ - Add one more verbose level 'Ample'. Could used in RcFile for (Sql)DebugLevel
+   and VerboseLevel.
+
 2011-01-06
 ============
 All Progs

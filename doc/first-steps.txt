@@ -358,5 +358,5 @@ NOTE: DON'T include some remarks as showing below, it's only to docu here!
                           // 1:extra after an error
                           // 2:print each processed sql
 
-  VerboseLevel=Info       // Possible values are Quiet, Info and Max or 0/1/2.
-                          // The names are not case sensitive.
+  VerboseLevel=Info       // Possible values are Quiet, Info, Ample and Max
+                          // or 0/1/2/3. The names are not case sensitive.

@@ -46,7 +46,8 @@ class Newswire
       eNoVerbose  =  0,
       eEver       =  0,
       eInfo       =  1,
-      eMax        =  2
+      eAmple      =  2,
+      eMax        =  3
     };
 
     enum MsgType
