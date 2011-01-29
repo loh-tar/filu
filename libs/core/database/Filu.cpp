@@ -1278,20 +1278,36 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
   // Read/fill the statement
   QTextStream in(&file);
   StringSet parameters; // Collect the parameter of the SQL
-  while (!in.atEnd())
+  while(!in.atEnd())
   {
     QString line = in.readLine();
 
     // Remove obsolet spaces
-    line = line.trimmed();
+    QString helpLine = line.trimmed();
 
-    if(line.startsWith("*")) continue; // Ignore remarks
-    if(line.isEmpty()) continue;
+    if(helpLine.startsWith("*"))  continue; // Ignore remarks
+    if(helpLine.startsWith("/*"))
+    {
+      // Ignore remarks of form /* comment */
+      if(helpLine.contains("*/")) continue;
+
+      while(!in.atEnd())
+      {
+        QString c = in.read(1);
+        if(!c.startsWith("*")) continue;
+        c = in.read(1);
+        if(c.startsWith("/")) break;
+      }
+      continue;
+    }
+    if(helpLine.isEmpty()) continue;
 
     // Make sure it ends with a whitespace
     line.append("\n");
 
-    if(line.startsWith("--")) line.replace(":", " "); // Oh dear, could make nice trouble
+    // FIXME: Use a RegExp so that also remarks at the end of a line are cleaned
+    //        and the from  /* comment */ is detected too
+    if(helpLine.startsWith("--")) line.replace(":", " "); // Oh dear, could make nice trouble
 
     // Fix the schema and client place holder
     line.replace(":filu", mFiluSchema);
@@ -1309,11 +1325,12 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
     sqlStatement.append(line);
   }
 
-  if(verboseLevel() == eMax)
+  if(verboseLevel() == eAmple)
   {
     QString parms;
     foreach(QString parm, parameters.toList()) parms.append(parm + " ");
     verbose(FUNC, QString("Sql '%1' has parameters: %2").arg(name, parms));
+    verbose(FUNC, sqlStatement);
   }
 
   mSqlParmNames.insert(name, parameters);
