@@ -1112,17 +1112,16 @@ int Filu::updateField(const QString& field, const QVariant& newValue
                     , const QString& schema, const QString& table, int id)
 {
   QString sql;
-  sql = QString("UPDATE %1.%2 SET %3=%4 WHERE %2_id = %5")
+  sql = QString("UPDATE %1.%2  SET %3 = %4  WHERE %2_id = %5")
                .arg(schema, table, field, newValue.toString()).arg(id);
-
 
   sql.replace(":filu", schema);
   sql.replace(":user", mUserSchema);
-  qDebug() << "sql=" << sql;
+  verbose(FUNC, sql);
 
   QSqlQuery query(QSqlDatabase::database(mConnectionName));
-  query.prepare(sql);
-  query.exec();
+  //query.prepare(sql);
+  query.exec(sql);
 }
 
 int Filu::getNextId(const QString& schema, const QString& table)
@@ -1231,9 +1230,9 @@ bool Filu::initQuery(const QString& name)
 {
   clearErrors();
 
-  verbose(FUNC, name/*, eMax*/);
-
   if(mSQLs.contains(name)) return true;
+
+  verbose(FUNC, name/*, eMax*/);
 
   QString sql;
 
@@ -1387,7 +1386,8 @@ int Filu::execute(QSqlQuery* query)
   if(isError)
   {
     //verbose(FUNC, tr("Executed query was: %1").arg(mLastQuery));
-    error(FUNC, tr("Error text: %1").arg(mLastError));
+    error(FUNC, tr("While executing query '%1'.").arg(mSQLs.key(query)));
+    errInfo(FUNC, tr("Error text: %1").arg(mLastError));
     return eError;
   }
 
