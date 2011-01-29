@@ -57,27 +57,33 @@ int BarTuple::findDate(const QDate& date) const
   if(date > mDate[iHigh]) return Tuple::eOverRange;
 
   int i     = iHigh / 2;
+  //int j = 0;
   while(iLow < iHigh)
   {
-    //qDebug() << "BarTuple::rewind() search:" << date <<  ++j << iLow << iHigh << mDate[i] << i;
+    //qDebug() << "BarTuple::rewind() search:" << date <<  ++j << iLow << i << iHigh << mDate[i];
     if(date > mDate[i])
     {
       iLow = i + 1;
-      i    = i + ((iHigh - i) / 2);
+      i    = (iHigh + i) / 2;
     }
     else if(date < mDate[i])
     {
       iHigh = i - 1;
-      i     = i - ((iLow + i) / 2);
+      i     = (iLow + i) / 2;
     }
     else if(date == mDate[i])
     {
-      //qDebug() << "BarTuple::rewind() found:" << date <<  ++j  <<  mDate[i] << i;
+      //qDebug() << "BarTuple::rewind() found:" << date <<  ++j << iLow << i << iHigh << mDate[i];
       break;
     }
   }
-  //qDebug() << "BarTuple::rewind() last low/high/i" << iLow << iHigh << i;
+  //qDebug() << "BarTuple::rewind() last low/high/i" << iLow << i << iHigh;
 
-  if(iLow == iHigh) i = iLow; // No other possibility
+  if(iHigh == iLow)
+  {
+    //qDebug() << "BarTuple::rewind() found iHigh==iLow:" << date <<  ++j << iLow << i << iHigh << mDate[iHigh];
+    i = iHigh;
+  }
+
   return i;
 }
