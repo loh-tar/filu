@@ -122,6 +122,8 @@ class Filu : public Newswire
                                   , int fiId, int marketId, int quality);
 
     // Add Functions
+    int          addFiType(const QString& type, const int id = 0);
+
     int          addSymbolType(const QString& type
                              , const int& seq
                              , const bool isProvider

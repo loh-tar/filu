@@ -61,6 +61,7 @@ class Importer : public FClass
     bool          setSymbol(const QString& symbol);
     bool          setMarket(const QString& market);
 
+    void          addFiType();
     void          addSymbolType();
     void          addMarket();
     void          addFi();

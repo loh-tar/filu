@@ -1,9 +1,11 @@
-2011-01-29
+2011-03-03
 ============
 Sundries
 ----------
  - Add one more verbose level 'Ample'. Could used in RcFile for (Sql)DebugLevel
    and VerboseLevel.
+ - Add/Fix Importer to import FiTypes.
+
 
 2011-01-06
 ============

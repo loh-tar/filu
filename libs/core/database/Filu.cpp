@@ -611,6 +611,21 @@ int Filu::searchCaption(const QString& table, const QString& caption)
   return (eError + retVal);
 }
 
+int Filu::addFiType(const QString& type, const int id/* = 0*/)
+{
+  // Add or update a FiType type
+  if(!initQuery("AddFiType")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("AddFiType");
+
+  query->bindValue(":fiType", type);
+  query->bindValue(":fiTypeId", id);
+
+  if(execute(query) <= eError) return eExecError;
+
+  return result(FUNC, query);
+}
+
 int Filu::addSymbolType(const QString& type
                        , const int& seq
                        , const bool isProvider

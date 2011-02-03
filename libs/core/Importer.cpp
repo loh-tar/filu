@@ -221,6 +221,7 @@ bool Importer::import(const QString& line)
   if(mToDo.contains("setSymbol"))     setSymbol();
   if(mToDo.contains("setFi"))         setFi();
 
+  if(mToDo.contains("addFiType"))     addFiType();
   if(mToDo.contains("addSymbolType")) addSymbolType();
   if(mToDo.contains("addMarket"))     addMarket();
   if(mToDo.contains("addFi"))         addFi();
@@ -515,6 +516,12 @@ void Importer::prepare()
     mToDo.insert("setFi");
   }
 
+  if(mData.contains("FiType"))
+  {
+    text << "FiTypes, ";
+    mToDo.insert("addFiType");
+  }
+
   if(mData.contains("SymbolType"))
   {
     text << "SymbolTypes, ";
@@ -684,6 +691,11 @@ bool Importer::setMarket(const QString& market)
 
   mMarketId = Filu::eNoData;
   return false;
+}
+
+void Importer::addFiType()
+{
+  mFilu->addFiType(mData.value("FiType"));
 }
 
 void Importer::addSymbolType()
