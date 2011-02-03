@@ -56,7 +56,7 @@ int Filu::setSymbolCaption(const QString& caption)
 
   query->bindValue(":symbol", caption);
 
-  if(execute(query) <= eError)  return eExecError;
+  if(execute(query) <= eError) return eExecError;
 
   int retVal = result(FUNC, query);
 
@@ -1239,11 +1239,11 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
     sqlStatement.append(line);
   }
 
-  if(verboseLevel() == eAmple)
+  if(verboseLevel() >= eAmple)
   {
     QString parms;
     foreach(QString parm, parameters.toList()) parms.append(parm + " ");
-    verbose(FUNC, QString("Sql '%1' has parameters: %2").arg(name, parms));
+    verbose(FUNC, QString("SQL '%1' has parameters: %2").arg(name, parms));
     verbose(FUNC, sqlStatement);
   }
 
@@ -1304,6 +1304,10 @@ int Filu::execute(QSqlQuery* query)
     error(FUNC, tr("While executing query '%1'.").arg(mSQLs.key(query)));
     errInfo(FUNC, tr("Error text: %1").arg(mLastError));
     return eError;
+  }
+  else if(verboseLevel() >= eAmple)
+  {
+    verbose(FUNC, tr("No error after execute query '%1'.").arg(mSQLs.key(query)));
   }
 
   if(query->isSelect())

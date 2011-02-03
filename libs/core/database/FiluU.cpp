@@ -53,9 +53,8 @@ QSqlQuery* FiluU::searchFi(const QString& name, const QString& type)
 
   query->bindValue(":name", name);
   query->bindValue(":type", type);
-  int result = execute(query);
 
-  if(result <= eError) return 0;
+  if(execute(query) < eData) return 0;
 
   return query;
 }
@@ -67,11 +66,10 @@ QSqlQuery* FiluU::getGroups(int motherId /*= -1*/)
   QSqlQuery* query = mSQLs.value("GetGroups");
 
   query->bindValue(":motherId", motherId);
-  int result = execute(query);
 
-  if(result >= eData) return query;
+  if(execute(query) < eData) return 0;
 
-  return 0;
+  return query;
 }
 
 QSqlQuery* FiluU::getGMembers(int groupId)
@@ -83,9 +81,8 @@ QSqlQuery* FiluU::getGMembers(int groupId)
   QSqlQuery* query = mSQLs.value("GetGMembers");
 
   query->bindValue(":groupId", groupId);
-  int result = execute(query);
 
-  if(result <= eError) return 0;
+  if(execute(query) < eData) return 0;
 
   return query;
 }
@@ -162,8 +159,8 @@ COTuple* FiluU::getCOs(int fiId, int /*marketId*/
   query->bindValue(":fiId", fiId);
   query->bindValue(":fromDate", fromDate);
   query->bindValue(":toDate", toDate);
-  int result = execute(query);
-  if(result < Filu::eData) return 0;
+
+  if(execute(query) < Filu::eData) return 0;
 
   COTuple* co = new COTuple(query->size());
   while(co->next())
@@ -204,8 +201,7 @@ bool FiluU::putCOs(COTuple& co)
     query->bindValue(":date", co.anchorDate());
     query->bindValue(":type", co.type());
     query->bindValue(":parameters", co.attributes());
-    int result = execute(query);
-    if(result <= eError)
+    if(execute(query) <= eError)
     {
       qDebug() << "FiluU::putCO: fail";
       QSqlDatabase::database(mConnectionName).rollback();
@@ -245,9 +241,7 @@ QSqlQuery* FiluU::getBacktest()
 
   //query->bindValue(":", );
 
-  int result = execute(query);
-
-  if(result <= eData) return 0;
+  if(execute(query) < eData) return 0;
 
   return query;
 }
@@ -270,7 +264,7 @@ void  FiluU::putBTLog(int backtestId, int fiId, int marketId, const QDate& date
   /*int result = */execute(query);
 }
 
-QSqlQuery * FiluU::getBTLog(int backtestId, int fiId, int marketId)
+QSqlQuery* FiluU::getBTLog(int backtestId, int fiId, int marketId)
 {
   if(!initQuery("GetBTLog")) return 0;
 
@@ -280,9 +274,7 @@ QSqlQuery * FiluU::getBTLog(int backtestId, int fiId, int marketId)
   query->bindValue(":fiId", fiId);
   query->bindValue(":marketId", marketId);
 
-  int result = execute(query);
-
-  if(result < eData) return 0;
+  if(execute(query) < eData) return 0;
 
   return query;
 }
@@ -307,9 +299,7 @@ int  FiluU::addTradingStrategy( const QString sId,
   query->bindValue(":rule", rule);
   query->bindValue(":indicator", indicator);
 
-  int result = execute(query);
-
-  if(result < eSuccess) return 0;
+  if(execute(query) < eSuccess) return 0;
 
   return tsId;
 }
@@ -332,9 +322,7 @@ bool FiluU::addTradingResult( int tsId, int fiId, int marketId,
   query->bindValue(":tpp", tpp);
   query->bindValue(":score", score);
 
-  int result = execute(query);
-
-  if(result < eSuccess) return false;
+  if(execute(query) < eSuccess) return false;
 
   return true;
 }
@@ -346,9 +334,8 @@ QSqlQuery* FiluU::getBTDetails(const QString& strategy)
   QSqlQuery* query = mSQLs.value("GetBTDetails");
 
   query->bindValue(":strategy", strategy);
-  int result = execute(query);
 
-  if(result <= eError) return 0;
+  if(execute(query) <= eError) return 0;
 
   return query;
 }
@@ -430,9 +417,7 @@ double FiluU::getDepotCash(int depotId, const QDate& date/* = QDate(3000, 01, 01
   query->bindValue(":depotId",depotId );
   query->bindValue(":date", date.toString(Qt::ISODate));
 
-  int result = execute(query);
-
-  if(result <= eError) return eExecError;
+  if(execute(query) <= eError) return eExecError;
 
   query->next();
   return query->value(0).toInt();
@@ -448,9 +433,7 @@ QSqlQuery* FiluU::getOrders(int depotId, int status/* = 5*/, int fiId/* = -1*/)
   query->bindValue(":status", status);
   query->bindValue(":fiId", fiId);
 
-  int result = execute(query);
-
-  if(result <= eError) return 0;
+  if(execute(query) <= eError) return 0;
 
   return query;
 }
