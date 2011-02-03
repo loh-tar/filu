@@ -157,7 +157,7 @@ class Filu : public Newswire
                              , const QString& symbol
                              , const double weight);
 
-    int           addSplit(const QString& symbol
+    int          addSplit(const QString& symbol
                         , const QString& date
                         , const double ratio
                         , const QString& comment
@@ -181,11 +181,14 @@ class Filu : public Newswire
     void        deleteRecord(const QString& schema, const QString& table, int id);
     int         updateField(const QString& field, const QVariant& newValue, const QString& schema, const QString& table, int id);
 
+    QString     dbFuncErrText(int errorCode);
+
   protected:
     int         getNextId(const QString& schema, const QString& table);
     bool        initQuery(const QString& name);
     bool        readSqlStatement(const QString& name, QString& sqlStatement);
     int         execute(QSqlQuery* query);
+    int         result(const QString& func, QSqlQuery* query);
 
     RcFile*     mRcFile;
     QString     mSqlPath;

@@ -1125,6 +1125,21 @@ int Filu::updateField(const QString& field, const QVariant& newValue
   query.exec(sql);
 }
 
+QString Filu::dbFuncErrText(int errorCode)
+{
+  if(!initQuery("GetDbError")) return "";
+
+  QSqlQuery* query = mSQLs.value("GetDbError");
+
+  query->bindValue(":errCode", -errorCode);
+
+  if(execute(query) <= eError) return "";
+  if(query->size() < 1) return "FATAL: Filu::dbFuncErrText: ErrorCode not found."; // Yes, no tr() and no error(...)
+
+  query->next();
+  return query->value(0).toString();
+}
+
 int Filu::getNextId(const QString& schema, const QString& table)
 {
   QString sql;
@@ -1421,6 +1436,23 @@ int Filu::execute(QSqlQuery* query)
   }
 
   return eSuccess;
+}
+
+int Filu::result(const QString& func, QSqlQuery* query)
+{
+  if(query->size() < 1)
+  {
+    errInfo(func, "No data.");
+    return eNoData;
+  }
+
+  query->next();
+  int retVal = query->value(0).toInt();
+  if(retVal >= eData) return retVal;
+
+  error(func, dbFuncErrText(retVal));
+
+  return retVal;
 }
 
 void Filu::readSettings()
