@@ -134,12 +134,9 @@ int FiluU::addGroup(const QString& path)
 
   query->bindValue(":groupPath", path);
 
-  int result = execute(query);
+  if(execute(query) <= eError) return eExecError;
 
-  if(result <= eError) return eExecError;
-
-  query->next();
-  return query->value(0).toInt();
+  return result(FUNC, query);
 }
 
 void FiluU::putGroup(int groupId, const QString& name, int motherId)
@@ -375,12 +372,9 @@ int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiI
   query->bindValue(":status", status);
   query->bindValue(":orderId", orderId);
 
-  int result = execute(query);
+  if(execute(query) <= eError) return eExecError;
 
-  if(result <= eError) return eExecError;
-
-  query->next();
-  return query->value(0).toInt();
+  return result(FUNC, query);
 }
 
 int FiluU::addDepotPos(int depotId, const QDate& date
@@ -400,12 +394,9 @@ int FiluU::addDepotPos(int depotId, const QDate& date
   query->bindValue(":marketId", marketId);
   query->bindValue(":depotPosId", depotPosId);
 
-  int result = execute(query);
+  if(execute(query) <= eError) return eExecError;
 
-  if(result <= eError) return eExecError;
-
-  query->next();
-  return query->value(0).toInt();
+  return result(FUNC, query);
 }
 
 int FiluU::addAccountPos(int depotId, const QDate& date
@@ -424,12 +415,9 @@ int FiluU::addAccountPos(int depotId, const QDate& date
   query->bindValue(":value", value);
   query->bindValue(":accountId", accountPosId);
 
-  int result = execute(query);
+  if(execute(query) <= eError) return eExecError;
 
-  if(result <= eError) return eExecError;
-
-  query->next();
-  return query->value(0).toInt();
+  return result(FUNC, query);
 }
 
 double FiluU::getDepotCash(int depotId, const QDate& date/* = QDate(3000, 01, 01)*/)
