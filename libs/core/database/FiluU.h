@@ -74,6 +74,18 @@ class FiluU : public Filu
 
     QSqlQuery*  getBTDetails(const QString& strategy);
 
+    int         addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiId, int pieces
+                       , double limit, bool buy, int marketId, int status, int orderId = 0);
+
+    int         addDepotPos(int depotId, const QDate& date
+                          , int fiId, int pieces, double price, int marketId, int depotPosId = 0);
+
+    int         addAccountPos(int depotId, const QDate& date, int type
+                            , const QString& text, double value, double accountPosId = 0);
+
+    double      getDepotCash(int depotId, const QDate& date = QDate(3000, 01, 01));
+    QSqlQuery*  getOrders(int depotId, int status = 5, int fiId = -1); // 5=aktive, -1=all Fi
+
   private:
     void        createTables();
 };

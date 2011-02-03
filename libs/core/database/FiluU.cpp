@@ -356,18 +356,138 @@ QSqlQuery* FiluU::getBTDetails(const QString& strategy)
   return query;
 }
 
+int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiId, int pieces
+                       , double limit, bool buy, int marketId, int status, int orderId/* = 0*/)
+{
+  // Returns Id or error
+  if(!initQuery("AddDepotOrder")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("AddDepotOrder");
+
+  query->bindValue(":depotId", depotId);
+  query->bindValue(":oDate", oDate);
+  query->bindValue(":vDate", vDate);
+  query->bindValue(":fiId", fiId);
+  query->bindValue(":pieces", pieces);
+  query->bindValue(":limit", limit);
+  query->bindValue(":buy", buy);
+  query->bindValue(":marketId", marketId);
+  query->bindValue(":status", status);
+  query->bindValue(":orderId", orderId);
+
+  int result = execute(query);
+
+  if(result <= eError) return eExecError;
+
+  query->next();
+  return query->value(0).toInt();
+}
+
+int FiluU::addDepotPos(int depotId, const QDate& date
+                     , int fiId, int pieces, double price
+                     , int marketId, int depotPosId/* = 0*/)
+{
+  // Returns Id or error
+  if(!initQuery("AddDepotPos")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("AddDepotPos");
+
+  query->bindValue(":depotId", depotId);
+  query->bindValue(":date", date.toString(Qt::ISODate));
+  query->bindValue(":fiId", fiId);
+  query->bindValue(":pieces", pieces);
+  query->bindValue(":price", price);
+  query->bindValue(":marketId", marketId);
+  query->bindValue(":depotPosId", depotPosId);
+
+  int result = execute(query);
+
+  if(result <= eError) return eExecError;
+
+  query->next();
+  return query->value(0).toInt();
+}
+
+int FiluU::addAccountPos(int depotId, const QDate& date
+                       , int type, const QString& text
+                       , double value, double accountPosId/* = 0*/)
+{
+  // Returns Id or error
+  if(!initQuery("AddAccountPos")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("AddAccountPos");
+
+  query->bindValue(":depotId", depotId);
+  query->bindValue(":date", date.toString(Qt::ISODate));
+  query->bindValue(":type", type);
+  query->bindValue(":text", text);
+  query->bindValue(":value", value);
+  query->bindValue(":accountId", accountPosId);
+
+  int result = execute(query);
+
+  if(result <= eError) return eExecError;
+
+  query->next();
+  return query->value(0).toInt();
+}
+
+double FiluU::getDepotCash(int depotId, const QDate& date/* = QDate(3000, 01, 01)*/)
+{
+  // Returns cash
+  if(!initQuery("GetDepotCash")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("GetDepotCash");
+
+  query->bindValue(":depotId",depotId );
+  query->bindValue(":date", date.toString(Qt::ISODate));
+
+  int result = execute(query);
+
+  if(result <= eError) return eExecError;
+
+  query->next();
+  return query->value(0).toInt();
+}
+
+QSqlQuery* FiluU::getOrders(int depotId, int status/* = 5*/, int fiId/* = -1*/)
+{
+  if(!initQuery("GetDepotOrders")) return 0;
+
+  QSqlQuery* query = mSQLs.value("GetDepotOrders");
+
+  query->bindValue(":depotId", depotId);
+  query->bindValue(":status", status);
+  query->bindValue(":fiId", fiId);
+
+  int result = execute(query);
+
+  if(result <= eError) return 0;
+
+  return query;
+}
+
 void FiluU::createTables()
 {
-  QString sql;
-  readSqlStatement("CreateUserTables", sql);
-  QSqlQuery* query = new QSqlQuery(QSqlDatabase::database(mConnectionName));
-
-  bool ok = query->exec(sql);
-  if(!ok)
+  if(!initQuery("CreateUserTables")) return;
+  QSqlQuery* query = mSQLs.value("CreateUserTables");
+  int result = execute(query);
+  if(result <= eError)
   {
-    qDebug() << "FiluU::createTables: error while exec: " << sql;
-    QSqlError err = query->lastError();
-    qDebug() << ":-(" << err.databaseText();
+    error(FUNC, tr("Can't create user tables."));
+    return;
   }
   delete query;
+  mSQLs.remove("CreateUserTables");
+
+  if(!initQuery("CreateUserFunctions")) return;
+  query  = mSQLs.value("CreateUserFunctions");
+  result = execute(query);
+  if(result <= eError)
+  {
+    error(FUNC, tr("Can't create user functions."));
+    return;
+  }
+  delete query;
+  mSQLs.remove("CreateUserFunctions");
 }

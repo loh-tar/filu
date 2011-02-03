@@ -442,172 +442,69 @@ ALTER TABLE :user.tsr OWNER TO :filu;
 CREATE TABLE :user.depot(
   depot_id   SERIAL4       NOT NULL, --no bigserial, 4byte are enough
   caption    VARCHAR(50)   NOT NULL,
-  cash       FLOAT         NOT NULL,
-PRIMARY KEY(depot_id)
+  trader     VARCHAR(50)   NOT NULL,
+  owner      VARCHAR(50)   NOT NULL,
+  currency   INT8          NOT NULL,
+  broker_id  INT4          NOT NULL,
+PRIMARY KEY(depot_id),
+FOREIGN KEY(currency) REFERENCES :filu.fi(fi_id) ON DELETE NO ACTION,
+FOREIGN KEY(broker_id) REFERENCES :filu.broker(broker_id) ON DELETE NO ACTION
 );
---
--- *** create the depot functions and trigger ***
---
--- Function: :user.depot_duplicate()
--- DROP FUNCTION :user.depot_duplicate();
-CREATE OR REPLACE FUNCTION :user.depot_duplicate()
-  RETURNS "trigger" AS
-$BODY$
-
-BEGIN
-
-  IF new.depot_id = 0
-  THEN
-    new.depot_id := nextval(':user.depot_depot_id_seq');
-    RETURN new;
-  END IF;
-
-  UPDATE :user.depot
-    SET  caption     = new.caption,
-         cash        = new.cash
-    WHERE depot_id   = new.depot_id;
-
-  RETURN NULL;
-
-  END;
-
-$BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
-ALTER FUNCTION :user.depot_duplicate() OWNER TO :filu;
-
--- Trigger: :user_depot_duplicate on :user.depot
--- DROP TRIGGER :user_depot_duplicate ON :user.depot;
-CREATE TRIGGER :user_depot_duplicate
-  BEFORE INSERT
-  ON :user.depot
-  FOR EACH ROW
-  EXECUTE PROCEDURE :user.depot_duplicate();
 
 --
 --
 -- *** create the depot positions table ***
 --
---DROP TABLE :user.dposition;
-CREATE TABLE :user.dposition(
-  dposition_id    SERIAL8   NOT NULL,
+--DROP TABLE :user.depotpos;
+CREATE TABLE :user.depotpos(
+  depotpos_id     SERIAL8   NOT NULL,
   depot_id        INT4      NOT NULL,
   pdate           DATE      NOT NULL,
   fi_id           INT8      NOT NULL,
   pieces          INT4      NOT NULL,
   price           FLOAT     NOT NULL,
-  ptype           BOOL      NOT NULL, -- position type, 0=short, 1=long
-PRIMARY KEY(dposition_id),
+  market_id       INT8      NOT NULL,  -- Looks stupid but 'currency' would make things pretty complicate.
+                                       -- How should you decide where is the right place to sell?
+PRIMARY KEY(depotpos_id),
 FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE CASCADE,
-FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE NO ACTION
+FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE NO ACTION,
+FOREIGN KEY(market_id) REFERENCES :filu.market(market_id) ON DELETE NO ACTION
 );
---
---
--- *** create the depot position functions and trigger ***
---
--- Function: :user.dposition_duplicate()
--- DROP FUNCTION :user.dposition_duplicate();
-CREATE OR REPLACE FUNCTION :user.dposition_duplicate()
-  RETURNS "trigger" AS
-$BODY$
-
-BEGIN
-
-  IF new.dposition_id = 0
-  THEN
-    new.dposition_id := nextval(':user.dposition_dposition_id_seq');
-    RETURN new;
-  END IF;
-
-  UPDATE :user.dposition
-    SET  depot_id     = new.depot_id,
-         pdate        = new.pdate,
-         vdate        = new.vdate,
-         fi_id        = new.fi_id,
-         pieces       = new.pieces,
-         price        = new.price,
-         ptype        = new.ptype
-    WHERE dposition_id   = new.dposition_id;
-
-  RETURN NULL;
-
-  END;
-
-$BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
-ALTER FUNCTION :user.dposition_duplicate() OWNER TO :filu;
-
--- Trigger: :user_dposition_duplicate on :user.dposition
--- DROP TRIGGER :user_dposition_duplicate ON :user.dposition;
-CREATE TRIGGER :user_dposition_duplicate
-  BEFORE INSERT
-  ON :user.dposition
-  FOR EACH ROW
-  EXECUTE PROCEDURE :user.dposition_duplicate();
 
 --
 --
 -- *** create the depot orders table ***
 --
---DROP TABLE :user.dorder;
-CREATE TABLE :user.dorder(
-  dorder_id       SERIAL8   NOT NULL,
+--DROP TABLE :user.order;
+CREATE TABLE :user.order(
+  order_id        SERIAL8   NOT NULL,
   depot_id        INT4      NOT NULL,
   odate           DATE      NOT NULL, -- order date
   vdate           DATE      NOT NULL, -- valid date
   fi_id           INT8      NOT NULL,
-  opieces         INT4      NOT NULL, -- ordered pieces
-  epieces         INT4      NOT NULL, -- executed pieces
+  pieces          INT4      NOT NULL, -- ordered pieces
   olimit          FLOAT     NOT NULL, -- order limit
-  otype           BOOL      NOT NULL, -- order type, 0=short, 1=long
-  --is_open         BOOL      NOT NULL,
-  --is_executed     BOOL      NOT NULL,
-  canceled        BOOL      NOT NULL,
-PRIMARY KEY(dorder_id),
+  buy             BOOL      NOT NULL, -- buy=true, sell=false
+  market_id       INT8      NOT NULL,
+  status          INT2      NOT NULL, -- see FiluU.h
+PRIMARY KEY(order_id),
 FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE CASCADE,
-FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE NO ACTION
+FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE NO ACTION,
+FOREIGN KEY(market_id) REFERENCES :filu.market(market_id) ON DELETE NO ACTION
 );
+
 --
 --
--- *** create the depot orders functions and trigger ***
+-- *** create the account table ***
 --
--- Function: :user.dorder_duplicate()
--- DROP FUNCTION :user.dorder_duplicate();
-CREATE OR REPLACE FUNCTION :user.dorder_duplicate()
-  RETURNS "trigger" AS
-$BODY$
-
-BEGIN
-
-  IF new.dorder_id = 0
-  THEN
-    new.dorder_id := nextval(':user.dorder_dorder_id_seq');
-    RETURN new;
-  END IF;
-
-  UPDATE :user.dorder
-    SET  depot_id     = new.depot_id,
-         odate        = new.odate,
-         vdate        = new.vdate,
-         fi_id        = new.fi_id,
-         opieces      = new.opieces,
-         epieces      = new.epieces,
-         olimit       = new.olimit,
-         ptype        = new.ptype,
-         canceled     = new.canceled
-    WHERE dorder_id   = new.dorder_id;
-
-  RETURN NULL;
-
-  END;
-
-$BODY$
-  LANGUAGE 'plpgsql' VOLATILE;
-ALTER FUNCTION :user.dorder_duplicate() OWNER TO :filu;
-
--- Trigger: :user_dorder_duplicate on :user.dorder
--- DROP TRIGGER :user_dorder_duplicate ON :user.dorder;
-CREATE TRIGGER :user_dorder_duplicate
-  BEFORE INSERT
-  ON :user.dorder
-  FOR EACH ROW
-  EXECUTE PROCEDURE :user.dorder_duplicate();
+--DROP TABLE :user.account;
+CREATE TABLE :user.account(
+  account_id      SERIAL8      NOT NULL,
+  depot_id        INT4         NOT NULL,
+  bdate           DATE         NOT NULL, -- booking date
+  btype           INT2         NOT NULL, -- see FiluU.h
+  btext           VARCHAR(100) NOT NULL, -- valid date
+  bvalue          FLOAT        NOT NULL, -- booking value/amount posted
+PRIMARY KEY(account_id),
+FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE CASCADE
+);
