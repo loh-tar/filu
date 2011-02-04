@@ -88,7 +88,7 @@ FiGroupWidget::FiGroupWidget(FClass* parent)
 
   setLayout(layout);
 
-  getGroups(0);
+  getGroups(1);
 }
 
 FiGroupWidget::~FiGroupWidget()
