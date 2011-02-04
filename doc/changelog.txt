@@ -9,6 +9,7 @@ Sundries
  - New (or even initial) concept of generic FIs.
  - Huge database makeover. To update you have to ex-/import your data.
  - Change eodbars open/h/l/c from float8 to float4.
+ - AgentF, change command 'printSettings' to 'info'.
 
 
 2011-01-06

@@ -532,7 +532,7 @@ void AgentF::execCmd(const QStringList& parm)
   else if(cmd == "scan")     scan(parm);
   else if(cmd == "addSplit") addSplit(parm);
   else if(cmd == "daemon")   beEvil(parm);
-  else if(cmd == "printSettings")
+  else if(cmd == "info")
   {
     if(mRcFile->getIT("DebugLevel")) return; // Already printed, don't print twice
     else printSettings();
@@ -571,7 +571,7 @@ void AgentF::printUsage()
   print("    agentf addSplit AAPL 2005-02-28 1:2");
   print("");
   print("  agentf daemon");
-  print("  agentf printSettings");
+  print("  agentf info");
   print("");
 }
 
