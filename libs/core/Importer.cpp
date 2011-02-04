@@ -206,6 +206,12 @@ bool Importer::import(const QString& line)
 
   // No, its not, therefore it must be a data line.
   // We place all in a QHash<QString, QString>
+  if(mHeader.size() > row.size())
+  {
+    mConsole << "To less data in line: '" << line << "'";
+    return true;
+  }
+
   for(int i = 0; i < mHeader.size(); ++i)
   {
     mData.insert(mHeader.at(i), row.at(i));

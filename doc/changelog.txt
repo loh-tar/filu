@@ -1,10 +1,14 @@
-2011-03-03
+2011-02-04
 ============
 Sundries
 ----------
  - Add one more verbose level 'Ample'. Could used in RcFile for (Sql)DebugLevel
    and VerboseLevel.
  - Add/Fix Importer to import FiTypes.
+ - Fix Importer, don't ASSERT if less data in a line as [Header] promised.
+ - New (or even initial) concept of generic FIs.
+ - Huge database makeover. To update you have to ex-/import your data.
+ - Change eodbars open/h/l/c from float8 to float4.
 
 
 2011-01-06
