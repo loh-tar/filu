@@ -2,12 +2,12 @@ This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
 
 
 If you are *not* intended to write new indicators powered by Filu than can you
-skip this file. But if you have an idea for a new Filu Power Indicator and you
-want implement that, then find you here the needed information how you can do
-this.
+skip this chapter. But if you have an idea for a new Filu Power Indicator and
+you want implement that, then find you here the needed information how you can
+do this.
 
 Filu Power Indicators are Postgres SQL functions located in database/functions
-and begin with "fpi_". Once you have create such a file you could run in your
+and begin with 'fpi_'. Once you have create such a file you could run in your
 database directory:
 
   ./configure -UDST
@@ -40,13 +40,15 @@ doc/indicator-file-format.txt.
 Variable names used intern by the function should begin with m followed by an
 uppercase letter and should not contain underscores.
 
-Use $$ quoting for larger strings and not single quotes '. Use $BODY$ to quote
-the entire function.
+Use $BODY$ to quote the entire function.
+
+Prefix the function name, each table reference and each non standard data type
+with <schema>. That will later replaced by the ./configure script.
 
 
 Function Name
 ===============
-Must begin with "fpi_" followed by the name which we have later to use as
+Must begin with 'fpi_' followed by the name which we have later to use as
 parameter in our normal indicator function FILU(...).
 
 
@@ -54,7 +56,7 @@ Function Input Parameter
 ==========================
 Each function should always take fiId, marketId, fdate and tdate. But this is
 not a must. But if you need one of these parameter it *must* have exact this
-name. These group of four parameters is called "FiRef". The name does not change
+name. These group of four parameters is called 'FiRef'. The name does not change
 anyway if you use all or only one parameter, its always FiRef. The both IDs are
 BIGINTs and the both dates...DATEs as type.
 If you need more parameter, add them in any order and name as you like.
@@ -66,7 +68,7 @@ Each function *must* return at least three columns in defined order:
 date, time and data. Date in DATE format, time in TIME format and data as FLOAT.
 The name of the columns are not used. Everything is accessed by its position.
 The time column is currently not used but maybe in the future. So fill these
-with "23:59:59" if you don't use it.
+with '23:59:59' if you don't use it.
 Any data you want to return has to be FLOAT, anyway if you calculate int or
 bool results. Return as much data columns as you like after the above noted data
 column. In database/misc/data_types.sql find you some handy return types you can
@@ -76,7 +78,7 @@ use.
 Function Error Codes
 ======================
 When you detect a problem while processing, return *one* row of data with the
-date "1000-01-01" as marker and the error number in the first data column. The
+date '1000-01-01' as marker and the error number in the first data column. The
 error code must be a integer like value greater than null.
 
 
@@ -96,12 +98,12 @@ Needed Attributes
 ===================
 When in the following the attribute is followed by a digit mean this that these
 attribute could appear as many times as needed with a fitting number. But there
-must not gabs in the numbering and the first number has to be "1". Anyway it is
+must not gabs in the numbering and the first number has to be '1'. Anyway it is
 not a must that attributes which appears more than one time has to be numbered.
 
 Input1:<parmName>[, <description>]
   <parmName> must fit with the name of the function input variable. The only
-  exception is the name "FiRef". In that case is the <description> ignored. In
+  exception is the name 'FiRef'. In that case is the <description> ignored. In
   any other case is the <description> not a must but desirable.
   NOTE: The order of listed variables doesn't have to fit with the order used
   in the real function implementation, but define the order how we have to use
