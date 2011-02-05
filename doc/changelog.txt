@@ -1,3 +1,11 @@
+2011-02-05
+============
+Sundries
+----------
+ - Update doc/first-steps.txt
+ - Change log file from agentf.log to filu.log
+
+
 2011-02-04
 ============
 Sundries

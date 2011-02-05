@@ -18,15 +18,18 @@ have to import all that stuff *YOU* need. Markets, currencies, stocks and so on.
 A long time ago in a galaxy far, far away... there was all imagine default data
 pre installed. But I don't like that bloating and removed all.
 
-NOTE: About market names see hacking-provider-scripts.txt
-
 The goal is that you could use ManagerF to import all stuff easily live from
 somewhere of the Internet. But that need more work, especially at the provider
 scripts.
 
 Till ManagerF works as desired, we have to import data with 'agentf imp <file>'
 command. What we need is a *.imp file with the data we are interested in. Take a
-look into Master-of-imp-files.ods and you see a way how to create that.
+look into Master-of-imp-files.ods and you see a way how to create that. Adding
+new FIs with ManagerF works well but you have to install the markets you are
+interested in.
+
+NOTE: About market names see hacking-provider-scripts.txt
+
 Furthermore read import-file-format.txt to became an overview of the
 possibilities.
 
@@ -63,7 +66,7 @@ select anything to force a download with a provider script was the result of a
 time-consuming consideration between me and Christian.
 
 A symbol has a type, or owner. Well known types are ISIN or Reuters which is
-often seen in TV broadcastings or old-school newspaper tables. When a symbol
+often seen in TV broad castings or old-school newspaper tables. When a symbol
 here at Filu is used to download data by a script it is called 'provider
 symbol'. So, when you read somewhere here 'Provider' in context with 'Symbol' it
 does mean 'symbol type'. There is no coercion that this symbol is really used to
@@ -136,14 +139,15 @@ indi <name>[ <name>...]
 
 auto
   Selects all indicators with a ScanFreq Key and take care of its value, so
-  avoids unwanted scans. When you also use '--indi' wi
+  avoids unwanted scans. When you also use '--indi' will these indicator also
+  used.
 
 force
   Forces '--auto' to scan anyway if needed or not.
 
 timeFrame <name>|<number>
   The time frame to be scanned. Overwrite the ScanFreq Key of the indicator when
-  '--auto' is used but still respekt if there is a need to be scanned. Use also
+  '--auto' is used but still respect if there is a need to be scanned. Use also
   '--force' to ignore that too.
 
 mark
@@ -151,7 +155,7 @@ mark
 
 verbose <levelName>|number
   Set the verbosity, values are the same as for global 'VerboseLevel', see
-  readme.txt, 2- Customizing.
+  Appendix A - Customizing.
 
 NOTE: Each time the bars of an FI are be updated a scan will automatic performed
       with the '--auto' switch. So you normally not have to scan directly except
@@ -228,7 +232,7 @@ Here find you some messages which may produce the other pages. Currently write
 only 'Add Fi' some messages, and not the very best.
 
 On the second tab 'LogFile' could you view the messages written by AgentF. In
-the future may more messages loggend there. RightClick to clear the file,
+the future may more messages logged there. RightClick to clear the file,
 
 
 PerformerF
@@ -336,27 +340,68 @@ Appendix A - Customizing
 ==========================
 If you need different settings as the defaults (listed below), you can modify
 some by create a system wide config file /etc/xdg/Filu.conf or an user config
-file ~/.config/Filu.conf with contents like these.
+file ~/.config/Filu.conf with contents like these in the [General] section. The
+other sections are not as interesting to change because they are updated by the
+progs at run time.
 
-NOTE: DON'T include some remarks as showing below, it's only to docu here!
+FiluHome=~/Filu
+  The location where Filu stores your personal data and settings, but none of the
+  DB data. It's usual to store such data in ~/.foo but I don't like that hidden
+  files/directories with interesting data.
 
-  [General]
-  SqlPath=/usr/local/lib/Filu/sqls/
-  HostName=localhost
-  HostPort=5432
-  DatabaseName=filu
-  FiluSchema=filu
-  UserName=filu
-  Password=filu           // Yes, of course pw in clear text is not as save.
+IndicatorPath=FiluHome/Indicators/
+  Where your self written, or shipped by Filu, indicators are located. These
+  indicators which are used to paint, scan or trade, but no FiluPowerIndicators.
 
-  CommitBlockSize=500     // Sadly not supported by the Qt4 Postgres driver
-                          // because of the bug.
+IndiSetsPath=FiluHome/IndicatorSets/
+  A indicator set is a combination of indicators shown at once by PerformerF.
 
-  DaysToFetchIfNoData=365 // Fetch one year from the inet.
+TradingRulePath=FiluHome/TradingRules/
+  Where your trading rules are located.
 
-  SqlDebugLevel=1         // 0:no extra debug info
-                          // 1:extra after an error
-                          // 2:print each processed sql
+IndiFilterSetPath=FiluHome/IndicatorFilterSettings/
+  A filter set stores which data are not shown in the indicator data view, at the
+  right of an indicator chart window.
 
-  VerboseLevel=Info       // Possible values are Quiet, Info, Ample and Max
-                          // or 0/1/2/3. The names are not case sensitive.
+InstallPath=/usr/local/lib/Filu/
+  Changing these affect only where Filu searches for some data at first time
+  start up.
+
+LogFile=FiluHome/filu.log
+  Where error/info messages are logged.
+
+ProviderPath=InstallPath/provider/
+  Where the provider scripts are located.
+
+SqlPath=/usr/local/lib/Filu/sqls/
+  Where SQLs are stored to access the DB.
+
+DatabaseName=test
+HostName=localhost
+HostPort=5432
+FiluSchema=filu
+Password=filu
+UserName=filu
+  Which database is to use and how could it be accessed. Yes, Password in clear text
+  looks like that there could things improved.
+
+CommitBlockSize=500
+  How many data rows will be send to the server before they will committed. Sadly
+  has these settings no effect because of broken Qt Driver.
+
+DaysToFetchIfNoData=365
+  How many bars, in days, should be downloaded the first time.
+
+MakeNameNice=true
+  When importing data will FiNames are stripped, or not.
+
+MaxClones=5
+  How many AgentFs will be started to do a big job, e.g at 'full'.
+
+VerboseLevel=Info
+ How many info while running an application will be printed. Possible values
+ are Quiet, Info, Ample and Max or 0/1/2/3. The names are not case sensitive.
+
+SqlDebugLevel=Quiet
+  How many infos by the DB access will be printed while running. Same possible
+  values as VerboseLevel has.
