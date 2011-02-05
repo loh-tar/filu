@@ -44,7 +44,8 @@ BEGIN
     THEN mSQuote = 1.0;
     ELSE SELECT qclose INTO mSQuote
            FROM <schema>.eodbar
-           WHERE fi_id = aSCurr and qdate = aCDate;
+           WHERE fi_id = aSCurr and qdate <= aCDate
+           ORDER BY qdate DESC LIMIT 1;
 
           IF mSQuote IS NULL THEN RETURN -aMoney; END IF; -- Currency or date not found, shit happens
   END IF;
@@ -53,12 +54,13 @@ BEGIN
     THEN mDQuote = 1.0;
     ELSE SELECT qclose INTO mDQuote
            FROM <schema>.eodbar
-           WHERE fi_id = aDCurr and qdate = aCDate;
+           WHERE fi_id = aDCurr and qdate <= aCDate
+           ORDER BY qdate DESC LIMIT 1;
 
           IF mDQuote IS NULL THEN RETURN -aMoney; END IF; -- Currency or date not found, shit happens
   END IF;
 
-  mDMoney := mDQuote * aMoney/mSQuote;
+  mDMoney := mSQuote * aMoney/mDQuote;
 
   RETURN mDMoney;
 

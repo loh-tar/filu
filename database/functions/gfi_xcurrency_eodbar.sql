@@ -86,6 +86,8 @@ END
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
+INSERT INTO <schema>.ftype(caption) VALUES('XCurrency');
+
 --
 -- END OF FUNCTION <schema>.gfi_currency_eodbar(...)
 --

@@ -29,7 +29,7 @@ BEGIN
   SELECT INTO mExist <schema>.id_from_caption('error', new.caption);
 
   IF mExist > 0 THEN
-      RAISE WARNING 'ErrorType "%" allready exists! Now updated to "%".', new.caption, new.etext;
+      RAISE NOTICE 'ErrorType "%" allready exists! Now updated to "%".', new.caption, new.etext;
       UPDATE <schema>.error
         SET caption = new.caption
           , etext = new.etext
@@ -43,7 +43,7 @@ BEGIN
     RETURN NULL;
   END IF;
 
-  RAISE INFO 'New ErrorType: "%":"%"', new.caption, new.etext;
+  --RAISE INFO 'New ErrorType: "%":"%"', new.caption, new.etext;
   RETURN new;
 
 END;

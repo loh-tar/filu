@@ -163,7 +163,7 @@ use Getopt::Std;
   foreach $dbfile(@dbfiles)
   {
       print "Load $dbfile ...\n";
-      $sql .= "-- *** Included by ./configue\nSELECT 'Process file $dbfile...' AS info;\n-- ***\n";
+      $sql .= "-- *** Included by ./configue\nSELECT 'Process file $dbfile...' AS \"INFO\";\n-- ***\n";
       $sql .= load($dbfile);
   }
 

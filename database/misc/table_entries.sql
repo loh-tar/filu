@@ -36,9 +36,6 @@ INSERT INTO <schema>.error(caption, etext) VALUES('QualityToBad', 'Quality is no
 -- Don't remove Currency, it's a must have!
 INSERT INTO <schema>.ftype(caption) VALUES('Currency');
 --
--- Shipped generic FIs
-INSERT INTO <schema>.ftype(caption) VALUES('XCurrency');
---
 INSERT INTO <schema>.ftype(caption) VALUES('Stock');
 INSERT INTO <schema>.ftype(caption) VALUES('Index');
 --INSERT INTO <schema>.ftype(caption) VALUES('Bond');

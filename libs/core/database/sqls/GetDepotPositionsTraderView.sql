@@ -11,8 +11,7 @@
 *     pdate     as "Date"
 *     fi_id     as "FiId"
 *     pieces    as "Pieces"
-*     price    as "Price"
-*                  "Currency"
+*     price     as "Price"
 *     market_id as "MarketId"
 *
 -- GetDepotPositionsTraderView.sql

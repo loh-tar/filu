@@ -177,6 +177,9 @@ CREATE TABLE <schema>.eodbar(
   FOREIGN KEY(market_id) REFERENCES <schema>.market(market_id) ON DELETE CASCADE,
   UNIQUE(fi_id, market_id, qdate)
 );
+
+CREATE INDEX eodbar_fi_market_date ON <schema>.eodbar( fi_id, market_id, qdate );
+
 --
 -- END OF CREATE TABLE <schema>.eodbar
 --

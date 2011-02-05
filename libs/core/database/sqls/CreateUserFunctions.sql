@@ -430,6 +430,21 @@ BEGIN
 
   mId := COALESCE(aOrderId, 0);
 
+  IF mId = 0 THEN -- Check if exist
+    SELECT order_id INTO mId
+                    FROM :user.order
+                    WHERE depot_id = aDepotId
+                      and odate = aODate
+                      and vdate = aVDate
+                      and fi_id = aFiId
+                      and pieces = aPieces
+                      and olimit = aOLimit
+                      and buy = aBuy
+                      and market_id = aMarketId;
+  END IF;
+
+  mId := COALESCE(mId, 0);
+
   IF mId = 0 THEN
     BEGIN
       mId := nextval(':user.order_order_id_seq');
@@ -454,9 +469,9 @@ BEGIN
           buy       = aBuy,
           market_id = aMarketId,
           status    = aStatus
-      WHERE order_id = aOrderId;
+      WHERE order_id = mId;
 
-  IF FOUND THEN RETURN aOrderId; END IF;
+  IF FOUND THEN RETURN mId; END IF;
 
   RETURN :filu.error_code('OrderIdNF');
 
@@ -540,13 +555,13 @@ DECLARE
 BEGIN
 
   FOR rpdate, rfi_id, rfiname, rpieces, rmarket_id IN
-    SELECT max(pdate), fi_id, f.caption, sum(pieces), m.currency_fi_id, market_id
+    SELECT max(pdate), fi_id, f.caption, sum(pieces), market_id
       FROM :user.depotpos AS p
       LEFT JOIN :filu.fi AS f USING(fi_id)
       LEFT JOIN :filu.market AS m USING(market_id)
       WHERE p.depot_id = aDepotId
             and CASE WHEN aFiId = -1  THEN true ELSE p.fi_id = aFiId END
-      GROUP BY fi_id, f.caption, m.currency_fi_id, market_id
+      GROUP BY fi_id, f.caption, market_id
       --ORDER BY max(pdate) DESC
   LOOP
 

@@ -40,7 +40,9 @@ DECLARE
   mClose        <schema>.eodbar.qclose%TYPE;
   mOi           <schema>.eodbar.qoi%TYPE;
   mQuality      <schema>.eodbar.quality%TYPE;
-  mNumRows      int;
+
+  mExist        <schema>.eodbar.eodbar_id%TYPE;
+  mQualyExist   <schema>.eodbar.quality%TYPE;
 
 BEGIN
 
@@ -76,13 +78,17 @@ BEGIN
         mQuality := 3;
         END IF;
 
-  -- Try to insert data
-  BEGIN
-    INSERT INTO <schema>.eodbar(fi_id, market_id, qdate, qopen, qhigh, qlow, qclose, qvol, qoi, quality)
-           VALUES(aFiId, aMarketId, aDate, mOpen, mHigh, mLow, mClose, aVol, mOi, mQuality);
-    RETURN;
-  EXCEPTION WHEN unique_violation
-  THEN -- make an update
+  SELECT eodbar_id, quality INTO mExist, mQualyExist
+      FROM <schema>.eodbar
+      WHERE fi_id = aFiId and market_id = aMarketId and qdate = aDate;
+
+  IF FOUND THEN -- make an update
+    IF mQualyExist < mQuality
+    THEN
+      --RAISE NOTICE 'Quality to bad.';
+      RETURN;
+    END IF; -- quality  to bad
+
     if aVol = -1 -- in case of an update with bar data where no volume exist, like from onvista
     then
       update <schema>.eodbar
@@ -94,10 +100,7 @@ BEGIN
         --qvol           = aVol,
         qoi            = mOi,
         quality        = mQuality
-      where fi_id       = aFiId
-        and market_id   = aMarketId
-        and qdate       = aDate
-        and quality     >= mQuality;
+      where eodbar_id = mExist;
     else
       update <schema>.eodbar
       set
@@ -108,26 +111,16 @@ BEGIN
         qvol           = aVol,
         qoi            = mOi,
         quality        = mQuality
-      where fi_id       = aFiId
-        and market_id   = aMarketId
-        and qdate       = aDate
-        and quality     >= mQuality;
+      where eodbar_id = mExist;
     end if;
-  END;
 
-  -- check the update result
-  GET DIAGNOSTICS mNumRows = ROW_COUNT;
-
-  IF mNumRows > 0 THEN
-    IF (mQuality <> 1) and (mQuality <> 2)
-    THEN -- only info if something interessting
-      --RAISE NOTICE '<schema>.eodbar_insert() FI %, at date %. Updated to quality %', aFiId, aDate, mQuality;
-    END IF;
-  ELSE
-    --RAISE NOTICE '<schema>.eodbar_insert() Update for FI %, at date %. FAILS! new quality was %', aFiId, aDate, mQuality;
+    RETURN;
   END IF;
 
-END;
+  INSERT INTO <schema>.eodbar(fi_id, market_id, qdate, qopen, qhigh, qlow, qclose, qvol, qoi, quality)
+          VALUES(aFiId, aMarketId, aDate, mOpen, mHigh, mLow, mClose, aVol, mOi, mQuality);
+
+END
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
