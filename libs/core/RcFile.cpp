@@ -52,7 +52,7 @@ RcFile::RcFile(Newswire* parent)
 
   // Agent stuff
   mDefault.insert("MaxClones",         5);
-  mDefault.insert("LogFile",           "agentf.log");
+  mDefault.insert("LogFile",           "filu.log");
   mDefault.insert("DebugLevel",        0);
 
   // Performer stuff
