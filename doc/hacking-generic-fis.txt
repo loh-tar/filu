@@ -1,0 +1,74 @@
+This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
+
+
+If you are *not* intended to create new generic FIs than can you skip this
+chapter. But if you have an idea for a new Generic FI and you want implement
+that, then find you here the needed information how you can do this.
+
+Generic FIs are Postgres SQL functions located in database/functions and begin
+with 'gfi_'. Once you have create such a file you could run in your database
+directory:
+
+  ./configure -UDST
+  sudo make install
+
+This replaced some stuff but does not delete any of your data, or shouldn't be.
+If you use other than the default database settingss then you have to be care of
+that by setting one of (or all) -d foo1 -u foo2 -s foo3.
+
+
+Naming Conventions And Restrictions
+=====================================
+Input arguments should begin with 'a', intern used Variable names with 'm',
+followed by an uppercase letter and should not contain underscores.
+
+Use $BODY$ to quote the entire function.
+
+Prefix the function name, each table reference and each non standard data type
+with <schema>. That will later replaced by the ./configure script.
+
+
+Function Name
+===============
+Must must have the format 'gfi_<FiType>_<DataType>', all in lowercase letters.
+Whereas FiType is the type name of the new FI and DataType the kind of data
+returned by the function, e.g. 'gfi_xcurrency_eodbar'.
+
+
+Function Input And Output Values
+==================================
+Are fixed and depend on the data type delivered by the funtion.
+
+EodBar
+--------
+Input:  aFiId        <schema>.fi.fi_id%TYPE
+        aMarketId    <schema>.market.market_id%TYPE
+        aFDate       <schema>.eodbar.qdate%TYPE       DEFAULT '1000-01-01'
+        aTDate       <schema>.eodbar.qdate%TYPE       DEFAULT '3000-01-01'
+        aLimit       int4                             DEFAULT 0
+
+Output: SETOF <schema>.fbar
+
+
+Register The New Type
+=======================
+Include in the SQL file an INSERT command to the ftype table with the name of
+the new type so that it will be useable. The name can contain uppercase letters,
+e.g.
+
+  INSERT INTO <schema>.ftype(caption) VALUES('XCurrency');
+
+
+How It Works
+==============
+The function has to collect all information he need out of the available tables
+to calculate the result. Currently is no special 'generic-attribute-table'
+present. So it should be the best to expect them as part of the FiName as done
+by xcurrency. But it is also possible to use the underlyling table.
+
+
+Document Your Type
+====================
+ToDo! Sugestions are welcome. But surely the user must be informed about the way
+the type is to use.
+
