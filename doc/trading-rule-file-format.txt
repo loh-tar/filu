@@ -1,4 +1,4 @@
-This file is part of Filu (c) 2007, 2010 loh.tar@googlemail.com
+This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
 
 
 A trading rule file is a plain text file located in ~/Filu/TradingRules by
