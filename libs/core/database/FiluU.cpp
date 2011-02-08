@@ -91,7 +91,7 @@ int FiluU::getGroupId(const QString& path)
 {
   QStringList groups = path.split("/", QString::SkipEmptyParts);
 
-  int groupId  = 1; // Set to root group
+  int groupId  = 0; // Set to root group
   foreach(QString group, groups)
   {
     QSqlQuery* query = getGroups(groupId);

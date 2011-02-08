@@ -132,7 +132,7 @@ DECLARE
 BEGIN
   mGroups := regexp_split_to_array(aPath, '/');
   i := 0;
-  mMGroupId := 1;
+  mMGroupId := 0;
 
 LOOP
   i := i + 1;
