@@ -81,15 +81,15 @@ bool MyParser::setExp(const QString& expr)
   // Create mVariables if not set from outside
   if(!mVariables)
   {
-    mVariables   = new QHash<const QString, double>;
+    mVariables   = new QHash<QString, double>;
     mMyVariables = true;
   }
 
   // ...and set the real needed variables. Well, its a crook again :-/
-  foreach(const QString& name, usedVariables)
+  foreach(QString name, usedVariables)
   {
     // 0.0 is only a dummy, replaced later
-    QHash<const QString, double>::iterator it = mVariables->insert(name, 0.0);
+    QHash<QString, double>::iterator it = mVariables->insert(name, 0.0);
     mParser.DefineVar(name.toStdString(), &it.value());
   }
 
@@ -101,7 +101,7 @@ QString MyParser::getExp()
   return mParser.GetExpr().data();
 }
 
-void MyParser::useVariables(QHash<const QString, double>* variables)
+void MyParser::useVariables(QHash<QString, double>* variables)
 {
   mVariables = variables;
 }

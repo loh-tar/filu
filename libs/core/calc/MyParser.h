@@ -40,13 +40,13 @@ class MyParser : public Newswire
 
     bool        setExp(const QString& expr);
     QString     getExp();
-    void        useVariables(QHash<const QString, double>* variables);
+    void        useVariables(QHash<QString, double>* variables);
     void        useData(DataTupleSet* data);
     void        appendUsedVariables(QSet<QString>& variables);
     int         calc(double& result);
 
   protected:
-    QHash<const QString, double>* mVariables;
+    QHash<QString, double>* mVariables;
 
     bool            mMyVariables;
     DataTupleSet*   mData;
