@@ -37,7 +37,6 @@ class FiTuple : public Tuple
     //const QString       issueDate() const;
     //const QString       maturityDate() const;
 
-    void          setId(int id);
     void          setTypeId(int type);
     void          setType(const QString& type);
     void          setName(const QString& name);
@@ -87,11 +86,6 @@ inline const QString& FiTuple::maturityDate() const
   return mMaturityDate[mIndex];
 }
 */
-
-inline void FiTuple::setId(int id)
-{
-  mId[mIndex] = id;
-}
 
 inline void FiTuple::setTypeId(int type)
 {

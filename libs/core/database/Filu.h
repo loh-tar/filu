@@ -96,6 +96,7 @@ class Filu : public Newswire
     BarTuple*    getBars(int fiId, int marketId, int limit);
 
     MarketTuple* getMarkets(const QString& name = "");
+    MarketTuple* getMarket(int marketId);
 
     FiTuple*     getFi(const int fiId);
     FiTuple*     getFiLike(const QString& pattern);
@@ -209,8 +210,9 @@ class Filu : public Newswire
     QHash<QString, StringSet>   mSqlParmNames; // Holds all parameter names to a sql
 
   private:
-    BarTuple*   fillQuoteTuple(QSqlQuery*);
-    FiTuple*    fillFiTuple(QSqlQuery*);
+    BarTuple*     fillQuoteTuple(QSqlQuery*);
+    FiTuple*      fillFiTuple(QSqlQuery*);
+    MarketTuple*  fillMarketTuple(QSqlQuery*);
 
     // Some Filu Settings
     void        readSettings();

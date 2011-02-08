@@ -21,12 +21,16 @@
 
 MarketTuple::MarketTuple(int size) : Tuple(size)
 {
-  mName     = new QString[size];
-  mCurrency = new QString[size];
+  mName       = new QString[size];
+  mCurrId     = new int[size];
+  mCurrName   = new QString[size];
+  mCurrSymbol = new QString[size];
 }
 
 MarketTuple::~MarketTuple()
 {
   delete []mName;
-  delete []mCurrency;
+  delete []mCurrId;
+  delete []mCurrName;
+  delete []mCurrSymbol;
 }

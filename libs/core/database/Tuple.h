@@ -45,10 +45,15 @@ class Tuple
                 Tuple(int size);
     virtual    ~Tuple();
 
-    int         id() const;
+    int         id() const { return mId[mIndex]; };
+    int         quality() const { return mQuality[mIndex]; };
+
+    void        setId(int id) { mId[mIndex] = id; };
+    void        setQuality(int q) { mQuality[mIndex] = q; };
+
     bool        next();
     int         rewind(int start = -1);
-    int         count() const;
+    int         count() const { return  mMaxIndex + 1; };
     bool        isInvalid() const;
 
     friend class Filu;
@@ -58,12 +63,8 @@ class Tuple
     int         mMaxIndex;
 
     int*        mId;
+    int*        mQuality;
 };
-
-inline int Tuple::id() const
-{
-  return mId[mIndex];
-}
 
 inline bool Tuple::next()
 {
@@ -74,11 +75,6 @@ inline bool Tuple::next()
   }
 
   return false;
-}
-
-inline int Tuple::count() const
-{
-  return mMaxIndex + 1;
 }
 
 inline bool Tuple::isInvalid() const

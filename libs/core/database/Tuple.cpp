@@ -24,11 +24,13 @@ Tuple::Tuple(int size)
      , mMaxIndex(size - 1)
 {
   mId = new int[size];
+  mQuality = new int[size];
 }
 
 Tuple::~Tuple()
 {
   delete []mId;
+  delete []mQuality;
 }
 
 int Tuple::rewind(int start /* = -1*/)

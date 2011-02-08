@@ -21,7 +21,6 @@
 
 COTuple::COTuple(int size) : Tuple(size)
 {
-  mId         = new int[size];
   mFiId       = new int[size];
   mMarketId   = new int[size];
   mViewName   = new QString[size];

@@ -264,27 +264,32 @@ SymbolTypeTuple* Filu::getSymbolTypes(int filter/* = eAllTypes FIXME, bool order
 
 MarketTuple* Filu::getMarkets(const QString& name/* = ""*/)
 {
-  if(!initQuery("GetMarketByName")) return 0;
+  if(!initQuery("GetMarket")) return 0;
 
-  QSqlQuery* query = mSQLs.value("GetMarketByName");
+  QSqlQuery* query = mSQLs.value("GetMarket");
 
   query->bindValue(":market", name);
+  query->bindValue(":marketId", 0);  // Don't use id
 
   if(execute(query) < eData) return 0;
 
-  // Fill the object to be returned to client
-  MarketTuple* market = new MarketTuple(query->size());
-  while(market->next())
-  {
-    query->next();
+  return fillMarketTuple(query);
+}
 
-    int i = market->mIndex;
-    market->mId[i]       = query->value(0).toInt();
-    market->mName[i]     = query->value(1).toString();
-    market->mCurrency[i] = query->value(2).toString();
-    //market->mType[i]     = query->value(3).toString();
-  }
-  market->rewind();
+MarketTuple* Filu::getMarket(int marketId)
+{
+  if(!initQuery("GetMarket")) return 0;
+
+  QSqlQuery* query = mSQLs.value("GetMarket");
+
+  query->bindValue(":market", "");  // Don't use name
+  query->bindValue(":marketId", marketId);
+
+  if(execute(query) < eData) return 0;
+
+  MarketTuple* market = fillMarketTuple(query);
+
+  if(market) market->next();
 
   return market;
 }
@@ -1139,6 +1144,31 @@ FiTuple* Filu::fillFiTuple(QSqlQuery* tuple)
   fi->rewind();
 
   return fi;
+}
+
+MarketTuple*  Filu::fillMarketTuple(QSqlQuery* query)
+{
+  int count = query->size();
+  if(!count) return 0;
+
+  // Fill the object to be returned to client
+  MarketTuple* market = new MarketTuple(count);
+  while(market->next())
+  {
+    query->next();
+
+    int i = market->mIndex;
+    int j = 0;
+    market->mId[i]         = query->value(j++).toInt();
+    market->mName[i]       = query->value(j++).toString();
+    market->mCurrId[i]     = query->value(j++).toInt();
+    market->mCurrName[i]   = query->value(j++).toString();
+    market->mCurrSymbol[i] = query->value(j++).toString();
+  }
+
+  market->rewind();
+
+  return market;
 }
 
 bool Filu::initQuery(const QString& name)

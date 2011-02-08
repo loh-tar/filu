@@ -35,7 +35,6 @@ class COTuple : public Tuple
     const QString&  type() const;
     const QString&  attributes() const;
 
-    void      setId(int);
     void      setFiId(int);
     void      setMarketId(int);
     void      setViewName(const QString&);
@@ -82,11 +81,6 @@ inline const QString& COTuple::type() const
 inline const QString& COTuple::attributes() const
 {
   return mAttributes[mIndex];
-}
-
-inline void COTuple::setId(int id)
-{
-  mId[mIndex] = id;
 }
 
 inline void COTuple::setFiId(int id)
