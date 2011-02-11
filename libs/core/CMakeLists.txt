@@ -80,6 +80,7 @@ include_directories(calc)
 
 set(FiluCore_SRC ${FiluCore_SRC}
     database/BarTuple.cpp
+    #database/BrokerTuple.cpp
     database/COTuple.cpp
     database/Filu.cpp
     database/FiluU.cpp
@@ -91,6 +92,7 @@ set(FiluCore_SRC ${FiluCore_SRC}
 )
 set(FiluCore_MOCH ${FiluCore_MOCH}
     #database/BarTuple.h
+    #database/BrokerTuple.h
     #database/COTuple.h
     #database/Filu.h
     #database/FiluU.h

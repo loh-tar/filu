@@ -295,7 +295,7 @@ MarketTuple* Filu::getMarket(int marketId)
   return market;
 }
 
-FiTuple* Filu::getFi(const int fiId)
+FiTuple* Filu::getFi(int fiId)
 {
   // Not yet used, but soon...I hope
   if(!initQuery("GetFi")) return 0;
@@ -391,6 +391,33 @@ int Filu::getEODBarDateRange(DateRange& dateRange
   dateRange.insert("last", query->value(1).toDate());
 
   return eData;
+}
+
+BrokerTuple* Filu::getBroker(int brokerId/* = 0*/)
+{
+  if(!initQuery("GetBroker")) return 0;
+
+  QSqlQuery* query = mSQLs.value("GetBroker");
+
+  query->bindValue(":brokerId", brokerId);
+
+  if(execute(query) < eData) return 0;
+
+  BrokerTuple* broker = new BrokerTuple(query->size());
+  while(query->next())
+  {
+    broker->next();
+
+    int i = broker->mIndex;
+    broker->mId[i]         = query->value(0).toInt();
+    broker->mName[i]       = query->value(1).toString();
+    broker->mFeeFormula[i] = query->value(2).toString();
+    broker->mQuality[i]    = query->value(3).toInt();
+  }
+
+  if(!brokerId) broker->rewind();
+
+  return broker;
 }
 
 int Filu::getIndicatorNames(QStringList* names, const QString& like /* = "" */)
@@ -615,7 +642,7 @@ int Filu::searchCaption(const QString& table, const QString& caption)
   return result(FUNC, query);
 }
 
-int Filu::addFiType(const QString& type, const int id/* = 0*/)
+int Filu::addFiType(const QString& type, int id/* = 0*/)
 {
   if(!initQuery("AddFiType")) return eInitError;
 
@@ -1012,6 +1039,28 @@ int Filu::addSplit(const QString& symbol
   if(execute(query) <= eError) return eExecError;
 
   return result(FUNC, query);
+}
+
+int Filu::addBroker(BrokerTuple& broker)
+{
+  if(broker.isInvalid()) return eError;
+
+  if(!initQuery("AddBroker")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("AddBroker");
+
+  query->bindValue(":brokerId", broker.id());
+  query->bindValue(":name", broker.name());
+  query->bindValue(":feeFormula", broker.feeFormula());
+  query->bindValue(":quality", broker.quality());
+
+  if(execute(query) <= eError) return eExecError;
+
+  int retVal = result(FUNC, query);
+
+  if(retVal >= eData) broker.setId(retVal);
+
+  return retVal;
 }
 
 QString Filu::getLastQuery()

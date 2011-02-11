@@ -32,6 +32,7 @@
 #include "MarketTuple.h"
 #include "FiTuple.h"
 #include "SymbolTypeTuple.h"
+#include "BrokerTuple.h"
 
 class RcFile;
 
@@ -98,7 +99,7 @@ class Filu : public Newswire
     MarketTuple* getMarkets(const QString& name = "");
     MarketTuple* getMarket(int marketId);
 
-    FiTuple*     getFi(const int fiId);
+    FiTuple*     getFi(int fiId);
     FiTuple*     getFiLike(const QString& pattern);
     FiTuple*     getFiBySymbol(const QString& symbol);
 
@@ -122,8 +123,10 @@ class Filu : public Newswire
     int          getEODBarDateRange(DateRange& dateRange
                                   , int fiId, int marketId, int quality);
 
+    BrokerTuple* getBroker(int brokerId = 0);
+
     // Add Functions
-    int          addFiType(const QString& type, const int id = 0);
+    int          addFiType(const QString& type, int id = 0);
 
     int          addSymbolType(const QString& type
                              , const int& seq
@@ -165,6 +168,8 @@ class Filu : public Newswire
                         , const double ratio
                         , const QString& comment
                         , const int& quality = 2);
+
+    int          addBroker(BrokerTuple& broker);
 
     // The Big Beef, Indicator Functions
     // These are *not* usual indicators. That's indicators provided by Filu,

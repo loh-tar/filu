@@ -17,47 +17,45 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO <schema>.error(caption, etext) VALUES('BrokerNUQ', 'Broker name already exist, give me the ID for an update.');
+INSERT INTO <schema>.error(caption, etext) VALUES('BrokerIdNF', 'Broker Id not found or quality to bad.');
 
 CREATE OR REPLACE FUNCTION <schema>.broker_insert
 (
   aCaption    <schema>.broker.caption%TYPE,
   aFeeFormula <schema>.broker.feeformula%TYPE,
+  aQuality    <schema>.broker.quality%TYPE,
   aBrokerId   <schema>.broker.broker_id%TYPE-- could be 0/NULL
 )
 RETURNS <schema>.broker.broker_id%TYPE AS
 $BODY$
 
 DECLARE
-  mId        <schema>.broker.broker_id%TYPE; -- New ID
-  mNumRows    int;
+  mId         <schema>.broker.broker_id%TYPE; -- New ID
 
 BEGIN
-  -- Insert or update an broker position.
-  -- Returns
-  --  -1 if broker_id is unknown
+-- See also split_insert for a more smart check if exist/updateable
 
   mId := COALESCE(aBrokerId, 0);
 
-  IF mId = 0 THEN
-      mId := <schema>.id_from_caption('broker', aCaption);
-      IF mId > 0 THEN RETURN <schema>.error_code('BrokerNUQ'); END IF; -- FIXME add
+  IF mId = 0 THEN mId := <schema>.id_from_caption('broker', aCaption); END IF;
 
+  IF mId = 0 THEN
       mId := nextval('<schema>.broker_broker_id_seq');
-      INSERT  INTO <schema>.broker(broker_id, caption, feeformula)
-              VALUES(mId, aCaption, aFeeFormula);
+      INSERT INTO <schema>.broker(broker_id, caption, feeformula, quality)
+             VALUES(mId, aCaption, aFeeFormula, aQuality);
 
       RETURN mId;
 
   ELSE
       UPDATE <schema>.broker
           SET caption    = aCaption,
-              feeformula = aFeeFormula
-          WHERE broker_id = aBrokerId;
+              feeformula = aFeeFormula,
+              quality    = aQuality
+          WHERE broker_id = mId and quality >= aQuality;
 
-      GET DIAGNOSTICS mNumRows = ROW_COUNT;
-      IF mNumRows > 0 THEN RETURN aBrokerId;
-      ELSE RETURN -1;
+      IF FOUND
+        THEN RETURN mId;
+        ELSE RETURN <schema>.error_code('BrokerIdNF');
       END IF;
 
   END IF;
