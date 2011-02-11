@@ -43,13 +43,11 @@ MyParser::MyParser(Newswire* parent)
 
   mVariables   = 0;
   mMyVariables = false;
-  mUsedMData   = 0;
 }
 
 MyParser::~MyParser()
 {
   if(mMyVariables) delete mVariables;
-  if(mUsedMData) delete mUsedMData;
 }
 
 bool MyParser::setExp(const QString& expr)
@@ -101,6 +99,11 @@ QString MyParser::getExp()
   return mParser.GetExpr().data();
 }
 
+void MyParser::useVariable(const QString& name, double& var)
+{
+  mParser.DefineVar(name.toStdString(), &var);
+}
+
 void MyParser::useVariables(QHash<QString, double>* variables)
 {
   mVariables = variables;
@@ -110,9 +113,7 @@ void MyParser::useData(DataTupleSet* data)
 {
   mData = data;
 
-  if(mUsedMData) delete mUsedMData;
-
-  mUsedMData = new QSet<QString>;
+  mUsedMData.clear();
   QSet<QString> usedNames;
   QStringList   mdataNames;
 
@@ -122,9 +123,9 @@ void MyParser::useData(DataTupleSet* data)
 
   foreach(const QString& name, usedNames)
   {
-    if(mdataNames.contains(name)) mUsedMData->insert(name);
+    if(mdataNames.contains(name)) mUsedMData.insert(name);
   }
-  //qDebug() << "MyParser::useData() mData variables" << *mUsedMData;
+  //qDebug() << "MyParser::useData() mData variables" << mUsedMData;
 }
 
 void MyParser::appendUsedVariables(QSet<QString>& list)
@@ -149,7 +150,7 @@ int MyParser::calc(double& result)
   //    2 if error while mu::Parser.Eval()
 
   // Fill mVariables with values from mData
-  foreach(const QString& name, *mUsedMData)
+  foreach(const QString& name, mUsedMData)
   {
     double value;
     if(!mData->getValue(name, value)) return 1;

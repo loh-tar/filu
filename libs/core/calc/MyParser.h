@@ -40,6 +40,7 @@ class MyParser : public Newswire
 
     bool        setExp(const QString& expr);
     QString     getExp();
+    void        useVariable(const QString& name, double& var);   // For direct use without mData
     void        useVariables(QHash<QString, double>* variables);
     void        useData(DataTupleSet* data);
     void        appendUsedVariables(QSet<QString>& variables);
@@ -50,7 +51,7 @@ class MyParser : public Newswire
 
     bool            mMyVariables;
     DataTupleSet*   mData;
-    QSet<QString>*  mUsedMData; // Holds name of variables to be read from mData
+    QSet<QString>   mUsedMData; // Holds name of variables to be read from mData
     mu::Parser      mParser;
 };
 #endif
