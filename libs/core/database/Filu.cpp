@@ -27,6 +27,7 @@ Filu::Filu(const QString& cn, RcFile* rcFile)
     , mConnectionName(cn)
 {
   mToDate = QDate::currentDate().toString(Qt::ISODate); // In case someone forget to set it...
+  //setNoErrorLogging(true);
 }
 
 Filu::~Filu()
@@ -571,6 +572,33 @@ void Filu::setSqlParm(const QString& parm, const QVariant& value)
   // has to set by multiple call of this function
 
   mSqlParm.insert(parm, value);
+}
+
+int Filu::convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& date)
+{
+  if(!money) return eData; // Nice, nothing todo
+
+  if(!initQuery("ConvertCurrency")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("ConvertCurrency");
+
+  query->bindValue(":money", money);
+  query->bindValue(":sCurr", sCurrId);
+  query->bindValue(":dCurr", dCurrId);
+  query->bindValue(":date", date);
+
+  if(execute(query) <= eError) return eExecError;
+
+  query->next();
+  if(-money == query->value(0).toDouble())
+  {
+    warning(FUNC, tr("Can't convert currency! Probably no  data available."));
+    return eError;
+  }
+
+  money = query->value(0).toDouble();
+
+  return eData;
 }
 
 int Filu::searchCaption(const QString& table, const QString& caption)

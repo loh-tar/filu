@@ -179,6 +179,7 @@ class Filu : public Newswire
     QSqlQuery*  execSql(const QString& name);
     void        setSqlParm(const QString& parm, const QVariant& value);
 
+    int         convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& date);
     int         searchCaption(const QString& table, const QString& caption);
     QString     getLastQuery(); // Unused
     void        deleteRecord(const QString& schema, const QString& table, int id);
