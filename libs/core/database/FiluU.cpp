@@ -409,18 +409,51 @@ int FiluU::addAccountPos(int depotId, const QDate& date
 
 double FiluU::getDepotCash(int depotId, const QDate& date/* = QDate(3000, 01, 01)*/)
 {
-  // Returns cash
   if(!initQuery("GetDepotCash")) return eInitError;
 
   QSqlQuery* query = mSQLs.value("GetDepotCash");
 
-  query->bindValue(":depotId",depotId );
+  query->bindValue(":depotId", depotId);
   query->bindValue(":date", date.toString(Qt::ISODate));
 
   if(execute(query) <= eError) return eExecError;
 
   query->next();
-  return query->value(0).toInt();
+  return query->value(0).toDouble();
+}
+
+double FiluU::getDepotNeededCash(int depotId, const QDate& date/* = QDate(3000, 01, 01)*/)
+{
+  if(!initQuery("GetDepotNeededCash")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("GetDepotNeededCash");
+
+  query->bindValue(":depotId", depotId);
+
+  if(date == QDate(3000, 01, 01))
+    query->bindValue(":date", QDate::currentDate().toString(Qt::ISODate));
+  else
+    query->bindValue(":date", date.toString(Qt::ISODate));
+
+  if(execute(query) <= eError) return eExecError;
+
+  query->next();
+  return query->value(0).toDouble();
+}
+
+double FiluU::getDepotValue(int depotId, const QDate& date/* = QDate(3000, 01, 01)*/)
+{
+  if(!initQuery("GetDepotValue")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("GetDepotValue");
+
+  query->bindValue(":depotId", depotId);
+  query->bindValue(":date", date.toString(Qt::ISODate));
+
+  if(execute(query) <= eError) return eExecError;
+
+  query->next();
+  return query->value(0).toDouble();
 }
 
 QSqlQuery* FiluU::getOrders(int depotId, int status/* = 5*/, int fiId/* = -1*/)

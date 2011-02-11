@@ -84,6 +84,8 @@ class FiluU : public Filu
                             , const QString& text, double value, double accountPosId = 0);
 
     double      getDepotCash(int depotId, const QDate& date = QDate(3000, 01, 01));
+    double      getDepotNeededCash(int depotId, const QDate& date = QDate(3000, 01, 01));
+    double      getDepotValue(int depotId, const QDate& date = QDate(3000, 01, 01));
     QSqlQuery*  getOrders(int depotId, int status = 5, int fiId = -1); // 5=aktive, -1=all Fi
 
   private:
