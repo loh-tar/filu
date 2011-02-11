@@ -185,6 +185,12 @@ void DataTupleSet::setEvenColor(const QString& name, const QString& color)
 
 void DataTupleSet::getDate(QDate& date)
 {
+  if((Index < 0) or (Index > MaxIndex))
+  {
+    date = QDate();
+    return;
+  }
+
   mThisBars->rewind(Index);
   date = mThisBars->date();
 }
