@@ -19,6 +19,7 @@ set(LIBS ${LIBS} ${MUPARSER_LIBRARIES})
 set(FiluCore_SRC ${FiluCore_SRC}
     DataTuple.cpp
     DataTupleSet.cpp
+    Depots.cpp
     Exporter.cpp
     FClass.cpp
     FObject.cpp
@@ -32,6 +33,7 @@ set(FiluCore_SRC ${FiluCore_SRC}
 set(FiluCore_MOCH ${FiluCore_MOCH}
     #DataTuple.h
     #DataTupleSet.h
+    #Depots.h
     #Exporter.h
     #FClass.h
     #FObject.h
