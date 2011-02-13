@@ -42,7 +42,7 @@ bool Scanner::exec(const QStringList& command)
   // Look for each command, and execute them if was given.
   // The order of look up is important.
   if(command.contains("--reset"))     reset();
-  if(command.contains("--verbose"))   setVerboseLevel(command);
+  if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
   if(command.contains("--force"))     mForce = true;
   if(command.contains("--timeFrame")) setTimeFrame(command);
   if(command.contains("--indi"))      loadIndicator(command);
@@ -181,14 +181,6 @@ void Scanner::setTimeFrame(const QStringList& parm)
   {
     error(FUNC, tr("Frame '%1' unknown.").arg(frame.at(0)));
   }
-}
-
-void Scanner::setVerboseLevel(const QStringList& parm)
-{
-  QStringList level;
-  if(FTool::getParameter(parm, "--verbose", level) < 1) return; // We ignore that fault
-
-  Newswire::setVerboseLevel(FUNC, level.at(0));
 }
 
 void Scanner::autoSetup()

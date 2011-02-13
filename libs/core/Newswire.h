@@ -80,6 +80,7 @@ class Newswire
 
     void            setVerboseLevel(const VerboseLevel level);
     void            setVerboseLevel(const QString& func, const QString& level);
+    void            setVerboseLevel(const QString& func, const QStringList& parm);
     VerboseLevel    verboseLevel() { return mVerboseLevel; };
 
     void            setNoErrorLogging(bool noErrorLogging);

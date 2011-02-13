@@ -115,6 +115,14 @@ void Newswire::setVerboseLevel(const QString& func, const QString& level)
   }
 }
 
+void Newswire::setVerboseLevel(const QString& func, const QStringList& parm)
+{
+  QStringList level;
+  if(FTool::getParameter(parm, "--verbose", level) < 1) return; // We ignore that fault
+
+  setVerboseLevel(func, level.at(0));
+}
+
 void Newswire::setNoErrorLogging(bool noErrorLogging)
 {
   mNoErrorLogging = noErrorLogging;

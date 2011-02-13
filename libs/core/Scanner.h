@@ -47,7 +47,6 @@ class Scanner : public FClass
   protected:
     void        loadIndicator(const QStringList& parm);
     void        setTimeFrame(const QStringList& parm);
-    void        setVerboseLevel(const QStringList& parm);
     void        scanGroup(const QStringList& parm);
     void        scanAll();
     void        scan(BarTuple* bars);
