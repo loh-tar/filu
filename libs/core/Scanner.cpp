@@ -18,8 +18,10 @@
 //
 
 #include "Scanner.h"
+
 #include "Indicator.h"
 #include "DataTupleSet.h"
+#include "FTool.h"
 
 Scanner::Scanner(FClass* parent)
        : FClass(parent, FUNC)

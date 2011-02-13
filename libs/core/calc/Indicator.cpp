@@ -22,6 +22,7 @@
 #include "DataTupleSet.h"
 #include "TALib.h"
 #include "CalcType.h"
+#include "FTool.h"
 
 Indicator::Indicator(FClass* parent)
          : FClass(parent, FUNC)

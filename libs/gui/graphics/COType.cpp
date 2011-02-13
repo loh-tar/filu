@@ -24,6 +24,7 @@
 #include "COTuple.h"
 #include "IndicatorPainter.h"
 #include "Scaler.h"
+#include "FTool.h"
 
 // All available types
 #include "COLine.h"

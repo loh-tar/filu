@@ -18,7 +18,9 @@
 //
 
 #include "Newswire.h"
+
 #include "RcFile.h"
+#include "FTool.h"
 
 Newswire::Newswire(const QString& connectionName)
         : mRoot(true)

@@ -25,7 +25,6 @@
 #include "Newswire.h"
 #include "FiluU.h"
 #include "RcFile.h"
-#include "FTool.h"
 
 /***********************************************************************
 *
