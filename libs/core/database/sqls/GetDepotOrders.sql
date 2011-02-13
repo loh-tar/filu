@@ -41,8 +41,9 @@ SELECT order_id   as "OrderId"
      , buy        as "Buy"
      , market_id  as "MarketId"
      , m.caption  as "Market"
+     , o.note     as "Note"
 
-  FROM user_lot.order AS o
+  FROM :user.order AS o
     LEFT JOIN :filu.fi AS fi USING(fi_id)
     LEFT JOIN :filu.market AS m USING(market_id)
     LEFT JOIN :filu.lovelysymbol AS lm ON lm.fi_id=currency_fi_id
@@ -54,3 +55,6 @@ SELECT order_id   as "OrderId"
                  WHEN :status =  5 THEN o.status > 3 -- Get not only 'active' but 'ask' too
                  ELSE o.status = :status
             END
+
+  ORDER BY o.status, o.odate DESC
+

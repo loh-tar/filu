@@ -362,7 +362,8 @@ CREATE OR REPLACE FUNCTION :user.depotpos_insert
   aFiId        :user.depotpos.fi_id%TYPE,
   aPieces      :user.depotpos.pieces%TYPE,
   aPrice       :user.depotpos.price%TYPE,
-  aMarketId    :user.depotpos.market_id%TYPE
+  aMarketId    :user.depotpos.market_id%TYPE,
+  aNote        :user.depotpos.note%TYPE
 )
 RETURNS :user.depotpos.depotpos_id%TYPE AS
 $BODY$
@@ -377,8 +378,8 @@ BEGIN
   IF mId = 0 THEN
     BEGIN
       mId := nextval(':user.depotpos_depotpos_id_seq');
-      INSERT  INTO :user.depotpos(depotpos_id, depot_id, pdate, fi_id, pieces, price, market_id)
-              VALUES(mId, aDepotId, aPDate, aFiId, aPieces, aPrice, aMarketId);
+      INSERT  INTO :user.depotpos(depotpos_id, depot_id, pdate, fi_id, pieces, price, market_id, note)
+              VALUES(mId, aDepotId, aPDate, aFiId, aPieces, aPrice, aMarketId, aNote);
 
       RETURN mId;
       EXCEPTION WHEN foreign_key_violation THEN RETURN :filu.error_code('ForeignKV');
@@ -391,7 +392,8 @@ BEGIN
           fi_id    = aFiId,
           pieces   = aPieces,
           price    = aPrice,
-          market_id= aMarketId
+          market_id= aMarketId,
+          note     = aNote
       WHERE depotpos_id = aDepotPosId;
 
   IF FOUND THEN RETURN aDepotPosId; END IF;
@@ -418,7 +420,8 @@ CREATE OR REPLACE FUNCTION :user.order_insert
   aOLimit     :user.order.olimit%TYPE,
   aBuy        :user.order.buy%TYPE,
   aMarketId   :user.order.market_id%TYPE,
-  aStatus     :user.order.status%TYPE
+  aStatus     :user.order.status%TYPE,
+  aNote       :user.order.note%TYPE
 )
 RETURNS :user.order.order_id%TYPE AS
 $BODY$
@@ -449,10 +452,10 @@ BEGIN
     BEGIN
       mId := nextval(':user.order_order_id_seq');
       INSERT  INTO :user.order(order_id, depot_id, odate, vdate, fi_id
-                             , pieces, olimit, buy, market_id, status)
+                             , pieces, olimit, buy, market_id, status, note)
 
               VALUES(mId, aDepotId, aODate, aVDate, aFiId
-                   , aPieces, aOLimit, aBuy, aMarketId, aStatus);
+                   , aPieces, aOLimit, aBuy, aMarketId, aStatus, aNote);
 
       RETURN mId;
       EXCEPTION WHEN foreign_key_violation THEN RETURN :filu.error_code('ForeignKV');
@@ -468,7 +471,8 @@ BEGIN
           olimit    = aOLimit,
           buy       = aBuy,
           market_id = aMarketId,
-          status    = aStatus
+          status    = aStatus,
+          note      = aNote
       WHERE order_id = mId;
 
   IF FOUND THEN RETURN mId; END IF;

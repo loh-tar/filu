@@ -16,6 +16,7 @@
 *     :buy
 *     :marketId
 *     :status
+*     :note
 *
 *  Outputs: (order is important)
 *     depotPosId or ErrorNo
@@ -28,4 +29,5 @@ SELECT * FROM :user.order_insert
 , CAST(:vDate as date)
 , :fiId, :pieces, :limit, :buy, :marketId
 , CAST(:status as smallint)
+, :note
 );

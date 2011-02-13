@@ -67,6 +67,7 @@ class AgentF : public FCoreApp
     void import(const QStringList& parm);
     void exxport(const QStringList& parm);
     void scan(const QStringList& parm);
+    void depots(const QStringList& parm);
     void addSplit(const QStringList& parm);
     void printUsage();
     void printSettings();

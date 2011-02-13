@@ -12,6 +12,7 @@
 *     :pieces
 *     :price
 *     :marketId
+*     :note
 *     :depotPosId
 *
 *  Outputs: (order is important)
@@ -22,5 +23,5 @@
 SELECT * FROM :user.depotpos_insert(
     :depotPosId, :depotId
   , CAST(:date as date)
-  , :fiId, :pieces, :price, :marketId
+  , :fiId, :pieces, :price, :marketId, :note
 );

@@ -33,8 +33,7 @@ class MyParser;
 *   of course) and a trading rule file.
 *
 *   He is used by CalcTrade.cpp to illustrade the result of the trading
-*   idea, the (FIXME: development not started) portfolio manager and
-*   (FIXME: not implemented) back tester inspectorf
+*   idea, the portfolio manager BookieF and the back tester InspectorF.
 *
 *   See also in your source directory
 *     doc/indicator-file-format.txt
@@ -45,6 +44,7 @@ class MyParser;
 class Trader : public FClass
 {
   public:
+
     enum SomeDefines
     {
       eNextBlock = true
@@ -56,14 +56,21 @@ class Trader : public FClass
     typedef     QPair<MyParser*, QList<QStringList> > Rule;
 
     bool        useRuleFile(const QString& fileName);
-    bool        useRule(const QStringList& rule);
-    void        getRule(QStringList& rule);
-    bool        useIndicator(const QStringList& indicator);
-    void        getIndicator(QStringList& indicator);
-    bool        check(int fiId, int marketId);   // FIXME: need by real tradings
+    bool        useRule(const QStringList& rule);                    // BackTester only
+    void        getRule(QStringList& rule);                          // InspectorF only
+    bool        useIndicator(const QStringList& indicator);          // BackTester only
+    void        getIndicator(QStringList& indicator);                // InspectorF only
+
+    // For real Trading
+    bool        prepare(const QSqlRecord& depot);
+    QDate       needBarsFrom();
+    QStringList workOnGroups();
+    bool        check(BarTuple* bars);
+    void        postExecutedOrder(const QSqlRecord& order, const QDate& execDate, double execPrice);
+
     bool        simulate(DataTupleSet* data);
-    int         prepare(const QDate& fromDate, const QDate& toDate);
-    int         simulateNext();
+    int         prepare(const QDate& fromDate, const QDate& toDate); // BackTester only
+    int         simulateNext();                                      // BackTester only
     void        getOrders(QList<QStringList>& orders);
     void        getReport(QList<QStringList>& report);
     void        getVariablesList(QSet<QString>* list);
@@ -74,6 +81,11 @@ class Trader : public FClass
     void        readSettings();
     void        readRules();
     void        appendMData(); // Add all output variables to mData
+    bool        setFeeFormula(const QString& exp);
+    double      calcFee(double& volume);
+    bool        initVariables();
+    double      inFiCurrency(double money);
+    double      inDepotCurrency(double money);
     void        takeActions(const QList<QStringList>& actions);
     void        actionBuy(const QStringList& action);
     void        actionSell(const QStringList& action);
@@ -91,8 +103,9 @@ class Trader : public FClass
     int         mLineNumber;        // For error messages
     QStringList mOrigRule;          // Holds the readed rule file as it is
 
-    QHash<QString,QString>       mSettings;
-    QHash<const QString, double> mVariable;
+    QHash<QString, QString>      mSettings;
+    QHash<QString, double>       mVariable;
+    QHash<QString, double>       mRealVar;    // Holds the real status to be overwrite mVariable defaults at real trading
     QStringList                  mDataAdded;  // Holds variable names needs synced between mData and mVariable
 
     QList<QStringList> mOpenOrders; // As the name implies, intern used
@@ -101,6 +114,7 @@ class Trader : public FClass
                                     // and a statistic report
 
     QList<Rule>    mRules;
+    MyParser*      mFeeCalc;
 
     Indicator*     mIndicator;
     int            mBarsNeeded;
@@ -113,6 +127,10 @@ class Trader : public FClass
     bool           mOkSettings;
     bool           mOkRules;
     QString        mTradingRulePath;
+
+    int            mDepotId;
+    QDate          mLastCheckDate;
+    QSet<int>      mInStock;        // Holds FiIds of FIs in depot at real trading to prevent redundant checks
 };
 
 #endif

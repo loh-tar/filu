@@ -31,13 +31,13 @@ Remarks
 
 Settings Needed To Do A Real Job
 ==================================
-UseIndicator  = <my indicator>
+UseIndicator = <my indicator>
   The filename, no surprise
 
-GainRefLong   = <indicator variable>
+GainRefLong = <indicator variable>
   Default is CLOSE
 
-GainRefShort  = <indicator variable>
+GainRefShort = <indicator variable>
   Default is CLOSE
 
 PeakRefLong = <indicator variable>
@@ -46,26 +46,19 @@ PeakRefLong = <indicator variable>
 MinPositionSize = <fix value> FIXME: or <variable> ?
   In money, default is set to 20% of InitialCash
 
-WorkWithPortfolio = HighRisk
-  If you have a portfolio "HighRisk" created
-  NOTE: Portfolio management is not implemented and therefore is this setting
-        not yet needed/used
+WorkOnFiGroup = <group>[, <group>...]
+  Whereas group is the path of one of PerformerF groups.
 
 
 Settings Needed To Simulate
 =============================
-CommissionFix = <fix value>
-  Default is 0
-
-CommissionPercentage = <fix value>
-  Default is 0
+FeeFormula = <expression>
+  The expression can contain the variable 'OV' (Order Volume) to calculate the
+  commisson. Default is '10 + OV * 0.001'. For details of supported operators
+  and functions see: http://muparser.sourceforge.net/mup_features.html#idDef2
 
 InitialCash = <fix value>
   Default is 5000
-
-WorkOnFiGroup = MyWatchlist
-  You may have created "MyWatchlist" as one of PerformerF groups
-  NOTE: This setting is only needed by InspectorF
 
 
 Available Variables Related To The Current FI
@@ -190,7 +183,6 @@ ENTERLONG, EXITLONG and LIMITLONG. Than is this a very simple trading rule
 
   [Settings]
     UseIndicator          = MyIndicator
-    CommissionFix         = 10
     InitialCash           = 5000
 
   [Rules]
@@ -202,7 +194,6 @@ The same with "take profit"
 
   [Settings]
     UseIndicator          = MyIndicator
-    CommissionFix         = 10
     InitialCash           = 5000
 
   [Rules]

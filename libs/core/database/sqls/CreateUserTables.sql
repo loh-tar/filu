@@ -124,6 +124,8 @@ CREATE TABLE :user.depotpos(
   price           float4    NOT NULL,
   market_id       int4      NOT NULL,  -- Looks stupid but 'currency' would make things pretty complicate.
                                        -- How should you decide WHERE is the right place to sell?
+  note            text,
+
 FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE RESTRICT,
 FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT,
 FOREIGN KEY(market_id) REFERENCES :filu.market(market_id) ON DELETE RESTRICT
@@ -142,6 +144,7 @@ CREATE TABLE :user.order(
   buy             bool      NOT NULL, -- buy=true, sell=false
   market_id       int4      NOT NULL,
   status          int2      NOT NULL, -- see FiluU.h
+  note            varchar(100),
 
 FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE RESTRICT,
 FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT,

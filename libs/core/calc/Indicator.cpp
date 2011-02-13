@@ -288,7 +288,7 @@ bool Indicator::hasScan4()
 
 bool Indicator::readIndicator(const QString& fileName, QStringList& indicator)
 {
-  verbose(FUNC, tr("Read File %1").arg(fileName), eInfo);
+  verbose(FUNC, tr("Read File %1").arg(fileName), eAmple);
 
   // Make sure we have no garbage in the indicator
   indicator.clear();

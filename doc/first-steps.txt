@@ -113,6 +113,27 @@ He is like the Swiss knife of Filu. He starts multiple instances to do a big job
 e.g. at 'full' to download quotes in parallel. The amount of instances is
 configurable in the settings file, ~/.config/Filu.conf by setting MaxClones=X.
 
+daemon
+--------
+Is not a daemon as typical known. It is very similar to rcf. He read from stdin
+and execute each command line he read until Carl+D is pressed or 'quit' is read.
+
+depots
+--------
+Performs actions with your portfolios.
+NOTE: That's fresh under development. To create a depot you have to use
+      e.g. pgAdminIII. New orders have status 0, aktive orders status 5.
+
+check
+ Yes, run a check over all your portfolios and print suggestions to order based
+ on the TradingRule file associated to your depot.
+
+verbose
+  Set the verbosity, values are the same as for global 'VerboseLevel', see
+  Appendix A - Customizing.
+
+  agentf depots --check --verbose Ample
+
 rcf
 -----
 Read Command File. The file can contain each command supported by AgentF. Lines
@@ -163,11 +184,6 @@ for testing purposes or multiuser mode.
 
   agentf scan --group all --indi MyNewIdea --timeFrame Quarter
   agentf scan --group all --auto
-
-daemon
---------
-Is not a daemon as typical known. It is very similar to rcf. He read from stdin
-and execute each command line he read until Carl+D is pressed or 'quit' is read.
 
 
 ManagerF

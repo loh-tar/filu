@@ -341,7 +341,7 @@ QSqlQuery* FiluU::getBTDetails(const QString& strategy)
 }
 
 int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiId, int pieces
-                       , double limit, bool buy, int marketId, int status, int orderId/* = 0*/)
+                  , double limit, bool buy, int marketId, int status, const QString& note, int orderId/* = 0*/)
 {
   // Returns Id or error
   if(!initQuery("AddDepotOrder")) return eInitError;
@@ -357,6 +357,7 @@ int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiI
   query->bindValue(":buy", buy);
   query->bindValue(":marketId", marketId);
   query->bindValue(":status", status);
+  query->bindValue(":note", note);
   query->bindValue(":orderId", orderId);
 
   if(execute(query) <= eError) return eExecError;
@@ -366,7 +367,7 @@ int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiI
 
 int FiluU::addDepotPos(int depotId, const QDate& date
                      , int fiId, int pieces, double price
-                     , int marketId, int depotPosId/* = 0*/)
+                     , int marketId, const QString& note, int depotPosId/* = 0*/)
 {
   // Returns Id or error
   if(!initQuery("AddDepotPos")) return eInitError;
@@ -379,6 +380,7 @@ int FiluU::addDepotPos(int depotId, const QDate& date
   query->bindValue(":pieces", pieces);
   query->bindValue(":price", price);
   query->bindValue(":marketId", marketId);
+  query->bindValue(":note", note);
   query->bindValue(":depotPosId", depotPosId);
 
   if(execute(query) <= eError) return eExecError;

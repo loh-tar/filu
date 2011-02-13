@@ -24,22 +24,16 @@
 Depots::Depots(FClass* parent)
        : FClass(parent, FUNC)
 
-{
-//   reset();
-}
+{}
 
 Depots::~Depots()
-{
-//   foreach(Indicator* indi, mIndicators) delete indi;
-}
+{}
 
 bool Depots::exec(const QStringList& command)
 {
   // Look for each command, and execute them if was given.
   // The order of look up is important.
-//   if(command.contains("--reset"))     reset();
   if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
-//   if(command.contains("--force"))     mForce = true;
   if(command.contains("--check"))     checkAll();
 
 
@@ -110,5 +104,9 @@ bool Depots::checkAll()
   // Clean up
   foreach(Trader* trader, traders) delete trader;
 
-  return hasError();
+  if(hasError()) return false;
+
+  mRcFile->set("LastDepotCheck", QDate::currentDate().toString(Qt::ISODate));
+
+  return true;
 }

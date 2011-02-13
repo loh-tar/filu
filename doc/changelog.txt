@@ -1,9 +1,16 @@
-2011-02-05
+2011-02-13
 ============
 Sundries
 ----------
- - Update doc/first-steps.txt
- - Change log file from agentf.log to filu.log
+ - Update doc/first-steps.txt.
+ - Change log file from agentf.log to filu.log.
+ - Update doc/hacking-filu-power-indicators.txt.
+ - Add new file doc/hacking-generic-fis.txt.
+ - Update DB, fixes and/or fine tunings after that huge makeover.
+ - Add depot management, well partial and poor documented.
+ - Change TradingRules, Replace 'Commission<foo>' with 'FeeFormula'
+   and remove 'WorkWithPortfolio'.
+ - AgentF, new command 'depots --check'.
 
 
 2011-02-04

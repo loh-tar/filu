@@ -23,6 +23,7 @@
 #include "Importer.h"
 #include "Exporter.h"
 #include "Scanner.h"
+#include "Depots.h"
 
 AgentF::AgentF(QCoreApplication& app)
       : FCoreApp("AgentF", app)
@@ -483,6 +484,18 @@ void AgentF::scan(const QStringList& parm)
   if(mScanner->hasError()) addErrors(mScanner->errors());
 }
 
+void AgentF::depots(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf depots --check
+
+  Depots* depots = new Depots(this);
+
+  depots->exec(parm);
+
+  if(depots->hasError()) addErrors(depots->errors());
+}
+
 void AgentF::addSplit(const QStringList& parm)
 {
   // parm list looks like
@@ -530,6 +543,7 @@ void AgentF::execCmd(const QStringList& parm)
   else if(cmd == "imp")      import(parm);
   else if(cmd == "exp")      exxport(parm);
   else if(cmd == "scan")     scan(parm);
+  else if(cmd == "depots")   depots(parm);
   else if(cmd == "addSplit") addSplit(parm);
   else if(cmd == "daemon")   beEvil(parm);
   else if(cmd == "info")
@@ -556,6 +570,9 @@ void AgentF::printUsage()
   print("");
   print("  agentf full [<fromDate>] [<toDate>]");
   print("    agentf full 2001-01-01");
+  print("");
+  print("  agentf depots <parameter list> (see doc/first-steps.txt)");
+  print("    agentf depots --check");
   print("");
   print("  agentf scan <parameter list> (see doc/first-steps.txt)");
   print("    agentf scan --group all --indi MyNewIdea --verbose Info");

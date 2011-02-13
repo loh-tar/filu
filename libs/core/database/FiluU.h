@@ -75,10 +75,10 @@ class FiluU : public Filu
     QSqlQuery*  getBTDetails(const QString& strategy);
 
     int         addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiId, int pieces
-                       , double limit, bool buy, int marketId, int status, int orderId = 0);
+                       , double limit, bool buy, int marketId, int status, const QString& note, int orderId = 0);
 
-    int         addDepotPos(int depotId, const QDate& date
-                          , int fiId, int pieces, double price, int marketId, int depotPosId = 0);
+    int         addDepotPos(int depotId, const QDate& date, int fiId, int pieces, double price
+                          , int marketId, const QString& note, int depotPosId = 0);
 
     int         addAccountPos(int depotId, const QDate& date, int type
                             , const QString& text, double value, double accountPosId = 0);

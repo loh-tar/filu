@@ -17,18 +17,22 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <float.h>
+
 #include "Trader.h"
 
 #include "Indicator.h"
 #include "DataTupleSet.h"
 #include "MyParser.h"
 
-// FIXME: short trades are not implemented. partial code about short selling
-// FIXME: should accept as it is with caution
+// FIXME: Short trades are not implemented. Partial code about short selling
+//        should accept as it is with caution
 
 Trader::Trader(FClass* parent)
       : FClass(parent, FUNC)
+      , mFeeCalc(new MyParser(this))
       , mIndicator(0)
+      , mBarsNeeded(0)
       , mData(0)
       , mFi(0)
 {
@@ -37,6 +41,7 @@ Trader::Trader(FClass* parent)
 
 Trader::~Trader()
 {
+  delete mFeeCalc;
   if(mIndicator) delete mIndicator;
   foreach(Rule rule, mRules) delete rule.first; // Delete the parser
   mRules.clear();
@@ -109,6 +114,440 @@ void Trader::getIndicator(QStringList& indicator)
   mIndicator->getIndicator(indicator);
 }
 
+bool Trader::prepare(const QSqlRecord& depot)
+{
+  // What we have todo is:
+  // - Load and setup the trading rule
+  // - Check open orders
+  // - Check portfolio for signals
+
+  if(depot.isEmpty())
+  {
+    fatal(FUNC, "No depot given."); // Yes, no tr()
+    return false;
+  }
+
+  // Load and setup the trading rule
+  if(!useRuleFile(depot.value("Trader").toString())) return false;
+
+  //
+  // Get and set our status
+  //
+  mLastCheckDate = mRcFile->getDT("LastDepotCheck");
+  if(!mLastCheckDate.isValid())
+  {
+    mLastCheckDate = QDate::currentDate().addDays(-60);
+    mRcFile->set("LastDepotCheck", mLastCheckDate.toString(Qt::ISODate));
+  }
+
+  mFromDate  = mLastCheckDate.addDays(mBarsNeeded * -1.4);
+  mToDate    = QDate::currentDate();
+  mDepotId   = depot.value("DepotId").toInt();
+  mSettings.insert("DepotName", depot.value("Name").toString());
+  mSettings.insert("DepotCurrency", depot.value("Currency").toString());
+  mSettings.insert("DepotCurrencyId", depot.value("CurrencyId").toString());
+  BrokerTuple* broker = mFilu->getBroker(depot.value("BrokerId").toInt());
+  setFeeFormula(broker->feeFormula());
+  delete broker;
+
+  double depCash  = mFilu->getDepotCash(mDepotId);
+  double depNeedC = mFilu->getDepotNeededCash(mDepotId);
+  double depValue = mFilu->getDepotValue(mDepotId);
+  mRealVar.insert("Cash", depCash - depNeedC);
+  mRealVar.insert("TotalBalance", depValue + depCash);
+
+  QSqlQuery* orders = mFilu->getOrders(mDepotId);
+
+  mFilu->setSqlParm(":depotId", mDepotId);
+  mFilu->setSqlParm(":fiId",  -1);
+  QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
+
+  verbose(FUNC, tr("Check depot: %1, Value: %L3 %2, AvCash: %L4 %2, Positions: %5, OpOrders: %6")
+                  .arg(mSettings.value("DepotName"), mSettings.value("DepotCurrency"))
+                  .arg(mRealVar.value("TotalBalance"), 0, 'f', 2)
+                  .arg(mRealVar.value("Cash"), 0, 'f', 2)
+                  .arg(positions->size())
+                  .arg(orders->size()) );
+
+  //
+  // Check open orders
+  //
+  if(orders)
+  {
+    while(orders->next())
+    {
+      QSqlRecord order = orders->record();
+      int pieces    = order.value("Pieces").toInt();
+      bool buyOrder = order.value("Buy").toBool();
+      double limit  = order.value("Limit").toDouble();
+      QDate oDate   = order.value("ODate").toDate();
+      QDate vDate   = order.value("VDate").toDate();
+
+      QString oType = buyOrder ? tr("Buy") : tr("Sell");
+      QString limitTxt = limit == 0.0 ? tr("Best") : QString::number(limit, 'f', 2);
+      if(limit) limitTxt.append(" " + order.value("Currency").toString());
+      QString verbText = tr("Check order: %2, %1 %5x %3, %4")
+                        .arg(oType, oDate.toString(Qt::ISODate), order.value("FiName").toString(), limitTxt)
+                        .arg(pieces);
+
+      verbText = verbText.leftJustified(80, '.');
+      mSettings.insert("VerboseText", verbText);
+
+      BarTuple* bars = mFilu->getBars(order.value("FiId").toInt(), order.value("MarketId").toInt()
+                                    , oDate.addDays(mBarsNeeded * -1.4).toString(Qt::ISODate)
+                                    , mToDate.toString(Qt::ISODate));
+      if(!bars)
+      {
+        verbText.append(tr("*** WARNING *** Got no bars."));
+        verbose(FUNC, verbText);
+        continue;
+      }
+
+      mData = new DataTupleSet();
+      mData->appendBarTuple(bars, "THIS");
+
+      if(!initVariables()) return false;
+
+      int idx = mData->findDate(oDate);
+      if(idx < Tuple::eInRange)
+      {
+        verbText.append(tr("*** WARNING *** Order date is not in bars."));
+        verbose(FUNC, verbText);
+        continue;
+      }
+
+      mData->rewind(idx - 1);
+      int orderId = order.value("OrderId").toInt();
+      double price;
+      double executedPrice = -1.0;
+
+      if((limit == 0.0) and (buyOrder)) limit = DBL_MAX;
+
+      while(mData->next())
+      {
+        QDate date;
+        mData->getDate(date);
+
+        if(date < oDate) continue;
+
+        if(date > vDate)
+        {
+          // Order experied
+          verbText.append(tr("Experied on %1").arg(date.toString(Qt::ISODate)));
+          verbose(FUNC, verbText);
+
+          mFilu->updateField("status", 1, ":user", "order", orderId); // 1=experied
+          break;
+        }
+
+        if(buyOrder)
+        {
+          // Buy order
+          mData->getValue("OPEN", price);
+          if(price < limit)
+          {
+            executedPrice = price;
+          }
+          else
+          {
+            mData->getValue("LOW", price);
+            if(price < limit) executedPrice = limit;
+            else if(price == limit) executedPrice = -2.0; // Ask whats up
+          }
+        }
+        else
+        {
+          // Sell order
+          mData->getValue("OPEN", price);
+          if(price > limit)
+          {
+            executedPrice = price;
+          }
+          else
+          {
+            mData->getValue("HIGH", price);
+            if(price > limit) executedPrice = limit;
+            else if(price == limit) executedPrice = -2.0; // Ask whats up
+          }
+        }
+
+        if(executedPrice > -1.0)
+        {
+          postExecutedOrder(order, date, executedPrice);
+          break;
+        }
+        else if(executedPrice == -2.0)
+        {
+          // Update DB
+          mFilu->updateField("status", 4, ":user", "order", orderId); // 4=ask user
+
+          verbose(FUNC, verbText + tr("Unsure if executed on %1").arg(date.toString(Qt::ISODate)));
+
+          executedPrice = -1.0;
+          // Don't break; go on
+        }
+
+      } // while(mData->next())
+
+      if(executedPrice == -1)
+      {
+        verbText.append(tr("Nothing happens."));
+        verbose(FUNC, verbText);
+      }
+
+      delete mData;
+    } // while(orders->next())
+  }
+  else
+  {
+    // Because of an error while getting orders we should break here
+    return false;
+  }
+
+  //
+  // Check portfolio for signals
+  //
+  if(positions)
+  {
+    while(positions->next())
+    {
+      QSqlRecord pos = positions->record();
+
+      QString verbText = tr("Check position: %1x %2...")
+                           .arg(pos.value("Pieces").toInt(), 4)
+                           .arg(pos.value("FiName").toString());
+
+      verbText = verbText.leftJustified(80, '.');
+      mSettings.insert("VerboseText", verbText);
+
+      QDate posDate  = pos.value("Date").toDate();
+      BarTuple* bars = mFilu->getBars(pos.value("FiId").toInt(), pos.value("MarketId").toInt()
+                                    , posDate.addDays(mBarsNeeded * -1.4).toString(Qt::ISODate)
+                                    , mToDate.toString(Qt::ISODate));
+
+      if(!bars)
+      {
+        verbText.append(tr("*** WARNING *** Got no bars."));
+        verbose(FUNC, verbText);
+        continue;
+      }
+
+      mRealVar.insert("Long", pos.value("Pieces").toDouble());
+      mRealVar.insert("AvgLong", pos.value("Price").toDouble());
+      mRealVar.insert("OffMarket", 0.0);
+
+      // Take here again mLastCheckDate to prevent doing
+      // stupid things if --Filu LastDepotCheck='anno x' was given
+      mLastCheckDate = mRcFile->getDT("LastDepotCheck");
+      if(mLastCheckDate < posDate) mLastCheckDate = posDate;
+
+      if(!check(bars))
+      {
+        verbText.append(tr("Nothing todo."));
+        verbose(FUNC, verbText);
+      }
+
+      mInStock.insert(bars->fiId());
+
+    } //while(positions->next())
+  }
+
+  if(mRealVar.value("Cash") < mSettings.value("MinPositionSize").toDouble())
+  {
+    verbose(FUNC, tr("Not enough cash to buy something."));
+    return false;
+  }
+
+  mRealVar.remove("Long");
+  mRealVar.remove("AvgLong");
+  mRealVar.remove("OffMarket");
+
+  mLastCheckDate = mRcFile->getDT("LastDepotCheck");
+  mSettings.remove("VerboseText");
+
+  verbose(FUNC, "");
+
+  return true;
+}
+
+QDate Trader::needBarsFrom()
+{
+  return mFromDate;
+}
+
+QStringList Trader::workOnGroups()
+{
+  return mSettings.value("WorkOnFiGroup").split(",");
+}
+
+bool Trader::check(BarTuple* bars)
+{
+  // Returns true if you should buy and false...if not
+
+  if(!bars) return false;
+  if(mInStock.contains(bars->fiId())) return false;  // Nothing todo, already checked at prepare()
+
+  mData = new DataTupleSet();
+  mData->appendBarTuple(bars, "THIS");
+
+  if(!initVariables()) return false;
+
+  // Overwrite some status variables
+  foreach(QString var, mRealVar.keys()) setTo(var, mRealVar.value(var));
+  setTo("Cash", inFiCurrency(mVariable.value("Cash")));
+  setTo("TotalBalance", inFiCurrency(mVariable.value("TotalBalance")));
+  setTo("MinPositionSize", inFiCurrency(mVariable.value("MinPositionSize")));
+
+  // Look for open orders and calc our status
+  QSqlQuery* orders = mFilu->getOrders(mDepotId, bars->fiId());
+  if(orders)
+  {
+    while(orders->next())
+    {
+      QSqlRecord order = orders->record();
+      if(order.value("Buy").toBool())
+      {
+        addTo("OOLongBuy", 1);
+        addTo("OpenLongBuy", order.value("Pieces").toInt());
+        addTo("OpenVolume", order.value("Pieces").toInt() * order.value("Limit").toDouble());
+      }
+      else
+      {
+        addTo("OOLongSell", 1);
+        addTo("OpenLongSell", order.value("Pieces").toInt());
+      }
+    }
+  }
+
+  // To decide what is todo now could be pretty complicate
+  // if we had for some days not checked our depot.
+  // I keep it simple and scan *backwards*.
+  int idx = mData->dataTupleSize();
+  while(idx)
+  {
+    mData->rewind(--idx);
+
+    QDate date;
+    mData->getDate(date);
+    if(date <= mLastCheckDate) break;
+
+    calcGain();
+    checkOpenOrders();
+    // Third, check each rule
+    for(int i = 0; i < mRules.size(); ++i)
+    {
+      double condition;
+      int ret = mRules.at(i).first->calc(condition);
+      if(ret == 1) continue; // No valid value in mData
+      else if(ret == 2)
+      {
+        error(FUNC, "Bad value from mu::Parser");
+        continue;
+      }
+
+      if(condition > 0.0) takeActions(mRules.at(i).second);
+    }
+
+    if(mOrders.size()) break; // Ok, we have a winner
+
+    // Fourth, sync mData with mVariable
+    for(int i = 0; i < mDataAdded.size(); ++i)
+      mData->setValue(mDataAdded.at(i), mVariable.value(mDataAdded.at(i)));
+    // Fifth, ...play it again Sam
+  }
+
+  delete mData;
+
+  if(mOrders.size())
+  {
+    QStringList o = mOrders.at(0);
+    // Order looks like
+    // <date>, BUY, <type>, <piece>, <limit value>, <rest validity>, <condition>
+    QDate  oDate  = QDate::fromString(o.at(0), Qt::ISODate);
+    oDate.addDays(1); // Today we have a signal, the order could only be placed tomorrow
+    while(oDate.dayOfWeek() > 5) oDate.addDays(1); // Skip Saturday/Sunday
+
+    QDate  vDate  = oDate.addDays(o.at(5).toInt() * 1.4);
+    bool   buy    = o.at(1).startsWith("BUY")  ? true : false;
+    int    pieces = o.at(3).toInt();
+    double limit  = o.at(4).startsWith("Best") ?  0.0 : o.at(4).toDouble();
+
+    mFilu->addOrder(mDepotId, oDate, vDate, bars->fiId(), pieces
+                  , limit, buy, bars->marketId(), 0, o.at(6)); // 0=status=suggestion
+
+    verbose(FUNC, mSettings.value("VerboseText") + tr("Signal: %1").arg(o.at(6)));
+
+    if(verboseLevel() >= eAmple)
+    {
+      FiTuple* fi = mFilu->getFi(bars->fiId());
+      fi->next();
+      MarketTuple* market = mFilu->getMarket(bars->marketId());
+      QString limitTxt = o.at(4);
+      if(limit) limitTxt.append(" " + market->currSymbol());
+
+      verbose(FUNC, tr("Order for %5, %8: %1 at %7: %2x %3, Limit: %4, Validity: %6\n")
+                      .arg(o.at(1), o.at(3), fi->name())
+                      .arg(limitTxt)
+                      .arg(oDate.toString(Qt::ISODate))
+                      .arg(vDate.toString(Qt::ISODate))
+                      .arg(market->name(), mSettings.value("DepotName")), eAmple);
+      delete fi;
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+void Trader::postExecutedOrder(const QSqlRecord& order, const QDate& execDate, double execPrice)
+{
+  bool buyOrder  = order.value("Buy").toBool();
+  int pieces     = order.value("Pieces").toInt();
+  QString fiName = order.value("FiName").toString();
+  QString curry  = order.value("Currency").toString();
+  QString oType  = buyOrder ? tr("Buy") : tr("Sell");
+
+  QString verbText = mSettings.value("VerboseText")
+                   + tr("Executed on %1 at %L3 %2").arg(execDate.toString(Qt::ISODate), curry)
+                                                   .arg(execPrice);
+  verbose(FUNC, verbText);
+
+  // Update DB
+  mFilu->updateField("status", 2, ":user", "order", order.value("OrderId").toInt()); // 2=executed
+
+  int p = execPrice < 2.0 ? 4 : 2; // Precision
+  QString txt = tr("%1 %4x %2 at %L5 %3").arg(oType, fiName, curry).arg(pieces).arg(execPrice, 0, 'f', p);
+  if(mSettings.value("FiCurrencyId") != mSettings.value("DepotCurrencyId"))
+  {
+    txt.append(QString(", %1/%2=%3").arg(curry, mSettings.value("DepotCurrency")).arg(inDepotCurrency(1.0)));
+  }
+  double volume = inDepotCurrency(execPrice) * pieces;
+
+  if(buyOrder)
+  {
+    mFilu->addDepotPos(mDepotId, execDate, order.value("FiId").toInt()
+                      , pieces, execPrice
+                      , order.value("MarketId").toInt()
+                      , order.value("Note").toString());
+
+    mFilu->addAccountPos(mDepotId, execDate, 0, txt, -volume); // 0=Fi value
+  }
+  else
+  {
+    mFilu->addDepotPos(mDepotId, execDate, order.value("FiId").toInt()
+                      , -pieces, execPrice
+                      , order.value("MarketId").toInt()
+                      , order.value("Note").toString());
+
+    mFilu->addAccountPos(mDepotId, execDate, 0, txt, volume); // 0=Fi value
+  }
+
+  // Add commission to account
+  txt = tr("Commission for %1 %3x %2").arg(oType, fiName).arg(pieces);
+  mFilu->addAccountPos(mDepotId, execDate, 2, txt, calcFee(volume)); // 2=Commission value
+}
+
 bool Trader::parseRule()
 {
   QTime time;
@@ -127,13 +566,10 @@ bool Trader::parseRule()
   if(!mOkSettings) error(FUNC, tr("No [Settings] in rule file."));
   if(!mOkRules)    error(FUNC, tr("No [Rules] in rule file."));
 
-  if(!hasError())
-  {
-    //verbose(FUNC, tr("Rule setup in %1 milliseconds.").arg(time.elapsed()));
-    return true;
-  }
+  if(hasError()) return false;
 
-  return false;
+  //verbose(FUNC, tr("Rule setup in %1 milliseconds.").arg(time.elapsed()));
+  return true;
 }
 
 bool Trader::nextLine(bool nextBlock/* = false*/)
@@ -174,18 +610,17 @@ void Trader::readSettings()
   mSettings.insert("GainRefLong", "CLOSE");
   mSettings.insert("GainRefShort", "CLOSE");
   mSettings.insert("PeakRefLong", "HIGH");
-  mSettings.insert("CommissionFix", "0.0");
-  mSettings.insert("CommissionPercentage", "0.0");
+  mSettings.insert("FeeFormula", "");
   mSettings.insert("InitialCash", "5000");
+  mSettings.insert("MinPositionSize", "");
   mSettings.insert("WorkOnFiGroup", "");
-  mSettings.insert("WorkWithPortfolio", "");
   //mSettings.insert("", "");
 
   while(nextLine())
   {
     if(!mLine.contains("="))
     {
-      error(FUNC, tr("No equal sign at line '%1'.").arg(QString::number(mLineNumber)));
+      error(FUNC, tr("No equal sign at line %1.").arg(QString::number(mLineNumber)));
       continue;
     }
 
@@ -203,8 +638,17 @@ void Trader::readSettings()
       continue;
     }
 
-    mSettings.insert(setting.at(0),setting.at(1));
+    mSettings.insert(setting.at(0), setting.at(1));
   }//while(nextLine());
+
+  // Check if MinPositionSize was set
+  if(mSettings.value("MinPositionSize").isEmpty())
+  {
+    mSettings.insert("MinPositionSize", QString::number(mSettings.value("InitialCash").toDouble()  * 0.20));
+  }
+
+  // Set the fee formula
+  setFeeFormula(mSettings.value("FeeFormula"));
 
   // Load the indicator...or not
   if(mAutoLoadIndicator)
@@ -338,26 +782,54 @@ void Trader::appendMData()
   //appendToMData("");
 }
 
-// bool Trader::check(int fiId, int marketId)
-// {
-//
-// }
-
-bool Trader::simulate(DataTupleSet* data)
+bool Trader::setFeeFormula(const QString& exp)
 {
-  if(hasError()) return false;
-
-  if(data->dataTupleSize() < mBarsNeeded)
+  if(exp.isEmpty())
   {
-    error(FUNC, tr("Too less bars for simulation."));
+    mFeeCalc->setExp("10 + OV * 0.001");
+    return true;
+  }
+
+  verbose(FUNC, tr("Set fee formula to: %1").arg(exp), eAmple);
+
+  if(!mFeeCalc->setExp(exp))
+  {
+    error(FUNC, tr("Can't set fee formula."));
+    addErrors(mFeeCalc->errors());
     return false;
   }
 
-//   QTime time;
-//   time.start();
+  if(verboseLevel() >= eInfo)
+  {
+    double ov;
+    ov = 1000.0;
+    verbose(FUNC, tr("Fee for order volume %L1 would be %L2.").arg(ov, 0, 'f', 2).arg(calcFee(ov), 0, 'f', 2), eAmple);
+    ov = 100000.0;
+    verbose(FUNC, tr("Fee for order volume %L1 would be %L2.").arg(ov, 0, 'f', 2).arg(calcFee(ov), 0, 'f', 2), eAmple);
+  }
 
-  mData = data;
-  mOpenOrders.clear(); // FIXME:could make trouble when do real jobs :-/
+  return true;
+}
+
+double Trader::calcFee(double& volume)
+{
+  static double* ovVar;
+
+  if(ovVar != &volume)
+  {
+    ovVar = &volume;
+    mFeeCalc->useVariable("OV", volume);
+  }
+
+  double fee;
+  mFeeCalc->calc(fee);
+
+  return fee;
+}
+
+bool Trader::initVariables()
+{
+  mOpenOrders.clear();
   mOrders.clear();
   mReport.clear();
   mDataAdded.clear();
@@ -385,19 +857,15 @@ bool Trader::simulate(DataTupleSet* data)
     mRules.at(i).first->useData(mData);
   }
 
-  // Ok, let's begin
   appendMData();
 
   // Set status variables
-  setTo("CommissionFix", mSettings.value("CommissionFix").toDouble());
-  setTo("CommissionPercentage", mSettings.value("CommissionPercentage").toDouble());
   setTo("Cash", mSettings.value("InitialCash").toDouble());
   setTo("TotalBalance", mSettings.value("InitialCash").toDouble());
+  setTo("MinPositionSize", mSettings.value("MinPositionSize").toDouble());
   setTo("EntryBalanceLong", 0.0);
   //setTo("", mSettings.value("").toDouble());
 
-  if(!mSettings.contains("MinPositionSize")) setTo("MinPositionSize", mVariable.value("Cash") * 0.20);
-  else setTo("MinPositionSize", mSettings.value("MinPositionSize").toDouble());
 
   setTo("OOLongBuy", 0.0);
   setTo("OOLongSell", 0.0);
@@ -426,6 +894,117 @@ bool Trader::simulate(DataTupleSet* data)
   setTo("TotalCommission", 0.0);
   //setTo("", 0.0);
 
+  // Got the currency of the FI and save the question for later reuse
+  // so that we not each time to fetch the market
+  int fiId, marketId;
+  mData->getIDs("THIS", fiId, marketId);
+  QString curr = mSettings.value(QString("MarketCurrency%1").arg(marketId));
+  if(curr.isEmpty())
+  {
+    MarketTuple* market = mFilu->getMarket(marketId);
+    curr = QString::number(market->currId());
+    mSettings.insert(QString("MarketCurrency%1").arg(marketId), curr);
+    mSettings.insert("FiCurrencyId", curr);
+
+    // Test if we can convert money
+    clearErrors();
+    inFiCurrency(1.0);
+    if(mFilu->hasError()) // FIXME: don't ask filu
+    {
+      verbose(FUNC, tr("WARNING No data to convert currency %1, printed pieces are wrong.").arg(market->currName()));
+      mSettings.insert(QString("MarketCurrency%1").arg(marketId), mSettings.value("DepotCurrencyId"));
+    }
+    delete market;
+  }
+  else
+  {
+    mSettings.insert("FiCurrencyId", curr);
+  }
+
+  if(mSettings.value("FiCurrencyId") != mSettings.value("DepotCurrencyId"))
+  {
+    // Convert all money data
+    setTo("Cash", inFiCurrency(mVariable.value("Cash")));
+    setTo("TotalBalance", inFiCurrency(mVariable.value("TotalBalance")));
+    setTo("MinPositionSize", inFiCurrency(mVariable.value("MinPositionSize")));
+  }
+
+  return true;
+}
+
+double Trader::inFiCurrency(double money)
+{
+  if(mSettings.value("FiCurrencyId") == mSettings.value("DepotCurrencyId"))
+    return money; // Nice, nothing todo
+
+  QDate date;
+  mData->getDate(date);
+  if(!date.isValid())
+  {
+    mData->rewind(mData->dataTupleSize() - 1);
+    mData->getDate(date);
+    mData->rewind();
+  }
+  QString dateString = date.toString(Qt::ISODate);
+  mFilu->convertCurrency(money
+                       , mSettings.value("DepotCurrencyId").toInt()
+                       , mSettings.value("FiCurrencyId").toInt()
+                       , date);
+
+  if(mFilu->hasError())
+  {
+    // Don't try again to convert money
+    mSettings.insert("FiCurrencyId", mSettings.value("DepotCurrencyId"));
+  }
+
+  return money;
+}
+
+double Trader::inDepotCurrency(double money)
+{
+  if(mSettings.value("FiCurrencyId") == mSettings.value("DepotCurrencyId"))
+    return money; // Nice, nothing todo
+
+  QDate date;
+  mData->getDate(date);
+  if(!date.isValid())
+  {
+    mData->rewind(mData->dataTupleSize() - 1);
+    mData->getDate(date);
+    mData->rewind();
+  }
+  QString dateString = date.toString(Qt::ISODate);
+
+  mFilu->convertCurrency(money
+                       , mSettings.value("FiCurrencyId").toInt()
+                       , mSettings.value("DepotCurrencyId").toInt()
+                       , date);
+
+  if(mFilu->hasError())
+  {
+    // Don't try again to convert money
+    mSettings.insert("FiCurrencyId", mSettings.value("DepotCurrencyId"));
+  }
+
+  return money;
+}
+
+bool Trader::simulate(DataTupleSet* data)
+{
+  if(hasError()) return false;
+
+  if(data->dataTupleSize() < mBarsNeeded)
+  {
+    error(FUNC, tr("Too less bars for simulation."));
+    return false;
+  }
+
+//   QTime time;
+//   time.start();
+
+  mData = data;
+
+  if(!initVariables()) return false;
 //   verbose(FUNC, tr("Variables setup in").arg(time.restart()));
 
   QDate date;
@@ -612,7 +1191,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
 
   if(!found)
   {
-    error(FUNC, tr("Group '%1'not found.").arg(group));
+    error(FUNC, tr("Group '%1' not found.").arg(group));
     return -1;
   }
 
@@ -781,10 +1360,10 @@ void Trader::actionBuy(const QStringList& action)
 
       newOrder.replace(2, QString::number(pieces));
 
-      // In case of OPEN set limit to a very big value FIXME: uses a c++ foobar
+      // In case of OPEN set limit to a very big value
       if(action.at(3) == "OPEN")
       {
-        newOrder.replace(3, QString::number(1000000.00));
+        newOrder.replace(3, QString::number(DBL_MAX));
         mOpenOrders.append(newOrder);
         // Change once more for real uses
         newOrder.replace(3, "Best");
@@ -866,10 +1445,10 @@ void Trader::actionSell(const QStringList& action)
 
     newOrder.replace(2, QString::number(pieces));
 
-    // In case of OPEN set limit to a very tiny value FIXME: uses a c++ foobar
+    // In case of OPEN set limit to a very tiny value
     if(action.at(3) == "OPEN")
     {
-      newOrder.replace(3, QString::number(0.0000001));
+      newOrder.replace(3, QString::number(DBL_EPSILON));
       mOpenOrders.append(newOrder);
       // Change once more for real uses
       newOrder.replace(3, "Best");
@@ -962,7 +1541,7 @@ void Trader::checkOpenBuyOrder(QStringList& order)
       if(mVariable.value("OOLongBuy") + mVariable.value("OOShortBuy") == 0)  setTo("OpenVolume", 0.0);
       else addTo("OpenVolume", -orderVolume);
 
-      price = mVariable.value("CommissionFix") + mVariable.value("CommissionPercentage") * orderVolume / 100.0;
+      price = calcFee(orderVolume);
       addTo("Cash", -price);
       addTo("TotalCommission", price);
 
@@ -1068,7 +1647,7 @@ void Trader::checkOpenSellOrder(QStringList& order)
       addTo("OOLongSell", -1.0);
       addTo("OpenLongSell", -orderSize);
 
-      price = mVariable.value("CommissionFix") + mVariable.value("CommissionPercentage") * orderVolume / 100.0;
+      price = calcFee(orderVolume);
       addTo("Cash", -price);
       addTo("TotalCommission", price);
 

@@ -122,8 +122,17 @@ M: restore/mark the used indicator after program start
 L: change from treeview to "something better"
 
 
-COType/COLine
-===============
+Trader
+========
+M: Change QList<QStringList> mOrders to QList<QHash<QString, QString>> or create a
+   special struct for one order
+
+
+Depots
+========
+M: Print nice summary report. After all checks are done, select from order table all
+   orders newer than "today".
+M: Print a progressbar while checking, force Trader to print nothing in that case.
 
 
 Exporter
