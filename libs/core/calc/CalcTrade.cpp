@@ -71,9 +71,12 @@ bool CalcTrade::calc()
   }
 
   // Print report to console
-  QList<QStringList> report;
-  mTrader->getReport(report);
-  for(int i = 0; i < report.size(); ++i) qDebug() << report.at(i);
+  if(verboseLevel() >= eAmple)
+  {
+    QList<QStringList> report;
+    mTrader->getReport(report);
+    for(int i = 0; i < report.size(); ++i) verbose(FUNC, report.at(i).join("; "));
+  }
 
   mData->rewind();
   while(mData->next())

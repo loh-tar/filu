@@ -1,4 +1,4 @@
-2011-02-15
+2011-02-16
 ============
 Sundries
 ----------
@@ -11,6 +11,8 @@ Sundries
  - Change TradingRules, Replace 'Commission<foo>' with 'FeeFormula'
    and remove 'WorkWithPortfolio'.
  - AgentF, new command 'depots <arg>'. See doc/first-steps.txt.
+ - Suppress output of trading report when viewing a simulation.
+   If you want it back start PerformerF with --Filu VerboseLevel=Ample
 
 
 2011-02-04
