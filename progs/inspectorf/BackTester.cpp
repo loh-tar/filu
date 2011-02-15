@@ -296,7 +296,7 @@ bool BackTester::detectConstants()
     mCType.append(eIndicator);
   }
 
-  if(verboseLevel() >= eInfo)
+  if(verboseLevel(eInfo))
   {
     for(int i = 0; i < mConst.size(); ++i)
     {

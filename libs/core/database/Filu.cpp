@@ -1346,7 +1346,7 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
     sqlStatement.append(line);
   }
 
-  if(verboseLevel() >= eAmple)
+  if(verboseLevel(eAmple))
   {
     QString parms;
     foreach(QString parm, parameters.toList()) parms.append(parm + " ");
@@ -1370,7 +1370,7 @@ int Filu::execute(QSqlQuery* query)
   mLastError = query->lastError().databaseText();
   bool isError = !query->isActive();
 
-  if(verboseLevel() == eMax) // For heavy debuging print each sql
+  if(verboseLevel(eMax)) // For heavy debuging print each sql
   {
     verbose(FUNC, QString("ExecutedQuery: %1").arg(mLastQuery));
     verbose(FUNC, QString("DatabaseText: %1").arg(query->lastError().databaseText()));
@@ -1412,7 +1412,7 @@ int Filu::execute(QSqlQuery* query)
     errInfo(FUNC, tr("Error text: %1").arg(mLastError));
     return eError;
   }
-  else if(verboseLevel() >= eAmple)
+  else if(verboseLevel(eAmple))
   {
     verbose(FUNC, tr("No error after execute query '%1'.").arg(mSQLs.key(query)));
   }
@@ -1475,7 +1475,7 @@ void Filu::readSettings()
   setLogFile(/*FIXME:FUNC, */mRcFile->getST("LogFile"));
   setVerboseLevel(FUNC, mRcFile->getST("SqlDebugLevel"));
 
-  if(verboseLevel() == eMax) printSettings();
+  if(verboseLevel(eMax)) printSettings();
 }
 
 void Filu::printSettings()

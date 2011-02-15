@@ -71,7 +71,7 @@ bool CalcTrade::calc()
   }
 
   // Print report to console
-  if(verboseLevel() >= eAmple)
+  if(verboseLevel(eAmple))
   {
     QList<QStringList> report;
     mTrader->getReport(report);

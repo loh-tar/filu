@@ -153,7 +153,7 @@ void Scanner::loadIndicator(const QStringList& parm)
 
   mRcFile->endGroup();
 
-  if(verboseLevel() == eMax)
+  if(verboseLevel(eMax))
   {
     QString txt = tr("Loaded Indi: %1 Frame: %2");
     for(int i = 0; i < mIndicators.size(); ++i)
@@ -221,7 +221,7 @@ void Scanner::autoSetup()
     file.close();
   }
 
-  if(verboseLevel() == eMax)
+  if(verboseLevel(eMax))
   {
     for(int i = 2; i < indiList.size(); ++i)
     {
@@ -261,7 +261,7 @@ void Scanner::scanGroup(const QStringList& parm)
       continue;
     }
 
-    if(verboseLevel() == eMax)
+    if(verboseLevel(eMax))
     {
       QString txt = tr("%1 FIs to scan in group %2");
       verbose(FUNC, txt.arg(query->size()).arg(group), eMax);
@@ -285,7 +285,7 @@ void Scanner::scanAll()
     return;
   }
 
-  if(verboseLevel() == eMax)
+  if(verboseLevel(eMax))
   {
     QString txt = tr("%1 FIs to scan.");
     verbose(FUNC, txt.arg(symbols->count()), eMax);

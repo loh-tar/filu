@@ -477,7 +477,7 @@ bool Trader::check(BarTuple* bars)
 
     verbose(FUNC, mSettings.value("VerboseText") + tr("Signal: %1").arg(o.at(6)));
 
-    if(verboseLevel() >= eAmple)
+    if(verboseLevel(eAmple))
     {
       FiTuple* fi = mFilu->getFi(bars->fiId());
       fi->next();
@@ -669,7 +669,7 @@ void Trader::readSettings()
     mBarsNeeded = mIndicator->barsNeeded();
   }
 
-//   if(verboseLevel() == eMax)
+//   if(verboseLevel(eMax))
 //   {
 //     QHashIterator<QString, QString> i(mSettings);
 //     while(i.hasNext())
@@ -749,7 +749,7 @@ void Trader::readRules()
     mRules.last().second = actions;           // Set the actions
   }//while(nextLine());
 
-//   if(verboseLevel() == eMax)
+//   if(verboseLevel(eMax))
 //   {
 //     for(int i = 0; i < mRules.size(); ++i)
 //     {
@@ -799,7 +799,7 @@ bool Trader::setFeeFormula(const QString& exp)
     return false;
   }
 
-  if(verboseLevel() >= eInfo)
+  if(verboseLevel(eInfo))
   {
     double ov;
     ov = 1000.0;
