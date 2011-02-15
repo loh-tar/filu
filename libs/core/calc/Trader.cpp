@@ -905,6 +905,7 @@ bool Trader::initVariables()
     curr = QString::number(market->currId());
     mSettings.insert(QString("MarketCurrency%1").arg(marketId), curr);
     mSettings.insert("FiCurrencyId", curr);
+    if(mSettings.contains("SimulationOnly")) mSettings.insert("DepotCurrencyId", curr);
 
     // Test if we can convert money
     clearErrors();
@@ -919,6 +920,7 @@ bool Trader::initVariables()
   else
   {
     mSettings.insert("FiCurrencyId", curr);
+    if(mSettings.contains("SimulationOnly")) mSettings.insert("DepotCurrencyId", curr);
   }
 
   if(mSettings.value("FiCurrencyId") != mSettings.value("DepotCurrencyId"))
@@ -1003,6 +1005,11 @@ bool Trader::simulate(DataTupleSet* data)
 //   time.start();
 
   mData = data;
+
+  // Don't throw a currency warning if we only simulate.
+  // We have no depot currency in that case.
+  // FIXME: Looks bad or ok?
+  mSettings.insert("SimulationOnly", "Yes");
 
   if(!initVariables()) return false;
 //   verbose(FUNC, tr("Variables setup in").arg(time.restart()));
