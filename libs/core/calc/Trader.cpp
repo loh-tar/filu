@@ -156,7 +156,7 @@ bool Trader::prepare(const QSqlRecord& depot)
   mRealVar.insert("Cash", depCash - depNeedC);
   mRealVar.insert("TotalBalance", depValue + depCash);
 
-  QSqlQuery* orders = mFilu->getOrders(mDepotId);
+  QSqlQuery* orders = mFilu->getOrders(mDepotId, FiluU::eOrderActive);
 
   mFilu->setSqlParm(":depotId", mDepotId);
   mFilu->setSqlParm(":fiId",  -1);

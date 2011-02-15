@@ -458,7 +458,7 @@ double FiluU::getDepotValue(int depotId, const QDate& date/* = QDate(3000, 01, 0
   return query->value(0).toDouble();
 }
 
-QSqlQuery* FiluU::getOrders(int depotId, int status/* = 5*/, int fiId/* = -1*/)
+QSqlQuery* FiluU::getOrders(int depotId, int status/* = -1*/, int fiId/* = -1*/)
 {
   if(!initQuery("GetDepotOrders")) return 0;
 
@@ -471,6 +471,21 @@ QSqlQuery* FiluU::getOrders(int depotId, int status/* = 5*/, int fiId/* = -1*/)
   if(execute(query) <= eError) return 0;
 
   return query;
+}
+
+QString FiluU::orderStatusText(int status)
+{
+  switch(status)
+  {
+    case eOrderAdvice:   return tr("Advice");
+    case eOrderExperied: return tr("Experied");
+    case eOrderExecuted: return tr("Executed");
+    case eOrderCanceled: return tr("Canceled");
+    case eOrderNeedHelp: return tr("Unsure");
+    case eOrderActive:   return tr("Active");
+    default:
+      return "UnknownStatus";
+  }
 }
 
 void FiluU::createTables()

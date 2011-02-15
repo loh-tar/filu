@@ -38,7 +38,14 @@ class Depots : public FClass
     bool          exec(const QStringList& command);
 
   protected:
-    bool          checkAll();
+    void          check(const QStringList& parm);
+    void          checkAll(const QStringList& parm);
+    void          listOrders(const QStringList& parm);
+    void          listOrders(const QSqlRecord& depot);
+    void          listOrders(QSqlQuery* orders, int status);
+    void          printOrder(const QSqlRecord& order);
+
+    int           mLineNo;
 
   private:
 };

@@ -34,6 +34,16 @@ class FiluU : public Filu
                 FiluU(const QString& connectionName, RcFile* rcFile);
     virtual    ~FiluU();
 
+    enum OrderStatus
+    {
+      eOrderAdvice   = 0,
+      eOrderExperied = 1,
+      eOrderExecuted = 2,
+      eOrderCanceled = 3,
+      eOrderNeedHelp = 4,
+      eOrderActive   = 5
+    };
+
     void        openDB();
 
     QSqlQuery*  searchFi(const QString& name, const QString& type);
@@ -86,7 +96,9 @@ class FiluU : public Filu
     double      getDepotCash(int depotId, const QDate& date = QDate(3000, 01, 01));
     double      getDepotNeededCash(int depotId, const QDate& date = QDate(3000, 01, 01));
     double      getDepotValue(int depotId, const QDate& date = QDate(3000, 01, 01));
-    QSqlQuery*  getOrders(int depotId, int status = 5, int fiId = -1); // 5=aktive, -1=all Fi
+    QSqlQuery*  getOrders(int depotId, int status = -1, int fiId = -1); // -1=Any status, All Fi
+
+    QString     orderStatusText(int status);
 
   private:
     void        createTables();

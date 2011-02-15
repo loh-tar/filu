@@ -1,4 +1,4 @@
-2011-02-13
+2011-02-15
 ============
 Sundries
 ----------
@@ -10,7 +10,7 @@ Sundries
  - Add depot management, well partial and poor documented.
  - Change TradingRules, Replace 'Commission<foo>' with 'FeeFormula'
    and remove 'WorkWithPortfolio'.
- - AgentF, new command 'depots --check'.
+ - AgentF, new command 'depots <arg>'. See doc/first-steps.txt.
 
 
 2011-02-04
