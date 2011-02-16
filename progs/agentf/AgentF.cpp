@@ -637,10 +637,12 @@ void AgentF::startClones()
 {
   int maxClones = mRcFile->getIT("MaxClones");
 
-  if(mCommands.size() < maxClones)
+  if((mCommands.size() - 1) < maxClones)
   {
     // Don't create more clones as useful
-    maxClones = mCommands.size();
+    // One less since we have at least one MASTER_CMD
+    // FIXME: That could be differend sometimes, calc/check it smarter
+    maxClones = mCommands.size() - 1;
   }
 
   QString logFile = mRcFile->getST("LogFile");
