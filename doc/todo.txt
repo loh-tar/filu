@@ -48,6 +48,32 @@ M: print more precise info when something goes wrong.
 M: Add missing filu --foo switches
 
 
+InspectorF
+============
+Needs a review/rethink.
+- The complete strategy hash looks overkilled, are 6 char not enough?
+- Build the hash only out of realy important parts. Remove things like
+  used group. Is it possible to replace variable names with normalized names?
+- StrategyEditor.cpp looks poor. Rename to something else and use the name for
+  a true editor with load/save, maybe at ManagerF. Reformat the rule file nicely
+  when loaded
+- Rethink the rule format. I guess it would be nicer split a rule over several
+  lines, but thats a Trader issue
+- Merge 'Last Results', 'Best Foo' tabs into the 'Detail' tab so that detail is
+  always visible and changes when one of the other one is clicked.
+
+
+BackTester
+============
+M: Change the way how 'Serial Test' works. Now is one strategy build and then
+   each FI tested. But fetching bars out of the DB is much more expensive than
+   rebuid and/or recalculate an indicator. That should result in nice
+   performance improvement when testing many combinations and/or FIs.
+M: Add 'Complex Test' (or 'Real Test') which runs a nicely expensive test where
+   each day of the simulation time frame is checked each FI. As opposite checks
+   'Serial Test' one FI over the time frame and takes than the next FI.
+
+
 PerformerF
 ============
 H: add a shortcut to display/hide the toolbar, now you can disable the tb with

@@ -176,7 +176,7 @@ void InspectorF::init()
 
   QDir dir(mTradingRulePath);
   QStringList allFiles = dir.entryList(QDir::Files, QDir::Name);
-  qDebug() << allFiles;
+//   qDebug() << allFiles;
   mTradingRuleName.insertItem(1, allFiles.at(0));
   mTradingRuleName.setEditable(true);
   connect(&mTradingRuleName, SIGNAL(activated(const QString &)), this, SLOT(loadRule(const QString &)));
@@ -449,7 +449,7 @@ void InspectorF::loopsNeedet(int ln)
   mProgessBar->reset();
   mProgessBar->setRange(0, ln);
   mProgessBar->setValue(0);
-  qDebug() << "InspectorF::loopsNeedet()" << ln << mProgessBar->format();
+//   qDebug() << "InspectorF::loopsNeedet()" << ln << mProgessBar->format();
 }
 
 void InspectorF::loopDone(int ld)
@@ -481,7 +481,7 @@ void InspectorF::backTestError()
 {
   clearErrors();
   addErrors(mBackTester->errors());
-  mReport.insertPlainText(formatErrors());
+  mReport.insertPlainText(formatErrors("%T *** %t *** %F %x") + "\n");
   mReport.moveCursor(QTextCursor::Start);
 
   mTabWidget->setCurrentWidget(&mReport);

@@ -14,6 +14,7 @@ Sundries
  - AgentF, new command 'filu <arg>'. See doc/first-steps.txt.
  - Suppress output of trading report when viewing a simulation.
    If you want it back start PerformerF with --Filu VerboseLevel=Ample
+ - Some minor fixes at InspectorF.
 
 
 2011-02-04

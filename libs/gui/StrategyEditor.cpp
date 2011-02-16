@@ -26,7 +26,9 @@ StrategyEditor::StrategyEditor(QWidget* parent)
   addWidget(&mIndi);
 
   mRule.setLineWrapMode(QTextEdit::NoWrap);
+  mRule.setFontFamily("Monospace");
   mIndi.setLineWrapMode(QTextEdit::NoWrap);
+  mIndi.setFontFamily("Monospace");
 
   connect(&mRule, SIGNAL(textChanged()), this, SIGNAL(edited()));
   connect(&mIndi, SIGNAL(textChanged()), this, SIGNAL(edited()));
