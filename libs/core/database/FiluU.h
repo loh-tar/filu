@@ -45,6 +45,7 @@ class FiluU : public Filu
     };
 
     void        openDB();
+    void        createFunctions();
 
     QSqlQuery*  searchFi(const QString& name, const QString& type);
 

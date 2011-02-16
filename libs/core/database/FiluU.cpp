@@ -45,6 +45,20 @@ void FiluU::openDB()
   if(query.size() == 0) createTables();
 }
 
+void FiluU::createFunctions()
+{
+  if(!initQuery("CreateUserFunctions")) return;
+  QSqlQuery* query = mSQLs.value("CreateUserFunctions");
+  int result = execute(query);
+  if(result <= eError)
+  {
+    error(FUNC, tr("Can't create user functions."));
+    return;
+  }
+  delete query;
+  mSQLs.remove("CreateUserFunctions");
+}
+
 QSqlQuery* FiluU::searchFi(const QString& name, const QString& type)
 {
   if(!initQuery("SearchFi")) return 0;
@@ -501,14 +515,5 @@ void FiluU::createTables()
   delete query;
   mSQLs.remove("CreateUserTables");
 
-  if(!initQuery("CreateUserFunctions")) return;
-  query  = mSQLs.value("CreateUserFunctions");
-  result = execute(query);
-  if(result <= eError)
-  {
-    error(FUNC, tr("Can't create user functions."));
-    return;
-  }
-  delete query;
-  mSQLs.remove("CreateUserFunctions");
+  createFunctions();
 }

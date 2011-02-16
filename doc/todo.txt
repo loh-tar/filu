@@ -37,7 +37,7 @@ M: write new GetSymbols.sql, now is too complicate an delivers not ever what
 M: add automatic new added FIs to the users FI group "New FIs". But that need a
    merge of Filu and FiluU.
 M: Create the main DB like the user tables => No need to use the console, let it
-   do ManagerF.
+   do ManagerF resp. AgentF.
 L: figure out optimum postgres parameters.
 L: list all markets a specific provider provides (?)
 
@@ -45,6 +45,7 @@ L: list all markets a specific provider provides (?)
 AgentF
 ========
 M: print more precise info when something goes wrong.
+M: Add missing filu --foo switches
 
 
 PerformerF

@@ -137,6 +137,30 @@ verbose
 
   agentf depots --check --verbose Ample
 
+filu
+------
+Create or update the Filu database.
+NOTE: Not to be confused with '--Filu' to overwrite a config setting.
+
+create [--db <db-name>] [--schema <schema>]
+  Create a new Filu database. Defaults of <db-name> and <schema> are 'filu'.
+  FIXME: Not yet implemented.
+
+drop <db-name>
+  Delete an existing database.
+  FIXME: Not yet implemented.
+
+update
+  Rebuild the database (user) functions.
+
+vacuum
+  Perform some janitor tasks by running vacuumdb.
+  See http://www.postgresql.org/docs/8.4/interactive/app-vacuumdb.html
+  FIXME: Not yet implemented.
+
+  agentf filu --create --db testdb
+  agentf filu --update
+
 rcf
 -----
 Read Command File. The file can contain each command supported by AgentF. Lines

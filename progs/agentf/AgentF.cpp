@@ -496,6 +496,30 @@ void AgentF::depots(const QStringList& parm)
   if(depots->hasError()) addErrors(depots->errors());
 }
 
+void AgentF::filu(const QStringList& parm)
+{
+  // parm list looks like
+  // agentf filu --update
+  // agentf filu --create [--db <db-name>] [--schema <schema>]
+
+  if(parm.contains("--update"))
+  {
+    mFilu->createFunctions();
+    if(!mFilu->hasError())
+    {
+      verbose(FUNC, tr("Database user functions successful updated."));
+    }
+  }
+  else if(parm.contains("--create"))
+  {
+    verbose(FUNC, tr("Not yet implemented, feel free to FIXME."));
+  }
+  else
+  {
+    verbose(FUNC, tr("What was that? :o)"));
+  }
+}
+
 void AgentF::addSplit(const QStringList& parm)
 {
   // parm list looks like
@@ -546,6 +570,7 @@ void AgentF::execCmd(const QStringList& parm)
   else if(cmd == "depots")   depots(parm);
   else if(cmd == "addSplit") addSplit(parm);
   else if(cmd == "daemon")   beEvil(parm);
+  else if(cmd == "filu")     filu(parm);
   else if(cmd == "info")
   {
     if(mRcFile->getIT("DebugLevel")) return; // Already printed, don't print twice
@@ -575,6 +600,7 @@ void AgentF::printUsage()
   print("    agentf depots --check");
   print("");
   print("  agentf exp <parameter list> (see doc/export-data.txt)");
+  print("  agentf filu <parameter list>");
   print("  agentf full [<fromDate> [<toDate>]]");
   print("    agentf full 2001-01-01");
   print("");
