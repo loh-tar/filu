@@ -1,3 +1,11 @@
+2011-02-18
+============
+AgentF
+--------
+ - Remove commands 'addFi' and 'addSplit'.
+ - New command 'add'. Try 'agentf add' to find out more.
+
+
 2011-02-16
 ============
 Sundries

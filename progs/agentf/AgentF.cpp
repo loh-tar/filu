@@ -24,6 +24,7 @@
 #include "Exporter.h"
 #include "Scanner.h"
 #include "Depots.h"
+#include "CmdAdd.h"
 
 AgentF::AgentF(QCoreApplication& app)
       : FCoreApp("AgentF", app)
@@ -295,43 +296,6 @@ void AgentF::updateAllBars(const QStringList& parm)
   mQuit = false; // Don't quit after all, enter main event loop
 }
 
-void AgentF::addFi(const QStringList& parm)
-{
-  // parm list looks like
-  // agentf addFi <longName> <fiType> <symbol> <market> <symbolType> [<symbol> <market> <symbolType> ...]
-
-  if(((parm.count() - 4) % 3 > 0) or parm.count() < 7)
-  {
-    error(FUNC, tr("addFi: Wrong parameter count."));
-    return;
-  }
-
-  int symbolCount = (parm.count() - 4) / 3;
-
-  FiTuple fi(1);
-  SymbolTuple* symbol = new SymbolTuple(symbolCount);
-
-  fi.next(); // Set on first position
-
-  fi.setSymbol(symbol);
-  fi.setName(parm[2]);
-  fi.setType(parm[3]);
-
-  int i = 4;
-  while(symbol->next())
-  {
-    symbol->setCaption(parm[i]);    // 4, 7, 10...
-    symbol->setMarket(parm[i + 1]); // 5, 8, 11...
-    symbol->setOwner(parm[i + 2]);  // 6, 9, 12...
-    i += 3;
-  }
-
-  // Here is the beef
-  mFilu->addFiCareful(fi);
-
-  check4FiluError(FUNC, tr("FAIL! FI not added."));
-}
-
 bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
 {
   if(line.startsWith("*")) return false; // Ignore remarks
@@ -520,31 +484,12 @@ void AgentF::filu(const QStringList& parm)
   }
 }
 
-void AgentF::addSplit(const QStringList& parm)
+void AgentF::cmdAdd(const QStringList& parm)
 {
-  // parm list looks like
-  // agentf addSplit AAPL 2005-02-28 1:2
-  // agentf addSplit AAPL 2005-02-28 1:2 1
-
-  // Remove "agentf" and "addSplit"
-  QStringList parm2(parm);
-  parm2.removeAt(0);
-  parm2.removeAt(0);
-
-  QString header = "[Header]RefSymbol;SplitDate;SplitPre:Post";
-
-  if(parm2.size() == 4)
-  {
-    header.append(";Quality");
-  }
-
-  QString data = parm2.join(";");
-
-  if(!mImporter) mImporter = new Importer(this);
-
-  if(!mImporter->import(header)) return;
-  if(!mImporter->import(data)) return;
-
+  CmdAdd* cmdAdd = new CmdAdd(this);
+  cmdAdd->exec(parm);
+  delete cmdAdd;
+  return;
 }
 
 void AgentF::execCmd(const QStringList& parm)
@@ -562,13 +507,12 @@ void AgentF::execCmd(const QStringList& parm)
   // Look for each known command and call the related function
   if(cmd == "this")          addEODBarData(parm);
   else if(cmd == "full")     updateAllBars(parm);
-  else if(cmd == "addFi")    addFi(parm);
   else if(cmd == "rcf")      readCommandFile(parm);
   else if(cmd == "imp")      import(parm);
   else if(cmd == "exp")      exxport(parm);
   else if(cmd == "scan")     scan(parm);
   else if(cmd == "depots")   depots(parm);
-  else if(cmd == "addSplit") addSplit(parm);
+  else if(cmd == "add")      cmdAdd(parm);
   else if(cmd == "daemon")   beEvil(parm);
   else if(cmd == "filu")     filu(parm);
   else if(cmd == "info")
@@ -587,27 +531,24 @@ void AgentF::printUsage()
 {
   print(tr("Hello! I'm part of Filu. Please call me this way:"));
   print("");
-  print("  agentf <command> [<parameter list>] (see doc/first-steps.txt)");
+  print("  agentf <command> [<parameterList>] (see doc/first-steps.txt)");
   print("");
-  print("  agentf addFi <longName> <fiType> <symbol> <market> <symbolType>[<symbol> <market> <symbolType> ...]");
-  print("    agentf addFi \"Apple Computer\" Stock AAPL NYSE Yahoo ");
-  print("");
-  print("  agentf addSplit <symbol> <date> <splitPre:Post>");
-  print("    agentf addSplit AAPL 2005-02-28 1:2");
+  print("  agentf add <dataType> [<parameterList>]");
+  print("    agentf add (tells you more)");
   print("");
   print("  agentf daemon");
-  print("  agentf depots <parameter list>");
+  print("  agentf depots <parameterList>");
   print("    agentf depots --check");
   print("");
-  print("  agentf exp <parameter list> (see doc/export-data.txt)");
-  print("  agentf filu <parameter list>");
+  print("  agentf exp <parameterList> (see doc/export-data.txt)");
+  print("  agentf filu <parameterList>");
   print("  agentf full [<fromDate> [<toDate>]]");
   print("    agentf full 2001-01-01");
   print("");
   print("  agentf imp [<fileName>] (if no fileName is given then will read from stdin)");
   print("  agentf info");
   print("  agentf rcf <fileName>");
-  print("  agentf scan <parameter list>");
+  print("  agentf scan <parameterList>");
   print("    agentf scan --group all --indi MyNewIdea --verbose Info");
   print("    agentf scan --group all --auto --force --timeFrame Quarter");
   print("");

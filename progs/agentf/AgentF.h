@@ -60,7 +60,6 @@ class AgentF : public FCoreApp
     void addEODBarData(const QStringList& parm);
     void addEODBarDataFull(const QStringList& parm);
     void updateAllBars(const QStringList& parm);
-    void addFi(const QStringList& parm);
     bool lineToCommand(const QString& line, QStringList& cmd);
     void readCommandFile(const QStringList& parm);
     void beEvil(const QStringList& parm);
@@ -69,7 +68,7 @@ class AgentF : public FCoreApp
     void scan(const QStringList& parm);
     void depots(const QStringList& parm);
     void filu(const QStringList& parm);
-    void addSplit(const QStringList& parm);
+    void cmdAdd(const QStringList& parm);
     void printUsage();
     void printSettings();
     void printError(const QString message);

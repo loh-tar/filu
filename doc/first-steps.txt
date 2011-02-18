@@ -113,6 +113,13 @@ He is like the Swiss knife of Filu. He starts multiple instances to do a big job
 e.g. at 'full' to download quotes in parallel. The amount of instances is
 configurable in the settings file, ~/.config/Filu.conf by setting MaxClones=X.
 
+add
+-----
+Lets you adding a single dataset to the database by using Importer.
+
+help
+  Tells you all what is possible.
+
 daemon
 --------
 Is not a daemon as typical known. It is very similar to rcf. He read from stdin
@@ -160,6 +167,10 @@ vacuum
 
   agentf filu --create --db testdb
   agentf filu --update
+
+imp
+-----
+Imports an (surprise!) import file. See doc/import-file-format.txt.
 
 rcf
 -----

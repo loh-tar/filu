@@ -9,7 +9,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${agentf_SOURCE_DIR} ${agentf_BINARY_DIR
 include_directories(${FiluCore_SOURCE_DIR})
 include_directories(${FiluCore_SOURCE_DIR}/database)
 
-set(agentf_SRC AgentF.cpp  main.cpp)
+set(agentf_SRC AgentF.cpp  main.cpp CmdAdd.cpp)
 QT4_WRAP_CPP(agentf_MOCSRCS AgentF.h)
 
 add_executable(agentf ${agentf_SRC} ${agentf_MOCSRCS})
