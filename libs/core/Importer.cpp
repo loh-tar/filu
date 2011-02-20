@@ -27,7 +27,6 @@ using namespace std;
 
 Importer::Importer(FClass* parent)
         : FClass(parent, FUNC)
-        , mFi(0)
         , mSymbol(0)
         , mConsole(stdout)
 {
@@ -51,7 +50,6 @@ Importer::~Importer()
   }
 
   //qDebug() << "Importer::~: I''m dead";
-  if(mFi)     delete mFi;
   if(mSymbol) delete mSymbol;
 
   mConsole << endl;
@@ -84,12 +82,6 @@ void Importer::reset()
   {
     delete mSymbol;
     mSymbol = 0;
-  }
-
-  if(mFi)
-  {
-    delete mFi;
-    mFi = 0;
   }
 
   // Read all symbol types out of the DB
@@ -224,8 +216,7 @@ bool Importer::import(const QString& line)
   printDot();
   mToDo.insert("PrintNewLine");
 
-  if(mToDo.contains("setSymbol"))     setSymbol();
-  if(mToDo.contains("setFi"))         setFi();
+  if(mToDo.contains("setSymbolTuple")) setSymbolTuple();
 
   if(mToDo.contains("addFiType"))     addFiType();
   if(mToDo.contains("addSymbolType")) addSymbolType();
@@ -243,12 +234,6 @@ bool Importer::import(const QString& line)
   {
     delete mSymbol;
     mSymbol = 0;
-  }
-
-  if(mFi)
-  {
-    delete mFi;
-    mFi = 0;
   }
 
   return !hasError();
@@ -466,7 +451,7 @@ void Importer::prepare()
 
   mPrepared = true;
   mTotalSymbolCount = 0;
-  mUsedSymbols = 0;
+  mSymbolXCount = 0;
   mUsedRefSymbols.clear();
   mUsedKnownSymbols.clear();
   mAllUsedSymbols.clear();
@@ -501,7 +486,7 @@ void Importer::prepare()
 
     if(rawKey == "Symbol")
     {
-      ++mUsedSymbols;
+      ++mSymbolXCount;
       continue;
     }
 
@@ -509,17 +494,12 @@ void Importer::prepare()
 
   }
   //qDebug() << "Importer::prepare:" <<  mTotalSymbolCount << "symbols total used";
-  //qDebug() << "Importer::prepare:" <<  mUsedSymbols << "SymbolX used";
+  //qDebug() << "Importer::prepare:" <<  mSymbolXCount << "SymbolX used";
 
   if(mData.contains("Market0") and mData.contains("CurrencySymbol"))
   {
     text << "Markets, ";
     mToDo.insert("addMarket");
-  }
-
-  if(mData.contains("Name") and mData.contains("Type"))
-  {
-    mToDo.insert("setFi");
   }
 
   if(mData.contains("FiType"))
@@ -536,35 +516,36 @@ void Importer::prepare()
 
   if(mTotalSymbolCount > 0)
   {
-    mToDo.insert("setSymbol");
+    mToDo.insert("setSymbolTuple");
 
-    int toBeInstalled = mUsedSymbols + mUsedKnownSymbols.size();
+    int toBeInstalled = mSymbolXCount + mUsedKnownSymbols.size();
 
-    // Check if we have FIs or symbols to add (no symbols, no FI to add)
-    if( (toBeInstalled > 0) and mToDo.contains("setFi") )
+    // Check if we have FIs or symbols to add (no symbols to add, no FI to add)
+    if(toBeInstalled)
     {
-      // Installs all symbols too
-      text << "FIs/Symbols, ";
-      mToDo.insert("addFi");
-      if(toBeInstalled > 1) mToDo.insert("addSymbol");
-    }
-    else if(toBeInstalled)
-    {
-      mToDo.insert("addSymbol");
-      text << "Symbols, ";
+      if(mData.contains("Name") and mData.contains("Type") )
+      {
+        text << "FIs/Symbols, ";
+        mToDo.insert("addFi");
+        // One symbol is installed with the FI, but if we have more symbols
+        // we have to add them separately
+        if(toBeInstalled > 1) mToDo.insert("addSymbol");
+      }
+      else
+      {
+        mToDo.insert("addSymbol");
+        text << "Symbols, ";
+      }
     }
   }
 
-  // Check for needs to add underlyings
   if(mData.contains("Mother") and mData.contains("Weight"))
   {
     text << "Underlyings, ";
-    mToDo.insert("setFi");
     mToDo.insert("ClearCompList");
     mToDo.insert("addUnderlying");
   }
 
-  // Check for needs to add eod bars
   if( mData.contains("Market0") and
       mData.contains("Date")    and
       mData.contains("Close")   and
@@ -574,21 +555,18 @@ void Importer::prepare()
     mToDo.insert("addEODBar");
   }
 
-  // Check for needs to add a split
   if(mData.contains("SplitDate"))
   {
     text << "Splits, ";
     mToDo.insert("addSplit");
   }
 
-  // Check for needs to add chart objects
   if(mData.contains("CODate") and mData.contains("Plot"))
   {
     text << "ChartObjects, ";
     mToDo.insert("addCO");
   }
 
-  // Check for needs to add group
   if(mData.contains("GroupPath") and mData.contains("RefSymbol0"))
   {
     text << "Groups, ";
@@ -601,17 +579,7 @@ void Importer::prepare()
   //qDebug() << "Importer::prepare: mData" << mData;
 }
 
-void Importer::setFi()
-{
-  mFi = new FiTuple(1);  //FIXME: Not used! (?)
-  mFi->next();                         // Set on first position
-  mFi->setSymbol(mSymbol);             // Add the mSymbol tuple
-  mFi->setName(makeNameNice(mData.value("Name")));
-  mFi->setType(mData.value("Type"));
-  //qDebug() << "Importer::setFi:" << mData.value("Name") << mData.value("Type");
-}
-
-void Importer::setSymbol()
+void Importer::setSymbolTuple()
 {
   // ...and add them to a fresh mSymbol tuple
   mSymbol = new SymbolTuple(mTotalSymbolCount);
@@ -625,7 +593,7 @@ void Importer::setSymbol()
     // but used for searching for the FI
     mSymbol->setMarket("");
     mSymbol->setOwner("");
-    //qDebug() << "Importer::setSymbol 1:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
+    //qDebug() << "Importer::setSymbolTuple 1:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
   // Second, none provider symbols which has to be installed
@@ -644,11 +612,11 @@ void Importer::setSymbol()
       mSymbol->setMarket("NoMarket");
       mSymbol->setOwner(mUsedKnownSymbols.at(i));
     }
-    //qDebug() << "Importer::setSymbol 2:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
+    //qDebug() << "Importer::setSymbolTuple 2:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
   // And last, provider symbols which has to be installed
-  for(int i = 0; i < mUsedSymbols; ++i)
+  for(int i = 0; i < mSymbolXCount; ++i)
   {
     QString p = "Provider" + QString::number(i);
     QString s = "Symbol" + QString::number(i);
@@ -657,14 +625,13 @@ void Importer::setSymbol()
     mSymbol->setCaption(mData.value(s));
     mSymbol->setMarket(mData.value(m));
     mSymbol->setOwner(mData.value(p));
-    //qDebug() << "Importer::setSymbol 3:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
+    //qDebug() << "Importer::setSymbolTuple 3:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
 }
 
-bool Importer::setSymbol(const QString& symbol)
+bool Importer::setFiIdBySymbol(const QString& symbol)
 {
-  // Same name like setSymbol() but do a different job.
   // Here will Filu called to set the FiId and the SqlParm :symbol
   if(symbol == mData.value("_LastSymbol")) return true;  // We are up to date
 
@@ -672,16 +639,16 @@ bool Importer::setSymbol(const QString& symbol)
 
   if(retVal >= Filu::eData)
   {
-    mFiId = retVal;
+    mId.insert("Fi", retVal);
     mData.insert("_LastSymbol", symbol);
     return true;
   }
 
-  mFiId = Filu::eNoData;
+  mId.insert("Fi", Filu::eNoData);
   return false;
 }
 
-bool Importer::setMarket(const QString& market)
+bool Importer::setMarketId(const QString& market)
 {
   // Here will Filu called to set the marketId and the SqlParm :market
   if(market == mData.value("_LastMarket")) return true;  // We are up to date
@@ -690,12 +657,12 @@ bool Importer::setMarket(const QString& market)
 
   if(retVal >= Filu::eData)
   {
-    mMarketId = retVal;
+    mId.insert("Market", retVal);
     mData.insert("_LastMarket", market);
     return true;
   }
 
-  mMarketId = Filu::eNoData;
+  mId.insert("Market", Filu::eNoData);
   return false;
 }
 
@@ -1010,8 +977,8 @@ void Importer::addSplit()
 void Importer::addCO()
 {
   mFilu->setSqlParm(":id", 0); // Force to insert new CO
-  if(!setSymbol(mData.value("RefSymbol0")) >= Filu::eSuccess) return;
-  if(!setMarket(mData.value("Market0")) >= Filu::eSuccess) return;
+  if(!setFiIdBySymbol(mData.value("RefSymbol0"))) return;
+  if(!setMarketId(mData.value("Market0"))) return;
   mFilu->setSqlParm(":date", mData.value("CODate"));
   mFilu->setSqlParm(":plot", mData.value("Plot"));
   mFilu->setSqlParm(":type", mData.value("Type"));
@@ -1029,7 +996,6 @@ void Importer::addCO()
     mConsole << "no chart objects match settings." << endl;
     return /*true*/;
   }
-
 }
 
 void Importer::addGroup()

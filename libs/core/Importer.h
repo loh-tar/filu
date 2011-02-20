@@ -56,10 +56,10 @@ class Importer : public FClass
     QString       makeUnique(const QString& key);
     void          buildPair(QString& key, QString& value, const QString& line);
     void          prepare();
-    void          setFi();             // mFi;
-    void          setSymbol();         // mSymbol
-    bool          setSymbol(const QString& symbol);
-    bool          setMarket(const QString& market);
+
+    void          setSymbolTuple(); // mSymbol
+    bool          setFiIdBySymbol(const QString& symbol);
+    bool          setMarketId(const QString& market);
 
     void          addFiType();
     void          addSymbolType();
@@ -89,13 +89,11 @@ class Importer : public FClass
     int           mTotalSymbolCount;
     QStringList   mUsedRefSymbols;     // Reference symbols, don't install
     QStringList   mUsedKnownSymbols;   // None provider symbols which has to be installed
-    int           mUsedSymbols;        // Provider symbols which has to be installed
+    int           mSymbolXCount;       // How many SymbolX: Symbol0, Symbol1, Symbol2...
     QStringList   mAllUsedSymbols;     // mUsedRefSymbols + mUsedKnownSymbols + mUsedSymbols
-    FiTuple*      mFi;
     SymbolTuple*  mSymbol;
     QTextStream   mConsole;
-    int           mFiId;
-    int           mMarketId;
+    QHash<QString, int> mId;           // Hold Fi, Market etc IDs
     QTime         mRolex;
     bool          mMakeNameNice;
     QStringList   mNiceSearch;
