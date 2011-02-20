@@ -422,9 +422,9 @@ int FiluU::addDepotPos(int depotId, const QDate& date
   return result(FUNC, query);
 }
 
-int FiluU::addAccountPos(int depotId, const QDate& date
+int FiluU::addAccPosting(int depotId, const QDate& date
                        , int type, const QString& text
-                       , double value, double accountPosId/* = 0*/)
+                       , double value, double accPostingId/* = 0*/)
 {
   // Returns Id or error
   if(!initQuery("AddAccountPos")) return eInitError;
@@ -436,7 +436,7 @@ int FiluU::addAccountPos(int depotId, const QDate& date
   query->bindValue(":type", type);
   query->bindValue(":text", text);
   query->bindValue(":value", value);
-  query->bindValue(":accountId", accountPosId);
+  query->bindValue(":accountId", accPostingId);
 
   if(execute(query) <= eError) return eExecError;
 
@@ -507,7 +507,31 @@ QSqlQuery* FiluU::getOrders(int depotId, int status/* = -1*/, int fiId/* = -1*/)
   return query;
 }
 
-QString FiluU::orderStatusText(int status)
+int FiluU::FiluU::orderStatus(const QString& status)
+{
+  bool ok;
+  int s = status.toInt(&ok);
+  if(ok)
+  {
+    if((s >= eOrderAdvice) and (s <= eOrderActive)) return s;
+  }
+  else
+  {
+    const QString sl = status.toLower();
+    if(sl == orderStatus(eOrderAdvice).toLower())   return eOrderAdvice;
+    if(sl == orderStatus(eOrderExperied).toLower()) return eOrderExperied;
+    if(sl == orderStatus(eOrderExecuted).toLower()) return eOrderExecuted;
+    if(sl == orderStatus(eOrderCanceled).toLower()) return eOrderCanceled;
+    if(sl == orderStatus(eOrderNeedHelp).toLower()) return eOrderNeedHelp;
+    if(sl == orderStatus(eOrderActive).toLower())   return eOrderActive;
+  }
+
+  error(FUNC, tr("Order status '%1' is unknown.").arg(status));
+
+  return eError;
+}
+
+QString FiluU::orderStatus(int status)
 {
   switch(status)
   {
@@ -517,9 +541,86 @@ QString FiluU::orderStatusText(int status)
     case eOrderCanceled: return tr("Canceled");
     case eOrderNeedHelp: return tr("Unsure");
     case eOrderActive:   return tr("Active");
-    default:
-      return "UnknownStatus";
+    default:             break;
   }
+
+  error(FUNC, tr("Order status number '%1' is unknown.").arg(status));
+
+  return "UnknownStatus";
+}
+
+int FiluU::orderType(const QString& type)
+{
+  bool ok;
+  int ot = type.toInt(&ok);
+  if(ok)
+  {
+    if((ot >= eSellOrder) and (ot <= eBuyOrder)) return ot;
+  }
+  else
+  {
+    const QString otl = type.toLower();
+    if(otl == orderType(eSellOrder).toLower()) return eSellOrder;
+    if(otl == orderType(eBuyOrder).toLower())  return eBuyOrder;
+  }
+
+  error(FUNC, tr("Order type number '%1' is unknown.").arg(type));
+
+  return eError;
+}
+
+QString FiluU::orderType(int type)
+{
+  switch(type)
+  {
+    case eSellOrder: return tr("Sell");
+    case eBuyOrder:  return tr("Buy");
+    default:         break;
+  }
+
+  error(FUNC, tr("Order type '%1' is unknown.").arg(type));
+
+  return "Unknown"; // No tr()
+}
+
+int FiluU::accPostingType(const QString& type)
+{
+  bool ok;
+  int pt = type.toInt(&ok);
+  if(ok)
+  {
+    if((pt >= ePostCashIn) and (pt <= ePostFee)) return pt;
+  }
+  else
+  {
+    const QString ptl = type.toLower();
+    if(ptl == accPostingType(ePostCashIn).toLower())  return ePostCashIn;
+    if(ptl == accPostingType(ePostCashOut).toLower()) return ePostCashOut;
+    if(ptl == accPostingType(ePostFiBuy).toLower())   return ePostFiBuy;
+    if(ptl == accPostingType(ePostFiSell).toLower())  return ePostFiSell;
+    if(ptl == accPostingType(ePostFee).toLower())     return ePostFee;
+  }
+
+  error(FUNC, tr("Posting type '%1' is unknown.").arg(type));
+
+  return eError;
+}
+
+QString FiluU::accPostingType(int type)
+{
+  switch(type)
+  {
+    case ePostCashIn:  return tr("CashIn");
+    case ePostCashOut: return tr("CashOut");
+    case ePostFiBuy:   return tr("FiBuy");
+    case ePostFiSell:  return tr("FiSell");
+    case ePostFee:     return tr("Fee");
+    default:           break;
+  }
+
+  error(FUNC, tr("Posting type number '%1' is unknown.").arg(type));
+
+  return "Unknown"; // No tr()
 }
 
 void FiluU::createTables()

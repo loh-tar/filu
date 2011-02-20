@@ -228,8 +228,7 @@ void Depots::printOrder(const QSqlRecord& order)
 
   QString symbol = st->caption();
 
-
-  QString statusTxt = mFilu->orderStatusText(order.value("Status").toInt());
+  QString statusTxt = mFilu->orderStatus(order.value("Status").toInt());
 
   int pieces    = order.value("Pieces").toInt();
   bool buyOrder = order.value("Buy").toBool();
@@ -237,7 +236,7 @@ void Depots::printOrder(const QSqlRecord& order)
   QDate oDate   = order.value("ODate").toDate();
   QDate vDate   = order.value("VDate").toDate();
 
-  QString oType = buyOrder ? tr("Buy") : tr("Sell");
+  QString oType = mFilu->orderType(buyOrder);
   QString limitTxt = limit == 0.0 ? tr("Best") : QString::number(limit, 'f', 2);
   if(limit) limitTxt.append(" " + order.value("Currency").toString());
   else limitTxt.append(QString(fc).repeated(4));

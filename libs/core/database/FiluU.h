@@ -34,14 +34,33 @@ class FiluU : public Filu
                 FiluU(const QString& connectionName, RcFile* rcFile);
     virtual    ~FiluU();
 
+    enum OrderType
+    {
+      // Has to fit with order table logic and orderType(...)
+      eSellOrder = 0,
+      eBuyOrder  = 1
+    };
+
     enum OrderStatus
     {
+      // If you change here something take a look at orderStatus(...)
       eOrderAdvice   = 0,
       eOrderExperied = 1,
       eOrderExecuted = 2,
       eOrderCanceled = 3,
       eOrderNeedHelp = 4,
       eOrderActive   = 5
+    };
+
+    enum AccPostingType
+    {
+      // If you change here something take a look at accPostingType(...)
+      // FIXME: You are a bookkeeper? Make suggestions!
+      ePostCashIn  = 1,
+      ePostCashOut = 2,
+      ePostFiBuy   = 3,
+      ePostFiSell  = 4,
+      ePostFee     = 5
     };
 
     void        openDB();
@@ -94,15 +113,20 @@ class FiluU : public Filu
     int         addDepotPos(int depotId, const QDate& date, int fiId, int pieces, double price
                           , int marketId, const QString& note, int depotPosId = 0);
 
-    int         addAccountPos(int depotId, const QDate& date, int type
-                            , const QString& text, double value, double accountPosId = 0);
+    int         addAccPosting(int depotId, const QDate& date, int type
+                            , const QString& text, double value, double accPostingId = 0);
 
     double      getDepotCash(int depotId, const QDate& date = QDate(3000, 01, 01));
     double      getDepotNeededCash(int depotId, const QDate& date = QDate(3000, 01, 01));
     double      getDepotValue(int depotId, const QDate& date = QDate(3000, 01, 01));
     QSqlQuery*  getOrders(int depotId, int status = -1, int fiId = -1); // -1=Any status, All Fi
 
-    QString     orderStatusText(int status);
+    int         orderStatus(const QString& type);
+    QString     orderStatus(int status);
+    int         orderType(const QString& type);
+    QString     orderType(int type);
+    int         accPostingType(const QString& type);
+    QString     accPostingType(int type);
 
   private:
     void        createTables();

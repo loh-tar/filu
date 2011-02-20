@@ -183,7 +183,7 @@ bool Trader::prepare(const QSqlRecord& depot)
       QDate oDate   = order.value("ODate").toDate();
       QDate vDate   = order.value("VDate").toDate();
 
-      QString oType = buyOrder ? tr("Buy") : tr("Sell");
+      QString oType = mFilu->orderType(buyOrder);
       QString limitTxt = limit == 0.0 ? tr("Best") : QString::number(limit, 'f', 2);
       if(limit) limitTxt.append(" " + order.value("Currency").toString());
       QString verbText = tr("Check order: %2, %1 %5x %3, %4")
@@ -506,7 +506,7 @@ void Trader::postExecutedOrder(const QSqlRecord& order, const QDate& execDate, d
   int pieces     = order.value("Pieces").toInt();
   QString fiName = order.value("FiName").toString();
   QString curry  = order.value("Currency").toString();
-  QString oType  = buyOrder ? tr("Buy") : tr("Sell");
+  QString oType  = mFilu->orderType(buyOrder);
 
   QString verbText = mSettings.value("VerboseText")
                    + tr("Executed on %1 at %L3 %2").arg(execDate.toString(Qt::ISODate), curry)
@@ -531,7 +531,7 @@ void Trader::postExecutedOrder(const QSqlRecord& order, const QDate& execDate, d
                       , order.value("MarketId").toInt()
                       , order.value("Note").toString());
 
-    mFilu->addAccountPos(mDepotId, execDate, 0, txt, -volume); // 0=Fi value
+    mFilu->addAccPosting(mDepotId, execDate, FiluU::ePostFiBuy, txt, -volume);
   }
   else
   {
@@ -540,12 +540,12 @@ void Trader::postExecutedOrder(const QSqlRecord& order, const QDate& execDate, d
                       , order.value("MarketId").toInt()
                       , order.value("Note").toString());
 
-    mFilu->addAccountPos(mDepotId, execDate, 0, txt, volume); // 0=Fi value
+    mFilu->addAccPosting(mDepotId, execDate, FiluU::ePostFiSell, txt, volume);
   }
 
   // Add commission to account
   txt = tr("Commission for %1 %3x %2").arg(oType, fiName).arg(pieces);
-  mFilu->addAccountPos(mDepotId, execDate, 2, txt, calcFee(volume)); // 2=Commission value
+  mFilu->addAccPosting(mDepotId, execDate, FiluU::ePostFee, txt, calcFee(volume));
 }
 
 bool Trader::parseRule()
