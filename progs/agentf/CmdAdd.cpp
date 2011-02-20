@@ -62,16 +62,18 @@ bool CmdAdd::exec(const QStringList& cmdLine)
   const QString cmd = parm.at(2);
 
   // Look for each known command and call the related function
-/*  if(cmd == "--broker")            addBroker(parm);
-  else*/ if(cmd == "--eodBar")       addEodBar(parm);
+  if(cmd == "--broker")            addBroker(parm);
+  else if(cmd == "--eodBar")       addEodBar(parm);
   else if(cmd == "--fi")           addFi(parm);
   else if(cmd == "--market")       addMarket(parm);
   else if(cmd == "--split")        addSplit(parm);
   else if(cmd == "--symbol")       addSymbol(parm);
   else if(cmd == "--symbolType")   addSymbolType(parm);
-//   else if(cmd == "") add(parm);
-//   else if(cmd == "") add(parm);
-  else if(cmd == "underlying")     addUnderlyg(parm);
+  else if(cmd == "--depot")        addDepot(parm);
+  else if(cmd == "--depotPos")     addDepotPos(parm);
+  else if(cmd == "--post")         addAccPosting(parm);
+  else if(cmd == "--order")        addOrder(parm);
+  else if(cmd == "--underlying")   addUnderlyg(parm);
   else if(cmd == "--help")         needHelp = true;
   else
   {
@@ -98,8 +100,10 @@ bool CmdAdd::exec(const QStringList& cmdLine)
 void CmdAdd::printDataTypes()
 {
   QStringList cmds;
-  cmds /*<< "broker"*/ << "eodBar" << "fi" << "market" << "split" << "symbol" << "symbolType"
-        << "underlying" /*<< "" << "" << "" << "" << ""*/;
+  cmds << "broker"<< "depot" << "depotPos" << "eodBar" << "fi" << "market"
+       << "order" << "post" << "split" << "symbol" << "symbolType"
+       << "underlying";
+
   print(tr("\nPossible data types are:\n"));
   print(QString("  %1\n").arg(cmds.join(" ")));
 }
@@ -175,6 +179,33 @@ void CmdAdd::addEodBar(const QStringList& parm)
   }
 
   import(header, data);
+}
+
+void CmdAdd::addBroker(const QStringList& parm)
+{
+  if(!mWantHelp)
+  {
+    if(FTool::getParameter(parm, "--broker", mCmdArg) < 2)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+  }
+
+  if(mWantHelp)
+  {
+    print(mInfoTxt.value("ThisWay"));
+    print(mInfoTxt.value("CmdPrefix").arg("broker <BrokerName> <FeeFormula> [<Quality>]"));
+    print(mInfoTxt.value("ForInst"));
+    print(mInfoTxt.value("CmdPrefix").arg("broker MyBank \"5.95 + OV * 0.001\""));
+    return;
+  }
+
+  QString header = "[Header]BrokerName;FeeFormula";
+
+  if(mCmdArg.size() > 2) header.append(";Quality");
+
+  import(header, mCmdArg.join(";"));
 }
 
 void CmdAdd::addFi(const QStringList& parm)
@@ -316,6 +347,114 @@ void CmdAdd::addSymbolType(const QStringList& parm)
   QString header = "[Header]SymbolType;IsProvider;SEQ";
 
   if(mCmdArg.size() > 3) header.append(";Quality");
+
+  import(header, mCmdArg.join(";"));
+}
+
+void CmdAdd::addOrder(const QStringList& parm)
+{
+  if(!mWantHelp)
+  {
+    if(FTool::getParameter(parm, "--order", mCmdArg) < 11)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+  }
+
+  if(mWantHelp)
+  {
+    print(mInfoTxt.value("ThisWay"));
+    print(mInfoTxt.value("CmdPrefix").arg("order <DepotName> <DepotOwner> <ODate> <VDate> <RefSymbol> <Market> <Pieces> <Limit> <Type> <Status> <Note> [<Quality>]"));
+    print(mInfoTxt.value("ForInst"));
+    print(mInfoTxt.value("CmdPrefix").arg("order SlowHand Me 2010-09-01 2010-09-01 AAPL NYSE 10 Best Buy Active \"It looks so good\""));
+    return;
+  }
+
+  QString header = "[Header]DepotName;DepotOwner;ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note";
+
+  if(mCmdArg.size() > 11) header.append(";Quality");
+
+  import(header, mCmdArg.join(";"));
+}
+
+void CmdAdd::addDepot(const QStringList& parm)
+{
+  if(!mWantHelp)
+  {
+    if(FTool::getParameter(parm, "--depot", mCmdArg) < 5)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+  }
+
+  if(mWantHelp)
+  {
+    print(mInfoTxt.value("ThisWay"));
+    print(mInfoTxt.value("CmdPrefix").arg("depot <DepotName> <DepotOwner> <Trader> <CurrencySymbol> <BrokerName> [<Quality>]"));
+    print(mInfoTxt.value("ForInst"));
+    print(mInfoTxt.value("CmdPrefix").arg("depot SlowHand Me Watchdog USD MyBank"));
+    return;
+  }
+
+  QString header = "[Header]DepotName;DepotOwner;Trader;CurrencySymbol;BrokerName";
+
+  if(mCmdArg.size() > 5) header.append(";Quality");
+
+  import(header, mCmdArg.join(";"));
+}
+
+void CmdAdd::addDepotPos(const QStringList& parm)
+{
+  if(!mWantHelp)
+  {
+    if(FTool::getParameter(parm, "--depotPos", mCmdArg) < 8)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+  }
+
+  if(mWantHelp)
+  {
+    print(mInfoTxt.value("ThisWay"));
+    print(mInfoTxt.value("CmdPrefix").arg("depotPos <DepotName> <DepotOwner> <PDate> <RefSymbol> <Market> <Pieces> <Price> <Note> [<Quality>]"));
+    print(mInfoTxt.value("ForInst"));
+    print(mInfoTxt.value("CmdPrefix").arg("depotPos SlowHand Me 2010-09-01 AAPL NYSE 10 247.47 \"It looked so good\""));
+    return;
+  }
+
+  QString header = "[Header]DepotName;DepotOwner;PDate;RefSymbol;Market;Pieces;Price;Note";
+
+  if(mCmdArg.size() > 8) header.append(";Quality");
+
+  import(header, mCmdArg.join(";"));
+}
+
+void CmdAdd::addAccPosting(const QStringList& parm)
+{
+  if(!mWantHelp)
+  {
+    if(FTool::getParameter(parm, "--post", mCmdArg) < 6)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+  }
+
+  if(mWantHelp)
+  {
+    print(mInfoTxt.value("ThisWay"));
+    print(mInfoTxt.value("CmdPrefix").arg("post <DepotName> <DepotOwner> <APDate> <APType> <Text> <Value> [<Quality>]"));
+    print(mInfoTxt.value("ForInst"));
+    print(mInfoTxt.value("CmdPrefix").arg("post SlowHand Me 2010-09-01 FiBuy \"10x Apple at 247.47\" 2474.70"));
+    return;
+  }
+
+  QString header = "[Header]DepotName;DepotOwner;APDate;APType;Text;Value";
+
+  if(mCmdArg.size() > 6) header.append(";Quality");
 
   import(header, mCmdArg.join(";"));
 }

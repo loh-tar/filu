@@ -45,16 +45,17 @@ class CmdAdd : public FClass
     void        printDataTypes();
     void        import(const QString& header, const QString& data);
 
-//     void        addBroker(const QStringList& parm);
+    void        addBroker(const QStringList& parm);
     void        addEodBar(const QStringList& parm);
     void        addFi(const QStringList& parm);
     void        addMarket(const QStringList& parm);
     void        addSplit(const QStringList& parm);
     void        addSymbol(const QStringList& parm);
     void        addSymbolType(const QStringList& parm);
-//     void        add(const QStringList& parm);
-//     void        add(const QStringList& parm);
-//     void        add(const QStringList& parm);
+    void        addOrder(const QStringList& parm);
+    void        addDepot(const QStringList& parm);
+    void        addDepotPos(const QStringList& parm);
+    void        addAccPosting(const QStringList& parm);
     void        addUnderlyg(const QStringList& parm);
 
     Importer*       mImporter;
