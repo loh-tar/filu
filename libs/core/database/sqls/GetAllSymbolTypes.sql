@@ -1,14 +1,12 @@
-*  file name: GetAllSymbolTypes.sql
-*  Used by function Exporter::expSymbolTypes()
-*
-*  Purpose:
-*     To fetch all symbol types
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :
-*
-*  Outputs: (order is important)
-*
+/*
+ *  Purpose:
+ *     To fetch all symbol types
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :
+ *
+ *  Outputs: (order is important)
+ */
 
 -- GetAllSymbolTypes.sql
 SELECT

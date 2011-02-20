@@ -1,31 +1,29 @@
-*  file name: GetDepotOrders.sql
-*  Used in function: FiluU::
-*
-*  Purpose:
-*     Fetch all depots
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :depotId
-*     :fiId
-*     :status
-*  Outputs: (order *and* names are important)
-*     order_id  as "OrderId"
-*     depot_id  as "DepotId"
-*     odate     as "ODate"
-*     vdate     as "VDate"
-*     fi_id     as "FiId"
-*                  "FiName"
-*                  "Symbol"
-*     pieces    as "Pieces"
-*     olimit    as "Limit"
-*                  "Currency"
-*     status    as "Status"
-*     buy       as "Buy"
-*     market_id as "MarketId"
-*                  "Market"
-*
+/*
+ *  Purpose:
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :depotId
+ *     :fiId
+ *     :status
+ *
+ *  Outputs: (order *and* names are important)
+ *     order_id  as "OrderId"
+ *     depot_id  as "DepotId"
+ *     odate     as "ODate"
+ *     vdate     as "VDate"
+ *     fi_id     as "FiId"
+ *                  "FiName"
+ *                  "Symbol"
+ *     pieces    as "Pieces"
+ *     olimit    as "Limit"
+ *                  "Currency"
+ *     status    as "Status"
+ *     buy       as "Buy"
+ *     market_id as "MarketId"
+ *                  "Market"
+ */
 
--- GetDepotOrders.sql.sql
+-- GetDepotOrders.sql
 SELECT order_id   as "OrderId"
      , depot_id   as "DepotId"
      , odate      as "ODate"

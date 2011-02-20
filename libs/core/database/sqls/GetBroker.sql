@@ -1,12 +1,10 @@
-*  file name: GetBroker.sql
-*  Used in function: Filu::addBroker()
-*
-*  Purpose:
-*     Get one or all broker
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :brokerId
-*
+/*
+ *  Purpose:
+ *     Get one or all broker
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :brokerId
+ */
 
 -- GetBroker.sql
 SELECT * FROM :filu.broker

@@ -1,14 +1,11 @@
-*  file name: GetBacktest.sql
-*  Used as query: mSqlGetBacktest
-*  Used in function: FiluU::
-*
-*  Purpose:
-*     Fetch
-*
-*  Inputs: (variable names are important and begins with a colon)
-*
-*  Outputs: (order is important)
-
+/*
+ *  Purpose:
+ *     Fetch
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *
+ *  Outputs: (order is important)
+ */
 
 -- GetBacktest.sql
 SELECT backtest_id, fdate, tdate, pgain, trule, tindicator, tname

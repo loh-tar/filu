@@ -1,12 +1,11 @@
-*--  file name: GetBestPerformance.sql
-*--  Used with function: Filu::execSql()
-*--
-*--  Purpose:
-*--     Fetch backtest results
-*--
-*--  Inputs: (variable names are important and begins with a colon)
-*--
-*--  Outputs: (order is important)
+/*
+ *  Purpose:
+ *     Fetch backtest results
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *
+ *  Outputs: (order is important)
+ */
 
 -- GetBestPerformance.sql
 SELECT

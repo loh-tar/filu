@@ -1,16 +1,13 @@
-*  file name: GetAllFiTypes.sql
-*  Used by Filu::getFiType()
-*          Exporter::expFiTypes()
-*
-*  Purpose:
-*     To fetch all FI types
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :
-*
-*  Outputs: (order is important)
-*     FiType
-*
+/*
+ *  Purpose:
+ *     To fetch all FI types
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :
+ *
+ *  Outputs: (order is important)
+ *     FiType
+ */
 
 -- Get AllFiTypes.sql
 SELECT

@@ -1,24 +1,23 @@
-*  file name: GetSymbols.sql
-*  Used as query: sqlGetSymbols
-*  Used in function: Filu::getSymbols(...)
-*
-*  Purpose:
-*     To fetch a list of symbols according ...some settings
-*  FIXME: needs a redisign or something else, its horror
-*  Inputs: (variable names are important and begins with a colon)
-*      :symbol
-*      :market
-*      :onlyProviderSymbols
-*      :provider
-*      :fiId
-*      :ftype
-*  Outputs: (order is important)
-*      fiId
-*      marketId
-*      symbolCaption
-*      marketCaption
-*      ownerCaption    // owner, issuer, provider naming is controversial
-*
+/*
+ *  Purpose:
+ *     To fetch a list of symbols according ...some settings
+ *  FIXME: needs a redisign or something else, its horror
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *      :symbol
+ *      :market
+ *      :onlyProviderSymbols
+ *      :provider
+ *      :fiId
+ *      :ftype
+ *
+ *  Outputs: (order is important)
+ *      fiId
+ *      marketId
+ *      symbolCaption
+ *      marketCaption
+ *      ownerCaption    // owner, issuer, provider naming is controversial
+ */
 
 -- GetSymbols.sql
 SELECT s.fi_id, s.market_id, s.caption as symbol,

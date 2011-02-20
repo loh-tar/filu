@@ -1,19 +1,17 @@
-*  file name: GetAllUnderlyings.sql
-*  Used by function:
-*
-*  Purpose:
-*     Fetch all existing underlyings
-*
-*  Inputs: (variable names are important and begins with a colon)
-*
-*
-*  Outputs: (order is important)
-*    MotherSymbol
-*    UnderlyingSymbol
-*    UnderlyingId
-*    UnderlyingFiId
-*    Weight
-*    UnderlyingFiId
+/*
+ *  Purpose:
+ *     Fetch all existing underlyings
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *
+ *  Outputs: (order is important)
+ *    MotherSymbol
+ *    UnderlyingSymbol
+ *    UnderlyingId
+ *    UnderlyingFiId
+ *    Weight
+ *    UnderlyingFiId
+ */
 
 -- GetAllUnderlyings.sql
 SELECT

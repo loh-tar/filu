@@ -1,20 +1,19 @@
-*  file name: AddBars.sql
-*  Used in function: Filu::addEODBarData()
-*
-*  Purpose:
-*     Add or update bars with values to the DB
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :fiId
-*     :marketId
-*     :date
-*     :open
-*     :high
-*     :low
-*     :close
-*     :vol
-*     :oi
-*     :status
+/*
+ *  Purpose:
+ *     Add or update bars with values to the DB
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :fiId
+ *     :marketId
+ *     :date
+ *     :open
+ *     :high
+ *     :low
+ *     :close
+ *     :vol
+ *     :oi
+ *     :status
+ */
 
 -- AddBars.sql
 SELECT :filu.eodbar_insert

@@ -1,16 +1,14 @@
-*  file name: GetDepotValue.sql
-*  Used in function: FiluU::
-*
-*  Purpose:
-*     Calc the value of the depot at given date, but without cash
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :depotId
-*     :date
-*
-*  Outputs: (order is important)
-*     value
-*
+/*
+ *  Purpose:
+ *     Calc the value of the depot at given date, but without cash
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :depotId
+ *     :date
+ *
+ *  Outputs: (order is important)
+ *     value
+ */
 
 -- GetDepotValue.sql
 -- FIXME: Looks pretty expensive, could you do it nicer?

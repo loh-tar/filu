@@ -1,14 +1,12 @@
-*  file name: GetAllMarkets.sql
-*  Used in function:
-*
-*  Purpose:
-*     To fetch all markets with currency
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :
-*
-*  Outputs: (order is important)
-*
+/*
+ *  Purpose:
+ *     To fetch all markets with currency
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :
+ *
+ *  Outputs: (order is important)
+ */
 
 -- GetAllMarkets.sql
 SELECT

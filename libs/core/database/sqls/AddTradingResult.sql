@@ -1,13 +1,12 @@
-*  file name: AddTradingResult.sql
-*  Used in function: FiluU::
-*
-*  Purpose:
-*     
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     
-*
+/*
+ *  Purpose:
+ *     
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     
+ */
 
+--AddTradingResult.sql
 INSERT INTO  :user.tsr (ts_id, fi_id, market_id, wltp, lltp, agwlp, alltp, tpp, score)
 VALUES (:tsId, :fiId, :marketId, :wltp, :lltp, :agwlp, :alltp, :tpp, :score)
 

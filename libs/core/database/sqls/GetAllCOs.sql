@@ -1,25 +1,23 @@
-*  file name: GetAllCOs.sql
-*  Used by function:  Exporter::expCOs()
-*
-*
-*  Purpose:
-*     Fetch all Chart Objects of a user.
-*     Why another sql besides of GetCOs.sql? Here we have symbols
-*     as input and output parameter
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :ftype      // like "Stock"
-*     :provider   // like "ISIN"
-*     :market     // like "Xetra"
-*     :group      // like "MyFavorites"
-*
-*  Outputs: (order is important)
-*     RefSymbol
-*     Market
-*     CODate
-*     Plot
-*     Type
-*     ArgV
+/*
+ *  Purpose:
+ *     Fetch all Chart Objects of a user.
+ *     Why another sql besides of GetCOs.sql? Here we have symbols
+ *     as input and output parameter
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :ftype      // like "Stock"
+ *     :provider   // like "ISIN"
+ *     :market     // like "Xetra"
+ *     :group      // like "MyFavorites"
+ *
+ *  Outputs: (order is important)
+ *     RefSymbol
+ *     Market
+ *     CODate
+ *     Plot
+ *     Type
+ *     ArgV
+ */
 
 -- GetAllCOs.sql
 SELECT

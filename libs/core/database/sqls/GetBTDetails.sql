@@ -1,13 +1,11 @@
-*--  file name: GetBTDetails.sql
-*--  Used with function: FiluU::getBTDetails()
-*--
-*--  Purpose:
-*--     Fetch details about a backtest strategy
-*--
-*--  Inputs: (variable names are important and begins with a colon)
-*--
-*--  Outputs: (order is important)
-
+/*
+ *  Purpose:
+ *     Fetch details about a backtest strategy
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *
+ *  Outputs: (order is important)
+ */
 -- GetBTDetails.sql
 -- SELECT *
 -- FROM :user.ts
@@ -31,6 +29,7 @@
 -- and ts_strategy = :strategy
 
 -- detail view
+
 SELECT
   ts.ts_id,
   ts_strategy,

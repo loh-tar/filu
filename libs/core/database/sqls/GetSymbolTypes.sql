@@ -1,18 +1,17 @@
-*  file name: GetSymbolTypes.sql
-*  Used in function: Filu::getSymbolTypes()
-*
-*  Purpose: Fetch symbol types
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :all
-*     :isProvider
-*     :orderBySeq FIXME
-*  Outputs: (order is important)
-*     sTypeId
-*     caption
-*     seq
-*     isProvider
-*
+/*
+ *  Purpose: Fetch symbol types
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :all
+ *     :isProvider
+ *     :orderBySeq FIXME
+ *
+ *  Outputs: (order is important)
+ *     sTypeId
+ *     caption
+ *     seq
+ *     isProvider
+ */
 
 -- GetSymbolTypes.sql
 SELECT

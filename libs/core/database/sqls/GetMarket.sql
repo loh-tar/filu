@@ -1,21 +1,20 @@
-*  file name: GetMarket.sql
-*  Used in function: Filu::getMarket()
-*
-*  Purpose:
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :market     // like "NYSE" or "XETRA" etc
-*     :marketId
-*
-*  Outputs: (order is important)
-*     market id
-*     market name
-*     currency id
-*     currency name
-*     currency symbol
-*
-* see also GetAllMarkets.sql
-*
+/*
+ *  Purpose:
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :market     // like "NYSE" or "XETRA" etc
+ *     :marketId
+ *
+ *  Outputs: (order is important)
+ *     market id
+ *     market name
+ *     currency id
+ *     currency name
+ *     currency symbol
+ *
+ * see also GetAllMarkets.sql
+ */
+
 -- GetMarket.sql
 SELECT m.market_id, m.caption, currency_fi_id, fi.caption, s.symbol
   FROM :filu.market m

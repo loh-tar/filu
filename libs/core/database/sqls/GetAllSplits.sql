@@ -1,20 +1,18 @@
-*  file name: GetAllSplits.sql
-*  Used in function: ()
-*
-*  Purpose:
-*     To fetch all splits or optional filtered to
-*     given FI type and/or group membership
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :ftype      // like "Stock"
-*     :group      // like "MyFavorites"
-*
-*  Outputs: (order is important)
-*     RefSymbol
-*     sdate
-*     scomment
-*     sratio
-*
+/*
+ *  Purpose:
+ *     To fetch all splits or optional filtered to
+ *     given FI type and/or group membership
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :ftype      // like "Stock"
+ *     :group      // like "MyFavorites"
+ *
+ *  Outputs: (order is important)
+ *     RefSymbol
+ *     sdate
+ *     scomment
+ *     sratio
+ */
 
 -- GetAllSplits.sql
 SELECT

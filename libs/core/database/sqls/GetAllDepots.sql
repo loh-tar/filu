@@ -1,6 +1,4 @@
-/*  file name: GetAllDepots.sql
- *  Used in function: FiluU::
- *
+/*
  *  Purpose:
  *     Fetch all depots
  *

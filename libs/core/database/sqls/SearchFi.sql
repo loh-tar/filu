@@ -1,23 +1,19 @@
-*  file name: SearchFi.sql
-*  Used as query:
-*  Used in function: Filu
-*
-*  Purpose:
-*     To
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :name  // like "pple"
-*     :type  // like "Stock"
-*
-*
-*  Outputs: (order is important)
-*     FiId
-*     MarketId
-*     FiName
-*     FiType
-*     Symbol
-*     Market
-*
+/*
+ *  Purpose:
+ *     To
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :name  // like "pple"
+ *     :type  // like "Stock"
+ *
+ *  Outputs: (order is important)
+ *     FiId
+ *     MarketId
+ *     FiName
+ *     FiType
+ *     Symbol
+ *     Market
+ */
 
 -- SearchFi.sql
 SELECT f.fi_id, s.market_id, f.caption, t.caption, s.caption, m.caption
@@ -29,8 +25,5 @@ SELECT f.fi_id, s.market_id, f.caption, t.caption, s.caption, m.caption
     and (lower(f.caption) LIKE '%'|| lower(:name) ||'%'
           or lower(s.caption) LIKE '%'|| lower(:name) ||'%')
     and lower(t.caption) LIKE '%'|| lower(:type)||'%'
-
-
-
 
 

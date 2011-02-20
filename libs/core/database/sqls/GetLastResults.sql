@@ -1,12 +1,11 @@
-*--  file name: GetLastResults.sql
-*--  Used with function: Filu::execSql()
-*--
-*--  Purpose:
-*--     Fetch
-*--
-*--  Inputs: (variable names are important and begins with a colon)
-*--
-*--  Outputs: (order is important)
+/*
+ *  Purpose:
+ *     Fetch
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *
+ *  Outputs: (order is important)
+ */
 
 -- GetLastResults.sql
 SELECT

@@ -1,19 +1,17 @@
-*  file name: GetGMembers.sql
-*  Used as query: sqlGetGMembers
-*  Used in function: FiluU::
-*
-*  Purpose:
-*     Fetch
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :groupId
-*
-*  Outputs: (order is important)
-*     gmember_id
-*     fi_id
-*     symbol
-*     market
-*     market_id
+/*
+ *  Purpose:
+ *     Fetch
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :groupId
+ *
+ *  Outputs: (order is important)
+ *     gmember_id
+ *     fi_id
+ *     symbol
+ *     market
+ *     market_id
+ */
 
 -- GetGMembers.sql
 SELECT

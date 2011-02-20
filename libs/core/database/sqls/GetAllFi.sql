@@ -1,18 +1,16 @@
-*  file name: GetAllFi.sql
-*  Used in function: FiluU::getFi()
-*
-*  Purpose:
-*     To fetch FIs with all symbols. Redundant listed or optional filtered to
-*     given symbol type and/or market and/or FI type
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :ftype      // like "Stock"
-*     :provider   // like "ISIN"
-*     :market     // like "Xetra"
-*     :group      // like "MyFavorites"
-*
-*  Outputs: (order is important)
-*
+/*
+ *  Purpose:
+ *     To fetch FIs with all symbols. Redundant listed or optional filtered to
+ *     given symbol type and/or market and/or FI type
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :ftype      // like "Stock"
+ *     :provider   // like "ISIN"
+ *     :market     // like "Xetra"
+ *     :group      // like "MyFavorites"
+ *
+ *  Outputs: (order is important)
+ */
 
 -- GetAllFi.sql
 -- All FIs with full lovely symbol set

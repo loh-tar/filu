@@ -1,17 +1,15 @@
-*  file name: GetDepotNeededCash.sql
-*  Used in function: FiluU::
-*
-*  Purpose:
-*     Fetch the needed cash of a depot at given date. That means
-*     calc the needed money of all open buy orders.
-*
-*  Inputs: (variable names are important and begins with a colon)
-*     :depotId
-*     :date
-*
-*  Outputs: (order is important)
-*     cash
-*
+/*
+ *  Purpose:
+ *     Fetch the needed cash of a depot at given date. That means
+ *     calc the needed money of all open buy orders.
+ *
+ *  Inputs: (variable names are important and begins with a colon)
+ *     :depotId
+ *     :date
+ *
+ *  Outputs: (order is important)
+ *     cash
+ */
 
 -- GetDepotNeededCash.sql
 -- FIXME: Looks pretty expensive, could you do it nicer?
