@@ -39,7 +39,7 @@ BEGIN
 
   IF mId = 0 THEN mId := <schema>.id_from_caption('broker', aCaption); END IF;
 
-  IF mId = 0 THEN
+  IF mId < 1 THEN
       mId := nextval('<schema>.broker_broker_id_seq');
       INSERT INTO <schema>.broker(broker_id, caption, feeformula, quality)
              VALUES(mId, aCaption, aFeeFormula, aQuality);

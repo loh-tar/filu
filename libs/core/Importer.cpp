@@ -226,9 +226,14 @@ bool Importer::import(const QString& line)
   if(mToDo.contains("addUnderlying")) addUnderlying();
   if(mToDo.contains("addEODBar"))     addEODBar();
   if(mToDo.contains("addSplit"))      addSplit();
+  if(mToDo.contains("addBroker"))     addBroker();
 
   if(mToDo.contains("addCO"))         addCO();
   if(mToDo.contains("addGroup"))      addGroup();
+  if(mToDo.contains("addDepot"))      addDepot();
+  if(mToDo.contains("addDepotPos"))   addDepotPos();
+  if(mToDo.contains("addAccountPos")) addAccountPos();
+  if(mToDo.contains("addOrder"))      addOrder();
 
   if(mSymbol)
   {
@@ -573,6 +578,39 @@ void Importer::prepare()
     mToDo.insert("addGroup");
   }
 
+  if(mData.contains("BrokerName") and mData.contains("FeeFormula"))
+  {
+    text << "Broker, ";
+    mToDo.insert("addBroker");
+  }
+
+  if(mData.contains("DepotName"))
+  {
+    if(mData.contains("Trader"))
+    {
+      text << "Depot, ";
+      mToDo.insert("addDepot");
+    }
+
+    if(mData.contains("PDate"))
+    {
+      text << "DepotPosition, ";
+      mToDo.insert("addDepotPos");
+    }
+
+    if(mData.contains("ODate"))
+    {
+      text << "DepotOrder, ";
+      mToDo.insert("addOrder");
+    }
+
+    if(mData.contains("APDate"))
+    {
+      text << "AccountData, ";
+      mToDo.insert("addAccountPos");
+    }
+  }
+
   if(tmpText > introTxt) mConsole << tmpText;
 
   //qDebug() << "Importer::prepare: mHeader" << mHeader;
@@ -663,6 +701,70 @@ bool Importer::setMarketId(const QString& market)
   }
 
   mId.insert("Market", Filu::eNoData);
+  return false;
+}
+
+bool Importer::setCurrencyId(const QString& curr)
+{
+  if(curr == mData.value("_LastCurrency")) return true;  // We are up to date
+
+  int retVal = mFilu->searchCaption("symbol", curr);
+
+  if(retVal >= Filu::eData)
+  {
+    mId.insert("Currency", retVal);
+    mData.insert("_LastCurrency", curr);
+    return true;
+  }
+
+  mId.insert("Currency", Filu::eNoData);
+  return false;
+}
+
+bool Importer::setDepotId(const QString& name, const QString& owner)
+{
+  QString lastDepot = QString("__%1_%2__").arg(name, owner); // Should be ugly enough to be unique
+
+  if(lastDepot == mData.value("_LastDepot")) return true;    // We are up to date
+
+  mFilu->setSqlParm(":name", name);
+  mFilu->setSqlParm(":owner", owner);
+
+  QSqlQuery* query = mFilu->execSql("GetDepotId");
+
+  int retVal = mFilu->result(FUNC, query);
+
+  if(retVal < Filu::eSuccess)
+  {
+//     addErrors(mFilu->errors());
+    mId.insert("Depot", Filu::eNoData);
+    return false;
+  }
+
+  mId.insert("Depot", retVal);
+  mData.insert("_LastDepot", lastDepot);
+  return true;
+}
+
+bool Importer::setQualityId()
+{
+  QString quality = mData.value("Quality", "Gold"); // If no quality set, use Gold
+
+  if(quality == mData.value("_LastQuality")) return true;  // We are up to date
+
+  mData.insert("_LastQuality", quality); // Save now, anyway if good or not
+
+  int retVal = mFilu->quality(quality);
+
+  if(retVal > Filu::eError) // Looks good?
+  {
+    mId.insert("Quality", retVal);
+    return true;
+  }
+
+  warning(FUNC, tr("Quality '%1' is unknown, I will use Gold.").arg(quality));
+
+  mId.insert("Quality", Filu::eGold);
   return false;
 }
 
@@ -974,6 +1076,22 @@ void Importer::addSplit()
   }
 }
 
+void Importer::addBroker()
+{
+  // Hm, Filu has only a BrokerTuple add func, so we do it raw like
+  mFilu->setSqlParm(":brokerId", 0);
+  mFilu->setSqlParm(":name", mData.value("BrokerName"));
+  mFilu->setSqlParm(":feeFormula", mData.value("FeeFormula"));
+  mFilu->setSqlParm(":quality", mId.value("Quality"));
+
+  QSqlQuery* query = mFilu->execSql("AddBroker");
+
+  if(mFilu->result(FUNC, query) < Filu::eSuccess)//FIXME check4FiluError
+  {
+    addErrors(mFilu->errors());
+  }
+}
+
 void Importer::addCO()
 {
   mFilu->setSqlParm(":id", 0); // Force to insert new CO
@@ -1062,4 +1180,75 @@ void Importer::addGroup()
   mPendingData << mData.value("RefSymbol0");
 
   mToDo.insert("groupPending");
+}
+
+void Importer::addDepot()
+{
+  int retVal = mFilu->addDepot(mData.value("DepotName"), mData.value("DepotOwner"), mData.value("Trader")
+                             , mData.value("CurrencySymbol"), mData.value("BrokerName"));
+}
+
+void Importer::addDepotPos()
+{
+  if(!setDepotId(mData.value("DepotName"), mData.value("DepotOwner"))) return;
+  if(!setFiIdBySymbol(mData.value("RefSymbol0"))) return;
+  if(!setMarketId(mData.value("Market0"))) return;
+
+  int retVal = mFilu->addDepotPos(mId.value("Depot")
+                                , QDate::fromString(mData.value("PDate"), Qt::ISODate)
+                                , mId.value("Fi")
+                                , mData.value("Pieces").toInt()
+                                , mData.value("Price").toDouble()
+                                , mId.value("Market")
+                                , mData.value("Note") );
+}
+
+void Importer::addAccountPos()
+{
+  if(!setDepotId(mData.value("DepotName"), mData.value("DepotOwner"))) return;
+  int postType = mFilu->accPostingType(mData.value("APType"));
+  if(!postType)
+  {
+    // print error
+    return;
+  }
+
+  int retVal = mFilu->addAccPosting(mId.value("Depot")
+                                  , QDate::fromString(mData.value("APDate"), Qt::ISODate)
+                                  , postType
+                                  , mData.value("Text")
+                                  , mData.value("Value").toDouble() );
+}
+
+void Importer::addOrder()
+{
+  if(!setDepotId(mData.value("DepotName"), mData.value("DepotOwner"))) return;
+  if(!setFiIdBySymbol(mData.value("RefSymbol0"))) return;
+  if(!setMarketId(mData.value("Market0"))) return;
+
+  int orderType = mFilu->orderType(mData.value("Type"));
+  if(orderType == eError)
+  {
+    // error
+    return;
+  }
+
+  int orderStatus = mFilu->orderStatus(mData.value("Status"));
+  if(orderStatus == eError)
+  {
+    // error
+    return;
+  }
+
+  int retVal = mFilu->addOrder(mId.value("Depot")
+                             , QDate::fromString(mData.value("ODate"), Qt::ISODate)
+                             , QDate::fromString(mData.value("VDate"), Qt::ISODate)
+                             , mId.value("Fi")
+                             , mData.value("Pieces").toInt()
+                             , mData.value("Limit").toDouble()
+                             , orderType
+                             , mId.value("Market")
+                             , orderStatus
+                             , mData.value("Note")
+  );
 }

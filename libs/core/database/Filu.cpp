@@ -1488,6 +1488,8 @@ int Filu::execute(QSqlQuery* query)
 
 int Filu::result(const QString& func, QSqlQuery* query)
 {
+  if(!query) return eExecError;
+
   if(query->size() < 1)
   {
     errInfo(func, "No data.");

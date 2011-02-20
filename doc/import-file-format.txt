@@ -20,7 +20,7 @@ NOTE: Exporter.cpp generate such an import file, see doc/export-data.txt, and
 Controlling Tags
 ==================
 [CompList]<MotherSymbol>
-  Set the Key "Mother" to <MotherSymbol>, you can call it "index symbol". All
+  Set the Key 'Mother' to <MotherSymbol>, you can call it 'index symbol'. All
   SymbolKeys listed in the following represent the full set of underlyings to
   this  FI. Not listed FIs will remove from the underlying list.
 
@@ -67,7 +67,7 @@ Controlling Tags
 Assignment Tags
 =================
 [<Foo>]bar
-  This declares the variable (aka Key) "Foo" and set the value to "bar". This
+  This declares the variable (aka Key) 'Foo' and set the value to 'bar'. This
   mean nothing else as that you can assign each data normally listed in columns
   with a Tag. This is useful when the same value appears in each data row. But
   [Header] will overwrite them if there is the same Key listed.
@@ -80,15 +80,19 @@ stored to the database. In the following you will find what Keys has to be set
 to got an data insert/update.
 
 Keys which are optional and not a must have are market behind its name with
-"(optional)".
+'(optional)'.
 
 Keys which are a must have but could substituted by an other Key are marked
-with "(either or...)".
+with '(either or...)'.
 
 <SymbolKey> is a must have but could be Symbol, RefSymbol or <KnownSymbolType>.
 
 <KnownSymbolType> depend on your database entries. Typically known types are
 Reuters and Yahoo.
+
+Almost all data take also an optional 'Quality' field. It is not listed special
+because of laziness. Can be given as number or its name, see
+doc/hacking-provider-scripts.txt
 
 
 Markets
@@ -99,7 +103,7 @@ Market
 OpenTime (optional) FIXME: not implemented
 CloseTime (optional) FIXME: not implemented
 Currency
-  The name of the currency FI, e.g. "US Dollar"
+  The name of the currency FI, e.g. 'US Dollar'
 
 CurrencySymbol
   Must be a Reuters symbol, or rather is as such interpreted.
@@ -108,22 +112,22 @@ CurrencySymbol
 Symbol Types / Provider
 =========================
 SymbolType
-  The name of the new symbol type, e.g. "Yahoo", "Reuters"
+  The name of the new symbol type, e.g. 'Yahoo', 'Reuters'
 
 SEQ
   The sequence, how lovely the symbol type is.
 
 IsProvider
-  "1"/"0" or "true"/"false"
+  '1'/'0' or 'true'/'false'
 
 
 FI Master Data
 ================
 Name
-  The FI name, e.g "Apple Computer"
+  The FI name, e.g 'Apple Computer'
 
 Type
-  The FI type, e.g "Stock", "Curency", "Index"
+  The FI type, e.g 'Stock', 'Curency', 'Index'
 
 DDate (optional) FIXME: not implemented
   Delete date, of the FI
@@ -139,9 +143,9 @@ Market (either these three Keys or <KnownSymbolType>)
   that you not skip a number and the first number is 0 or nothing. If you think
   its clear enough listed and you trust Importer then will he do the numbering
   for you.
-  NOTE: "Provider" is not as exactly named. It must not be a real data provider
-        usable with "agentf this ..." command. A more fitting name would be
-  "SymbolType". In such a case set "Market" to "NoMarket" but it should make
+  NOTE: 'Provider' is not as exactly named. It must not be a real data provider
+        usable with 'agentf this ...' command. A more fitting name would be
+  'SymbolType'. In such a case set 'Market' to 'NoMarket' but it should make
   more sense to use <KnownSymbolType>, see below.
 
 RefSymbol (optional)
@@ -161,7 +165,7 @@ RefSymbol (optional)
 
 Symbols
 =========
-Adding more symbols to existing FIs
+Adding more symbols to existing FIs.
 
 <SymbolKey>
 Provider
@@ -169,10 +173,10 @@ Symbol
 Market
 
 IDate (optional) FIXME: not implemented
-  Issue date, of the symbol
+  Issue date, of the symbol.
 
 MDate (optional) FIXME: not implemented
- Maritury date, of the symbol
+ Maritury date, of the symbol.
 
 
 Underlying
@@ -188,21 +192,18 @@ Weight
 
 Split Data
 ============
-Quality (optional)
-  see doc/hacking-provider-scripts.txt
-
 <SymbolKey>
 SplitDate
-  The data format like: "yyyy-mm-dd"
+  The data format like: 'yyyy-mm-dd'.
 
 SplitPre:Post (either or SplitPost:Pre or SplitRatio)
-  Format must like: "1:2", it's a normal split 2-for-1
+  Format must like: '1:2', it's a normal split 2-for-1.
 
 SplitPost:Pre (either or SplitPre:Post or SplitRatio)
-  Format must like: "2:1", it's a reverse split 1-for-2
+  Format must like: '2:1', it's a reverse split 1-for-2.
 
 SplitRatio (either or SplitPre:Post or SplitPost:Pre)
-  Format is a number, e.g. "0.5"
+  Format is a number, e.g. '0.5'.
 
 SplitComment (optional)
 
@@ -212,14 +213,18 @@ EODBar Data
 Market
 <SymbolKey>
 Date
+
 Open (optional)
 High (optional)
 Low (optional)
+  If one of these is not given will it set to 'Close'.
+
 Close
 Volume (optional)
+  If not given will it set to '0'.
+
 OpenInterest (optional)
-Quality (optional)
-  see doc/hacking-provider-scripts.txt
+  If not given will it set to '0'.
 
 
 Groups, And Content Of Groups, At Performerf
@@ -229,7 +234,7 @@ a FI to that group.
 
 RefSymbol
 GroupPath
-  Format looks like: /ScanResults/WatchDog
+  Format looks like: '/ScanResults/WatchDog'.
 
 
 Chart Object Data
@@ -241,15 +246,81 @@ RefSymbol
 Market
 CODate
 Plot
-  The VIEWNAME(), see doc/indicator-file-format.txt
+  The VIEWNAME(), see doc/indicator-file-format.txt.
 
 Type
 ArgV (optional)
-  The variable argument list
+  The variable argument list.
 
 Here a full data set as example:
 
 AAPL;NYSE;2010-01-19;Main;Line;ExtendLeft=true/nAnchorValue=199.011771653543/nWatchDog=true/nHorizontal=true/nLeftValue=199.011771653543/nLeftDate=2009-12-28/nColor=#ffffff/nRightDate=2010-02-09/nRightValue=199.011771653543/nWatchRef=CLOSE/nExtendRight=true
+
+
+Broker
+========
+BrokerName
+FeeFormula
+
+
+Depot
+=======
+DepotName
+DepotOwner
+Trader
+  The name of a trading rule file, by default located at ~/Filu/TradingRules.
+
+CurrencySymbol
+BrokerName
+
+
+Depot Positions
+=================
+DepotName
+DepotOwner
+PDate
+RefSymbol
+Market
+Pieces
+Price
+Note (optional)
+
+
+Depot Order
+=============
+DepotName
+DepotOwner
+ODate
+  Order date.
+
+VDate
+  Valid date.
+
+RefSymbol
+Market
+Pieces
+Limit
+  Any value or 'Best'/'0'.
+
+Type
+Status
+  Order status. A number or its name, see FIXME:..where?
+
+Note (optional)
+
+
+Account Data
+==============
+DepotName
+DepotOwner
+APDate
+  Posting date.
+
+APType
+  Posting type. A number or its name, see FIXME:..where?
+
+Text
+Value
 
 
 Example 1

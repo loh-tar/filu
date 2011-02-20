@@ -60,6 +60,9 @@ class Importer : public FClass
     void          setSymbolTuple(); // mSymbol
     bool          setFiIdBySymbol(const QString& symbol);
     bool          setMarketId(const QString& market);
+    bool          setCurrencyId(const QString& curr);
+    bool          setDepotId(const QString& name, const QString& owner);
+    bool          setQualityId(); // Well, its not realy an ID, but could
 
     void          addFiType();
     void          addSymbolType();
@@ -69,10 +72,15 @@ class Importer : public FClass
     void          addUnderlying();
     void          addEODBar();
     void          addSplit();
+    void          addBroker();
 
     // User data imports
     void          addCO();
     void          addGroup();
+    void          addDepot();
+    void          addDepotPos();
+    void          addAccountPos();
+    void          addOrder();
 
     QString       mOrigData;           // Copy of the data at import(), FIXME:unused
     QStringList   mPendingData;        // Collect data till committed

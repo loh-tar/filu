@@ -82,6 +82,7 @@ class Filu : public Newswire
     int  setSymbolCaption(const QString&); // Returns FiId to symbol or < eError
     void setBarsToLoad(int);
     void setDaysToFetchIfNoData(int);      // Unused
+
     void printSettings();
 
     // Get Tuple Functions
@@ -190,8 +191,10 @@ class Filu : public Newswire
     int         searchCaption(const QString& table, const QString& caption);
     QString     getLastQuery(); // Unused
     void        deleteRecord(const QString& schema, const QString& table, int id);
-    int         updateField(const QString& field, const QVariant& newValue, const QString& schema, const QString& table, int id);
+    int         updateField(const QString& field, const QVariant& newValue
+                          , const QString& schema, const QString& table, int id);
 
+    int         result(const QString& func, QSqlQuery* query);
     QString     dbFuncErrText(int errorCode);
 
   protected:
@@ -199,7 +202,6 @@ class Filu : public Newswire
     bool        initQuery(const QString& name);
     bool        readSqlStatement(const QString& name, QString& sqlStatement);
     int         execute(QSqlQuery* query);
-    int         result(const QString& func, QSqlQuery* query);
 
     RcFile*     mRcFile;
     QString     mSqlPath;
