@@ -601,6 +601,44 @@ void Filu::setSqlParm(const QString& parm, const QVariant& value)
   mSqlParm.insert(parm, value);
 }
 
+int Filu::quality(const QString& qual)
+{
+  bool ok;
+  int q = qual.toInt(&ok);
+  if(ok)
+  {
+    if((q >= ePlatinum) and (q <= eTin)) return q;
+  }
+  else
+  {
+    const QString ql = qual.toLower();
+    if(ql == quality(ePlatinum).toLower()) return ePlatinum;
+    if(ql == quality(eGold).toLower())     return eGold;
+    if(ql == quality(eBronze).toLower())   return eBronze;
+    if(ql == quality(eTin).toLower())      return eTin;
+  }
+
+  error(FUNC, tr("Quality '%1' is unknown.").arg(qual));
+
+  return eError;
+}
+
+QString Filu::quality(int quality)
+{
+  switch(quality)
+  {                        // Never tr()
+    case ePlatinum: return "Platinum";
+    case eGold:     return "Gold";
+    case eBronze:   return "Bronze";
+    case eTin:      return "Tin";
+    default:        break;
+  }
+
+  error(FUNC, tr("Quality '%1' is unknown.").arg(quality));
+
+  return "Unknown";
+}
+
 int Filu::convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& date)
 {
   if(!money) return eData; // Nice, nothing todo
