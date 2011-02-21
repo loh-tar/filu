@@ -182,17 +182,7 @@ QString Newswire::messageTypeName(const MsgType type)
 
 void Newswire::addErrors(const MessageLst& errors)
 {
-  foreach(Message error, errors)
-  {
-    for(int i = 0; i < mErrors.size(); ++i)
-    {
-      if(mErrors.at(i).text != error.text) continue;
-      return;
-    }
-
-    mErrors.append(error);
-    mHasError = true;
-  }
+  foreach(Message error, errors) addError(error);
 }
 
 void Newswire::errInfo(const QString& func, const QString& txt)
