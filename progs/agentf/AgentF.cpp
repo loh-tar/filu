@@ -49,6 +49,8 @@ AgentF::~AgentF()
   if(mImporter) delete mImporter;
   if(mExporter) delete mExporter;
   if(mScanner)  delete mScanner;
+
+  verbose(FUNC, tr("Done."), eEver);
 }
 
 void AgentF::run()
@@ -62,7 +64,6 @@ void AgentF::run()
 
 void AgentF::quit()
 {
-  verbose(FUNC, tr("Done."), eEver);
   QCoreApplication::exit(0);
 }
 
