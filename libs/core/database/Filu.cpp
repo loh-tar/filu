@@ -27,7 +27,7 @@ Filu::Filu(const QString& cn, RcFile* rcFile)
     , mConnectionName(cn)
 {
   mToDate = QDate::currentDate().toString(Qt::ISODate); // In case someone forget to set it...
-  //setNoErrorLogging(true);
+  setNoErrorLogging(true);
 }
 
 Filu::~Filu()
@@ -740,10 +740,10 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
   // 2010-04-29;263.02;270.00;262.01;268.64;19943100;;1
   // ...
 
-  QTextStream console(stdout);
+//   QTextStream console(stdout);
 //console << "Filu::addEODBarData\n";
-  QTime time;
-  time.restart();
+//   QTime time;
+//   time.restart();
 
   QStringList header = data->at(0).split(";");
 
@@ -826,7 +826,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
       QSqlDatabase::database(mConnectionName).commit();
       QSqlDatabase::database(mConnectionName).transaction();
 
-      console << ".";
+//       console << ".";
 
       sqlExecCounter = 0;
     }
@@ -836,8 +836,8 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
  // if(sqlExecCounter > 0)
       QSqlDatabase::database(mConnectionName).commit();
 
-   console /*<< "Filu::addEODBarData: " */<< barCount << " bars added in "
-           << time.elapsed() << " ms\n" << flush;
+//    console /*<< "Filu::addEODBarData: " */<< barCount << " bars added in "
+//            << time.elapsed() << " ms\n" << flush;
 
   return eSuccess;
 }
@@ -1119,13 +1119,13 @@ void Filu::deleteRecord(const QString& schema, const QString& table, int id /*= 
     sql = QString("DELETE FROM %1.%2 WHERE %2_id = %3").arg(schema).arg(table).arg(id);
   }
 
-  sql.replace(":filu", schema);
+  sql.replace(":filu", mFiluSchema);
   sql.replace(":user", mUserSchema);
-  //qDebug() << "sql=" << sql;
+  verbose(FUNC, sql, eAmple);
 
   QSqlQuery query(QSqlDatabase::database(mConnectionName));
   query.prepare(sql);
-  query.exec();
+  execute(&query);
 }
 
 int Filu::updateField(const QString& field, const QVariant& newValue
@@ -1135,13 +1135,13 @@ int Filu::updateField(const QString& field, const QVariant& newValue
   sql = QString("UPDATE %1.%2  SET %3 = %4  WHERE %2_id = %5")
                .arg(schema, table, field, newValue.toString()).arg(id);
 
-  sql.replace(":filu", schema);
+  sql.replace(":filu", mFiluSchema);
   sql.replace(":user", mUserSchema);
-  verbose(FUNC, sql);
+  verbose(FUNC, sql, eAmple);
 
   QSqlQuery query(QSqlDatabase::database(mConnectionName));
-  //query.prepare(sql);
-  query.exec(sql);
+  query.prepare(sql);
+  execute(&query);
 }
 
 QString Filu::dbFuncErrText(int errorCode)
@@ -1164,17 +1164,16 @@ int Filu::getNextId(const QString& schema, const QString& table)
   QString sql;
 
   sql = QString("SELECT nextval('%1.%2_%2_id_seq')").arg(schema).arg(table);
-  sql.replace(":filu", schema);
+  sql.replace(":filu", mFiluSchema);
   sql.replace(":user", mUserSchema);
-//qDebug() << "Filu::getNextId, sql=" << sql;
+  verbose(FUNC, sql, eAmple);
+
   QSqlQuery query(QSqlDatabase::database(mConnectionName));
   query.prepare(sql);
 
-  if(!query.exec()) return 0;
+  if(execute(&query) <= eError) return eExecError;
 
-  query.next();
-//qDebug() << "neueid=" << query.value(0).toULongLong();
-  return query.value(0).toULongLong();
+  return result(FUNC, &query);
 }
 
 void Filu::openDB()
@@ -1292,10 +1291,11 @@ bool Filu::initQuery(const QString& name)
 
   if(mSQLs.contains(name)) return true;
 
-  verbose(FUNC, name/*, eMax*/);
+  verbose(FUNC, name, eAmple);
+
+  mLastResult = eInitError; // The glass is always half-empty
 
   QString sql;
-
   if(!readSqlStatement(name, sql)) return false;
 
   QSqlQuery* query = new QSqlQuery(QSqlDatabase::database(mConnectionName));
@@ -1309,7 +1309,6 @@ bool Filu::initQuery(const QString& name)
 
     return false;
   }
-  //else qDebug() << "Filu::initQuery: okay...";// << sql;
 
   mSQLs.insert(name, query);
 
@@ -1322,7 +1321,7 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
   QString fileName(mSqlPath);
   fileName.append(name + ".sql");
 
-  verbose(FUNC, fileName, eMax);
+  verbose(FUNC, fileName, eAmple);
 
   // Make sure we have no garbage in the statement
   sqlStatement.clear();
@@ -1407,6 +1406,7 @@ int Filu::execute(QSqlQuery* query)
   mLastQuery = query->executedQuery();
   mLastError = query->lastError().databaseText();
   bool isError = !query->isActive();
+  mLastResult = eError; // The glass is always half-empty
 
   if(verboseLevel(eMax)) // For heavy debuging print each sql
   {
@@ -1445,9 +1445,8 @@ int Filu::execute(QSqlQuery* query)
 
   if(isError)
   {
-    //verbose(FUNC, tr("Executed query was: %1").arg(mLastQuery));
-    error(FUNC, tr("While executing query '%1'.").arg(mSQLs.key(query)));
-    errInfo(FUNC, tr("Error text: %1").arg(mLastError));
+    fatal(FUNC, mLastError);
+    errInfo(FUNC, tr("Executed query was '%1'.").arg(mSQLs.key(query)));
     return eError;
   }
   else if(verboseLevel(eAmple))
@@ -1462,47 +1461,58 @@ int Filu::execute(QSqlQuery* query)
       // Should never read this
       fatal(FUNC, "Size of Select SQL is -1");
       fatal(FUNC, mLastError);
+      errInfo(FUNC, tr("Executed query was '%1'.").arg(mSQLs.key(query)));
       return eError;
     }
     else if(query->size() == 0)
     {
+      //error(FUNC, "No data."); //FIXME Incomment after Newswire is improved
+      mLastResult = eNoData;
       return eNoData;
     }
   }
   else
   {
-    if(query->numRowsAffected() < 0)
-    {
-      fatal(FUNC, "Number of rows affected < 0");
-      return eNoSuccess;
-    }
-    else if(query->numRowsAffected() == 0)
-    {
-      verbose(FUNC, "No rows affected by sql.", eAmple);
-      return eNoSuccess;
-    }
+    mLastResult = eNoSuccess;
+    // FIXME Does not work, e.g. an INSERT sql doesn't say'Yes, inserted'
+    // numRowsAffected() is always 0 :-(
+
+//     if(query->numRowsAffected() < 0)
+//     {
+//       fatal(FUNC, "Number of rows affected < 0");
+//       return eNoSuccess;
+//     }
+//     else if(query->numRowsAffected() == 0)
+//     {
+//       verbose(FUNC, "No rows affected by sql.", eAmple);
+//       return eNoSuccess;
+//     }
   }
 
+  mLastResult = eSuccess;
   return eSuccess;
 }
 
 int Filu::result(const QString& func, QSqlQuery* query)
 {
   if(!query) return eExecError;
-
-  if(query->size() < 1)
+  if(lastResult() == eNoData)
   {
-    errInfo(func, "No data.");
+     //FIXME Incomment after Newswire is improved
+    //clearMessages(); // remove the "No data." from execute(query)
+    //error(func, "No data.");
     return eNoData;
   }
 
   query->next();
-  int retVal = query->value(0).toInt();
-  if(retVal >= eData) return retVal;
+  mLastResult = query->value(0).toInt();
+  if(mLastResult > eNoData) return mLastResult;
 
-  error(func, dbFuncErrText(retVal));
+  int save = mLastResult;
+  error(func, dbFuncErrText(mLastResult));
+  mLastResult = save;
 
-  return retVal;
+  return mLastResult;
 }
 
 void Filu::readSettings()

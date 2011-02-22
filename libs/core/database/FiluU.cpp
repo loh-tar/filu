@@ -57,6 +57,8 @@ void FiluU::createFunctions()
   }
   delete query;
   mSQLs.remove("CreateUserFunctions");
+
+  verbose(FUNC, tr("User functions successful created."));
 }
 
 QSqlQuery* FiluU::searchFi(const QString& name, const QString& type)
@@ -635,6 +637,8 @@ void FiluU::createTables()
   }
   delete query;
   mSQLs.remove("CreateUserTables");
+
+  verbose(FUNC, tr("User tables successful created."));
 
   createFunctions();
 }

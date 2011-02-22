@@ -195,6 +195,7 @@ class Filu : public Newswire
                           , const QString& schema, const QString& table, int id);
 
     int         result(const QString& func, QSqlQuery* query);
+    int         lastResult() { return mLastResult; };
     QString     dbFuncErrText(int errorCode);
 
   protected:
@@ -213,6 +214,7 @@ class Filu : public Newswire
     bool        mOnlyProviderSymbols;
     QString     mLastError;
     QString     mLastQuery;
+    int         mLastResult; // ErrorNo, eNoData, eData or Id
 
     QHash<QString, QSqlQuery*>  mSQLs;
     QHash<QString, QVariant>    mSqlParm;      // Holds all values of ':foo' sql parameters
