@@ -189,9 +189,9 @@ void PlotSheet::scrollChart(QPoint mousePos, int modifiers)
 
 void PlotSheet::printError()
 {
-  if(!hasError()) return;
+  if(!hasMessage()) return;
 
-  QString error = formatErrors("%c: %x");
+  QString error = formatMessages("%c: %x");
 
   int x = size().width() / 2;
   int y = size().height() / 2;

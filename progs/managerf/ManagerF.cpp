@@ -117,7 +117,7 @@ void ManagerF::createIcons()
     mp->setPageIcon(icon);
 
     // Fetch errors happens while page construction
-    QString msg = mp->formatErrors();
+    QString msg = mp->formatMessages();
     if(!msg.isEmpty())
     {
       msg.prepend(mp->iconText() + " Page: ");

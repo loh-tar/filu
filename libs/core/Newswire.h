@@ -65,7 +65,7 @@ class Newswire
       eVerbose, // Verbose messages on the console
       eConsLog, // Error logging on the console
       eFileLog, // Error logging in file
-      eErrFunc  // The default formatErrors(...) format
+      eErrFunc  // The default formatMessages(...) format
     };
 
     struct Message  // It's a typedef
@@ -87,10 +87,13 @@ class Newswire
     void            setNoErrorLogging(bool noErrorLogging);
     void            setLogFile(const QString& path);
     void            setMsgTargetFormat(MsgTarget target, const QString& format);
-    QString         formatErrors(const QString& format = "");
-    bool            hasError() const { return mHasError; };
+    QString         formatMessages(const QString& format = "");
+    bool            hasMessage() const { return mMessages.size() > 0; }; // True if any message
+    bool            hasError() const { return mHasError; };              // True if error or fatal
+    bool            hasFatal() const { return mHasFatal; };              // Only true if fatal
 
-    const MessageLst& errors() const { return mErrors; };
+    const MessageLst& errors() const { return mMessages; };
+    const MessageLst& messages() const { return mMessages; };
 
     friend class RcFile;
 
@@ -99,7 +102,8 @@ class Newswire
     void            verbose(const QString& func, const QString& txt, const VerboseLevel type = eInfo)
                            { if(mVerboseLevel >= type) verboseP(func, txt, type); };
 
-    void            addErrors(const MessageLst& errors);
+    void            addMessages(const MessageLst& msgl);
+    void            addErrors(const MessageLst& errors) { addMessages(errors); };
     void            errInfo(const QString& func, const QString& txt);
     void            warning(const QString& func, const QString& txt);
     void            error(const QString& func, const QString& txt);
@@ -110,24 +114,26 @@ class Newswire
     Message         makeMessage(const QString& func, const QString& txt, const MsgType type);
     QString         formatMessage(const Message& msg, const QString& format = "");
 
-    void            removeError(const QString& txt);
+    void            removeMessage(const QString& txt);
     bool            isRoot() { return mRoot; };
-    void            clearErrors();
+    void            clearMessages();
+    void            clearErrors() { clearMessages(); };
 
   private:
                         // P for private
     void            verboseP(const QString& func, const QString& txt, const VerboseLevel type = eInfo);
 
     void            init();
-    void            addError(const Message& msg);
-    void            logError(const Message& msg);
+    void            addMessage(const Message& msg);
+    void            logMessage(const Message& msg);
 
     bool           mRoot;
     QString        mConnName;       // ConnectionName/ProgramName for logfile entries
     QString        mClass;
     VerboseLevel   mVerboseLevel;
-    MessageLst     mErrors;
+    MessageLst     mMessages;
     bool           mHasError;
+    bool           mHasFatal;
     QTextStream*   mErrConsole;
     QFile*         mLogFileFile;
     QTextStream*   mLogFile;

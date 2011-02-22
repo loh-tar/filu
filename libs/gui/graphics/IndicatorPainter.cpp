@@ -440,13 +440,13 @@ bool IndicatorPainter::paint()
   }
   else
   {
-    if(hasError())
+    if(hasMessage())
     {
-      removeError(errTxt);
+      removeMessage(errTxt);
     }
   }
 
-  if(hasError()) return false;
+  if(hasMessage()) return false;
 
   if(mUpdateStaticSheet)
   {

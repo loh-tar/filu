@@ -28,6 +28,7 @@ Newswire::Newswire(const QString& connectionName)
         , mClass(connectionName)
         , mVerboseLevel(eNoVerbose)
         , mHasError(false)
+        , mHasFatal(false)
         , mErrConsole(new QTextStream(stderr))
         , mLogFileFile(0)
         , mLogFile(0)
@@ -42,6 +43,7 @@ Newswire::Newswire(Newswire* parent, const QString& className)
         , mClass(className)
         , mVerboseLevel(parent->mVerboseLevel)
         , mHasError(false)
+        , mHasFatal(false)
         , mErrConsole(parent->mErrConsole)
         , mLogFileFile(0)
         , mLogFile(0)
@@ -128,19 +130,19 @@ void Newswire::setNoErrorLogging(bool noErrorLogging)
   mNoErrorLogging = noErrorLogging;
 }
 
-QString Newswire::formatErrors(const QString& format/* = ""*/)
+QString Newswire::formatMessages(const QString& format/* = ""*/)
 {
   QString useFormat = format;
   if(useFormat.isEmpty()) useFormat = mFormat.value(eErrFunc);
 
-  QString errors;
-  foreach(Message error, mErrors)
+  QString msgs;
+  foreach(Message msg, mMessages)
   {
-    errors.append(formatMessage(error, useFormat) + "\n");
+    msgs.append(formatMessage(msg, useFormat) + "\n");
   }
 
-  errors.chop(1); // Remove last newline
-  return errors;
+  msgs.chop(1); // Remove last newline
+  return msgs;
 }
 
 QString Newswire::formatMessage(const Message& msg, const QString& format/* = ""*/)
@@ -180,29 +182,29 @@ QString Newswire::messageTypeName(const MsgType type)
   }
 }
 
-void Newswire::addErrors(const MessageLst& errors)
+void Newswire::addMessages(const MessageLst& msgl)
 {
-  foreach(Message error, errors) addError(error);
+  foreach(Message msg, msgl) addMessage(msg);
 }
 
 void Newswire::errInfo(const QString& func, const QString& txt)
 {
-  addError(makeMessage(func, txt, eErrInfo));
+  addMessage(makeMessage(func, txt, eErrInfo));
 }
 
 void Newswire::warning(const QString& func, const QString& txt)
 {
-  addError(makeMessage(func, txt, eWarning));
+  addMessage(makeMessage(func, txt, eWarning));
 }
 
 void Newswire::error(const QString& func, const QString& txt)
 {
-  addError(makeMessage(func, txt, eError));
+  addMessage(makeMessage(func, txt, eError));
 }
 
 void Newswire::fatal(const QString& func, const QString& txt)
 {
-  addError(makeMessage(func, txt, eFatal));
+  addMessage(makeMessage(func, txt, eFatal));
 }
 
 void Newswire::setMessage(const QString& func, const QString& txt, const MsgType type/* = eError*/)
@@ -219,24 +221,33 @@ void Newswire::setMessage(const QString& func, const QString& txt, const MsgType
   }
 }
 
-void Newswire::removeError(const QString& txt)
+void Newswire::removeMessage(const QString& txt)
 {
+  mHasError = false;
+  mHasFatal = false;
   int exist = -1;
-  for(int i = 0; i < mErrors.size(); ++i)
+  for(int i = 0; i < mMessages.size(); ++i)
   {
-    if(mErrors.at(i).text != txt) continue;
+    if(mMessages.at(i).text != txt)
+    {
+      if(eError == mMessages.at(i).type) mHasError = true;
+      if(eFatal == mMessages.at(i).type) mHasFatal = true;
+      continue;
+    }
+
     exist = i;
+    // Don't break, maybe comes some error to be set "mHasError = true"
   }
 
-  if(exist > -1) mErrors.removeAt(exist);
-
-  if(mErrors.size() == 0) mHasError = false;
+  if(mHasFatal)  mHasError = true;
+  if(exist > -1) mMessages.removeAt(exist);
 }
 
-void Newswire::clearErrors()
+void Newswire::clearMessages()
 {
-  mErrors.clear();
+  mMessages.clear();
   mHasError = false;
+  mHasFatal = false;
 }
 
 void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLevel type/* = eInfo*/)
@@ -244,21 +255,24 @@ void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLe
   *mErrConsole << formatMessage(makeMessage(func, txt, eInfoMsg), mFormat.value(eVerbose)) << endl;
 }
 
-void Newswire::addError(const Message& error)
+void Newswire::addMessage(const Message& msg)
 {
-  for(int i = 0; i < mErrors.size(); ++i)
+  for(int i = 0; i < mMessages.size(); ++i)
   {
-    if(mErrors.at(i).text != error.text) continue;
+    if(mMessages.at(i).text != msg.text) continue;
     return;
   }
 
-  mErrors.append(error);
-  mHasError = true;
+  mMessages.append(msg);
 
-  logError(error);
+  if(eError == msg.type) mHasError = true;
+  if(eFatal == msg.type) mHasFatal = true;
+  if(mHasFatal)          mHasError = true;
+
+  logMessage(msg);
 }
 
-void Newswire::logError(const Message& msg)
+void Newswire::logMessage(const Message& msg)
 {
   if(!mNoErrorLogging)
   {

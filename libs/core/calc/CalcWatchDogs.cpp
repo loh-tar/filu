@@ -61,7 +61,7 @@ bool CalcWatchDogs::calc()
 {
   static const QString noDogTxt = tr("No watchdog on patrol.");
 
-  removeError(noDogTxt);
+  removeMessage(noDogTxt);
 
   if(hasError()) return false;
 

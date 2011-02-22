@@ -481,7 +481,7 @@ void InspectorF::backTestError()
 {
   clearErrors();
   addErrors(mBackTester->errors());
-  mReport.insertPlainText(formatErrors("%T *** %t *** %F %x") + "\n");
+  mReport.insertPlainText(formatMessages("%T *** %t *** %F %x") + "\n");
   mReport.moveCursor(QTextCursor::Start);
 
   mTabWidget->setCurrentWidget(&mReport);

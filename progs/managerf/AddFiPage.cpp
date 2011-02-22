@@ -335,7 +335,7 @@ bool AddFiPage::importFails(const QString& func, const QString& data)
 
   if(mImporter->hasError())
   {
-    emitMessage(func, mImporter->formatErrors(), eError);
+    emitMessage(func, mImporter->formatMessages(), eError);
     return true;
   }
 
@@ -501,7 +501,7 @@ void AddFiPage::scriptFinished()
   {
     // For 'historical reasons', and because it looks so cool,
     // we fill the result table with the error message...
-    QString errorMsg = mScripter->formatErrors();
+    QString errorMsg = mScripter->formatMessages();
     QStringList* result = new QStringList;
     result->append("[Header]Error");
     result->append(errorMsg);
