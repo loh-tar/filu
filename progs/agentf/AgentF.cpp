@@ -37,6 +37,7 @@ AgentF::AgentF(QCoreApplication& app)
 {
   readSettings();
   setMsgTargetFormat(eVerbose, "%C: %x");
+  setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
   execCmd(mCommandLine);
 
@@ -50,7 +51,10 @@ AgentF::~AgentF()
   if(mExporter) delete mExporter;
   if(mScanner)  delete mScanner;
 
-  verbose(FUNC, tr("Done."), eEver);
+  if(!hasMessage())   verbose(FUNC, tr("Done."));
+  else if(hasFatal()) verbose(FUNC, tr("Houston, we have a problem."));
+  else if(hasError()) verbose(FUNC, tr("Exit with error."));
+  else verbose(FUNC, tr("Not the best."));
 }
 
 void AgentF::run()
@@ -64,7 +68,7 @@ void AgentF::run()
 
 void AgentF::quit()
 {
-  QCoreApplication::exit(0);
+  QCoreApplication::exit(hasError());
 }
 
 void AgentF::readSettings()
@@ -224,7 +228,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
   // Here is the beef...
   mFilu->addEODBarData(fiId, marketId, data);
   delete data; // No longer needed
-  check4FiluError(FUNC);
+  if(check4FiluError(FUNC)) return;
   // ...and as dessert check for events
   if(!mScanner)
   {
@@ -467,6 +471,10 @@ void AgentF::filu(const QStringList& parm)
     if(!mFilu->hasError())
     {
       verbose(FUNC, tr("Database user functions successful updated."));
+    }
+    else
+    {
+      addErrors(mFilu->errors());
     }
   }
   else if(parm.contains("--create"))
