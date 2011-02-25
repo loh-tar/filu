@@ -221,16 +221,10 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
   // Puh...we can call the script
   QStringList* data = fetchBarsFromProvider(parm[4], parameters); // parm[4]=<provider>
 
-  if(!data)
-  {
-    warning(FUNC, tr("No data from script."));
-    return;
-  }
-
   // Here is the beef...
   mFilu->addEODBarData(fiId, marketId, data);
   delete data; // No longer needed
-
+  check4FiluError(FUNC);
   // ...and as dessert check for events
   if(!mScanner)
   {

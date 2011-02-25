@@ -740,6 +740,18 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
   // 2010-04-29;263.02;270.00;262.01;268.64;19943100;;1
   // ...
 
+  if(!data)
+  {
+    error(FUNC, tr("Got no 'data'."));
+    return eError;
+  }
+
+  if(data->size() == 1)
+  {
+    warning(FUNC, tr("No data from script."));
+    return eNoData;
+  }
+
 //   QTextStream console(stdout);
 //console << "Filu::addEODBarData\n";
 //   QTime time;
