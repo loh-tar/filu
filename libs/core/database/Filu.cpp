@@ -330,15 +330,11 @@ FiTuple* Filu::getFiLike(const QString& pattern)
 
 FiTuple* Filu::getFiBySymbol(const QString& symbol)
 {
-  if(!initQuery("GetFiBySymbol")) return 0;
+  int fiId = setSymbolCaption(symbol);
 
-  QSqlQuery* query = mSQLs.value("GetFiBySymbol");
+  if(fiId < 1) return 0;
 
-  query->bindValue(":symbol", symbol);
-
-  if(execute(query) < eData) return 0;
-
-  return fillFiTuple(query);
+  return getFi(fiId);
 }
 
 int Filu::getFiTypes(QStringList& type)
