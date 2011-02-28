@@ -19,16 +19,13 @@ NOTE: Exporter.cpp generate such an import file, see doc/export-data.txt, and
 
 Controlling Tags
 ==================
-[CompList]<MotherSymbol>
-  Set the Key 'Mother' to <MotherSymbol>, you can call it 'index symbol'. All
-  SymbolKeys listed in the following represent the full set of underlyings to
-  this  FI. Not listed FIs will remove from the underlying list.
-
 [CompListEnd]
-  Terminates the [CompList]
+  Terminates a CompList and force a commit to the DB. Or in other words it
+  removes a set value of CompList.
 
-[Data] FIXME: not implemented, not shure if usefull
-  It mußt be placed directly before the data follows.
+[EOF]
+  End Of File. It's not intend to use it in a file, but you could. Informs the
+  Importer that no more data follow.
 
 [Header]<foo>;<bar>...
   Comma separated files have typicaly a header, here we have headers too. It
@@ -61,7 +58,8 @@ Controlling Tags
   behaves like reading the very first line of the import file.
 
 [Stop]
-  Terminate the import at this point
+  Terminate the import at this point. Almost the same as [EOF] but write a
+  different message.
 
 
 Assignment Tags
@@ -92,7 +90,10 @@ Reuters and Yahoo.
 
 Almost all data take also an optional 'Quality' field. It is not listed special
 because of laziness. Can be given as number or its name, see
-doc/hacking-provider-scripts.txt
+doc/hacking-provider-scripts.txt.
+FIXME: There are only a few data types which can insert the quality to the DB
+and the DB will care about it. Anyway have all tables of the DB already the
+quality field.
 
 
 Markets
@@ -181,12 +182,18 @@ MDate (optional) FIXME: not implemented
 
 Underlying
 ============
-Mother
-  Similar to [CompList], but no total summary update, simply added. So use it
+CompList (either or Mother)
+  You can call it 'index symbol'. All <SymbolKey> listed in the following
+  represent the full set of underlyings to this FI. Not listed FIs will remove
+  from the underlying list. If the FI name contains a number is this number used
+  to validate the list, e.g. 'DAX 30'. If there is a mismatch nothing happens,
+  but an error is thrown.
+
+Mother (either or CompList)
+  Similar to CompList, but no total summary update, simply added. So use it
   with care.
 
 <SymbolKey>
-
 Weight
 
 
@@ -227,9 +234,9 @@ OpenInterest (optional)
   If not given will it set to '0'.
 
 
-Groups, And Content Of Groups, At Performerf
+Groups, And Content Of Groups, At PerformerF
 ==============================================
-Creating a group, if not already exist,  in the navi panel of performerf and add
+Creating a group, if not already exist, in the navi panel of PerformerF and add
 a FI to that group.
 
 RefSymbol
@@ -265,8 +272,11 @@ FeeFormula
 
 Depot
 =======
+DepotId (either or DepotName/DepotOwner)
+
 DepotName
-DepotOwner
+DepotOwner (either these two or DepotId)
+
 Trader
   The name of a trading rule file, by default located at ~/Filu/TradingRules.
 
@@ -276,8 +286,11 @@ BrokerName
 
 Depot Positions
 =================
+DepotId (either or DepotName/DepotOwner)
+
 DepotName
-DepotOwner
+DepotOwner (either these two or DepotId)
+
 PDate
 RefSymbol
 Market
@@ -288,8 +301,11 @@ Note (optional)
 
 Depot Order
 =============
+DepotId (either or DepotName/DepotOwner)
+
 DepotName
-DepotOwner
+DepotOwner (either these two or DepotId)
+
 ODate
   Order date.
 
@@ -311,8 +327,11 @@ Note (optional)
 
 Account Data
 ==============
+DepotId (either or DepotName/DepotOwner)
+
 DepotName
-DepotOwner
+DepotOwner (either these two or DepotId)
+
 APDate
   Posting date.
 
@@ -331,11 +350,19 @@ Example 2
 ===========
 Add a symbol to an existing FI interactiv in a console.
 
-  lot@N110:~/FiluSource$ agentf imp
+  [lot@N110 ~/FiluSource]$ agentf imp --Filu VerboseLevel=2
   [Header]RefSymbol;ISIN
   AAPL;US0378331005
-
-  Importer::prepare: import symbols...
-  agentf: Done
+  [Line:    2      39B][  1/1  ] Symbols...................Ok (Ref: AAPL) ISIN US0378331005 NoMarket
+  [Line:    3      44B][  0/0  ] End Of File...............Ok
+  AgentF: Done.
 
 Ctrl-D was pressed to finish. This is not as comfortable but a possibility.
+
+Example 3
+===========
+Add a new market using AgentF's 'add' command.
+
+  [lot@N110 ~/FiluSource]$ agentf add market NYSE USD --curr "US Dollar"
+  [Line:    2      56B][  1/1  ] Markets...................Ok
+  AgentF: Done.

@@ -411,6 +411,8 @@ void AgentF::import(const QStringList& parm)
     if(!mImporter->import(line)) break;
   }
 
+  mImporter->import("[EOF]");
+
   if(file)
   {
     file->close();

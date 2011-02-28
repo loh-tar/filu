@@ -51,17 +51,29 @@ class Importer : public FClass
     void          makeNameNice(QString& name);
 
   protected:
-    void          printDot();
+    enum Effect
+    {
+      eEffectPending = 0,
+      eEffectOk      = 1,
+      eEffectFault   = 2
+    };
+
+    void          printStatus(Effect effect = eEffectPending, const QString& extraTxt = "");
+    bool          notAdded(const QString& what = "");
+    void          checkIfAdded(const QString& what = "") { notAdded(what); };
+    bool          notFound(const QString& what = "");
+    bool          noSuccess() { return notFound(); };
     bool          handleTag(QStringList& row);
     QString       makeUnique(const QString& key);
     void          buildPair(QString& key, QString& value, const QString& line);
     void          prepare();
 
     void          setSymbolTuple(); // mSymbol
-    bool          setFiIdBySymbol(const QString& symbol);
-    bool          setMarketId(const QString& market);
+    bool          setFiIdByAnySymbol(const QString faultTxt = "");
+    bool          setFiIdBySymbol(const QString& symbol, const QString faultTxt = "");
+    bool          setMarketId(const QString& market, const QString faultTxt = "");
     bool          setCurrencyId(const QString& curr);
-    bool          setDepotId(const QString& name, const QString& owner);
+    bool          setDepotId(const QString faultTxt = "");
     bool          setQualityId(); // Well, its not realy an ID, but could
 
     void          addFiType();
@@ -70,6 +82,7 @@ class Importer : public FClass
     void          addFi();
     void          addSymbol();
     void          addUnderlying();
+    void          addCompList();
     void          addEODBar();
     void          addSplit();
     void          addBroker();
@@ -83,12 +96,11 @@ class Importer : public FClass
     void          addOrder();
 
     QString       mOrigData;           // Copy of the data at import(), FIXME:unused
-    QStringList   mPendingData;        // Collect data till committed
+    QList<QStringList> mPendingData;   // Collect data till committed
     QHash<QString, QString> mData;     // The split mOrigData associated to the [Header]
     QStringList   mHeader;             // Must be a stringlist, we need the positions of header data
     QStringList   mHeaderExpanded;     // Is mHeader + auto added keys, e.g. when a KnownSymbolType is used
     QSet<QString> mToDo;               // Holds notes, which job is todo to avoid redundant if()
-    bool          mPrepared;
 
     QString       mMustBeUnique;
     QStringList   mAllSymbolTypes;     // All possible symbol types
@@ -106,6 +118,14 @@ class Importer : public FClass
     bool          mMakeNameNice;
     QStringList   mNiceSearch;
     QStringList   mNiceReplace;
+
+    int           mLineNo;              // Hold the line number which was actual read
+    QQueue<int>   mDataLineNo;          // Is cut to max 2 numbers
+    int           mByteCount;
+    int           mDataR;               // Data Read
+    int           mDataW;               // Data Written
+    QString       mImportData;
+    QStringList   mHint;
 
   private:
 

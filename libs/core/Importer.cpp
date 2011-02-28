@@ -35,7 +35,7 @@ Importer::Importer(FClass* parent)
 
 Importer::~Importer()
 {
-  if(!mPendingData.isEmpty())
+  if(!mPendingData.isEmpty() and !hasError())
   {
     if(mToDo.contains("eodBarsPending"))
     {
@@ -47,21 +47,181 @@ Importer::~Importer()
       mToDo.insert("commitGroup");
       addGroup();
     }
+    else if(mToDo.contains("compListPending"))
+    {
+      mToDo.insert("commitCompList");
+      addCompList();
+    }
+
+    mPendingData.clear();
   }
 
-  //qDebug() << "Importer::~: I''m dead";
+  if(mDataW)
+  {
+    if(mDataLineNo.size()) mDataLineNo.dequeue();
+    if(!hasError()) printStatus(eEffectOk);
+  }
+
   if(mSymbol) delete mSymbol;
 
-  mConsole << endl;
+  verbose(FUNC, "I'm dead.", eMax);
 }
 
-void Importer::printDot()
+void Importer::printStatus(Effect effectEnum, const QString& extraTxt)
 {
-  if(mRolex.elapsed() > 500)
+  static const QStringList effectList = QStringList() << "" << "Ok" << "FAULT";
+  static const char c[] = {'-', '\\', '|', '/'};
+  static int cIdx = 0;
+  static int maxMsgLength = 0;
+  static int dataWidth = 3;
+  static QString exTxt = "";
+
+  if(verboseLevel() == eNoVerbose) return;
+
+  if(mDataW and eEffectFault == effectEnum) printStatus(eEffectOk);
+
+  bool force = false;
+  QString effect = effectList.at(effectEnum);
+
+  if(extraTxt.size())
   {
-    mConsole << "." << flush;
-    mRolex.start();
+    if(mHint.size()) exTxt = mHint.join(extraTxt);
+    else exTxt = extraTxt;
+
+    force = true;
   }
+  else if(effect.size())
+  {
+    force = true;
+  }
+
+  if(!force and mRolex.elapsed() < 200) return;
+
+  if(effect.isEmpty())
+  {
+    if(4 == ++cIdx) cIdx = 0;
+    effect = c[cIdx];
+  }
+
+  int lineNo = mLineNo;
+  if(eEffectPending != effectEnum)
+  {
+    if(mDataLineNo.size()) lineNo = mDataLineNo.dequeue();
+  }
+  if(eEffectFault == effectEnum) // We have again to "chop"
+  {
+    if(mDataLineNo.size()) lineNo = mDataLineNo.dequeue();
+  }
+
+  QString byteTxt = QString("%1B").arg(mByteCount);
+  double bytes = mByteCount;
+  if(bytes > 999.0)
+  {
+    bytes /= 1000.0;
+    byteTxt = QString("%1%2").arg(bytes, 3, 'f', 1).arg("KB");
+  }
+  if(bytes > 999.0)
+  {
+    bytes /= 1000.0;
+    byteTxt = QString("%1%2").arg(bytes, 3, 'f', 2).arg("MB"); // One decimal more
+  }
+
+  if(mDataR > 999999) dataWidth = qMax(7, dataWidth);
+  else if(mDataR > 99999) dataWidth = qMax(6, dataWidth);
+  else if(mDataR > 9999) dataWidth = qMax(5, dataWidth);
+  else if(mDataR > 999) dataWidth = qMax(4, dataWidth);
+
+  QString msg = QString("[Line: %1 %2][%3/%4] %5%6 %7")
+                        .arg(lineNo, 4)
+                        .arg(byteTxt, 8)
+                        .arg(mDataR,  dataWidth)
+                        .arg(mDataW, -dataWidth)
+                        .arg(mImportData, -20, '.')
+                        .arg(effect, 8, '.')
+                        .arg(exTxt);
+
+  if(msg.size() > maxMsgLength) maxMsgLength = msg.size();
+
+  if(msg.size() < maxMsgLength)
+  {
+    // Make sure that the whole line is repainted
+    msg.append(QString(maxMsgLength - msg.size(), ' '));
+  }
+
+  if(force and eEffectPending != effectEnum)
+  {
+    mConsole << msg << endl;
+    maxMsgLength = 0;
+  }
+  else
+  {
+    mConsole << msg << '\r' << flush;
+  }
+
+  if(eEffectPending != effectEnum)
+  {
+    exTxt.clear();
+    mDataR = 0;
+    mDataW = 0;
+  }
+
+  mHint.clear();
+  mRolex.start();
+}
+
+bool Importer::notAdded(const QString& what/* = ""*/)
+{
+  if(mFilu->lastResult() > Filu::eNoData)
+  {
+    ++mDataW;
+    mHint.clear();
+    return false;
+  }
+
+  if(mFilu->hasFatal())
+  {
+    addErrors(mFilu->errors());
+    printStatus(eEffectFault, "*** FATAL ***");
+    return true;
+  }
+
+  QString msg;
+//   if(mFilu->hasMessage()) msg = formatMessages(mFilu->errors().at(0), "%x");
+  msg = mFilu->formatMessages("%x");
+
+  if(what.size()) msg.append(QString(" (%1)").arg(what));
+  else if(mHint.size()) msg.append(QString(" (%1)").arg(mHint.join(" ")));
+
+  mHint.clear();
+  printStatus(eEffectFault, msg);
+  return true;
+}
+
+bool Importer::notFound(const QString& what/* = ""*/)
+{
+  if(mFilu->lastResult() > Filu::eNoData)
+  {
+    mHint.clear();
+    return false;
+  }
+
+  if(mFilu->hasFatal())
+  {
+    addErrors(mFilu->errors());
+    printStatus(eEffectFault, "*** FATAL ***");
+    return true;
+  }
+
+  if(what.isEmpty() and mHint.isEmpty()) return true;
+
+  QString msg = formatMessage(mFilu->errors().at(0), "%x");
+
+  if(what.size() and what != "PrintError") msg.append(QString(" (%1)").arg(what));
+  else if(mHint.size()) msg.append(QString(" (%1)").arg(mHint.join(" ")));
+
+  mHint.clear();
+  printStatus(eEffectFault, msg);
+  return true;
 }
 
 void Importer::reset()
@@ -75,8 +235,13 @@ void Importer::reset()
   mKnownSTisProvider.clear();
   mAllSymbolTypes.clear();
   mToDo.clear();
-  mPrepared = false;
   mTotalSymbolCount = 0;
+
+  mLineNo = 0;
+  mByteCount = 0;
+  mDataR     = 0;
+  mDataW     = 0;
+  mImportData.clear();
 
   if(mSymbol)
   {
@@ -87,7 +252,7 @@ void Importer::reset()
   // Read all symbol types out of the DB
   SymbolTypeTuple* symbolTypes = mFilu->getSymbolTypes(Filu::eAllTypes);
 
-  if(!check4FiluError(FUNC, tr("ERROR while exec GetSymbolTypes.sql")))
+  if(!check4FiluError(FUNC))
   {
     if(symbolTypes)
     {
@@ -166,6 +331,9 @@ bool Importer::import(const QString& line)
   // [Header]Name;Type;Provider;Symbol;Market;RefSymbol
   // Apple Computer;Stock;Yahoo;AAPL;NASDAQ;US0378331005
 
+  mLineNo    += 1;
+  mByteCount += line.size();
+
   QString data = line;
 
   data = data.replace(QRegExp("^[\"\']" ),  "");
@@ -191,30 +359,42 @@ bool Importer::import(const QString& line)
   //qDebug() << "Importer::import: " << row;
 
   // Check if line is a tag line
-  if(row.at(0).startsWith("["))
-  {
-    return handleTag(row);
-  }
+  if(row.at(0).startsWith("[")) return handleTag(row);
 
   // No, its not, therefore it must be a data line.
-  // We place all in a QHash<QString, QString>
+  mDataLineNo.enqueue(mLineNo);
+  if(mDataLineNo.size() > 2) mDataLineNo.dequeue(); // Store max two line numbers
+
+  ++mDataR;
+
+  // Last check if all looks good
   if(mHeader.size() > row.size())
   {
-    mConsole << "To less data in line: '" << line << "'";
+    printStatus(eEffectFault, tr("To less data in the line."));
     return true;
   }
 
+  // We place all in a QHash<QString, QString>
   for(int i = 0; i < mHeader.size(); ++i)
   {
     mData.insert(mHeader.at(i), row.at(i));
   }
 
-  if(!mPrepared) prepare();
-
+  if(mToDo.contains("prepare")) prepare();
+  else if(verboseLevel(eMax))
+  {
+    verbose(FUNC, QString("*** Data line No: %1 ***").arg(mLineNo));
+    QStringList sl;
+    QHashIterator<QString, QString> i(mData);
+    while(i.hasNext()) { i.next(); sl << QString("%1=%2").arg(i.key(), i.value()); }
+    sl.sort();
+    foreach(QString data, sl) verbose(FUNC, data);
+  }
   //return true; // debug only
 
-  printDot();
-  mToDo.insert("PrintNewLine");
+  printStatus();
+
+  setQualityId(); // Nearly always needed
 
   if(mToDo.contains("setSymbolTuple")) setSymbolTuple();
 
@@ -224,6 +404,7 @@ bool Importer::import(const QString& line)
   if(mToDo.contains("addFi"))         addFi();
   if(mToDo.contains("addSymbol"))     addSymbol();
   if(mToDo.contains("addUnderlying")) addUnderlying();
+  if(mToDo.contains("addCompList"))   addCompList();
   if(mToDo.contains("addEODBar"))     addEODBar();
   if(mToDo.contains("addSplit"))      addSplit();
   if(mToDo.contains("addBroker"))     addBroker();
@@ -234,12 +415,6 @@ bool Importer::import(const QString& line)
   if(mToDo.contains("addDepotPos"))   addDepotPos();
   if(mToDo.contains("addAccountPos")) addAccountPos();
   if(mToDo.contains("addOrder"))      addOrder();
-
-  if(mSymbol)
-  {
-    delete mSymbol;
-    mSymbol = 0;
-  }
 
   return !hasError();
 }
@@ -287,8 +462,17 @@ void Importer::makeNameNice(QString& name)
 
 bool Importer::handleTag(QStringList& row)
 {
+  if(hasError())
+  {
+    mImportData = "Please report that bug";
+    printStatus(eEffectFault);
+    return false;
+  }
+
   if(!mPendingData.isEmpty())
   {
+    if(mDataLineNo.size()) mDataLineNo.dequeue();
+
     if(mToDo.contains("eodBarsPending"))
     {
       mToDo.insert("commitEODBars");
@@ -299,6 +483,27 @@ bool Importer::handleTag(QStringList& row)
       mToDo.insert("commitGroup");
       addGroup();
     }
+    else if(mToDo.contains("compListPending"))
+    {
+      mToDo.insert("commitCompList");
+      addCompList();
+    }
+
+    mPendingData.clear();
+  }
+
+  if(row.at(0).startsWith("[EOF]"))
+  {
+    if(mDataW)
+    {
+      if(mDataLineNo.size()) mDataLineNo.dequeue();
+      printStatus(eEffectOk);
+    }
+
+    --mLineNo; // One less because it is not part of the file (or should be)
+    mImportData = "End Of File";
+    printStatus(eEffectOk);
+    return false;
   }
 
   if(row.at(0).startsWith("[Reset]"))
@@ -316,7 +521,7 @@ bool Importer::handleTag(QStringList& row)
     return true;
   }
 
-  mPrepared = false;
+  mToDo.insert("prepare");
 
   if(row.at(0).startsWith("[Header]"))
   {
@@ -364,19 +569,17 @@ bool Importer::handleTag(QStringList& row)
     return true;
   }
 
-  if(row.at(0).startsWith("[CompList]"))
-  {
-    mData.insert("Mother", row[0].remove("[CompList]"));
-    return true;
-  }
-
   if(row.at(0).startsWith("[CompListEnd]"))
   {
-    mData.remove("Mother");
+    mData.remove("CompList");
     return true;
   }
 
-  if(row.at(0).startsWith("[Stop]")) return false;
+  if(row.at(0).startsWith("[Stop]"))
+  {
+    printStatus(eEffectOk, tr("Read Special Tag %1").arg("[Stop]"));
+    return false;
+  }
 
   // At this point we have a global key
   QString key, value;
@@ -441,20 +644,11 @@ void Importer::buildPair(QString& key, QString& value, const QString& line)
 
 void Importer::prepare()
 {
-  const char* introTxt = "Import: ";
-  QString tmpText;
-  QTextStream text(&tmpText);
-  //qDebug() << "Importer::prepare:";
+  verbose(FUNC, QString("*** Let's get ready to rumble! Line No: %1 ***").arg(mLineNo), eMax);
 
-  if(mToDo.contains("PrintNewLine"))
-  {
-    mConsole << endl;
-    mToDo.remove("PrintNewLine");
-  }
+  printStatus();
 
-  text << introTxt;
-
-  mPrepared = true;
+  if(mSymbol) { delete mSymbol; mSymbol = 0; }
   mTotalSymbolCount = 0;
   mSymbolXCount = 0;
   mUsedRefSymbols.clear();
@@ -470,7 +664,7 @@ void Importer::prepare()
     i.next();
     rawKey = i.key();
     rawKey.remove(QRegExp("[\\d]*\\b"));
-    //qDebug() << "Importer::prepare:" << i.key() << ":" << i.value() << rawKey;
+    verbose(FUNC, QString("Examine Symbols: %1 %2 %3").arg(i.key(), i.value(), rawKey), eMax);
 
     if(!mAllSymbolTypes.contains(rawKey)) continue;
 
@@ -496,26 +690,33 @@ void Importer::prepare()
     }
 
     fatal(FUNC, "Oops?! What's that? :" + rawKey);
-
   }
-  //qDebug() << "Importer::prepare:" <<  mTotalSymbolCount << "symbols total used";
-  //qDebug() << "Importer::prepare:" <<  mSymbolXCount << "SymbolX used";
+
+  if(verboseLevel(eMax))
+  {
+    verbose(FUNC, QString("Symbols total used: %1").arg(mTotalSymbolCount));
+    verbose(FUNC, QString("UsedKnownSymbols: %1").arg(mUsedKnownSymbols.size()));
+    verbose(FUNC, QString("UsedRefSymbols: %1").arg(mUsedRefSymbols.size()));
+    verbose(FUNC, QString("SymbolXCount: %1").arg(mSymbolXCount));
+  }
+
+  QStringList importData;
 
   if(mData.contains("Market0") and mData.contains("CurrencySymbol"))
   {
-    text << "Markets, ";
+    importData << "Markets";
     mToDo.insert("addMarket");
   }
 
   if(mData.contains("FiType"))
   {
-    text << "FiTypes, ";
+    importData << "FiTypes";
     mToDo.insert("addFiType");
   }
 
   if(mData.contains("SymbolType"))
   {
-    text << "SymbolTypes, ";
+    importData << "SymbolTypes";
     mToDo.insert("addSymbolType");
   }
 
@@ -530,7 +731,7 @@ void Importer::prepare()
     {
       if(mData.contains("Name") and mData.contains("Type") )
       {
-        text << "FIs/Symbols, ";
+        importData << "FIs/Symbols";
         mToDo.insert("addFi");
         // One symbol is installed with the FI, but if we have more symbols
         // we have to add them separately
@@ -539,16 +740,21 @@ void Importer::prepare()
       else
       {
         mToDo.insert("addSymbol");
-        text << "Symbols, ";
+        importData << "Symbols";
       }
     }
   }
 
   if(mData.contains("Mother") and mData.contains("Weight"))
   {
-    text << "Underlyings, ";
-    mToDo.insert("ClearCompList");
+    importData << "Underlyings";
     mToDo.insert("addUnderlying");
+  }
+
+  if(mData.contains("CompList") and mData.contains("Weight"))
+  {
+    importData << "CompList";
+    mToDo.insert("addCompList");
   }
 
   if( mData.contains("Market0") and
@@ -556,31 +762,31 @@ void Importer::prepare()
       mData.contains("Close")   and
      (mTotalSymbolCount > 0)       )
   {
-    text << "EODBarData, ";
+    importData << "EODBarData";
     mToDo.insert("addEODBar");
   }
 
   if(mData.contains("SplitDate"))
   {
-    text << "Splits, ";
+    importData << "Splits";
     mToDo.insert("addSplit");
   }
 
   if(mData.contains("CODate") and mData.contains("Plot"))
   {
-    text << "ChartObjects, ";
+    importData << "ChartObjects";
     mToDo.insert("addCO");
   }
 
   if(mData.contains("GroupPath") and mData.contains("RefSymbol0"))
   {
-    text << "Groups, ";
+    importData << "Group";
     mToDo.insert("addGroup");
   }
 
   if(mData.contains("BrokerName") and mData.contains("FeeFormula"))
   {
-    text << "Broker, ";
+    importData << "Broker";
     mToDo.insert("addBroker");
   }
 
@@ -588,39 +794,58 @@ void Importer::prepare()
   {
     if(mData.contains("Trader"))
     {
-      text << "Depot, ";
+      importData << "Depot";
       mToDo.insert("addDepot");
     }
 
     if(mData.contains("PDate"))
     {
-      text << "DepotPosition, ";
+      importData << "DepotPosition";
       mToDo.insert("addDepotPos");
     }
 
     if(mData.contains("ODate"))
     {
-      text << "DepotOrder, ";
+      importData << "DepotOrder";
       mToDo.insert("addOrder");
     }
 
     if(mData.contains("APDate"))
     {
-      text << "AccountData, ";
+      importData << "AccountData";
       mToDo.insert("addAccountPos");
     }
   }
 
-  if(tmpText > introTxt) mConsole << tmpText;
+  const QString impDat = importData.join(", ");
+  if(mDataW and /*mImportData.size() and*/ impDat != mImportData)
+  {
+    mDataR -= 1;
+    printStatus(eEffectOk);
+    mDataR  = 1;
+  }
 
-  //qDebug() << "Importer::prepare: mHeader" << mHeader;
-  //qDebug() << "Importer::prepare: mData" << mData;
+  mImportData = impDat;
+
+  printStatus();
+
+  if(verboseLevel(eMax))
+  {
+    verbose(FUNC, QString("*** Data line No: %1 ***").arg(mLineNo));
+    QStringList sl;
+    QHashIterator<QString, QString> i(mData);
+    while(i.hasNext()) { i.next(); sl << QString("%1=%2").arg(i.key(), i.value()); }
+    sl.sort();
+    foreach(QString data, sl) verbose(FUNC, data);
+  }
 }
 
 void Importer::setSymbolTuple()
 {
   // ...and add them to a fresh mSymbol tuple
-  mSymbol = new SymbolTuple(mTotalSymbolCount);
+  if(!mSymbol) mSymbol = new SymbolTuple(mTotalSymbolCount);
+
+  mSymbol->rewind();
 
   // First, reference symbols...
   for(int i = 0; i < mUsedRefSymbols.size(); ++i)
@@ -666,82 +891,134 @@ void Importer::setSymbolTuple()
     //qDebug() << "Importer::setSymbolTuple 3:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
+  if(verboseLevel(eMax))
+  {
+    QStringList sl;
+    mSymbol->rewind();
+    while(mSymbol->next())
+    {
+      sl << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
+      verbose(FUNC, sl.join(" "));
+      sl.clear();
+    }
+  }
 }
 
-bool Importer::setFiIdBySymbol(const QString& symbol)
+bool Importer::setFiIdByAnySymbol(const QString faultTxt/* = ""*/)
 {
-  // Here will Filu called to set the FiId and the SqlParm :symbol
-  if(symbol == mData.value("_LastSymbol")) return true;  // We are up to date
+  QStringList tested;
 
-  int retVal = mFilu->setSymbolCaption(symbol);
-
-  if(retVal >= Filu::eData)
+  mSymbol->rewind();
+  while(mSymbol->next())
   {
-    mId.insert("Fi", retVal);
-    mData.insert("_LastSymbol", symbol);
-    return true;
+    if(mSymbol->caption().isEmpty()) continue;
+    tested << mSymbol->caption();
+    if(setFiIdBySymbol(mSymbol->caption())) return true;
   }
 
-  mId.insert("Fi", Filu::eNoData);
+  if(faultTxt.size())
+  {
+    printStatus(eEffectFault, QString("%1 (Tested: %2)").arg(faultTxt, tested.join(" ")));
+  }
+
   return false;
 }
 
-bool Importer::setMarketId(const QString& market)
+bool Importer::setFiIdBySymbol(const QString& symbol, const QString faultTxt/* = ""*/)
+{
+  // Here will Filu called to set the FiId and the SqlParm :symbol
+  if(symbol == mData.value("_LastRefSymbol")) return true;  // We are up to date
+
+  mFilu->setSymbolCaption(symbol);
+  if(notFound())
+  {
+    mId.insert("Fi", Filu::eNoData);
+    mData.remove("_LastRefSymbol");
+    mData.remove("_RefSymbolHint");
+    if(faultTxt.size())
+    {
+      if("FaultIfNot" == faultTxt) printStatus(eEffectFault, tr("Symbol not found: %2").arg(symbol));
+      else printStatus(eEffectFault, QString("%1: %2").arg(faultTxt, symbol));
+    }
+    return false;
+  }
+
+  mId.insert("Fi", mFilu->lastResult());
+  mData.insert("_LastRefSymbol", symbol);
+  mData.insert("_RefSymbolHint", QString("(Ref: %1)").arg(symbol));
+  return true;
+}
+
+bool Importer::setMarketId(const QString& market, const QString faultTxt/* = ""*/)
 {
   // Here will Filu called to set the marketId and the SqlParm :market
   if(market == mData.value("_LastMarket")) return true;  // We are up to date
 
-  int retVal = mFilu->setMarketName(market);
-
-  if(retVal >= Filu::eData)
+  mFilu->setMarketName(market);
+  if(notFound())
   {
-    mId.insert("Market", retVal);
-    mData.insert("_LastMarket", market);
-    return true;
+    mId.insert("Market", Filu::eNoData);
+    if(faultTxt.size())
+    {
+      if("FaultIfNot" == faultTxt) printStatus(eEffectFault, tr("Market not found: %2").arg(market));
+      else printStatus(eEffectFault, QString("%1: %2").arg(faultTxt, market));
+    }
+    return false;
   }
 
-  mId.insert("Market", Filu::eNoData);
-  return false;
+  mId.insert("Market", mFilu->lastResult());
+  mData.insert("_LastMarket", market);
+  return true;
 }
 
 bool Importer::setCurrencyId(const QString& curr)
 {
   if(curr == mData.value("_LastCurrency")) return true;  // We are up to date
 
-  int retVal = mFilu->searchCaption("symbol", curr);
-
-  if(retVal >= Filu::eData)
+  mFilu->searchCaption("symbol", curr);
+  if(notFound())
   {
-    mId.insert("Currency", retVal);
-    mData.insert("_LastCurrency", curr);
-    return true;
-  }
-
-  mId.insert("Currency", Filu::eNoData);
-  return false;
-}
-
-bool Importer::setDepotId(const QString& name, const QString& owner)
-{
-  QString lastDepot = QString("__%1_%2__").arg(name, owner); // Should be ugly enough to be unique
-
-  if(lastDepot == mData.value("_LastDepot")) return true;    // We are up to date
-
-  mFilu->setSqlParm(":name", name);
-  mFilu->setSqlParm(":owner", owner);
-
-  QSqlQuery* query = mFilu->execSql("GetDepotId");
-
-  int retVal = mFilu->result(FUNC, query);
-
-  if(retVal < Filu::eSuccess)
-  {
-//     addErrors(mFilu->errors());
-    mId.insert("Depot", Filu::eNoData);
+    mId.insert("Currency", Filu::eNoData);
     return false;
   }
 
-  mId.insert("Depot", retVal);
+  mId.insert("Currency", mFilu->lastResult());
+  mData.insert("_LastCurrency", curr);
+  return true;
+}
+
+bool Importer::setDepotId(const QString faultTxt/* = ""*/)
+{
+  bool ok;
+  int depotId = mData.value("DepotId").toInt(&ok);
+  if(ok)
+  {
+    mId.insert("Depot", depotId);
+    return true;
+  }
+
+  // Should be ugly enough to be unique
+  QString lastDepot = QString("__%1_%2__").arg(mData.value("DepotName")
+                                             , mData.value("DepotOwner"));
+
+  if(lastDepot == mData.value("_LastDepot")) return true;    // We are up to date
+
+  mFilu->setSqlParm(":name", mData.value("DepotName"));
+  mFilu->setSqlParm(":owner", mData.value("DepotOwner"));
+  QSqlQuery* query = mFilu->execSql("GetDepotId");
+  mFilu->result(FUNC, query);
+  if(notFound())
+  {
+    mId.insert("Depot", Filu::eNoData);
+    if(faultTxt.size())
+    {
+      QString txt = tr("Depot not found: %1, %2").arg(mData.value("DepotName"), mData.value("DepotOwner"));
+      printStatus(eEffectFault, txt);
+    }
+    return false;
+  }
+
+  mId.insert("Depot", mFilu->lastResult());
   mData.insert("_LastDepot", lastDepot);
   return true;
 }
@@ -754,11 +1031,10 @@ bool Importer::setQualityId()
 
   mData.insert("_LastQuality", quality); // Save now, anyway if good or not
 
-  int retVal = mFilu->quality(quality);
-
-  if(retVal > Filu::eError) // Looks good?
+  mFilu->quality(quality);
+  if(mFilu->lastResult() > Filu::eError) // Looks good?
   {
-    mId.insert("Quality", retVal);
+    mId.insert("Quality", mFilu->lastResult());
     return true;
   }
 
@@ -771,6 +1047,13 @@ bool Importer::setQualityId()
 void Importer::addFiType()
 {
   mFilu->addFiType(mData.value("FiType"));
+
+  if(notAdded(mData.value("FiType"))) return;
+
+  if(verboseLevel(eAmple))
+  {
+    printStatus(eEffectOk, mData.value("FiType"));
+  }
 }
 
 void Importer::addSymbolType()
@@ -781,7 +1064,15 @@ void Importer::addSymbolType()
                       , mData.value("SEQ").toInt()
                       , isProvider);
 
+  if(notAdded(mData.value("SymbolType"))) return;
+
   mKnownSymbolTypes.append(mData.value("SymbolType"));
+
+  if(verboseLevel(eAmple))
+  {
+    mHint << mData.value("SymbolType") << QString("(SEQ: %1)").arg(mData.value("SEQ"));
+    printStatus(eEffectOk, " ");
+  }
 }
 
 void Importer::addMarket()
@@ -789,12 +1080,35 @@ void Importer::addMarket()
   mFilu->addMarket( mData.value("Market0")
                   , mData.value("Currency")
                   , mData.value("CurrencySymbol"));
+
+  mHint << mData.value("Market0") << mData.value("Currency") << mData.value("CurrencySymbol");
+  if(notAdded()) return;
+
+  if(verboseLevel(eAmple))
+  {
+    mHint << mData.value("Market0") << QString("(%1, %2)").arg(mData.value("Currency"), mData.value("CurrencySymbol"));;
+    printStatus(eEffectOk, ", ");
+  }
 }
 
 void Importer::addFi()
 {
+  if(setFiIdByAnySymbol())
+  {
+    mFilu->addFi(makeNameNice(mData.value("Name")), mData.value("Type"), mId.value("Fi"));
+
+    mHint << mData.value("_RefSymbolHint") << mData.value("Name") << mSymbol->caption();
+    if(notAdded()) return;
+
+    if(verboseLevel(eAmple))
+    {
+      mHint << "Updated:" << mData.value("_RefSymbolHint") << mData.value("Name") << mData.value("Type");
+      printStatus(eEffectOk, " ");
+    }
+    return;
+  }
+
   mSymbol->rewind();
-  int newFiId = Filu::eNoData;
   while(mSymbol->next())
   {
     // Skip reference and garbage Symbols
@@ -803,60 +1117,32 @@ void Importer::addFi()
     if(mSymbol->market().isEmpty()) continue;
 
     // FIXME: Set Delete date, of the FI
-    newFiId = mFilu->addFi(makeNameNice(mData.value("Name"))
-                         , mData.value("Type")
-                         , mSymbol->caption()
-                         , mSymbol->market()
-                         , mSymbol->owner());
+    mFilu->addFi(makeNameNice(mData.value("Name")), mData.value("Type")
+               , mSymbol->caption(), mSymbol->market(), mSymbol->owner());
 
-    //qDebug() << "Importer::addFi: " << mData.value("Name") <<  mData.value("Type")
-    //         << mSymbol->caption() << mSymbol->market() <<  mSymbol->owner() << newFiId;
+    mHint << mData.value("Name") << mSymbol->caption();
+    if(notAdded()) continue;
 
-    if(newFiId >= Filu::eData) return; // Success
-  }
-
-  if(newFiId < Filu::eData)
-  {
-//     if(check4FiluError(FUNC, tr("fail to add FI")))
-//     {
-//       mConsole << "fail to add FI " << mData.value("Name") <<  " "
-//                << mData.value("Type") << endl;
-//     }
-    if(mFilu->hasError())
+    if(verboseLevel(eAmple))
     {
-      mConsole << endl << "FIXME:mFilu->errorText()";
+      mHint << "Added:" << mSymbol->caption() << mData.value("Name") << mData.value("Type");
+      printStatus(eEffectOk, " ");
     }
+    break; // Success
   }
-
-  return;
 }
 
 void Importer::addSymbol()
 {
-  // Search the FiId fitting a Symbol
-  int fiId = Filu::eNoData;
-  mSymbol->rewind();
-  while(mSymbol->next())
+  if(mSymbol->count() == 1)
   {
-    if(mSymbol->caption().isEmpty()) continue;
-    fiId = mFilu->setSymbolCaption(mSymbol->caption());
-    if(fiId >= Filu::eData) break;
-  }
-
-  if(fiId < Filu::eData)
-  {
-    QString msg = tr("Fail to add symbol. No fitting RefSymbol found: ");
-    mSymbol->rewind();
-    while(mSymbol->next())
-    {
-      if(mSymbol->caption().isEmpty()) continue;
-      msg.append(mSymbol->caption() + ", ");
-    }
-    msg.chop(2);
-    error(FUNC, msg);
-    mConsole << endl << msg << endl;
+    mSymbol->rewind(1);
+    QString msg = tr("Can't install a single symbol: %1").arg(mSymbol->caption());
+    printStatus(eEffectFault, msg);
     return;
   }
+
+  if(!setFiIdByAnySymbol("No RefSymbol found")) return;
 
   mSymbol->rewind();
   while(mSymbol->next())
@@ -865,97 +1151,206 @@ void Importer::addSymbol()
     if(mSymbol->caption().isEmpty()) continue;
     if(mSymbol->owner().isEmpty()) continue;
     if(mSymbol->market().isEmpty()) continue;
-    //  FIXME: Use mFilu->addSymbol(mSymbol), and set Issue date, Maritury date
-    /*int retVal = */mFilu->addSymbol(mSymbol->caption()
-                                  , mSymbol->market()
-                                  , mSymbol->owner()
-                                  , fiId);
+    if(mSymbol->caption() == mData.value("_LastRefSymbol")) continue; // Make no sens to add when ref by itself
 
-    //qDebug() << "Importer::addSymbol: retVal=" << retVal << mSymbol->caption() << mSymbol->market() << mSymbol->owner() << fiId;
-    if(mFilu->hasError())
+    mFilu->addSymbol(mSymbol->caption(), mSymbol->market()
+                   , mSymbol->owner(), mId.value("Fi"));
+
+    mHint << mData.value("_RefSymbolHint") << mSymbol->owner() << mSymbol->caption() << mSymbol->market();
+    if(notAdded()) continue;
+
+    if(verboseLevel(eAmple))
     {
-      mConsole << endl << "FIXME:mFilu->errorText()" << endl;
+      mHint << mData.value("_RefSymbolHint") << mSymbol->owner() << mSymbol->caption() << mSymbol->market();
+      printStatus(eEffectOk, " ");
     }
   }
-
-  return;
 }
 
 void Importer::addUnderlying()
 {
-  if(mToDo.contains("ClearCompList"))
-  {
-    mToDo.remove("ClearCompList");
+  QString errTxt = tr("Mother not found");
+  if(!setFiIdBySymbol(mData.value("Mother"), errTxt)) return;
 
-    int momId = mFilu->setSymbolCaption(mData.value("Mother"));
-    if(momId < Filu::eData)
+  errTxt = tr("%1 Underlying not found").arg(mData.value("Mother"));
+  if(!setFiIdByAnySymbol(errTxt)) return;
+
+  mFilu->addUnderlying(mData.value("Mother"), mData.value("_LastRefSymbol")
+                      , mData.value("Weight").toDouble());
+
+  mHint << mData.value("Mother") << mData.value("_LastRefSymbol");
+  if(notAdded()) return;
+
+  if(verboseLevel(eAmple))
+  {
+    mHint << mData.value("Mother") << mData.value("_LastRefSymbol");
+    printStatus(eEffectOk, " ");
+  }
+}
+
+void Importer::addCompList()
+{
+  if(mToDo.contains("commitCompList"))
+  {
+    mImportData.remove(", CompList");
+    if(mDataW) printStatus(eEffectOk);
+
+    mImportData = "CompList";
+    mDataR = mPendingData.size();
+    printStatus();
+
+    mToDo.remove("commitCompList");
+    mToDo.remove("compListPending");
+
+    QString mother = mData.value("_CompList");
+    mData.remove("_CompList");
+
+    FiTuple* mom = mFilu->getFiBySymbol(mother);
+    if(notFound(QString("Mother: %1").arg(mother))) return;
+
+    mom->next();
+    QString momName = mom->name();
+    int momId = mom->id();
+    delete mom;
+
+    momName.remove(QRegExp("\\D"));
+    int compCount = momName.toInt();
+    if(compCount and (compCount != mPendingData.size()))
     {
-      mToDo.remove("addUnderlying");
-      QString msg = tr("Mother '%1' not found.").arg(mData.value("Mother"));
-      error(FUNC, msg);
-      mConsole << endl << msg << endl;
+      printStatus(eEffectFault, tr("Expect %1 underlyings but got %2.")
+                                  .arg(compCount).arg(mPendingData.size()));
       return;
     }
 
-    mFilu->setSqlParm(":momId", momId);
-    mFilu->execSql("DelAllUnderlyingsFromMother");
-    //qDebug() << "Importer::addUnderlying: Old stuff removed.";
+    mFilu->setSqlParm(":motherId", momId);
+    QSqlQuery* ulys = mFilu->execSql("GetUnderlyings");
+    if(!ulys)
+    {
+      check4FiluError(FUNC);
+      return;
+    }
+
+    QSet<int> toBeDeleted; // Collect the underlyingId (thats *not* a fiId, its the undl.table primary key)
+    while(ulys->next()) toBeDeleted << ulys->value(3).toInt();
+
+    QString txt = QString("Commit %1 components to %2...")
+                         .arg(mPendingData.size()).arg(mother);
+    printStatus(eEffectPending, txt);
+
+    QTime time;
+    time.restart();
+
+    for(int i = 0; i < mPendingData.size(); ++i)
+    {
+      mFilu->addUnderlying(mother
+                         , mPendingData.at(i).at(0)
+                         , mPendingData.at(i).at(1).toDouble() );
+
+      if(notAdded(mPendingData.at(i).at(0))) return;
+      toBeDeleted.remove(mFilu->lastResult());
+      printStatus();
+    }
+
+    if(toBeDeleted.size())
+    {
+      foreach(int id, toBeDeleted)
+      {
+        mFilu->deleteRecord(":filu", "underlying", id);
+        if(check4FiluError(FUNC)) return;
+      }
+      txt = QString("%1, Components:%2, Changed:%3, %4FIs/s")
+                   .arg(mother).arg(mDataW).arg(toBeDeleted.size()).arg((1000 * (mDataW)) / time.elapsed());
+    }
+    else
+    {
+      txt = QString("%1, %2 checked, No changes, %3FIs/s")
+                   .arg(mother).arg(mDataW).arg((1000 * (mDataW)) / time.elapsed());
+    }
+
+    printStatus(eEffectOk, txt);
+    return;
   }
 
-  mSymbol->rewind();
-  bool ok(false);
-  while(mSymbol->next())
+  // Save to detect if mother was changing
+  QString mother = mData.value("CompList");
+
+  if(!mData.contains("_CompList"))
   {
-    if(mSymbol->caption().isEmpty()) continue;
-
-    ok = mFilu->addUnderlying(mData.value("Mother")
-                            , mSymbol->caption()
-                            , mData.value("Weight").toDouble());
-
-    if(ok) break;
+    // At first call, set them
+    mData.insert("_CompList", mother);
+    mToDo.insert("compListPending");
   }
 
-  if(!ok)
+  if(mData.value("_CompList") != mother)
   {
-    mConsole << endl
-             << "Importer::addUnderlying: Fail to add underlying: [BEGIN MESSAGE]\n"
-             << "FIXME:mFilu->errorText()" << endl
-             << "[END MESSAGE]" << endl;
+    mToDo.insert("commitCompList");
+    addCompList(); // Call myself to make the commit
+    mPendingData.clear();
+    mData.insert("_CompList", mother);
+    mToDo.insert("compListPending");
   }
+
+  // Check if FI/Symbol is known
+  if(!setFiIdByAnySymbol("FI not found")) return;
+
+  QStringList data;
+  data << mData.value("_LastRefSymbol");
+  data << mData.value("Weight");
+
+  mPendingData << data;
 }
 
 void Importer::addEODBar()
 {
   if(mToDo.contains("commitEODBars"))
   {
-    mConsole << endl << "Importer::addEODBar: commit " << mData.value("_EODSymbol")
-             << " " << mData.value("_EODMarket") << "..." << flush;
+    mImportData.remove(", EODBarData");
+    if(mDataW) printStatus(eEffectOk);
 
-    int marketId = mFilu->setMarketName(mData.value("_EODMarket"));
-    if(marketId < 1)
-    {
-      mConsole << "could not set Market'" << mData.value("_EODMarket") << "', nothing importet." << endl;
-      mPendingData.clear();
-      return;
-    }
-
-    int fiId = mFilu->setSymbolCaption(mData.value("_EODSymbol"));
-    if(fiId < 1)
-    {
-      mConsole << "could not set Symbol'" << mData.value("_EODSymbol") << "', nothing importet." << endl;
-      mPendingData.clear();
-      return;
-    }
+    mImportData = "EODBarData";
+    mDataR = mPendingData.size();
+    printStatus();
 
     mToDo.remove("commitEODBars");
     mToDo.remove("eodBarsPending");
 
+    QString symbol = mData.value("_EODSymbol");
+    QString market = mData.value("_EODMarket");
     mData.remove("_EODSymbol");
     mData.remove("_EODMarket");
 
-    mFilu->addEODBarData(fiId, marketId, &mPendingData);
-    mPendingData.clear();
-    //mConsole << "done." << endl;
+    if(!setMarketId(market, "FaultIfNot")) return;
+    if(!setFiIdBySymbol(symbol, "FaultIfNot")) return;
+
+    QTime time;
+    time.restart();
+    QString txt = QString("Commit %1 at %2, %3 bars...").arg(symbol, market).arg(mDataR);
+    mDataR = mPendingData.size();
+    printStatus(eEffectPending, txt);
+
+    QString header = "Date;Open;High;Low;Close;Volume;OpenInterest;Quality";
+    QStringList barData;
+    barData << header;
+    for(int i = 0; i < mPendingData.size(); ++i)
+    {
+      barData << mPendingData.at(i).join(";");
+      if((i % 100) and (i != mPendingData.size() - 1)) continue;
+
+      mFilu->addEODBarData(mId.value("Fi"), mId.value("Market"), &barData);
+      if(notAdded()) return;
+
+      mDataW = i + 1;
+      printStatus();
+      barData.clear();
+      barData << header;
+    }
+
+    if(notAdded()) return;
+
+    txt = QString("%1 at %2, %3Bars/s").arg(symbol, market)
+                                          .arg((1000 * mDataW) / time.elapsed());
+    printStatus(eEffectOk, txt);
+
     return;
   }
 
@@ -968,6 +1363,7 @@ void Importer::addEODBar()
     // At first call, set them
     mData.insert("_EODSymbol", symbol);
     mData.insert("_EODMarket", market);
+    mToDo.insert("eodBarsPending");
   }
 
   if(mData.value("_EODSymbol") != symbol or
@@ -975,15 +1371,10 @@ void Importer::addEODBar()
   {
     mToDo.insert("commitEODBars");
     addEODBar(); // Call myself to make the commit
-
+    mPendingData.clear();
     mData.insert("_EODSymbol", symbol);
     mData.insert("_EODMarket", market);
-  }
-
-  if(mPendingData.isEmpty())
-  {
-    // Add the header needed by mFilu->addEODBarData()
-    mPendingData << "Date;Open;High;Low;Close;Volume;OpenInterest;Quality";
+    mToDo.insert("eodBarsPending");
   }
 
   QStringList data;
@@ -997,20 +1388,13 @@ void Importer::addEODBar()
   data << mData.value("Close");
   data << mData.value("Volume", "0");
   data << mData.value("OpenInterest", "0");
-  data << mData.value("Quality", "1");
+  data << QString::number(mId.value("Quality"));
 
-  mPendingData << data.join(";");
-
-  mToDo.insert("eodBarsPending");
+  mPendingData << data;
 }
 
 void Importer::addSplit()
 {
-  // If no quality is set, use 1 as default
-  // 1=gold, as final classified data by script
-  // See doc/hacking-provider-scripts.txt
-  int quality = mData.value("Quality", "1").toInt();
-
   QString comment;
   double  pre;
   double  post = 0.0;
@@ -1059,20 +1443,24 @@ void Importer::addSplit()
     else comment = "";
   }
 
-  if(ok)
+  if(!ok)
   {
-    mSymbol->rewind();
-    while(mSymbol->next())
-    {
-      int retVal = mFilu->addSplit(mSymbol->caption(), mData.value("SplitDate")
-                                 , ratio, comment, quality);
-
-      if(retVal >= Filu::eSuccess) break;
-    }
+    printStatus(eEffectFault, QString("Data not valid, skip: %1, %1")
+                                  .arg(mData.value("SplitDate"), mSymbol->caption()));
+    return;
   }
-  else
+
+  if(!setFiIdByAnySymbol("FI not found")) return;
+
+  mFilu->addSplit(mData.value("_LastRefSymbol"), mData.value("SplitDate")
+                , ratio, comment, mId.value("Quality"));
+
+  if(notAdded(mData.value("_LastRefSymbol"))) return;
+
+  if(verboseLevel(eAmple))
   {
-    mConsole << endl << "Importer::import: split data not valid, skiped:" << endl/* << data*/;
+    mHint << mData.value("_LastRefSymbol") << mData.value("SplitDate") << comment;
+    printStatus(eEffectOk, ", ");
   }
 }
 
@@ -1085,18 +1473,23 @@ void Importer::addBroker()
   mFilu->setSqlParm(":quality", mId.value("Quality"));
 
   QSqlQuery* query = mFilu->execSql("AddBroker");
+  mFilu->result(FUNC, query);
 
-  if(mFilu->result(FUNC, query) < Filu::eSuccess)//FIXME check4FiluError
+  if(notAdded(mData.value("BrokerName"))) return;
+
+  if(verboseLevel(eAmple))
   {
-    addErrors(mFilu->errors());
+    mHint << mData.value("BrokerName") << QString("Fee= %1").arg(mData.value("FeeFormula"));
+    printStatus(eEffectOk, ", ");
   }
 }
 
 void Importer::addCO()
 {
+  if(!setFiIdBySymbol(mData.value("RefSymbol0"), "FaultIfNot"))return;
+  if(!setMarketId(mData.value("Market0"), "FaultIfNot")) return;
+
   mFilu->setSqlParm(":id", 0); // Force to insert new CO
-  if(!setFiIdBySymbol(mData.value("RefSymbol0"))) return;
-  if(!setMarketId(mData.value("Market0"))) return;
   mFilu->setSqlParm(":date", mData.value("CODate"));
   mFilu->setSqlParm(":plot", mData.value("Plot"));
   mFilu->setSqlParm(":type", mData.value("Type"));
@@ -1106,13 +1499,15 @@ void Importer::addCO()
   mFilu->setSqlParm(":parameters", FTool::lineToTxt(mData.value("ArgV")));
 
   QSqlQuery* query = mFilu->execSql("PutCOs");
+  //mFilu->result(FUNC, query); FIXME We have no insert_co function, so no return value
+  //if(notAdded(mData.value("Type"))) return;
+  if(check4FiluError(FUNC)) return;
+  ++mDataW; // Needed because we could not use notAdded()
 
-  if(!query)
+  if(verboseLevel(eAmple))
   {
-    if(check4FiluError(FUNC, tr("ERROR while exec PutCOs.sql"))) return;// false;
-
-    mConsole << "no chart objects match settings." << endl;
-    return /*true*/;
+    mHint << mData.value("_LastRefSymbol") << mData.value("Plot") << mData.value("Type");
+    printStatus(eEffectOk, ", ");
   }
 }
 
@@ -1120,43 +1515,61 @@ void Importer::addGroup()
 {
   if(mToDo.contains("commitGroup"))
   {
-    mConsole << endl << "Importer::addGroup: Commit " << mData.value("GroupPath")
-             << "..." << flush;
+    mImportData.remove(", Group");
+    if(mDataW) printStatus(eEffectOk);
+
+    mImportData = "Group";
+    mDataR = mPendingData.size();
+    printStatus();
 
     mToDo.remove("commitGroup");
     mToDo.remove("groupPending");
 
-    mFilu->setSqlParm(":groupPath", mData.value("_GroupPath"));
-    QSqlQuery* query = mFilu->execSql("AddGroup");
-    if(!query)
-    {
-      mPendingData.clear();
-      if(check4FiluError(FUNC, tr("ERROR while exec AddGroup.sql")))
-      {
-        mConsole << "could not create group!?" << endl;
-        return;// false;
-      }
-      return /*true*/;
-    }
-    query->next();
-    int gId = query->value(0).toInt();
+    QString path = mData.value("_GroupPath");
+    mData.remove("_GroupPath");
 
+    int gId = mFilu->addGroup(path);
+
+    mHint << tr("Can't create group '%1', skip").arg(path);
+    if(notAdded()) return;
+
+    QTime time;
+    time.restart();
+
+    QString txt = QString("Commit %1 FIs to %2...").arg(mPendingData.size()).arg(path);
+    printStatus(eEffectPending, txt);
+    mDataR = 0;
+    mDataW = 0;
+    int nf = 0;
+    txt = verboseLevel(eAmple) ? "FaultIfNot" : ""; // Ignore error or not
     for(int i = 0; i < mPendingData.size(); ++i)
     {
-      int fiId = mFilu->setSymbolCaption(mPendingData.at(i));
-      if(fiId < Filu::eData)
+      ++mDataR;
+      QString symbol = mPendingData.at(i).at(0);
+      if(!setFiIdBySymbol(symbol, txt))
       {
-        mConsole << "Symbol not found, skip " << mPendingData.at(i) << endl;
+        ++nf;
         continue;
       }
 
-      printDot();
-      mFilu->addToGroup(gId, fiId);
+      mFilu->addToGroup(gId, mId.value("Fi"));
+      // FIXME Calling here "notAdded()" need a DB function "add_to_group".
+      //       See Filu::execute() about INSERT sql
+      ++mDataW;
     }
 
-    mData.remove("_GroupPath");
+    if(nf)
+    {
+      txt = QString("%1, Added: %2, Faults: %3, %4FIs/s")
+                   .arg(path).arg(mDataW).arg(nf).arg((1000 * (mDataW + nf)) / time.elapsed());
+    }
+    else
+    {
+      txt = QString("%1, %3FIs/s")
+                   .arg(path).arg((1000 * (mDataW)) / time.elapsed());
+    }
 
-    mPendingData.clear();
+    printStatus(eEffectOk, txt);
     return;
   }
 
@@ -1167,88 +1580,111 @@ void Importer::addGroup()
   {
     // At first call, set them
     mData.insert("_GroupPath", path);
+    mToDo.insert("groupPending");
   }
 
   if(mData.value("_GroupPath") != path)
   {
     mToDo.insert("commitGroup");
     addGroup(); // Call myself to make the commit
-
+    mPendingData.clear();
     mData.insert("_GroupPath", path);
+    mToDo.insert("groupPending");
   }
 
-  mPendingData << mData.value("RefSymbol0");
-
-  mToDo.insert("groupPending");
+  mPendingData << (QStringList() << mData.value("RefSymbol0"));
 }
 
 void Importer::addDepot()
 {
-  int retVal = mFilu->addDepot(mData.value("DepotName"), mData.value("DepotOwner"), mData.value("Trader")
-                             , mData.value("CurrencySymbol"), mData.value("BrokerName"));
+  setDepotId();
+
+  mFilu->addDepot(mData.value("DepotName"), mData.value("DepotOwner"), mData.value("Trader")
+                , mData.value("CurrencySymbol"), mData.value("BrokerName"), mId.value("Depot"));
+
+  if(notAdded()) return;
+
+  if(verboseLevel(eAmple))
+  {
+    mHint << mData.value("DepotOwner") << mData.value("DepotName") << mData.value("CurrencySymbol");
+    printStatus(eEffectOk, ", ");
+  }
 }
 
 void Importer::addDepotPos()
 {
-  if(!setDepotId(mData.value("DepotName"), mData.value("DepotOwner"))) return;
-  if(!setFiIdBySymbol(mData.value("RefSymbol0"))) return;
-  if(!setMarketId(mData.value("Market0"))) return;
+  if(!setDepotId("FaultIfNot")) return;
+  if(!setFiIdBySymbol(mData.value("RefSymbol0"), "FaultIfNot")) return;
+  if(!setMarketId(mData.value("Market0"), "FaultIfNot")) return;
 
-  int retVal = mFilu->addDepotPos(mId.value("Depot")
-                                , QDate::fromString(mData.value("PDate"), Qt::ISODate)
-                                , mId.value("Fi")
-                                , mData.value("Pieces").toInt()
-                                , mData.value("Price").toDouble()
-                                , mId.value("Market")
-                                , mData.value("Note") );
+  mFilu->addDepotPos(mId.value("Depot")
+                   , QDate::fromString(mData.value("PDate"), Qt::ISODate)
+                   , mId.value("Fi")
+                   , mData.value("Pieces").toInt()
+                   , mData.value("Price").toDouble()
+                   , mId.value("Market")
+                   , mData.value("Note") );
+
+  if(notAdded()) return;
+
+  if(verboseLevel(eAmple))
+  {
+    mHint << mData.value("DepotName") << mData.value("PDate") << QString("%1x %2").arg(mData.value("Pieces"), mData.value("RefSymbol0"));
+    printStatus(eEffectOk, ", ");
+  }
 }
 
 void Importer::addAccountPos()
 {
-  if(!setDepotId(mData.value("DepotName"), mData.value("DepotOwner"))) return;
+  if(!setDepotId("FaultIfNot")) return;
   int postType = mFilu->accPostingType(mData.value("APType"));
-  if(!postType)
-  {
-    // print error
-    return;
-  }
+  if(notFound("PrintError")) return;
 
-  int retVal = mFilu->addAccPosting(mId.value("Depot")
-                                  , QDate::fromString(mData.value("APDate"), Qt::ISODate)
-                                  , postType
-                                  , mData.value("Text")
-                                  , mData.value("Value").toDouble() );
+  mFilu->addAccPosting(mId.value("Depot")
+                     , QDate::fromString(mData.value("APDate"), Qt::ISODate)
+                     , postType
+                     , mData.value("Text")
+                     , mData.value("Value").toDouble() );
+
+  if(notAdded()) return;
+
+  if(verboseLevel(eAmple))
+  {
+    mHint << mData.value("DepotName") << mData.value("APDate") << mData.value("Text") << mData.value("Value");
+    printStatus(eEffectOk, ", ");
+  }
 }
 
 void Importer::addOrder()
 {
-  if(!setDepotId(mData.value("DepotName"), mData.value("DepotOwner"))) return;
-  if(!setFiIdBySymbol(mData.value("RefSymbol0"))) return;
-  if(!setMarketId(mData.value("Market0"))) return;
+  if(!setDepotId("FaultIfNot")) return;
+  if(!setFiIdBySymbol(mData.value("RefSymbol0"), "FaultIfNot")) return;
+  if(!setMarketId(mData.value("Market0"), "FaultIfNot")) return;
 
   int orderType = mFilu->orderType(mData.value("Type"));
-  if(orderType == eError)
-  {
-    // error
-    return;
-  }
+  if(notFound("PrintError")) return;
 
   int orderStatus = mFilu->orderStatus(mData.value("Status"));
-  if(orderStatus == eError)
-  {
-    // error
-    return;
-  }
+  if(notFound("PrintError")) return;
 
-  int retVal = mFilu->addOrder(mId.value("Depot")
-                             , QDate::fromString(mData.value("ODate"), Qt::ISODate)
-                             , QDate::fromString(mData.value("VDate"), Qt::ISODate)
-                             , mId.value("Fi")
-                             , mData.value("Pieces").toInt()
-                             , mData.value("Limit").toDouble()
-                             , orderType
-                             , mId.value("Market")
-                             , orderStatus
-                             , mData.value("Note")
-  );
+  mFilu->addOrder(mId.value("Depot")
+                , QDate::fromString(mData.value("ODate"), Qt::ISODate)
+                , QDate::fromString(mData.value("VDate"), Qt::ISODate)
+                , mId.value("Fi")
+                , mData.value("Pieces").toInt()
+                , mData.value("Limit").toDouble()
+                , orderType
+                , mId.value("Market")
+                , orderStatus
+                , mData.value("Note") );
+
+  if(notAdded()) return;
+
+  if(verboseLevel(eAmple))
+  {
+    mHint << mData.value("DepotName") << mData.value("Status") << mData.value("Type")
+          << QString("%1x %2").arg(mData.value("Pieces"), mData.value("RefSymbol0"))
+          << mData.value("Limit");
+    printStatus(eEffectOk, ", ");
+  }
 }

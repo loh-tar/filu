@@ -1,9 +1,25 @@
-2011-02-18
+2011-02-28
 ============
+Database
+----------
+ - Various fixes. To update you have at least to reinstall with -UDST and run
+   'agentf filu --update'. But some less important stuff is not fixed this way.
+
+Importer
+----------
+ - Print now more exactly what's going on.
+ - Add Tag [EOF].
+ - Fix CompList. Works now nicely and removes underlyings which are no longer
+   part of the index.
+ - Add depot stuff.
+ - Updated doc/import-file-format.txt.
+
 AgentF
 --------
  - Remove commands 'addFi' and 'addSplit'.
- - New command 'add'. Try 'agentf add' to find out more.
+ - New command 'add'. Uses Importer to add a single data set. Try 'agentf add'
+   to find out more.
+ - Print a more fitting message on exit when had trouble.
 
 
 2011-02-16
