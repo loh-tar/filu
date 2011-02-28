@@ -218,7 +218,7 @@ CREATE TABLE <schema>.broker(
   quality         int2          NOT NULL DEFAULT 2 -- bronze, as tempo classified data
 );
 
-CREATE UNIQUE INDEX broker_unique_caption ON <schema>.error(
+CREATE UNIQUE INDEX broker_unique_caption ON <schema>.broker(
   lower(caption)
 );
 --

@@ -59,8 +59,10 @@ DECLARE
 
 BEGIN
   --
-  -- Returns Unique Id if found, 0 if not or <1 if not unique
+  -- Returns Unique Id if found or < 0 if not or trouble
   --
+  IF aCaption IS NULL THEN RETURN <schema>.error_code('CaptionEY'); END IF;
+
   mCaption := trim(both from aCaption);
   IF char_length(mCaption) = 0 THEN RETURN <schema>.error_code('CaptionEY'); END IF;
 

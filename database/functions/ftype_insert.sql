@@ -17,7 +17,8 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO <schema>.error(caption, etext) VALUES('FTypeNUQ', 'FType name already exist, give me the ID for an update.');
+INSERT INTO <schema>.error(caption, etext) VALUES('FTypeNF', 'FiType not found.');
+INSERT INTO <schema>.error(caption, etext) VALUES('FTypeNUQ', 'FiType already exist, give me the ID for an update.');
 
 CREATE OR REPLACE FUNCTION <schema>.ftype_insert
 (

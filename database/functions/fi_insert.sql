@@ -17,10 +17,8 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO <schema>.error(caption, etext) VALUES('FTypeNV', 'FType is unknown.');
+INSERT INTO <schema>.error(caption, etext) VALUES('CurryNF', 'Currency not found.');
 INSERT INTO <schema>.error(caption, etext) VALUES('FiNameEY', 'FiName is empty.');
-INSERT INTO <schema>.error(caption, etext) VALUES('STypeNV', 'SType is unknown');
-INSERT INTO <schema>.error(caption, etext) VALUES('MarketNV', 'Market is unknown.');
 
 CREATE OR REPLACE FUNCTION <schema>.fi_insert
 (
@@ -49,7 +47,7 @@ BEGIN
 
   -- Check that the FiType is valid
   mFTypeId := <schema>.id_from_caption('ftype', aFiType);
-  IF mFTypeId < 1 THEN RETURN <schema>.error_code('FTypeNV'); END IF;
+  IF mFTypeId < 1 THEN RETURN <schema>.error_code('FTypeNF'); END IF;
 
   mAddSymbol := true;
 
@@ -78,6 +76,13 @@ BEGIN
     mMarketId := <schema>.id_from_caption('market', aMarket);
     IF mMarketId < 1 THEN mAddSymbol := false; END IF;
 
+    -- Last check if the combination already exist
+    SELECT symbol_id INTO mSymbolId
+        FROM <schema>.symbol
+        WHERE fi_id = mFiId and stype_id = mSTypeId and market_id = mMarketId;
+
+    IF FOUND THEN mAddSymbol := false; END IF;
+
     IF mAddSymbol THEN
         mSymbolId := <schema>.id_from_caption('symbol', aSymbol);
         IF mSymbolId > 0 THEN RETURN mFiId; END IF; -- Already known, nothing todo
@@ -94,10 +99,10 @@ BEGIN
   -- Ok, No mFiId given, Symbol is not known and Name not found
   -- Try to insert both, but make last checks
   mSTypeId := <schema>.id_from_caption('stype', aSType);
-  IF mSTypeId < 1 THEN RETURN <schema>.error_code('STypeNV'); END IF;
+  IF mSTypeId < 1 THEN RETURN <schema>.error_code('STypeNF'); END IF;
 
   mMarketId := <schema>.id_from_caption('market', aMarket);
-  IF mMarketId < 1 THEN RETURN <schema>.error_code('MarketNV'); END IF;
+  IF mMarketId < 1 THEN RETURN <schema>.error_code('MarketNF'); END IF;
 
   mFiId     := nextval('<schema>.fi_fi_id_seq');
   mSymbolId := nextval('<schema>.symbol_symbol_id_seq');

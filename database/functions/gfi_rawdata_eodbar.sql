@@ -29,20 +29,24 @@ RETURNS SETOF <schema>.fbar AS
 $BODY$
 DECLARE
   mFDate        date;
+  mTDate        date;
 
 BEGIN
 
+  mFDate := COALESCE(aFDate, '1000-01-01');
+  mTDate := COALESCE(aTDate, '3000-01-01');
+
   -- fetch last date if limited rowcount needed
   IF aLimit > 0 THEN
-      SELECT INTO mFDate qdate FROM <schema>.eodbar
+      SELECT qdate INTO mFDate FROM <schema>.eodbar
        WHERE fi_id = aFiId
          and market_id = aMarketId
-         and qdate <= aTDate
+         and qdate <= mTDate
        ORDER BY qdate DESC
-       LIMIT aLimit offset aLimit-1;
-  END IF;
+       LIMIT 1 offset aLimit-1;
 
-  mFDate := COALESCE(mFDate, aFDate);
+      mFDate := COALESCE(mFDate, '1000-01-01');
+  END IF;
 
   RETURN QUERY SELECT e.qdate, '23:59:59'::time
                     , cast(e.qopen  as float)
@@ -53,7 +57,7 @@ BEGIN
                     , cast(e.qoi    as float)
                    FROM <schema>.eodbar e
                    WHERE e.fi_id = aFiId
-                     and qdate BETWEEN mFDate and aTDate
+                     and qdate BETWEEN mFDate and mTDate
                      and market_id = aMarketId
                    ORDER BY qdate ASC;
 

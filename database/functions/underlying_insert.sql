@@ -34,34 +34,42 @@ RETURNS int2 AS
 $BODY$
 
 DECLARE
-  mMotherId        <schema>.fi.fi_id%TYPE;
-  mUnderlyingId    <schema>.fi.fi_id%TYPE;
+  mMotherFi      <schema>.fi.fi_id%TYPE;
+  mUndlyFi       <schema>.fi.fi_id%TYPE;
+  mUndlyId       <schema>.underlying.underlying_id%TYPE;
 
 BEGIN
   -- Added the given aSymbol as underlying to the aMotherSymbol.
-  -- Returns:
-  --    1 if all was fine or <0 if trouble
 
-  mMotherId := <schema>.fiid_from_symbolcaption(aMotherSymbol);
-  IF mMotherId < 1 THEN
-    IF mMotherId = <schema>.error_code('SymbolNUQ') THEN RETURN <schema>.error_code('MotherSymbolNUQ');
-      ELSEIF mMotherId = <schema>.error_code('SymbolNF') THEN RETURN <schema>.error_code('MotherSymbolNF');
+  mMotherFi := <schema>.fiid_from_symbolcaption(aMotherSymbol);
+  IF mMotherFi < 1 THEN
+    IF mMotherFi = <schema>.error_code('SymbolNUQ') THEN RETURN <schema>.error_code('MotherSymbolNUQ');
+      ELSEIF mMotherFi = <schema>.error_code('SymbolNF') THEN RETURN <schema>.error_code('MotherSymbolNF');
       ELSE RETURN <schema>.error_code('MotherSymbolEY');
     END IF;
   END IF;
 
-  mUnderlyingId := <schema>.fiid_from_symbolcaption(aSymbol);
-  IF mUnderlyingId < 1 THEN
-    IF mMotherId = <schema>.error_code('SymbolNUQ') THEN RETURN <schema>.error_code('UlySymbolNUQ');
-      ELSEIF mMotherId = <schema>.error_code('SymbolNF') THEN RETURN <schema>.error_code('UlySymbolNF');
+  mUndlyFi := <schema>.fiid_from_symbolcaption(aSymbol);
+  IF mUndlyFi < 1 THEN
+    IF mMotherFi = <schema>.error_code('SymbolNUQ') THEN RETURN <schema>.error_code('UlySymbolNUQ');
+      ELSEIF mMotherFi = <schema>.error_code('SymbolNF') THEN RETURN <schema>.error_code('UlySymbolNF');
       ELSE RETURN <schema>.error_code('UlySymbolEY');
     END IF;
   END IF;
 
-  INSERT INTO <schema>.underlying(fi_id, underlying_fi_id, weight)
-         VALUES(mMotherId, mUnderlyingId, aWeight);
+  -- Check if already associated to mother
+  SELECT underlying_id INTO mUndlyId
+      FROM <schema>.underlying
+      WHERE fi_id = mMotherFi and underlying_fi_id = mUndlyFi;
 
-  RETURN 1;
+  IF FOUND THEN RETURN mUndlyId; END IF;
+
+  -- Ok, add them
+  mUndlyId := nextval('<schema>.underlying_underlying_id_seq');
+  INSERT INTO <schema>.underlying(underlying_id, fi_id, underlying_fi_id, weight)
+        VALUES(mUndlyId, mMotherFi, mUndlyFi, aWeight);
+
+  RETURN mUndlyId;
 
 END
 $BODY$

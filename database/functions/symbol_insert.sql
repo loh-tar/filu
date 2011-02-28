@@ -17,6 +17,8 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
+INSERT INTO <schema>.error(caption, etext) VALUES('SymbolEY', 'Symbol is empty.');
+INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNF', 'Symbol not found.');
 --INSERT INTO <schema>.error(caption, etext) VALUES('', '.');
 
 CREATE OR REPLACE FUNCTION <schema>.symbol_insert
@@ -65,22 +67,30 @@ BEGIN
 
   END IF; -- aFiId < 1
 
-  mSymbolId := aSymbolId;
+  mSymbolId := COALESCE(aSymbolId, 0);
 
   IF mSymbolId < 1 THEN -- no aSymbolId given, we have to check if the symbol is already known
      mSymbolId := <schema>.id_from_caption('symbol', mSymbol);
 
     IF mSymbolId = <schema>.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
-      SELECT INTO mSymbolId symbol_id
+      SELECT symbol_id INTO mSymbolId
         FROM <schema>.symbol
         WHERE
           lower(caption) = lower(mSymbol)
           and market_id = mMarketId
           and stype_id  = mSTypeId;
 
+    ELSEIF mSymbolId = <schema>.error_code('CaptionNF') THEN -- check if combi fi/stype/market exist
+        SELECT symbol_id INTO mSymbolId
+          FROM <schema>.symbol
+                  WHERE fi_id     = aFiId
+                    and market_id = mMarketId
+                    and stype_id  = mSTypeId;
     END IF;
 
-    IF (mSymbolId < 0) or (mSymbolId IS NULL) THEN -- insert the new symbol
+    mSymbolId := COALESCE(mSymbolId, 0);
+
+    IF mSymbolId < 1 THEN -- insert the new symbol
       mSymbolId := nextval('<schema>.symbol_symbol_id_seq');
       BEGIN
         INSERT INTO <schema>.symbol(symbol_id, market_id, stype_id, fi_id, caption)
@@ -92,8 +102,8 @@ BEGIN
                   WHEN foreign_key_violation THEN RETURN <schema>.error_code('ForeignKV');
       END;
 
-    END IF;
-  END IF; -- mSymbolId < 1
+    END IF; -- insert the new symbol
+  END IF; -- no aSymbolId given, we have to check if the symbol is already known
 
   BEGIN
     -- ok, we have to update the symbol
@@ -107,6 +117,7 @@ BEGIN
         --maturitydate = maturitydate
       WHERE
         symbol_id = mSymbolId;
+        --and quality >= aQuality;
 
       RETURN mSymbolId;
 

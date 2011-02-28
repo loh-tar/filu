@@ -36,10 +36,16 @@ BEGIN
 -- Something like that would be nice
 -- http://www.mail-archive.com/pgsql-performance@postgresql.org/msg12945.html
 
-  SELECT INTO mFunc ftype.caption
+  SELECT ftype.caption INTO mFunc
     FROM  <schema>.ftype
       LEFT JOIN <schema>.fi USING(ftype_id)
     WHERE fi.fi_id = aFiId;
+
+  IF lower(mFunc) = 'stock' THEN -- Save some time
+    --RAISE NOTICE 'As most times...Stock';
+    RETURN QUERY SELECT * FROM <schema>.gfi_stock_eodbar(aFiId, aMarketId, aFDate, aTDate, aLimit);
+    RETURN;
+  END IF;
 
   mFunc := 'gfi_' || lower(mFunc) || '_eodbar';
   mFunc := replace(mFunc, ' ', '_');
@@ -56,16 +62,9 @@ BEGIN
 
   IF mHasFunc IS NULL THEN mFunc := 'gfi_rawdata_eodbar'; END IF;
 
-  IF mFunc = 'gfi_stock_eodbar' -- Does it make sense to check this to save some time?
-  THEN
-    --RAISE NOTICE 'As most times...Stock';
-    RETURN QUERY SELECT * FROM <schema>.gfi_stock_eodbar(aFiId, aMarketId, aFDate, aTDate, aLimit);
-
-  ELSE
-    --RAISE NOTICE 'Used function is %', mFunc;
-    RETURN QUERY EXECUTE 'SELECT * FROM <schema>.' || quote_ident(mFunc) || ' ($1, $2, $3, $4, $5)'
-                 USING aFiId, aMarketId, aFDate, aTDate, aLimit;
-  END IF;
+  --RAISE NOTICE 'Used function is %', mFunc;
+  RETURN QUERY EXECUTE 'SELECT * FROM <schema>.' || quote_ident(mFunc) || ' ($1, $2, $3, $4, $5)'
+                USING aFiId, aMarketId, aFDate, aTDate, aLimit;
 
 END;
 $BODY$

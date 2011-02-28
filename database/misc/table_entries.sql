@@ -19,15 +19,11 @@
 --
 -- Usual Error Messages
 --
-INSERT INTO <schema>.error(caption, etext) VALUES('UnkownErr', 'Oops, unknown error.');
 INSERT INTO <schema>.error(caption, etext) VALUES('ForeignKV', 'Foreign key violation.');
-INSERT INTO <schema>.error(caption, etext) VALUES('UniqueV', 'Unique violation.');
 INSERT INTO <schema>.error(caption, etext) VALUES('PrimaryKeyNF', 'Given primary key (the ID) not found.');
-INSERT INTO <schema>.error(caption, etext) VALUES('SymbolEY', 'Symbol is empty.');
-INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNF', 'Symbol not found.');
-INSERT INTO <schema>.error(caption, etext) VALUES('CurryNF', 'Currency not found.');
-INSERT INTO <schema>.error(caption, etext) VALUES('MarketIdNF', 'MarketId not found.');
 INSERT INTO <schema>.error(caption, etext) VALUES('QualityToBad', 'Quality is not good enough for an update.');
+INSERT INTO <schema>.error(caption, etext) VALUES('UniqueV', 'Unique violation.');
+INSERT INTO <schema>.error(caption, etext) VALUES('UnkownErr', 'Oops, unknown error.');
 --INSERT INTO <schema>.error(caption, etext) VALUES('', '.');
 --
 --

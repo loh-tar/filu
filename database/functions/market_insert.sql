@@ -17,6 +17,8 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
+INSERT INTO <schema>.error(caption, etext) VALUES('MarketIdNF', 'MarketId not found.');
+INSERT INTO <schema>.error(caption, etext) VALUES('MarketNF', 'Market not found.');
 --INSERT INTO <schema>.error(caption, etext) VALUES('', '');
 
 CREATE OR REPLACE FUNCTION <schema>.market_insert
@@ -87,6 +89,9 @@ BEGIN
 
       RAISE INFO 'Dummy stuff NoMarket and NoCurrency had been created.';
     END IF;
+
+    IF aCurrency IS NULL THEN RETURN <schema>.error_code('FiNameEY'); END IF;
+    IF char_length(trim(both from aCurrency)) = 0 THEN RETURN <schema>.error_code('FiNameEY'); END IF;
 
     -- add the market, currency fi and the currency symbol
     mFiId := nextval('<schema>.fi_fi_id_seq');

@@ -31,21 +31,25 @@ DECLARE
   mQuery       varchar;
   mRecord      record;
   mFDate       date;
+  mTDate       date;
   mResult      <schema>.fbar;
 
 BEGIN
 
+  mFDate := COALESCE(aFDate, '1000-01-01');
+  mTDate := COALESCE(aTDate, '3000-01-01');
+
   -- fetch last date if limited rowcount needed
   IF aLimit > 0 THEN
-      SELECT INTO mFDate qdate FROM <schema>.eodbar
+      SELECT qdate INTO mFDate FROM <schema>.eodbar
        WHERE fi_id = aFiId
          and market_id = aMarketId
-         and qdate <= aTDate
+         and qdate <= mTDate
        ORDER BY qdate DESC
-       LIMIT aLimit offset aLimit-1;
-  END IF;
+       LIMIT 1 offset aLimit-1;
 
-  mFDate := COALESCE(mFDate, aFDate);
+      mFDate := COALESCE(mFDate, '1000-01-01');
+  END IF;
 
   mQuery := 'SELECT *,
                 COALESCE((select exp(sum(ln(sratio)))
@@ -61,7 +65,7 @@ BEGIN
               ORDER BY qdate ASC';
 
   -- adjust data to splits
-  FOR mRecord IN EXECUTE mQuery USING aFiId, mFDate, aTDate, aMarketId
+  FOR mRecord IN EXECUTE mQuery USING aFiId, mFDate, mTDate, aMarketId
   LOOP
     mResult.fdate  := mRecord.qdate;
     mResult.ftime  := '23:59:59'::Time;

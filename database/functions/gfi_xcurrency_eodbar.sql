@@ -29,7 +29,6 @@ RETURNS SETOF <schema>.fbar AS
 $BODY$
 DECLARE
   mRecord       record;
-  mFDate        date;
   mCurryMarket  CONSTANT int := 1;
   mUSDollar     CONSTANT int := 2;           -- US Dollar has always ID 2
   mSCurrId      <schema>.fi.fi_id%TYPE;

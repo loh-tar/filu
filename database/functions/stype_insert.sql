@@ -18,6 +18,7 @@
  */
 
 INSERT INTO <schema>.error(caption, etext) VALUES('STypeEY', 'SymbolType is empty.');
+INSERT INTO <schema>.error(caption, etext) VALUES('STypeNF', 'SymbolType not found.');
 --INSERT INTO <schema>.error(caption, etext) VALUES('', '.');
 
 CREATE OR REPLACE FUNCTION <schema>.stype_insert

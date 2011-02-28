@@ -17,7 +17,7 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNUQ', 'Symbol was found more than one times but was associated to different FIs.');
+INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNUQ', 'Symbol references different FIs.');
 
 CREATE OR REPLACE FUNCTION <schema>.fiid_from_symbolcaption
 (
