@@ -112,6 +112,10 @@ CREATE TABLE :user.depot(
 FOREIGN KEY(currency) REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT,
 FOREIGN KEY(broker_id) REFERENCES :filu.broker(broker_id) ON DELETE RESTRICT
 );
+
+CREATE UNIQUE INDEX depot_unique_caption ON :user.depot(
+  lower(caption), lower(owner)
+);
 --
 --
 --

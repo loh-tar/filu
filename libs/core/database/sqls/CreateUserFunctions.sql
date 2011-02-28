@@ -316,11 +316,21 @@ RETURNS :user.depot.depot_id%TYPE AS
 $BODY$
 
 DECLARE
-  mId        :user.depot.depot_id%TYPE; -- New ID
+  mId         :user.depot.depot_id%TYPE; -- New ID
+  mCurrencyId :user.depot.currency%TYPE;
+  mBrokerId   :user.depot.broker_id%TYPE;
 
 BEGIN
 
   mId := COALESCE(aDepotId, 0);
+
+  IF mId = 0 THEN
+    SELECT depot_id INTO mId
+        FROM :user.depot
+        WHERE lower(caption) = lower(aCaption) AND lower(owner) = lower(aOwner);
+  END IF;
+
+  mId := COALESCE(mId, 0);
 
   IF mId = 0 THEN
     BEGIN
@@ -337,11 +347,11 @@ BEGIN
       SET caption   = aCaption,
           trader    = aTrader,
           owner     = aOwner,
-          currency  = aCurrency,
-          broker_id = aBrokerId
-      WHERE depot_id = aDepotId;
+          currency  = mCurrencyId,
+          broker_id = mBrokerId
+      WHERE depot_id = mId;
 
-  IF FOUND THEN RETURN aDepotId; END IF;
+  IF FOUND THEN RETURN mId; END IF;
 
   RETURN :filu.error_code('DepotIdNF');
 
@@ -375,6 +385,19 @@ BEGIN
 
   mId := COALESCE(aDepotPosId, 0);
 
+  IF mId = 0 THEN -- Check if exist
+    SELECT depotpos_id INTO mId
+        FROM :user.depotpos
+        WHERE depot_id = aDepotId
+          and pdate = aPDate
+          and fi_id = aFiId
+          and pieces = aPieces
+          and price = aPrice
+          and market_id = aMarketId;
+  END IF;
+
+  mId := COALESCE(mId, 0);
+
   IF mId = 0 THEN
     BEGIN
       mId := nextval(':user.depotpos_depotpos_id_seq');
@@ -394,9 +417,9 @@ BEGIN
           price    = aPrice,
           market_id= aMarketId,
           note     = aNote
-      WHERE depotpos_id = aDepotPosId;
+      WHERE depotpos_id = mId;
 
-  IF FOUND THEN RETURN aDepotPosId; END IF;
+  IF FOUND THEN RETURN mId; END IF;
 
   RETURN :filu.error_code('DepotPosIdNF');
 
@@ -435,15 +458,15 @@ BEGIN
 
   IF mId = 0 THEN -- Check if exist
     SELECT order_id INTO mId
-                    FROM :user.order
-                    WHERE depot_id = aDepotId
-                      and odate = aODate
-                      and vdate = aVDate
-                      and fi_id = aFiId
-                      and pieces = aPieces
-                      and olimit = aOLimit
-                      and buy = aBuy
-                      and market_id = aMarketId;
+        FROM :user.order
+        WHERE depot_id = aDepotId
+          and odate = aODate
+          and vdate = aVDate
+          and fi_id = aFiId
+          and pieces = aPieces
+          and olimit = aOLimit
+          and buy = aBuy
+          and market_id = aMarketId;
   END IF;
 
   mId := COALESCE(mId, 0);
@@ -507,6 +530,20 @@ BEGIN
 
   mId := COALESCE(aAccountId, 0);
 
+  IF mId = 0 THEN -- Check if exist
+    SELECT account_id INTO mId
+        FROM :user.account
+        WHERE depot_id = aDepotId
+          and bdate = aDate
+          and btype = aType
+          and btext = aText
+          and bvalue = aValue;
+
+    IF FOUND THEN RETURN mId; END IF; -- Hm, nothing todo
+  END IF;
+
+  mId := COALESCE(mId, 0);
+
   IF mId = 0 THEN
     BEGIN
       mId := nextval(':user.account_account_id_seq');
@@ -524,9 +561,9 @@ BEGIN
           btype    = aType,
           btext    = aText,
           bvalue   = aValue
-      WHERE account_id = aAccountId;
+      WHERE account_id = mId;
 
-  IF FOUND THEN RETURN aAccountId; END IF;
+  IF FOUND THEN RETURN mId; END IF;
 
   RETURN :filu.error_code('AccountIdNF');
 

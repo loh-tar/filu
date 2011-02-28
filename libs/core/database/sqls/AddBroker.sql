@@ -12,4 +12,4 @@
 *
 
 -- AddBroker.sql
-SELECT * FROM :filu.broker_insert(:name, :feeFormula, :quality, :brokerId);
+SELECT * FROM :filu.broker_insert(:name, :feeFormula, cast(:quality as int2), cast(:brokerId as int4));
