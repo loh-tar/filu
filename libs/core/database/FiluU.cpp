@@ -379,6 +379,26 @@ int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiI
   return result(FUNC, query);
 }
 
+int FiluU::addDepot(const QString& name, const QString& owner, const QString& trader
+                  , const QString& currency, const QString& broker, int depotId/* = 0*/)
+{
+  // Returns Id or error
+  if(!initQuery("AddDepot")) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("AddDepot");
+
+  query->bindValue(":depotId", depotId);
+  query->bindValue(":name", name);
+  query->bindValue(":owner", owner);
+  query->bindValue(":trader", trader);
+  query->bindValue(":currency", currency);
+  query->bindValue(":broker", broker);
+
+  if(execute(query) <= eError) return eExecError;
+
+  return result(FUNC, query);
+}
+
 int FiluU::addDepotPos(int depotId, const QDate& date
                      , int fiId, int pieces, double price
                      , int marketId, const QString& note, int depotPosId/* = 0*/)

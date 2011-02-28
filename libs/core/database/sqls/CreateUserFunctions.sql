@@ -309,8 +309,8 @@ CREATE OR REPLACE FUNCTION :user.depot_insert
   aCaption    :user.depot.caption%TYPE,
   aTrader     :user.depot.trader%TYPE,
   aOwner      :user.depot.owner%TYPE,
-  aCurrency   :user.depot.currency%TYPE,
-  aBrokerId   :user.depot.broker_id%TYPE
+  aCurrency   :filu.symbol.caption%TYPE,
+  aBroker     :filu.broker.caption%TYPE
 )
 RETURNS :user.depot.depot_id%TYPE AS
 $BODY$
@@ -321,6 +321,12 @@ DECLARE
   mBrokerId   :user.depot.broker_id%TYPE;
 
 BEGIN
+
+  mCurrencyId := :filu.fiid_from_symbolcaption(aCurrency);
+  IF mCurrencyId < 1 THEN RETURN mCurrencyId; END IF;
+
+  mBrokerId   := :filu.id_from_caption('broker', aBroker);
+  IF mBrokerId < 1 THEN RETURN mBrokerId; END IF;
 
   mId := COALESCE(aDepotId, 0);
 
@@ -336,7 +342,7 @@ BEGIN
     BEGIN
       mId := nextval(':user.depot_depot_id_seq');
       INSERT INTO :user.depot(depot_id, caption, trader, owner, currency, broker_id)
-             VALUES(mId, aCaption, aTrader, aOwner, aCurrency, aBrokerId);
+             VALUES(mId, aCaption, aTrader, aOwner, mCurrencyId, mBrokerId);
 
       RETURN mId;
       EXCEPTION WHEN foreign_key_violation THEN RETURN :filu.error_code('ForeignKV');
