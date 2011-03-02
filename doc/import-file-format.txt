@@ -89,8 +89,7 @@ with '(either or...)'.
 Reuters and Yahoo.
 
 Almost all data take also an optional 'Quality' field. It is not listed special
-because of laziness. Can be given as number or its name, see
-doc/hacking-provider-scripts.txt.
+because of laziness. Can be given as number or its name, see Appendix A.
 FIXME: There are only a few data types which can insert the quality to the DB
 and the DB will care about it. Anyway have all tables of the DB already the
 quality field.
@@ -100,6 +99,7 @@ Markets
 =========
 Market
   The (short) name of the market. We have no long names in Filu for markets.
+  See Appendix B
 
 OpenTime (optional) FIXME: not implemented
 CloseTime (optional) FIXME: not implemented
@@ -319,8 +319,10 @@ Limit
   Any value or 'Best'/'0'.
 
 Type
+  The order type. A number or its name, see Appendix C
+
 Status
-  Order status. A number or its name, see FIXME:..where?
+  The order status. A number or its name, see Appendix D
 
 Note (optional)
 
@@ -336,7 +338,7 @@ APDate
   Posting date.
 
 APType
-  Posting type. A number or its name, see FIXME:..where?
+  Posting type. A number or its name, see Appendix E
 
 Text
 Value
@@ -366,3 +368,87 @@ Add a new market using AgentF's 'add' command.
   [lot@N110 ~/FiluSource]$ agentf add market NYSE USD --curr "US Dollar"
   [Line:    2      56B][  1/1  ] Markets...................Ok
   AgentF: Done.
+
+
+Appendix A - Quality Names
+============================
+Quality stored in the database could be:
+
+Platinum, 0
+  Modified by the user, don't change automatically.
+
+Gold, 1
+  As final classified data by script.
+
+Bronze, 2
+  As temporary classified data by script.
+
+Tin, 3
+  Means there was an logical error in the data detected by the database.
+
+
+Appendix B - Standardized Market Names
+========================================
+When you add new markets to your database should you choose one of these names.
+If you want to use a different name for a here listed market should you also
+change the name in the existing provider scripts, e.g. Yahoo.pm.
+
+Barcelona
+Berlin
+Bilbao
+Brussels
+Copenhagen
+Dusseldorf
+Eurex
+Frankfurt
+HKSE
+Hamburg
+Hanover
+London
+Madrid
+Milan
+Munich
+NYSE          Yahoo can't distingues between NYSE/NASDAQ, so always NYSE
+Euronext
+Oslo
+Euronext
+Stockholm
+Stuttgart
+Toronto
+CDNX
+Valence
+Vienna
+Xetra
+
+
+Appendix C - Order Types
+==========================
+Buy
+Sell
+
+
+Appendix D - Order Status
+===========================
+Advice
+  A suggestion by your trading rule.
+
+Experied
+Executed
+Canceled
+  Canceled by your trading rule.
+
+Unsure
+  The order may executed or not. That's only the case if the limit was exactly
+  touched but not exceeded (if Sell) or undershot (if Buy).
+
+Active
+  An really placed order.
+
+
+Appendix E - Account Posting Types
+====================================
+CashIn
+CashOut
+FiBuy
+FiSell
+Fee

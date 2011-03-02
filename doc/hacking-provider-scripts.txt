@@ -63,7 +63,11 @@ Keys separate by a vertical bar | means 'either or'.
 
 Market
   Because markets currently handled in Filu simplified the scripts has to ship
-  standardized names. See appendix A.
+  standardized names. See doc/import-file-format.txt, Appendix A.
+
+Quality
+  A script should only deliver gold or bronze.
+  See doc/import-file-format.txt, Appendix B.
 
 
 Script Functions
@@ -72,16 +76,9 @@ Name:     fetchBar*
 Purpose:  EOD Bar data to a FI in a given time frame.
 Input:    FromDate, ToDate, Symbol, Market
 Output:   Date, Open, High, Low, Close, Volume, OpenInterest, Quality
-Comment:  Quality stored in the database could be:
-            0=platinum, modified by the user, don't change automatically
-            1=gold, as final classified data by script
-            2=bronze, as temporary classified data by script
-            3=tin, means there was an logical error in the data detected by the
-              database
-          So the script should only deliver gold or bronze.
-          NOTICE: If only a close price is available, the missed prices must
-                  filled with the close price. Otherwise the database will
-          change the quality to tin.
+Comment:  If only a close price is available, the missed prices must filled
+          with the close price. Otherwise the database will change the quality
+          to Tin.
 
 Name:     fetchFI*
 Purpose:  The master data to a FI.
@@ -95,36 +92,3 @@ Input:    Symbol
 Output:   RefSymbol, Weight[, Name, Type, <SymbolDataSet>|<KnownSymbolType>]
 Comment:  Name, Type and more Symbol(s) are optional but desired.
           If Weight is not available fill it with 1, it is anyway not yet used.
-
-
-Appendix A
-============
-Standardized market names. When you change here some names, changes them also in
-the existing provider scripts, e.g. Yahoo.pm.
-
-  Barcelona
-  Berlin
-  Bilbao
-  Brussels
-  Copenhagen
-  Dusseldorf
-  Eurex
-  Frankfurt
-  HKSE
-  Hamburg
-  Hanover
-  London
-  Madrid
-  Milan
-  Munich
-  NYSE          Yahoo can't distingues between NYSE/NASDAQ, so always NYSE
-  Euronext
-  Oslo
-  Euronext
-  Stockholm
-  Stuttgart
-  Toronto
-  CDNX
-  Valence
-  Vienna
-  Xetra
