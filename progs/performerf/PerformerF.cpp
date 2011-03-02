@@ -281,7 +281,6 @@ void PerformerF::showWindowTitle(const QString& symbol, const QString& market)
   }
   else
   {
-    fi->next();
     name = fi->name();
   }
 

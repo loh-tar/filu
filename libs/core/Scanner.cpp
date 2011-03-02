@@ -348,7 +348,6 @@ void Scanner::scan(BarTuple* bars)
       {
         QString info = tr("'%1' found FiId: %2, %3");
         FiTuple* fi = mFilu->getFi(bars->fiId());
-        fi->next(); // No need to check if !0
 
         verbose(FUNC, info.arg(mIndicators.at(i)->fileName()).arg(bars->fiId(), 4).arg(fi->name()), Newswire::eNoVerbose);
         delete fi;

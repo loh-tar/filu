@@ -480,7 +480,6 @@ bool Trader::check(BarTuple* bars)
     if(verboseLevel(eAmple))
     {
       FiTuple* fi = mFilu->getFi(bars->fiId());
-      fi->next();
       MarketTuple* market = mFilu->getMarket(bars->marketId());
       QString limitTxt = o.at(4);
       if(limit) limitTxt.append(" " + market->currSymbol());

@@ -1208,7 +1208,6 @@ void Importer::addCompList()
     FiTuple* mom = mFilu->getFiBySymbol(mother);
     if(notFound(QString("Mother: %1").arg(mother))) return;
 
-    mom->next();
     QString momName = mom->name();
     int momId = mom->id();
     delete mom;

@@ -309,7 +309,10 @@ FiTuple* Filu::getFi(int fiId)
 
   if(execute(query) < eData) return 0;
 
-  return fillFiTuple(query);
+  FiTuple* fi = fillFiTuple(query);
+  if(fi) fi->next();
+
+  return fi;
 }
 
 FiTuple* Filu::getFiLike(const QString& pattern)
