@@ -34,8 +34,6 @@ H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
 M: write new GetSymbols.sql, now is too complicate an delivers not ever what
    expected.
-M: add automatic new added FIs to the users FI group "New FIs". But that need a
-   merge of Filu and FiluU.
 M: Create the main DB like the user tables => No need to use the console, let it
    do ManagerF resp. AgentF.
 L: figure out optimum postgres parameters.
@@ -78,11 +76,8 @@ PerformerF
 ============
 H: add a shortcut to display/hide the toolbar, now you can disable the tb with
    right-click by the mouse, but how you can bring them back?
-M: Fix search FI widget to set cursor inside when aktivated
+H: Fix search FI widget to set cursor inside when aktivated and show all FI
 M: Rename ZoomOutWidget to ZoomWidget
-M: improve drag&drop. when drop an index to the group list of the navi, create
-   a group and insert all underlyings (hm, maybe it's the best *not* to insert
-   the underlyings but include them on the fly when group is selected)
 M: add an "about" button with copyright and other stuff
 L: add buttons to change the density quickly. Since the new IndiSetPad might
    this no longer needed.
@@ -106,11 +101,28 @@ L: add a help page to display all (or most) available docu, copyright and other
 
 Libf
 ======
-H: merge Filu.cpp and FiluU.cpp to Filu.cpp
 M: new class CmdOptions, see FTool.h
+
+
+GroupNavi
+===========
+H: Add "OnTheFly" group(s).
+/Auto Hold automatically selected FIs, not stored, no possibility to add some by
+drag&drop. Each group below /Auto use a SQL AutoGroup_<name>.sql and
+AutoGroupChild_<name>.sql. The former is used twice. First of cause is it the
+content of the group, the FIs. But when you click into the group it is used as
+child groups. But clicking into is only possible if there exist a SQL
+AutoGroupChild_* which than can select the content (FIs) of the child group.
+
+/Auto/Indexes
+  Use AutoGroup_Indexes.sql, select all FIs where type=index.
+/Auto/Indexes/<foo>
+  Use AutoGroupChild_Indexes.sql, select content e.g when "DAX" is klicked.
+/Auto/NewFIs
+  Use AutoGroup_NewFIs.sql, select last 10 or 20 FIs order by FiId DESC.
+
 M: redesign FiGroupWidget signals/slots. use QModelIndex for slots and
    QHash<QString, QString> for signals. (hmm...)
-L: short selling in Trader.cpp.
 
 
 LaunchPad
@@ -153,6 +165,7 @@ Trader
 ========
 M: Change QList<QStringList> mOrders to QList<QHash<QString, QString>> or create a
    special struct for one order
+L: short selling.
 
 
 Depots
