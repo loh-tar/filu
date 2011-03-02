@@ -78,8 +78,6 @@ class Filu : public Newswire
             void closeDB();
 
     // Set Functions
-    int  setMarketName(const QString&);    // Returns marketId or < eError
-    int  getFiIdBySymbol(const QString&);  // Returns FiId to symbol or < eError
     void setBarsToLoad(int);
     void setDaysToFetchIfNoData(int);      // Unused
 
@@ -99,10 +97,12 @@ class Filu : public Newswire
 
     MarketTuple* getMarkets(const QString& name = "");
     MarketTuple* getMarket(int marketId);
+    int          getMarketId(const QString& name);        // Returns marketId or < eError
 
     FiTuple*     getFi(int fiId);
     FiTuple*     getFiLike(const QString& pattern);
     FiTuple*     getFiBySymbol(const QString& symbol);
+    int          getFiIdBySymbol(const QString& symbol);  // Returns FiId to symbol or < eError
 
     SymbolTuple* getSymbols(int fiId, const QString& fiType
                             , const QString& symbolType

@@ -35,7 +35,7 @@ Filu::~Filu()
   closeDB();
 }
 
-int Filu::setMarketName(const QString& name)
+int Filu::getMarketId(const QString& name)
 {
   const int retVal = searchCaption("market", name);
 
@@ -87,7 +87,7 @@ BarTuple* Filu::getBars(const QString& symbol, const QString& market
 
   int fiId = retVal;
 
-  retVal = setMarketName(market);
+  retVal = getMarketId(market);
   if(retVal < eData) return 0;
 
   return getBars(fiId, retVal, fromDate, toDate);
@@ -128,7 +128,7 @@ BarTuple* Filu::getBars(const QString& symbol, const QString& market, int limit)
 
   int fiId = retVal;
 
-  retVal = setMarketName(market);
+  retVal = getMarketId(market);
   if(retVal < eData) return 0;
 
   return getBars(fiId, retVal, limit);

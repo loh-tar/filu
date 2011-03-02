@@ -954,7 +954,7 @@ bool Importer::setMarketId(const QString& market, const QString faultTxt/* = ""*
   // Here will Filu called to set the marketId and the SqlParm :market
   if(market == mData.value("_LastMarket")) return true;  // We are up to date
 
-  mFilu->setMarketName(market);
+  mFilu->getMarketId(market);
   if(notFound())
   {
     mId.insert("Market", Filu::eNoData);
