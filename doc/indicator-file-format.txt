@@ -24,7 +24,7 @@ Remarks, Embedded Setting Keys
   can disable a setting temporary when you include a second asterisk or any
   other character like "-".
 
-*AddToGroup:<foo>[, <bar>...]
+*AddToGroup:<foo>[, <foo>...]
   The indicator will appear in the group <foo> in the indicator picker. If the
   group not exist will they created. Include so much "*AddToGroup:<foo>" as you
   like.
@@ -110,7 +110,7 @@ INCLTALIB(<type>, <parameter>[, <parameter>...])
   <fi-alias>.BIDVOL, <fi-alias>.ASKVOL
 
 PRIMARY(<variable>)
-  The primary variable is used to place the cursor on the x-scale. When no
+  The primary variable is used to place the cursor on the y-scale. When no
   primary variable is set, CLOSE, VOLUME or the first plottet variable is used.
 
 SIMTRADE(<trading-rule-name>)

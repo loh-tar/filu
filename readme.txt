@@ -97,7 +97,7 @@ After all steps above you have to do:
   cd into the FiluSource directory
   mkdir build
   cd build
-  cmake ..         Yes, there are two dots !!!
+  cmake ..         Yes, there are two dots!
   make
   sudo make install
   sudo ldconfig
@@ -116,7 +116,7 @@ you have the programs:
 
 2- Customizing
 ================
-See doc/first-steps.txt, Appendix A - Customizing.
+See doc/config-file.txt.
 
 
 3- Further Readings

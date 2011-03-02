@@ -49,6 +49,14 @@ To create the Filu database use:
 To drop the database use:
   sudo make uninstall
 
+To update the database functions:
+  ./configure -UDST
+  sudo make install
+
+To create an additional test database for any purpose:
+  ./configure -d testdb -U
+  sudo make install
+
 To remove the temporary build sql files:
   make clean
 
@@ -77,15 +85,15 @@ For example:
 Expecting the user exists already do:
   ./configure -d myDatabaseName -s mySchema -u myUser -U
 
-NOTE: Use only lower case letters for dbame, schema (and user?)
+NOTE: Use only lower case letters for dbname, schema and user.
 
 
 4- Default Values
 ===================
 After creating the database there are no longer any default values, except
-these less you could find in the files at /FiluSource/database/defaults. But
-don't worry. After successful installation of the Filu programs read
-FiluSource/doc/first-steps.txt and be happy.
+these less you could find in /database/misc/table_entries.sql. But don't worry.
+After successful installation of the Filu programs read
+/doc/first-steps.txt and be happy.
 
 
 5- Backup
