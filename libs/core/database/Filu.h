@@ -79,7 +79,7 @@ class Filu : public Newswire
 
     // Set Functions
     int  setMarketName(const QString&);    // Returns marketId or < eError
-    int  setSymbolCaption(const QString&); // Returns FiId to symbol or < eError
+    int  getFiIdBySymbol(const QString&);  // Returns FiId to symbol or < eError
     void setBarsToLoad(int);
     void setDaysToFetchIfNoData(int);      // Unused
 

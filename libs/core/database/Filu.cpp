@@ -47,7 +47,7 @@ int Filu::setMarketName(const QString& name)
   return retVal;
 }
 
-int Filu::setSymbolCaption(const QString& caption)
+int Filu::getFiIdBySymbol(const QString& caption)
 {
   setSqlParm(":symbol", caption);
 
@@ -82,7 +82,7 @@ BarTuple* Filu::getBars(const QString& symbol, const QString& market
 {
   int retVal;
 
-  retVal = setSymbolCaption(symbol);
+  retVal = getFiIdBySymbol(symbol);
   if(retVal < eData) return 0;
 
   int fiId = retVal;
@@ -123,7 +123,7 @@ BarTuple* Filu::getBars(const QString& symbol, const QString& market, int limit)
 {
   int retVal;
 
-  retVal = setSymbolCaption(symbol);
+  retVal = getFiIdBySymbol(symbol);
   if(retVal < eData) return 0;
 
   int fiId = retVal;
@@ -330,7 +330,7 @@ FiTuple* Filu::getFiLike(const QString& pattern)
 
 FiTuple* Filu::getFiBySymbol(const QString& symbol)
 {
-  int fiId = setSymbolCaption(symbol);
+  int fiId = getFiIdBySymbol(symbol);
 
   if(fiId < 1) return 0;
 
@@ -881,7 +881,7 @@ int Filu::addFiCareful(FiTuple& fi)
   {
     if(symbol->caption().isEmpty()) continue;
 
-    retVal = setSymbolCaption(symbol->caption());
+    retVal = getFiIdBySymbol(symbol->caption());
     if(retVal > 0) break;
     if(retVal == -3)
     {

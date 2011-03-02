@@ -929,7 +929,7 @@ bool Importer::setFiIdBySymbol(const QString& symbol, const QString faultTxt/* =
   // Here will Filu called to set the FiId and the SqlParm :symbol
   if(symbol == mData.value("_LastRefSymbol")) return true;  // We are up to date
 
-  mFilu->setSymbolCaption(symbol);
+  mFilu->getFiIdBySymbol(symbol);
   if(notFound())
   {
     mId.insert("Fi", Filu::eNoData);
