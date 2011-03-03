@@ -1451,7 +1451,7 @@ int Filu::execute(QSqlQuery* query)
     qDebug() << "END debug code for qt4.5 bug :-(";
     */
 
-    if(isError) return eError;
+    //if(isError) return eError;
   }
 
   if(isError)
