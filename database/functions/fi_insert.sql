@@ -19,6 +19,7 @@
 
 INSERT INTO <schema>.error(caption, etext) VALUES('CurryNF', 'Currency not found.');
 INSERT INTO <schema>.error(caption, etext) VALUES('FiNameEY', 'FiName is empty.');
+INSERT INTO <schema>.error(caption, etext) VALUES('FiNameNUQ', 'FiName is not unique.');
 
 CREATE OR REPLACE FUNCTION <schema>.fi_insert
 (
@@ -63,10 +64,14 @@ BEGIN
 
   IF mFiId > 0 THEN
     -- quit simple, only update the FI data
-    UPDATE <schema>.fi
-      SET caption  = aFiName,
-          ftype_id = mFTypeId
-      WHERE fi_id = mFiId;
+    BEGIN
+      UPDATE <schema>.fi
+        SET caption  = aFiName,
+            ftype_id = mFTypeId
+        WHERE fi_id = mFiId;
+
+      EXCEPTION WHEN unique_violation THEN RETURN <schema>.error_code('FiNameNUQ');
+    END;
 
     -- So far so good, check the given symbol, if it looks good
     -- add them too

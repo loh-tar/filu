@@ -19,6 +19,7 @@
 
 INSERT INTO <schema>.error(caption, etext) VALUES('SymbolEY', 'Symbol is empty.');
 INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNF', 'Symbol not found.');
+INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNUQ', 'Symbol is not unique.');
 --INSERT INTO <schema>.error(caption, etext) VALUES('', '.');
 
 CREATE OR REPLACE FUNCTION <schema>.symbol_insert
@@ -121,7 +122,7 @@ BEGIN
 
       RETURN mSymbolId;
 
-    EXCEPTION WHEN unique_violation THEN RETURN <schema>.error_code('UniqueV');
+    EXCEPTION WHEN unique_violation THEN RETURN <schema>.error_code('SymbolNUQ');
 
   END;
 
