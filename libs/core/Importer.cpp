@@ -28,7 +28,7 @@ using namespace std;
 Importer::Importer(FClass* parent)
         : FClass(parent, FUNC)
         , mSymbol(0)
-        , mConsole(stdout)
+        , mConsole(stderr)
 {
   reset();
 }
