@@ -12,7 +12,9 @@
 -- Get AllFiTypes.sql
 SELECT
   ftype.caption AS "FiType"
+
 FROM
   :filu.ftype
+
 ORDER BY
   ftype.caption ASC;

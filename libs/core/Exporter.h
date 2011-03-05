@@ -31,41 +31,65 @@ class FiluU;
 *   File created at 2010-03-15
 *
 *   Yes, he exports stuff out of the DB into a plain text file.
-*   He is almost used by "agentf -exp ..." command. Options are
+*   He is almost used by "agentf exp ..." command.
 *
 ************************************************************************/
 
 class Exporter : public FClass
 {
   public:
-                Exporter(FClass* parent);
-    virtual    ~Exporter();
+                  Exporter(FClass* parent);
+    virtual      ~Exporter();
 
-    void        reset();
-    bool        exxport(QStringList& command);
+    void          reset();
+    bool          exxport(QStringList& command);
 
   protected:
-    int         getParameter(const QString& command, QStringList& parm);  // -1 cmd not given, 0..n parm count
+    enum Effect
+    {
+      eEffectPending,
+      eEffectOk,
+      eEffectNote,
+      eEffectFault
+    };
 
-    bool        expFiTypes();
-    bool        expSymbolTypes();
-    bool        expMarkets();
-    bool        expFiNames();
-    bool        expSymbols();
-    bool        expEODRaw();
-    bool        expSplits();
+    void          printStatus(Effect effect = eEffectPending, const QString& extraTxt = "");
+    bool          noData(const QString& what = "");
+    void          writeToFile();
+    bool          selectFis();
+
+    bool          expFiTypes();
+    bool          expSymbolTypes();
+    bool          expMarkets();
+    bool          expFiNames();
+    bool          expSymbols();
+    bool          expEODRaw();
+    bool          expSplits();
     //TODO: bool expUnderlyings();
 
     // User data exports
-    bool        expCOs();
-    bool        expGroups();
+    bool          expCOs();
+    bool          expGroups();
+    bool          expGroup(int gid, bool ignoreIfEmpty = true);
 
-    QStringList    mCommandLine;  // Yes, the command line with all options
+    QStringList   mCmdLine;         // The command line with all options
+    QStringList   mParm;            // A helper to get parameter by FTool::getParameter()
+    QTextStream   mBuffer;
+    QString       mBufferStr;
+    QTextStream   mOutput;
+    QTextStream   mConsole;
+    QFile*        mOutFile;
+    QSqlQuery*    mFis;
 
-    QTextStream*   mOutput;
-    QTextStream    mConsole;
-    QFile*         mOutFile;
-
+    // printStatus() stuff
+    int           mLineNo;           // Hold the line number which was actual read
+    QQueue<int>   mDataLineNo;       // Is cut to max 2 numbers
+    int           mByteCount;
+    int           mDataR;            // Data Read
+    int           mDataW;            // Data Written
+    QString       mDataText;
+    QStringList   mHint;
+    QTime         mRolex;
   private:
 
 };

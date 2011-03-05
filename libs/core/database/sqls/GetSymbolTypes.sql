@@ -15,14 +15,17 @@
 
 -- GetSymbolTypes.sql
 SELECT
-  stype.stype_id AS "ID",
-  stype.caption AS "SymbolType",
-  stype.seq AS "SEQ",
+  stype.stype_id   AS "ID",
+  stype.caption    AS "SymbolType",
+  stype.seq        AS "SEQ",
   stype.isprovider AS "IsProvider"
+
 FROM
   :filu.stype
+
 WHERE
   CASE WHEN :all = TRUE THEN TRUE ELSE isprovider = :isProvider END
+
 ORDER BY
   stype.seq ASC,
   stype.caption ASC;

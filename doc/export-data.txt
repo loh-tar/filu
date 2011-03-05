@@ -1,7 +1,7 @@
 This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
 
 
-Export of database data is done by Exporter.cpp which is used by "agentf exp"
+Export of database data is done by Exporter.cpp which is used by 'agentf exp'
 command. The parameter which exp takes, or rather Exporter.cpp, are described
 here.
 
@@ -11,85 +11,103 @@ export call may look like these:
   agentf exp --setGroup MyFavorites --fiNames
 
 
-Output Destination
-====================
-toFile <fileName>
-  Write the exported data into <fileName>. If no "--toFile" is given, data will
-  written to stdout.
+Common Switches
+=================
+toFile <fileName> [append]
+  Write the exported data into <fileName>. If 'append' is given the data will
+  appended to the existing file. If no '--toFile' is given, the data will be
+  written to stdout. The verbose level is in that case set to 'Quiet' unless
+  --verbose is given.
+
+verbose
+  Set the verbose level, see doc/config-file.txt.
 
 
 Filter Settings
 =================
 Controls the qualities of exportet data.
 
+fiType <fiType>
+  e.g. 'Stock'.
+
+from <date>
+  Should be given as YYYY-MM-DD.
+
+group <groupPath>
+  Is one of PerformerF groups createt by the user.
+
+market <market>
+  e.g. 'NYSE'.
+
+noBars
+  Don't export eodBar data, useful with '--all'.
+
+noUser
+  Don't export user data, useful with '--all'.
+
+to <date>
+ Should be given as YYYY-MM-DD.
+
 user <userName> FIXME: not implemented
   Used e.g. by --co, --groups or --portfolio to spezify whoes data to export.
-  If no "--user" is given the calling user is used.
-
-setFiType <fiType>
-  e.g. "Stock"
-
-setGroup <group name>
-  Is one of performerf groups createt by the user
-
-setMarket <market name>
-  e.g. "NYSE"
-
-setProvider <symbol type>
-  e.g. "Yahoo"
+  If no '--user' is given the calling user is used.
 
 
 Export Switches
 =================
 Force the export of the given data type.
 
-fiNames
-  Export the master data of FIs. Name, Type and a reference Symbol
+all
+  Export all kind of data.
 
-symbols all|<type>[ <type2> ...]
-  "all" exports all known symbol types.
+eodAdjusted FIXME: not implemented
+  These eodBar data are adjusted by splits and dividents if some.
 
-  --symbols ISIN Reuters
-
-eodRaw [<fromDate> [<toDate>]]
+eodRaw
   The original eodBar data as they was collected over the lifetime of the
   database.
 
-eodAdjusted [<fromDate> [<toDate>]] FIXME: not implemented
-  These eodBar data are adjusted by splits, if some. If no date is given, all data will exportet.
-
-splits
-  Export split data
+fiNames
+  Export the master data of FIs. Name, Type and a reference Symbol.
 
 fiTypes
-  Export the ...
+  Export the FiTypes.
 
 markets
-  Export the ...
+  Export the markets.
 
 marketSymbols FIXME: not implemented
-  Export the provider specific market symbols
-
-symbolTypes
-  Export the ...
-
-underlyings FIXME: not implemented
-  Export the ...
+  Export the provider specific market symbols.
 
 offdays FIXME: not implemented
+  Export the ...
+
+splits
+  Export split data.
+
+symbols [<type> ...]
+  When no <type> is given will all kind of symbols exportet. But note that
+  <type> can not be your lovely symbol, these is always used as RefSymbol.
+
+  --symbols ISIN Yahoo
+
+symbolTypes
+  Export the SymbolTypes aka Provider.
+
+underlyings FIXME: not implemented
   Export the ...
 
 
 Export Switches Of User Spezific Data
 =======================================
 co
-  Export chart objects
+  Export chart objects.
+
+depots FIXME: not implemented
+  Exports the ...
 
 groups
-  Exports the created groups at performerf
-
-portfolio FIXME: not implemented
-  Exports the ...
+  Exports the created groups at PerformerF.
 
 
 Hints

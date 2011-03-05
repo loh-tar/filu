@@ -29,6 +29,7 @@ FROM
   JOIN :filu.lovelysymbol ufi ON(ufi.fi_id = underlying_fi_id)
 
 WHERE CASE WHEN :motherId = 0 THEN TRUE ELSE ul.fi_id = :motherId END
+
 ORDER BY
   mfi.symbol,
   ufi.symbol

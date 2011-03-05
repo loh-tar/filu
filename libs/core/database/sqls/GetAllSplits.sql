@@ -16,26 +16,24 @@
 
 -- GetAllSplits.sql
 SELECT
-
-  (select distinct on (s.fi_id) s.caption
-    from :filu.symbol s, :filu.stype st
-    where s.stype_id = st.stype_id and sp.fi_id = s.fi_id
-    order by s.fi_id, st.seq asc) as RefSymbol,
-
+  ls.symbol,
   sp.sdate,
   sp.scomment,
   sp.sratio
+
 FROM
-  :filu.split sp,
+  :filu.split sp JOIN :filu.lovelysymbol ls USING(fi_id),
   :filu.fi f,
   :filu.ftype ft
+
 WHERE
   sp.fi_id = f.fi_id
   and f.ftype_id = ft.ftype_id
   and CASE WHEN length(:ftype) = 0  THEN true ELSE ft.caption = :ftype END
   and CASE WHEN length(:group) = 0  THEN true
-            ELSE f.fi_id IN (select fi_id from :user.gmember gm, :user.group g where gm.group_id = g.group_id and g.caption = :group) END
+           ELSE f.fi_id IN (select fi_id from :user.gmember gm
+                                         where gm.group_id = :user.group_id_from_path(:group)) END
 
 ORDER BY
-  RefSymbol,
+  ls.symbol,
   sp.sdate ASC;

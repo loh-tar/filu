@@ -12,4 +12,5 @@
  */
 
 -- GetAllGroups.sql
-SELECT  group_id, caption, mothergroup_id FROM :user.group_childs(:motherId);
+SELECT  group_id, caption, mothergroup_id
+  FROM :user.group_childs(:motherId);
