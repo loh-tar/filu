@@ -120,7 +120,7 @@ CREATE OR REPLACE FUNCTION :user.group_insert
 (
   aPath varchar
 )
-RETURNS bigint AS
+RETURNS int4 AS
 $BODY$
 DECLARE
   mGroupId      :user.group.group_id%TYPE;       --group id
@@ -272,9 +272,59 @@ ALTER FUNCTION :user.group_id_to_path(:user.group.group_id%TYPE) OWNER TO :filu;
 -- END OF FUNCTION :user.group_id_to_path
 --
 --
+INSERT INTO :filu.error(caption, etext) VALUES('GroupNF', 'Group not found.');
+
+CREATE OR REPLACE FUNCTION :user.group_id_from_path
+(
+  aPath varchar
+)
+RETURNS int4 AS
+$BODY$
+DECLARE
+  mGroupId      :user.group.group_id%TYPE;       --group id
+  mMGroupId     :user.group.mothergroup_id%TYPE; --mother group id
+  mGroups       text[];
+  mRec          record;
+  i             int;
+
+BEGIN
+  mGroups := regexp_split_to_array(aPath, '/');
+  i := 0;
+  mMGroupId := 0;
+
+LOOP
+  i := i + 1;
+
+  EXIT WHEN mGroups[i] IS NULL;
+  CONTINUE WHEN mGroups[i]='';
+
+  SELECT * INTO mRec
+      FROM :user.group g
+      WHERE lower(g.caption) = lower(mGroups[i])
+        and mothergroup_id = mMGroupId;
+
+  mGroupId := mRec.group_id;
+
+  IF NOT FOUND THEN RETURN :filu.error_code('GroupNF'); END IF;
+
+  mMGroupId := mGroupId;
+
+END LOOP;
+
+RETURN mMGroupId;
+
+END
+$BODY$
+LANGUAGE PLPGSQL STABLE;
+
+ALTER FUNCTION :user.group_id_from_path(varchar) OWNER TO :filu;
+--
+-- END OF FUNCTION :user.group_id_from_path
+--
+--
 CREATE OR REPLACE FUNCTION :user.group_childs
 (
-  aId bigint
+  aId int4
 )
 RETURNS SETOF :user.group AS
 $BODY$
