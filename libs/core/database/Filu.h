@@ -189,11 +189,11 @@ class Filu : public Newswire
     QString     quality(int quality);
     int         convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& date);
     int         searchCaption(const QString& table, const QString& caption);
-    QString     getLastQuery(); // Unused
     void        deleteRecord(const QString& schema, const QString& table, int id);
     int         updateField(const QString& field, const QVariant& newValue
                           , const QString& schema, const QString& table, int id);
 
+    QSqlQuery*  lastQuery();
     int         result(const QString& func, QSqlQuery* query);
     int         lastResult() { return mLastResult; };
     QString     dbFuncErrText(int errorCode);
@@ -212,8 +212,9 @@ class Filu : public Newswire
     QString     mToDate;
     int         mLimit;  // To limit the count of rows at SELECT xyz FROM abc...
     bool        mOnlyProviderSymbols;
+    QSqlQuery*  mLastQuery;
     QString     mLastError;
-    QString     mLastQuery;
+    QString     mExecSql;
     int         mLastResult; // ErrorNo, eNoData, eData or Id
 
     QHash<QString, QSqlQuery*>  mSQLs;

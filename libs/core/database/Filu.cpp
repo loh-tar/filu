@@ -1112,11 +1112,6 @@ int Filu::addBroker(BrokerTuple& broker)
   return retVal;
 }
 
-QString Filu::getLastQuery()
-{
-  return mLastQuery;
-}
-
 void Filu::deleteRecord(const QString& schema, const QString& table, int id /*= -1*/)
 {
   QString sql;
@@ -1412,16 +1407,17 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
 int Filu::execute(QSqlQuery* query)
 {
   query->exec();
+  mLastQuery = query;
 
   // Save the query statement, anyway if error or not
-  mLastQuery = query->executedQuery();
+  mExecSql = query->executedQuery();
   mLastError = query->lastError().databaseText();
   bool isError = !query->isActive();
   mLastResult = eError; // The glass is always half-empty
 
   if(verboseLevel(eMax)) // For heavy debuging print each sql
   {
-    verbose(FUNC, QString("ExecutedQuery: %1").arg(mLastQuery));
+    verbose(FUNC, QString("ExecutedQuery: %1").arg(mExecSql));
     verbose(FUNC, QString("DatabaseText: %1").arg(query->lastError().databaseText()));
     verbose(FUNC, QString("DriverText: %1").arg(query->lastError().driverText()));
     verbose(FUNC, QString("ErrorNo: %1").arg(query->lastError().number()));
@@ -1502,6 +1498,11 @@ int Filu::execute(QSqlQuery* query)
 
   mLastResult = eSuccess;
   return eSuccess;
+}
+
+QSqlQuery* Filu::lastQuery()
+{
+  return mLastQuery;
 }
 
 int Filu::result(const QString& func, QSqlQuery* query)
