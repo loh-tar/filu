@@ -1204,6 +1204,7 @@ void Importer::addCompList()
 
     QString mother = mData.value("_CompList");
     mData.remove("_CompList");
+    mData.remove("CompList");
 
     FiTuple* mom = mFilu->getFiBySymbol(mother);
     if(notFound(QString("Mother: %1").arg(mother))) return;
@@ -1333,7 +1334,7 @@ void Importer::addEODBar()
     for(int i = 0; i < mPendingData.size(); ++i)
     {
       barData << mPendingData.at(i).join(";");
-      if((i % 100) and (i != mPendingData.size() - 1)) continue;
+      if((i % 100) and (i != mPendingData.size() - 1) or !i) continue;
 
       mFilu->addEODBarData(mId.value("Fi"), mId.value("Market"), &barData);
       if(notAdded()) return;
@@ -1526,6 +1527,7 @@ void Importer::addGroup()
 
     QString path = mData.value("_GroupPath");
     mData.remove("_GroupPath");
+    mData.remove("GroupPath");
 
     int gId = mFilu->addGroup(path);
 
