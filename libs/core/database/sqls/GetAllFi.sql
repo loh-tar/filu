@@ -7,7 +7,7 @@
  *     :ftype      // like "Stock"
  *     :group      // like "MyFavorites"
  *
- *  Outputs: (order is important)
+ *  Outputs: (order *and* names are important)
  */
 
 -- GetAllFi.sql

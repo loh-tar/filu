@@ -1230,7 +1230,7 @@ void Importer::addCompList()
     }
 
     QSet<int> toBeDeleted; // Collect the underlyingId (thats *not* a fiId, its the undl.table primary key)
-    while(ulys->next()) toBeDeleted << ulys->value(3).toInt();
+    while(ulys->next()) toBeDeleted << ulys->value(0).toInt();
 
     QString txt = QString("Commit %1 components to %2...")
                          .arg(mPendingData.size()).arg(mother);

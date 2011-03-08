@@ -62,10 +62,10 @@ class Exporter : public FClass
     bool          expSymbolTypes();
     bool          expMarkets();
     bool          expFiNames();
+    bool          expUnderlyings();
     bool          expSymbols();
     bool          expEODRaw();
     bool          expSplits();
-    //TODO: bool expUnderlyings();
 
     // User data exports
     bool          expCOs();

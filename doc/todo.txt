@@ -177,9 +177,9 @@ M: Print a progressbar while checking, force Trader to print nothing in that cas
 
 Exporter
 ==========
-H: When export, don't print NoMarket at -markets, market_insert.sql expect
-   Reuters as symbol
-H: add shortcut command(s) like --full, --userdata, --fullNoBars
+H: depot stuff
+H: market_insert.sql expect Reuters as symbol (what?)
+L: don't print NoMarket at --markets
 
 
 Importer

@@ -8,7 +8,7 @@ here.
 NOTE: Each parameter switch is always leaded by -- but that is below omitted. An
 export call may look like these:
 
-  agentf exp --setGroup MyFavorites --fiNames
+  agentf exp --group MyFavorites --fiNames
 
 
 Common Switches
@@ -94,8 +94,8 @@ symbols [<type> ...]
 symbolTypes
   Export the SymbolTypes aka Provider.
 
-underlyings FIXME: not implemented
-  Export the ...
+ulys
+  Export underlyings.
 
 
 Export Switches Of User Spezific Data
@@ -107,7 +107,8 @@ depots FIXME: not implemented
   Exports the ...
 
 groups
-  Exports the created groups at PerformerF.
+  Exports the members of created groups at PerformerF. Empty groups will not
+  exported.
 
 
 Hints
@@ -120,5 +121,7 @@ Rename something
 Delete something
   sed '/yahoo/d' expData.imp > expDataModified.imp
 
-More you will find at  http://sed.sourceforge.net/sed1line_de.html.
+You could also using a pipe
+  agentf exp --all --verbose 1 | sed 's/yahoo/Yahoo/g' > expDataModified.imp
 
+More you will find at http://sed.sourceforge.net/sed1line_de.html.

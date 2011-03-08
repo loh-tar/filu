@@ -257,7 +257,7 @@ bool Exporter::exxport(QStringList& command)
   {
     mCmdLine << "--fiTypes" << "--symbolTypes" << "--markets" << "--offdays"
              << "--marketSymbols" << "--fiNames" << "--symbols" << "--eodRaw"
-             << "--splits" << "--underlyings"
+             << "--splits" << "--ulys"
              << "--co" << "--groups" << "--depots";
 
     extraInfo = true;
@@ -318,10 +318,10 @@ bool Exporter::exxport(QStringList& command)
 //   if(mCmdLine.contains("--offdays")) ; // Should always done when -markets given
 //   if(mCmdLine.contains("--marketSymbols")) ;
   if(mCmdLine.contains("--fiNames"))      if(!expFiNames()) return false;
+  if(mCmdLine.contains("--ulys"))         if(!expUnderlyings()) return false;
   if(mCmdLine.contains("--symbols"))      if(!expSymbols()) return false;
 //   if(mCmdLine.contains("--eodAdjusted")) ;
   if(mCmdLine.contains("--splits"))       if(!expSplits())  return false; // What if -eodAdjusted? after reimport we have a problem
-//   if(mCmdLine.contains("--underlyings")) ;
   if(mCmdLine.contains("--co"))           if(!expCOs())     return false;
   if(mCmdLine.contains("--groups"))       if(!expGroups())  return false;
 //   if(mCmdLine.contains("--depots")) ;
@@ -508,6 +508,90 @@ bool Exporter::expFiNames()
   mBuffer << endl;
 
   printStatus(eEffectOk);
+
+  return true;
+}
+
+bool Exporter::expUnderlyings()
+{
+  mDataText = "CompList";
+
+  if(!selectFis())
+  {
+    if(hasError()) return false;
+    return true;
+  }
+
+  mDataR = 0; // We are not interested in the total amound of FIs
+  bool intro = true;
+
+  while(mFis->next())
+  {
+    QSqlRecord mfi = mFis->record();
+    if(mfi.value("Type").toString() == "Stock") continue; //
+
+    mFilu->setSqlParm(":motherId", mfi.value("FiId").toInt());
+    QSqlQuery* query = mFilu->execSql("GetUnderlyings");
+
+    if(!query)
+    {
+      printStatus(eEffectFault);
+      check4FiluError(FUNC);
+      return false;
+    }
+
+    if(noData()) continue;
+
+    //++mDataR; // Count the mother
+    --mDataW; // Sub the mother
+
+    if(intro)
+    {
+      mBuffer << "***\n";
+      mBuffer << "*\n";
+      mBuffer << "* Underlyings with full lovely symbol set as reference.\n";
+      mBuffer << "*\n";
+      intro = false;
+    }
+
+    mBuffer << "*\n";
+    mBuffer << "* " << mfi.value("Name").toString() << "\n";
+    mBuffer << "*\n";
+    mBuffer << "[Header]Name;DDate;Symbol;Provider;Market;IDate;MDate\n\n";
+    mBuffer << mfi.value("Name").toString() << ";";
+    mBuffer << mfi.value("DDate").toDate().toString(Qt::ISODate) << ";";
+    mBuffer << mfi.value("Symbol").toString() << ";";
+    mBuffer << mfi.value("Provider").toString() << ";";
+    mBuffer << mfi.value("Market").toString() << ";";
+    mBuffer << mfi.value("IDate").toDate().toString(Qt::ISODate) << ";";
+    mBuffer << mfi.value("MDate").toDate().toString(Qt::ISODate) << "\n\n";
+
+    mBuffer << "[Header]Weight;Name;Type;Symbol;Provider;Market\n";
+    mBuffer << "[CompList]" << mfi.value("Symbol").toString() << "\n\n";
+    writeToFile();
+
+    while(query->next())
+    {
+      QSqlRecord ufi = query->record();
+      mBuffer << ufi.value("Weight").toString() << ";";
+      mBuffer << ufi.value("CompName").toString() << ";";
+      mBuffer << ufi.value("CompType").toString() << ";";
+      mBuffer << ufi.value("Comp").toString() << ";";
+      mBuffer << ufi.value("CompSymbolType").toString() << ";";
+      mBuffer << ufi.value("CompSymbolMarket").toString() << "\n";
+      writeToFile();
+    }
+
+    mBuffer << "[CompListEnd]\n";
+
+    if(verboseLevel(eAmple)) printStatus(eEffectOk, mfi.value("Name").toString());
+  }
+
+  mBuffer << endl;
+  writeToFile();
+
+  if(intro) printStatus(eEffectNote, tr("No underlyings found."));
+  else if(verboseLevel() < eAmple) printStatus(eEffectOk);
 
   return true;
 }
