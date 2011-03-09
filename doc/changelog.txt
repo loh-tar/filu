@@ -1,3 +1,21 @@
+2011-03-08
+============
+Sundries
+----------
+ - New file doc/config-file.txt, several other docs updated.
+ - DB, some minor fixes.
+ - Importer, some minor fixes.
+
+Exporter
+----------
+ - Add switches: all, noBars, noUser, to, from, ulys.
+ - Change switch eodRaw, take no longer a date range.
+ - Change filter switches from --setFoo to --foo.
+ - Bar data are exported per FI, not all at once. This prevent that
+   kind of blocking to fetch the data and should be more safety.
+ - Print more nicely what's going on.
+
+
 2011-02-28
 ============
 Database
