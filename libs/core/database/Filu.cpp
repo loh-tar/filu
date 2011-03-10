@@ -1278,12 +1278,11 @@ MarketTuple*  Filu::fillMarketTuple(QSqlQuery* query)
     query->next();
 
     int i = market->mIndex;
-    int j = 0;
-    market->mId[i]         = query->value(j++).toInt();
-    market->mName[i]       = query->value(j++).toString();
-    market->mCurrId[i]     = query->value(j++).toInt();
-    market->mCurrName[i]   = query->value(j++).toString();
-    market->mCurrSymbol[i] = query->value(j++).toString();
+    market->mId[i]         = query->value(0).toInt();
+    market->mName[i]       = query->value(1).toString();
+    market->mCurrId[i]     = query->value(4).toInt();
+    market->mCurrName[i]   = query->value(5).toString();
+    market->mCurrSymbol[i] = query->value(6).toString();
   }
 
   market->rewind();

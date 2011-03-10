@@ -419,7 +419,8 @@ bool Exporter::expMarkets()
 {
   mDataText = "Markets";
 
-  QSqlQuery* query = mFilu->execSql("GetAllMarkets");
+  mFilu->setSqlParm(":marketId", 0);
+  QSqlQuery* query = mFilu->execSql("GetMarket");
 
   if(!query)
   {
@@ -431,8 +432,7 @@ bool Exporter::expMarkets()
   if(noData("Info")) return true;
 
   // The query result has the format
-  // MarketId, Market, OpenTime, CloseTime, Currency, CurrencySymbol
-  // See also GetAllMarkets.sql
+  // MarketId, Market, OpenTime, CloseTime, CurrencyId, Currency, CurrencySymbol
 
   mBuffer << "***\n";
   mBuffer << "*\n";
@@ -447,8 +447,8 @@ bool Exporter::expMarkets()
     mBuffer << query->value(1).toString() << ";";
     mBuffer << query->value(2).toTime().toString(Qt::TextDate) << ";";
     mBuffer << query->value(3).toTime().toString(Qt::ISODate) << ";";
-    mBuffer << query->value(4).toString() << ";";
-    mBuffer << query->value(5).toString() << ";\n";
+    mBuffer << query->value(5).toString() << ";";
+    mBuffer << query->value(6).toString() << ";\n";
     writeToFile();
   }
 
