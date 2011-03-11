@@ -790,7 +790,7 @@ void Importer::prepare()
     mToDo.insert("addBroker");
   }
 
-  if(mData.contains("DepotName"))
+  if(mData.contains("DepotName") or mData.contains("DepotId"))
   {
     if(mData.contains("Trader"))
     {
