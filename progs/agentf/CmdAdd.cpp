@@ -353,9 +353,16 @@ void CmdAdd::addSymbolType(const QStringList& parm)
 
 void CmdAdd::addOrder(const QStringList& parm)
 {
+  QStringList dp;
+
   if(!mWantHelp)
   {
-    if(FTool::getParameter(parm, "--order", mCmdArg) < 11)
+    if(FTool::getParameter(parm, "--order", mCmdArg) < 9)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+    else if(FTool::getParameter(parm, "--dp", dp) < 1)
     {
       error(FUNC, mInfoTxt.value("TooLessArg"));
       mWantHelp = true;
@@ -365,16 +372,21 @@ void CmdAdd::addOrder(const QStringList& parm)
   if(mWantHelp)
   {
     print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("order <DepotName> <DepotOwner> <ODate> <VDate> <RefSymbol> <Market> <Pieces> <Limit> <Type> <Status> <Note> [<Quality>]"));
+    print(mInfoTxt.value("CmdPrefix").arg("order <ODate> <VDate> <RefSymbol> <Market> <Pieces> <Limit> <Type> <Status> <Note> [<Quality>]"));
+    print(mInfoTxt.value("CmdPref++").arg("     --dp <DepotId> | <DepotName> <DepotOwner>"));
     print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("order SlowHand Me 2010-09-01 2010-09-01 AAPL NYSE 10 Best Buy Active \"It looks so good\""));
+    print(mInfoTxt.value("CmdPrefix").arg("order 2010-09-01 2010-09-01 AAPL NYSE 10 Best Buy Active \"It looks so good\" --dp SlowHand Me"));
     return;
   }
 
-  QString header = "[Header]DepotName;DepotOwner;ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note";
+  QString header = "[Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note";
 
-  if(mCmdArg.size() > 11) header.append(";Quality");
+  if(mCmdArg.size() > 9) header.append(";Quality");
 
+  if(dp.size() > 1) header.append(";DepotName;DepotOwner");
+  else header.append(";DepotId");
+
+  mCmdArg << dp;
   import(header, mCmdArg.join(";"));
 }
 
@@ -407,9 +419,16 @@ void CmdAdd::addDepot(const QStringList& parm)
 
 void CmdAdd::addDepotPos(const QStringList& parm)
 {
+  QStringList dp;
+
   if(!mWantHelp)
   {
-    if(FTool::getParameter(parm, "--depotPos", mCmdArg) < 8)
+    if(FTool::getParameter(parm, "--depotPos", mCmdArg) < 6)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+    else if(FTool::getParameter(parm, "--dp", dp) < 1)
     {
       error(FUNC, mInfoTxt.value("TooLessArg"));
       mWantHelp = true;
@@ -419,24 +438,36 @@ void CmdAdd::addDepotPos(const QStringList& parm)
   if(mWantHelp)
   {
     print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("depotPos <DepotName> <DepotOwner> <PDate> <RefSymbol> <Market> <Pieces> <Price> <Note> [<Quality>]"));
+    print(mInfoTxt.value("CmdPrefix").arg("depotPos <PDate> <RefSymbol> <Market> <Pieces> <Price> <Note> [<Quality>]"));
+    print(mInfoTxt.value("CmdPref++").arg("         --dp <DepotId> | <DepotName> <DepotOwner>"));
     print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("depotPos SlowHand Me 2010-09-01 AAPL NYSE 10 247.47 \"It looked so good\""));
+    print(mInfoTxt.value("CmdPrefix").arg("depotPos 2010-09-01 AAPL NYSE 10 247.47 \"It looked so good\" --dp SlowHand Me"));
     return;
   }
 
-  QString header = "[Header]DepotName;DepotOwner;PDate;RefSymbol;Market;Pieces;Price;Note";
+  QString header = "[Header]PDate;RefSymbol;Market;Pieces;Price;Note";
 
-  if(mCmdArg.size() > 8) header.append(";Quality");
+  if(mCmdArg.size() > 6) header.append(";Quality");
 
+  if(dp.size() > 1) header.append(";DepotName;DepotOwner");
+  else header.append(";DepotId");
+
+  mCmdArg << dp;
   import(header, mCmdArg.join(";"));
 }
 
 void CmdAdd::addAccPosting(const QStringList& parm)
 {
+  QStringList dp;
+
   if(!mWantHelp)
   {
-    if(FTool::getParameter(parm, "--post", mCmdArg) < 6)
+    if(FTool::getParameter(parm, "--post", mCmdArg) < 4)
+    {
+      error(FUNC, mInfoTxt.value("TooLessArg"));
+      mWantHelp = true;
+    }
+    else if(FTool::getParameter(parm, "--dp", dp) < 1)
     {
       error(FUNC, mInfoTxt.value("TooLessArg"));
       mWantHelp = true;
@@ -446,16 +477,21 @@ void CmdAdd::addAccPosting(const QStringList& parm)
   if(mWantHelp)
   {
     print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("post <DepotName> <DepotOwner> <APDate> <APType> <Text> <Value> [<Quality>]"));
+    print(mInfoTxt.value("CmdPrefix").arg("post <APDate> <APType> <Text> <Value> [<Quality>]"));
+    print(mInfoTxt.value("CmdPref++").arg("     --dp <DepotId> | <DepotName> <DepotOwner>"));
     print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("post SlowHand Me 2010-09-01 FiBuy \"10x Apple at 247.47\" 2474.70"));
+    print(mInfoTxt.value("CmdPrefix").arg("post 2010-09-01 FiBuy \"10x Apple at 247.47\" 2474.70 --dp SlowHand Me"));
     return;
   }
 
-  QString header = "[Header]DepotName;DepotOwner;APDate;APType;Text;Value";
+  QString header = "[Header]APDate;APType;Text;Value";
 
-  if(mCmdArg.size() > 6) header.append(";Quality");
+  if(mCmdArg.size() > 4) header.append(";Quality");
 
+  if(dp.size() > 1) header.append(";DepotName;DepotOwner");
+  else header.append(";DepotId");
+
+  mCmdArg << dp;
   import(header, mCmdArg.join(";"));
 }
 
