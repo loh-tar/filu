@@ -40,7 +40,7 @@ bool Depots::exec(const QStringList& command)
   // The order of look up is important.
   if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
   if(command.contains("--check"))     check(command);
-  if(command.contains("--lso"))  listOrders(command);
+  if(command.contains("--lso"))       listOrders(command);
 
   return hasError();
 }
@@ -177,11 +177,12 @@ void Depots::listOrders(const QSqlRecord& depot)
 
   QSqlQuery* orders = mFilu->getOrders(depotId);
 
-  verbose(FUNC, tr("All orders for depot: %1, Value: %L3 %2, AvCash: %L4 %2, Positions: %5")
+  verbose(FUNC, tr("All orders for depot: %1, Id: %6, Value: %L3 %2, AvCash: %L4 %2, Positions: %5")
                   .arg(depot.value("Name").toString(), depot.value("Currency").toString())
                   .arg(balance, 0, 'f', 2)
                   .arg(cash, 0, 'f', 2)
-                  .arg(positions->size()) );
+                  .arg(positions->size())
+                  .arg(depotId));
 
   listOrders(orders, FiluU::eOrderCanceled);
   listOrders(orders, FiluU::eOrderNeedHelp);

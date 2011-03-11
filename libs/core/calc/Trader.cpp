@@ -162,12 +162,13 @@ bool Trader::prepare(const QSqlRecord& depot)
   mFilu->setSqlParm(":fiId",  -1);
   QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
 
-  verbose(FUNC, tr("Check depot: %1, Value: %L3 %2, AvCash: %L4 %2, Positions: %5, OpOrders: %6")
+  verbose(FUNC, tr("Check depot: %1, Id: %7, Value: %L3 %2, AvCash: %L4 %2, Positions: %5, OpOrders: %6")
                   .arg(mSettings.value("DepotName"), mSettings.value("DepotCurrency"))
                   .arg(mRealVar.value("TotalBalance"), 0, 'f', 2)
                   .arg(mRealVar.value("Cash"), 0, 'f', 2)
                   .arg(positions->size())
-                  .arg(orders->size()) );
+                  .arg(orders->size())
+                  .arg(mDepotId) );
 
   //
   // Check open orders
