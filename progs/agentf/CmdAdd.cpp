@@ -105,7 +105,18 @@ void CmdAdd::printDataTypes()
        << "underlying";
 
   print(tr("\nPossible data types are:\n"));
-  print(QString("  %1\n").arg(cmds.join(" ")));
+  int cols = 3;
+  for(int i = 0; i < cmds.size(); i += cols)
+  {
+    QString line;
+    for(int j = 0; (j < cols) and ((i + j) < cmds.size()); ++j)
+    {
+      line.append(QString("%1").arg(cmds.at(i + j), -20));
+    }
+    print(QString("  %1").arg(line));
+  }
+
+  print("");
 }
 
 void CmdAdd::import(const QString& header, const QString& data)
