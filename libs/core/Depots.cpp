@@ -40,6 +40,7 @@ bool Depots::exec(const QStringList& command)
   // The order of look up is important.
   if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
   if(command.contains("--check"))     check(command);
+  if(command.contains("--lsd"))       listDepots(command);
   if(command.contains("--lso"))       listOrders(command);
 
   return hasError();
@@ -62,12 +63,8 @@ void Depots::check(const QStringList& parm)
 
 void Depots::checkAll(const QStringList& parm)
 {
-  QSqlQuery* depots = mFilu->execSql("GetAllDepots");
-  if(!depots)
-  {
-    verbose(FUNC, tr("No depots found."));
-    return;
-  }
+  QSqlQuery* depots = getDepots();
+  if(!depots) return;
 
   QList<Trader*> traders;
   QList<QStringList> groups;
@@ -138,15 +135,47 @@ void Depots::checkAll(const QStringList& parm)
   return;
 }
 
+void Depots::listDepots(const QStringList& parm)
+{
+  QSqlQuery* depots = getDepots();
+  if(!depots) return;
+
+  while(depots->next())
+  {
+    listDepot(depots->record());
+  }
+}
+
+void Depots::listDepot(const QSqlRecord& depot)
+{
+  if(depot.isEmpty())
+  {
+    fatal(FUNC, "No depot given."); // Yes, no tr()
+    return;
+  }
+
+  print(tr("All positions for depot: %1").arg(depotStatusLine(depot)));
+
+  QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
+
+  if(!positions->size())
+  {
+    print(tr("Depot is empty."));
+    return;
+  }
+
+  while(positions->next())
+  {
+    printPosition(positions->record());
+  }
+
+  print("");
+}
 
 void Depots::listOrders(const QStringList& parm)
 {
-  QSqlQuery* depots = mFilu->execSql("GetAllDepots");
-  if(!depots)
-  {
-    verbose(FUNC, tr("No depots found."));
-    return;
-  }
+  QSqlQuery* depots = getDepots();
+  if(!depots) return;
 
   while(depots->next())
   {
@@ -164,25 +193,9 @@ void Depots::listOrders(const QSqlRecord& depot)
 
   mLineNo = 0;
 
-  int    depotId  = depot.value("DepotId").toInt();
-  double depCash  = mFilu->getDepotCash(depotId);
-  double depNeedC = mFilu->getDepotNeededCash(depotId);
-  double depValue = mFilu->getDepotValue(depotId);
-  double cash     = depCash - depNeedC;
-  double balance  = depValue + depCash;
+  verbose(FUNC, tr("All orders for depot: %1").arg(depotStatusLine(depot)));
 
-  mFilu->setSqlParm(":depotId", depotId);
-  mFilu->setSqlParm(":fiId",  -1);
-  QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
-
-  QSqlQuery* orders = mFilu->getOrders(depotId);
-
-  verbose(FUNC, tr("All orders for depot: %1, Id: %6, Value: %L3 %2, AvCash: %L4 %2, Positions: %5")
-                  .arg(depot.value("Name").toString(), depot.value("Currency").toString())
-                  .arg(balance, 0, 'f', 2)
-                  .arg(cash, 0, 'f', 2)
-                  .arg(positions->size())
-                  .arg(depotId));
+  QSqlQuery* orders = mFilu->getOrders(depot.value("DepotId").toInt());
 
   listOrders(orders, FiluU::eOrderCanceled);
   listOrders(orders, FiluU::eOrderNeedHelp);
@@ -207,6 +220,46 @@ void Depots::listOrders(QSqlQuery* orders, int status)
   }
 }
 
+void Depots::printPosition(const QSqlRecord& pos)
+{
+  if(pos.isEmpty()) return;
+
+  QChar fc = QChar(' ');
+  //fc = mLineNo % -2 ? QChar(' ') : QChar(183); // Fill character middle dot
+
+  QString symbol = isin(pos.value("FiId").toInt());
+
+  QString text;
+  QTextStream out(&text);
+
+  int pieces    = pos.value("Pieces").toInt();
+  double ePrice = pos.value("Price").toDouble();
+
+  BarTuple*  bt = mFilu->getBars(pos.value("FiId").toInt(), pos.value("MarketId").toInt(), 1);
+  bt->next();
+  double price  = bt->close();
+  delete bt;
+
+  double change = 100 * (price - ePrice) / ePrice;
+  double value  = pieces * price;
+  //QDate date    = pos.value("Date").toDate();
+  double slice = 100 * (value) / mDP.balance;
+
+  // FIXME: What looks better, this way or done at printOrder? Both shitty!
+  out << pos.value("Date").toString() << fc;
+  out << qSetFieldWidth(30) << left << pos.value("FiName").toString();
+  out << qSetFieldWidth(12) << center << symbol;
+  out << qSetFieldWidth(6)  << right << pieces;
+  out << qSetFieldWidth(0);
+  out << QString("%L1").arg(ePrice, 8, 'f', 2, fc);
+  out << QString("%L1%").arg(change, 4, 'f', 0, fc);
+
+  out << QString("%L1").arg(value, 10, 'f', 2, fc);
+  out << QString("%L1%").arg(slice, 4, 'f', 0, fc);
+
+  print(text);
+}
+
 void Depots::printOrder(const QSqlRecord& order)
 {
   if(order.isEmpty()) return;
@@ -216,19 +269,7 @@ void Depots::printOrder(const QSqlRecord& order)
   QChar fc = QChar(' ');
   //fc = mLineNo % -2 ? QChar(' ') : QChar(183); // Fill character middle dot
 
-  //
-  // Search ISIN or as fallback Reuters symbol
-  SymbolTuple* st = mFilu->getSymbols(order.value("FiId").toInt());
-  while(st->next()) if(st->owner() == "ISIN") break;
-
-  if(st->owner() != "ISIN")
-  {
-    st->rewind();
-    while(st->next()) if(st->owner() == "Reuters") break;
-  }
-
-  QString symbol = st->caption();
-
+  QString symbol    = isin(order.value("FiId").toInt());
   QString statusTxt = mFilu->orderStatus(order.value("Status").toInt());
 
   int pieces    = order.value("Pieces").toInt();
@@ -306,6 +347,7 @@ void Depots::printOrder(const QSqlRecord& order)
     fiName.append("~+");
   }
 
+  // FIXME: What looks better, this way or done at printPosition? Both shitty!
   QString verbText = QString("%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9")
                     .arg(fc)
                     .arg(oDate.toString(Qt::ISODate))
@@ -318,4 +360,62 @@ void Depots::printOrder(const QSqlRecord& order)
                     .arg(note);
 
   verbose(FUNC, verbText);
+}
+
+QSqlQuery* Depots::getDepots()
+{
+  QSqlQuery* depots = mFilu->execSql("GetAllDepots");
+  if(!depots)
+  {
+    check4FiluError(FUNC);
+    return 0;
+  }
+
+  if(mFilu->lastResult() == Filu::eNoData)
+  {
+    verbose(FUNC, tr("No depots found."));
+    return 0;
+  }
+
+  return depots;
+}
+
+QString Depots::depotStatusLine(const QSqlRecord& depot)
+{
+  mDP.id = depot.value("DepotId").toInt();
+  mDP.cash = mFilu->getDepotCash(mDP.id);
+  mDP.neededCash = mFilu->getDepotNeededCash(mDP.id);
+  mDP.value = mFilu->getDepotValue(mDP.id);
+  mDP.availCash = mDP.cash - mDP.neededCash;
+  mDP.balance = mDP.value + mDP.cash;
+
+  mFilu->setSqlParm(":depotId", mDP.id);
+  mFilu->setSqlParm(":fiId",  -1);
+  QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
+
+  return QString("%1, Id: %6, Value: %L3 %2, AvCash: %L4 %2, Positions: %5")
+                .arg(depot.value("Name").toString(), depot.value("Currency").toString())
+                .arg(mDP.balance, 0, 'f', 2)
+                .arg(mDP.availCash, 0, 'f', 2)
+                .arg(positions->size())
+                .arg(mDP.id);
+}
+
+QString Depots::isin(int fiId)
+{
+  // Search ISIN or as fallback Reuters symbol
+  SymbolTuple* st = mFilu->getSymbols(fiId);
+
+  while(st->next()) if(st->owner() == "ISIN") break;
+
+  if(st->owner() != "ISIN")
+  {
+    st->rewind();
+    while(st->next()) if(st->owner() == "Reuters") break;
+  }
+
+  QString isin = st->caption();
+  delete st;
+
+  return isin;
 }

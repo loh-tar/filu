@@ -135,6 +135,9 @@ check
  Yes, run a check over all your portfolios and print suggestions to order based
  on the TradingRule file associated to your depot.
 
+lsd
+  List all depots.
+
 lso
   List all orders.
 

@@ -38,13 +38,31 @@ class Depots : public FClass
     bool          exec(const QStringList& command);
 
   protected:
+    struct DepotStatus
+    {
+      int    id;
+      double cash;
+      double neededCash;
+      double value;
+      double availCash;
+      double balance;
+    };
+
     void          check(const QStringList& parm);
     void          checkAll(const QStringList& parm);
+    void          listDepots(const QStringList& parm);
+    void          listDepot(const QSqlRecord& depot);
     void          listOrders(const QStringList& parm);
     void          listOrders(const QSqlRecord& depot);
     void          listOrders(QSqlQuery* orders, int status);
+    void          printPosition(const QSqlRecord& pos);
     void          printOrder(const QSqlRecord& order);
 
+    QSqlQuery*    getDepots();
+    QString       depotStatusLine(const QSqlRecord& depot);
+    QString       isin(int fiId);
+
+    DepotStatus   mDP;
     int           mLineNo;
 
   private:
