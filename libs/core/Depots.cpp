@@ -193,7 +193,7 @@ void Depots::listOrders(const QSqlRecord& depot)
 
   mLineNo = 0;
 
-  verbose(FUNC, tr("All orders for depot: %1").arg(depotStatusLine(depot)));
+  print(tr("All orders for depot: %1").arg(depotStatusLine(depot)));
 
   QSqlQuery* orders = mFilu->getOrders(depot.value("DepotId").toInt());
 
@@ -204,7 +204,7 @@ void Depots::listOrders(const QSqlRecord& depot)
   listOrders(orders, FiluU::eOrderExecuted);
   listOrders(orders, FiluU::eOrderExperied);
 
-  verbose(FUNC, "");
+  print("");
 }
 
 void Depots::listOrders(QSqlQuery* orders, int status)
@@ -348,7 +348,7 @@ void Depots::printOrder(const QSqlRecord& order)
   }
 
   // FIXME: What looks better, this way or done at printPosition? Both shitty!
-  QString verbText = QString("%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9")
+  QString text = QString("%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9")
                     .arg(fc)
                     .arg(oDate.toString(Qt::ISODate))
                     .arg(oType, -4, fc)
@@ -359,7 +359,7 @@ void Depots::printOrder(const QSqlRecord& order)
                     .arg(statusTxt, -8, fc)
                     .arg(note);
 
-  verbose(FUNC, verbText);
+  print(text);
 }
 
 QSqlQuery* Depots::getDepots()
