@@ -48,7 +48,7 @@ class MyMouseEvent
 {
   public:
   QObject* sender;
-  QVariant val1;
+  QObject* requester;
   int      type;
   float    density;
   int      place4Bars;

@@ -245,7 +245,7 @@ void PlotSheet::mouseSlot(MyMouseEvent* mme)
   if(mme->type == eSyncReq)
   {
     mMouseEvent.type = eSyncDec;
-    mMouseEvent.val1 = (int)mme->sender;  // Set val1 to the addressee which is the SyncRequester
+    mMouseEvent.requester = mme->sender;  // Set the addressee which is the SyncRequester
     mMouseEvent.mousePos.setX(mPainter->mMouseXPos);
     mMouseEvent.density        = mPainter->mDensity;
     mMouseEvent.place4Bars     = mPainter->mPlace4Bars;
@@ -254,7 +254,7 @@ void PlotSheet::mouseSlot(MyMouseEvent* mme)
     emit mouse(&mMouseEvent);
   }
 
-  if((mme->type == eSyncDec) and (mme->val1.toInt() == (int)this))
+  if((mme->type == eSyncDec) and (mme->requester == this))
   {
     mPainter->mMouseXPos      = mme->mousePos.x();
     mPainter->mDensity        = mme->density;
