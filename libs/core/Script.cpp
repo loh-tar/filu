@@ -77,7 +77,7 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
       return 0;
     }
 
-    if(!mProc->waitForFinished())
+    if(!mProc->waitForFinished(90000))
     {
       fatal(FUNC, tr("Script '%1' not finished.").arg(script));
       mProc->kill();
