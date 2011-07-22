@@ -29,3 +29,11 @@ install(DIRECTORY ${PROVIDER_FILES}
         USE_SOURCE_PERMISSIONS
         DESTINATION ${PROVIDER_PATH}
 )
+
+#
+# Install perl modules
+#
+install(DIRECTORY ${agentf_SOURCE_DIR}/perlmodules/
+        USE_SOURCE_PERMISSIONS
+        DESTINATION /usr/local/lib/Filu/perlmodules
+)

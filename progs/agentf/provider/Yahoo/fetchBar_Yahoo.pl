@@ -43,6 +43,9 @@ use strict;
 use LWP::Simple;
 use Date::Simple(':all');
 
+use lib '../../perlmodules';
+use FiluDate;
+
 if ($#ARGV < 3) { &usage }
 
 #build url:
@@ -67,17 +70,44 @@ my $yahoo        = "http://ichart.finance.yahoo.com/table.csv?" .
 my $quoteData = "";
 my $quality = 1;
 
-if ( $toDate eq Date::Simple->today() ) {
-    #print "today\n";
-    $quoteData = $quoteData . get($yahoo_today);
-    while( $quoteData =~ s/\"// ) {}
-    #print $quoteData;
-    #die();
-    $quality = 2;
+if($toDate eq Date::Simple->today() ) {
+
+  # Because Yahoo make trouble in July of 2011 I try to
+  # fix it with repeated download of todays data.
+  # Note: They ship garbage data with date in the 1970th
+  for(my $i = 0; $i < 5; $i++)
+  {
+    $quoteData = get($yahoo_today);
+    while( $quoteData =~ s/\"// ) {} # Remove double quotes "
+
+    my @columns = split(/,/, $quoteData);
+    my $isod = isoDate($columns[0]);
+    if($isod ==  $toDate)
+    {
+      #print STDERR "good $yahoo_symbol $quoteData";
+      $quality = 2;
+      $i = 10; # Break
+    }
+    elsif(($isod >= $fromDate) and ($isod < $toDate))
+    {
+      # Hm, seams to early to got todays data, we accept them
+      #print STDERR "alright $yahoo_symbol $quoteData";
+      $quality = 2;
+      $i = 10; # Break
+    }
+    else
+    {
+      #print STDERR "damn$i $yahoo_symbol $quoteData";
+      $quoteData = "";
+    }
+  }
 }
 
-$quoteData = $quoteData . get($yahoo);
-#print $quoteData;
+# Fetch historical data
+if($fromDate < Date::Simple->today() )
+{
+  $quoteData = $quoteData . get($yahoo);
+}
 
 # parse and print data
 my @lines;
@@ -128,53 +158,7 @@ sub parse($)
     # parse only valid data, no headers no footers
     if ($columns[0] != "Date" and defined $columns[0])
     {
-        # convert date to SQL format
-        $columns[0] =~ s/Jan/01/;
-        $columns[0] =~ s/Feb/02/;
-        $columns[0] =~ s/Mar/03/;
-        $columns[0] =~ s/Apr/04/;
-        $columns[0] =~ s/May/05/;
-        $columns[0] =~ s/Jun/06/;
-        $columns[0] =~ s/Jul/07/;
-        $columns[0] =~ s/Aug/08/;
-        $columns[0] =~ s/Sep/09/;
-        $columns[0] =~ s/Oct/10/;
-        $columns[0] =~ s/Nov/11/;
-        $columns[0] =~ s/Dec/12/;
-
-        if ($columns[0] !~ m/\d\d\d\d-\d\d-\d\d/ ) {
-            #if english date convert to american
-
-            if ($columns[0] =~ m/\d*(.)\d\d(.)\d*/ ) {}
-            my @date = split(/$1/, $columns[0]);
-
-            if ($#date != 2)
-            {
-                print STDERR "could not parse date " .
-                             $columns[0] . "\n";
-                return;
-            }
-            else
-            {
-                #fix Y2K problem
-
-                if($date[2] < 90 and $date[2] >= 00)
-                {
-                    $date[2] = "20" . $date[2]
-                }
-                else
-                {
-                    $date[2] = "19" . $date[2]
-                };
-
-                $columns[0] = ymd( $date[2], $date[0], $date[1] );
-            }
-        }
-        else
-        {
-            #date is in the right order allready
-            $columns[0] = Date::Simple->new($columns[0]);
-        }
+        $columns[0] = isoDate($columns[0]);
 
         # now build the output
         # there is no open interrest end string with ,
