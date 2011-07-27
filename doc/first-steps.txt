@@ -124,6 +124,7 @@ daemon
 --------
 Is not a daemon as typical known. It is very similar to rcf. He read from stdin
 and execute each command line he read until Carl+D is pressed or 'quit' is read.
+The optional name parameter is only used at message logging.
 
 depots
 --------

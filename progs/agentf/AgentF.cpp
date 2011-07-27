@@ -359,11 +359,21 @@ void AgentF::readCommandFile(const QStringList& parm)
   file.close();
 }
 
-void AgentF::beEvil(const QStringList &/*parm*/) //FIXME: improvemts possible to use parm?
+void AgentF::beEvil(const QStringList &parm)
 {
   if(mIamEvil) return; // Don't do stupid things
 
   mIamEvil = true;
+
+  // parm list looks like
+  // agentf daemon [<name>]
+
+  if(parm.count() > 2)
+  {
+    setMsgTargetFormat(eVerbose, QString("%C %1: %x").arg(parm[2]));
+    setMsgTargetFormat(eConsLog, QString("%C %1: *** %t *** %x").arg(parm[2]));
+    setMsgTargetFormat(eFileLog, QString("%T %C %1 *** %t *** %F %x").arg(parm[2]));
+  }
 
   QTextStream console(stdout);
   QTextStream in(stdin);
@@ -541,7 +551,7 @@ void AgentF::printUsage()
   print("  agentf add <dataType> [<parameterList>]");
   print("    agentf add (tells you more)");
   print("");
-  print("  agentf daemon");
+  print("  agentf daemon [<name>]");
   print("  agentf depots <parameterList>");
   print("    agentf depots --check");
   print("");
@@ -602,7 +612,7 @@ void AgentF::startClones()
     connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
 
-    QString cmd = QString("%1 %2").arg(QCoreApplication::applicationFilePath(), "daemon");
+    QString cmd = QString("%1 %2 %3").arg(QCoreApplication::applicationFilePath(), "daemon").arg(i);
     if(mFiluParms.size()) cmd.append(" --Filu " + mFiluParms.join(" "));
     clone->start(cmd);
 
