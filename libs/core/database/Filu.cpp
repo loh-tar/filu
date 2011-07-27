@@ -745,7 +745,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
     return eError;
   }
 
-  if(data->size() == 1)
+  if(data->size() < 2)
   {
     warning(FUNC, tr("No data from script."));
     return eNoData;
