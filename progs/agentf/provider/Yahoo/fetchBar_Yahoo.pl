@@ -82,7 +82,8 @@ if($toDate eq Date::Simple->today() ) {
 
     my @columns = split(/,/, $quoteData);
     my $isod = isoDate($columns[0]);
-    if($isod ==  $toDate)
+
+    if($isod == $toDate)
     {
       #print STDERR "good $yahoo_symbol $quoteData";
       $quality = 2;
@@ -93,6 +94,12 @@ if($toDate eq Date::Simple->today() ) {
       # Hm, seams to early to got todays data, we accept them
       #print STDERR "alright $yahoo_symbol $quoteData";
       $quality = 2;
+      $i = 10; # Break
+    }
+    elsif($isod eq "0000-01-01") # Not available
+    {
+      #print STDERR "nope $yahoo_symbol $quoteData";
+      $quoteData = "";
       $i = 10; # Break
     }
     else

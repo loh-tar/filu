@@ -26,10 +26,12 @@ use base 'Exporter';
 
 our @EXPORT = qw(isoDate);
 
-
 sub isoDate($)
 {
   # Convert a date string into ISO format YYYY-MM-DD.
+  # Returns "0000-01-01" if "N/A" Not Avaiable
+  # Returns "1000-01-01" if date is bad or not detect
+  #
   # Supported formats are:
   # ISO of course 2011-07-21
   # US style 7/21/2011
@@ -49,19 +51,21 @@ sub isoDate($)
   #$isod = "21. Jul 2011";
   #$isod = "Jul 21, 2011";
 
-  # Test for 2011-07-21
-  if($isod =~ m/\d\d\d\d-\d\d-\d\d/ )
-  {
-    #print STDERR "Detect ISO style\n";
-    return $isod; # Nice, nothing to do
-  }
-
   my $day;
   my $month;
   my $year;
 
+  # Test for 2011-07-21
+  if($isod =~ m/\d\d\d\d-\d\d-\d\d/ )
+  {
+    #print STDERR "Detect ISO style\n";
+    my @date = split(/\-/, $isod);
+    $day   = $date[2];
+    $month = $date[1];
+    $year  = $date[0];
+  }
   # Test for 7/21/2011
-  if($isod =~ m/\d+\/\d+\/\d\d\d\d/ )
+  elsif($isod =~ m/\d{1,2}\/\d{1,2}\/\d{4}/ )
   {
     #print STDERR "Detect US style\n";
     my @date = split(/\//, $isod);
@@ -70,7 +74,7 @@ sub isoDate($)
     $year  = $date[2];
   }
   # Test for 21.7.2011
-  elsif($isod =~ m/\d+\.\d+\.\d\d\d\d/ )
+  elsif($isod =~ m/\d{1,2}\.\d{1,2}\.\d{4}/ )
   {
     #print STDERR "Detect German style\n";
     my @date = split(/\./, $isod);
@@ -107,6 +111,10 @@ sub isoDate($)
     $month = monthNumber($date[0]);
     $year  = $date[2];
   }
+  elsif(lc($isod) eq "n/a") # Not available, e.g. Yahoo give some times
+  {
+    return "0000-01-01";
+  }
   else
   {
     #print STDERR "could not parse date " . $isod . "\n";
@@ -119,12 +127,14 @@ sub isoDate($)
     if($year < 90 and $year >= 00) { $year = "20" . $year } else { $year = "19" . $year }
   }
 
-  # Build the beef
-  $isod = "$year-";
-  if($month < 9) { $isod = $isod."0$month-" } else { $isod = $isod.$month."-" }
-  if($day < 9) { $isod = $isod."0$day" } else { $isod = $isod.$day }
+  # Last validate checks
+  return "1000-01-01" if(!isDateValid($year,$month,$day));
 
-  return $isod;
+  # Build the beef
+  if(length($month) == 1) { $month = "0$month" }
+  if(length($day) == 1) { $day = "0$day" }
+
+  return "$year-$month-$day";
 }
 
 sub monthNumber($)
@@ -145,6 +155,34 @@ sub monthNumber($)
   $mn =~ s/Dec/12/;
 
   return $mn;
+}
+
+#
+# Date validation was found at http://www.perlmonks.org/index.pl?node_id=614932
+# Thanks to JohnGG
+sub isLeap($)
+{
+  my $year = $_[0];
+  return 0 if $year % 4;
+  return 1 if $year % 100;
+  return 1 unless $year % 400;
+  return 0;
+}
+
+sub isDateValid($)
+{
+  my($year, $month, $day) = @_;
+  return 0 unless
+      $year =~ /^\d+$/
+      and $month =~ /^\d+$/
+      and $day =~ /^\d+$/;
+  my $daysinm = [
+      [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+      [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]];
+  return 0 if $year < 1 or $year > 9999;
+  return 0 if $month < 1 or $month > 12;
+  return 0 if $day < 1 or $day > $daysinm->[isLeap($year)]->[$month - 1];
+  return 1;
 }
 
 # Usual in perl last line is...
