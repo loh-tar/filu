@@ -47,10 +47,10 @@ To compile the programs you need:
 
 The perl scripts needs the packages:
   perl-libwww
-
-Some more packages available with "bauerbill -S --cpan foo":
-  perl-date-simple
   perl-timedate
+
+One more package available in AUR:
+  perl-date-simple
 
 To install TALib and muParser you could follow the Ubuntu instructions or use
 packages from AUR:
