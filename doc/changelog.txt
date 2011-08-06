@@ -1,3 +1,18 @@
+2011-08-06
+============
+Sundries
+----------
+ - Fix compile trouble on Suse.
+ - fetchBar_Yahoo: Try to fix actual garbage data trouble with date in 1970.
+ - Some more small changes and fixes.
+
+AgentF
+--------
+ - Add optional name parameter to 'deamon'.
+ - Add --lsd (list depots) to 'depots'.
+ - Add DepotId to post, depotPos and order at command 'add'.
+
+
 2011-03-08
 ============
 Sundries
