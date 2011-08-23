@@ -730,8 +730,8 @@ void Trader::readRules()
         continue;
       }
 
-      if(action.size() == 3) action << "OPEN" << "20";
-      if(action.size() == 4) action << "20";
+      if(action.size() == 3) action << "OPEN" << "20";  // Set to defaults when not given
+      if(action.size() == 4) action << "20";            // see also doc/trading-rule-format.txt if change here
       if(action.size() != 5)
       {
         error(FUNC, tr("Wrong parameter count at line %1.").arg(mLineNumber));

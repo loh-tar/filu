@@ -128,9 +128,7 @@ The optional name parameter is only used at message logging.
 
 depots
 --------
-Performs actions with your portfolios.
-NOTE: That's fresh under development. To create a depot you have to use
-      e.g. pgAdminIII. New orders have status 0, aktive orders status 5.
+Performs actions with your portfolios. See also doc/depot-management.txt.
 
 check
  Yes, run a check over all your portfolios and print suggestions to order based
@@ -144,9 +142,13 @@ lso
 
 verbose
   Set the verbosity, values are the same as for global 'VerboseLevel', see
-  Appendix A - Customizing.
+  doc/config-file.txt.
 
   agentf depots --check --verbose Ample
+
+exp
+-----
+Export data from the database. See doc/export-data.txt.
 
 filu
 ------
@@ -218,7 +220,7 @@ mark
 
 verbose <levelName>|number
   Set the verbosity, values are the same as for global 'VerboseLevel', see
-  Appendix A - Customizing.
+  doc/config-file.txt.
 
 NOTE: Each time the bars of an FI are be updated a scan will automatic performed
       with the '--auto' switch. So you normally not have to scan directly except

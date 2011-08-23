@@ -10,6 +10,9 @@ block. Some of them are exported to the indicator data set. But this means not
 that you can use them to do some useful things in an indicator except that you
 can plot them.
 
+NOTE: Short trades are not implemented. All hints about short selling should
+      kindly be ignored.
+
 
 Blocks
 ========
@@ -155,12 +158,12 @@ BUY(<type>, <size>[, <limit>, <validity>])
   <type>        Long or Short
   <size>        In percent from TotalBalance. If not enough cash left, size
                 will reduced down to MinPositionSize or droped
-  <limit>       Any indicator variable
+  <limit>       Any indicator variable, default is 'Best' aka next open
   <condition>   FIXME: not implemented, so forget it ;-)
                 Because my bank don't support those things I will ignore
                 these nice features
                 http://en.wikipedia.org/wiki/Order_(exchange)#Time_in_force
-  <validity>    In days (FIXME: well, if we use intraday quotes...)
+  <validity>    In days, default is 20 (FIXME: well, if we use intraday quotes...)
 
   BUY(Long, 100)
     Buy on next open for all money left the actual FI
@@ -172,8 +175,8 @@ SELL(<type>, <size>[, <limit>, <validity>])
   <type>        Long or Short
   <size>        In percent from holded Long/Short position. If the rest
                 position is smaler than MinPositionSize, size will set to 100
-  <limit>       Any indicator variable
-  <validity>    In days
+  <limit>       Any indicator variable, default is 'Best' aka next open
+  <validity>    In days, default is 20
 
 
 Examples
