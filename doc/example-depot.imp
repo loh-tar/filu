@@ -1,0 +1,37 @@
+* This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
+*
+* Broker
+*
+[Header]BrokerName;FeeFormula
+MyBank;5.95 + OV * 0.001
+
+*
+* Global settings, always needed below
+[DepotName]TestDepot
+[DepotOwner]Me
+
+*
+* Depot
+*
+[Header]Trader;CurrencySymbol;BrokerName
+SimpleRule;USD;MyBank
+
+*
+* Positions
+*
+[Header]PDate;RefSymbol;Market;Pieces;Price;Note
+2009-03-19;AAPL;NYSE;10;101.60;Sadly only here fake data
+
+*
+* Order
+*
+[Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note
+2011-02-28;2011-12-31;AAPL;NYSE;10;500;Sell;Active;Will we see 500$?
+
+*
+* Account
+*
+[Header]APDate;APType;Value;Text
+2009-01-01;CashIn;10000;Our fake chance
+2009-03-19;FiBuy;-1010.60;10x Apple at 101.60
+2009-03-19;Fee;-6.96;Fee 10xApple

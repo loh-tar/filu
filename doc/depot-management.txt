@@ -1,0 +1,82 @@
+This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
+
+
+NOTE: All relating to depot stuff is fresh under development, maybe buggy and
+      not very comfortable to use.
+
+Index
+=======
+1- Approach
+2- Create a depot step by step
+3- Create a depot by import file
+
+
+1- Approach
+=============
+Depots in Filu are working with a trading rule. For different trading approaches
+you have to create different depots. Each depot has a name and an owner which is
+not your Linux login name. You can choose any owner you like e.g. 'Me' or
+'Grandpa'. Therefore we could say that Filu is multi-tenancy capable. The depot
+name may represent your trading strategy. As in real life has a depot a clearing
+account and therefore a currency.
+
+When your account currency is different from the market where you place your
+order Filu will note the exchange rate. Therefore you must have the currency
+data available. NOTE: IIRC there was something buggy :-/
+
+Let's assume your depots are set up nicely. After an update of eodbar data you
+can check all depots if any action is needed. Just by running
+
+  agentf depots --check
+
+At the end will be a list with orders printed with suggestions by your trading
+rule what to buy or sell. These list could you print again by running
+
+   agentf depots --lso
+
+One suggestion (notice the 'Advice') may looks like:
+
+  All orders for depot: TestDepot, Id: 1, Value: 12.915,44 USD, AvCash: 8.982,44 USD, Positions: 1
+  2011-07-22  Sell    10x US0378331005 Apple Inc.      393.30 USD    Advice    Gain > 20
+
+When you trust your rule, place that order as usual at your broker and inform
+Filu that we have now an active order.
+
+  agentf add order 2011-07-22 2011-07-29 AAPL NYSE 10 393.30 Sell Active "Gain > 20" --dp 1
+
+In the next days will Filu track if the order was executed and if yes updates
+the account and depot. To list the actual depot situation run
+
+  agentf depots --lsd
+
+  All positions for depot: TestDepot, Id: 1, Value: 12.915,44 USD, AvCash: 8.982,44 USD, Positions: 1
+  2009-03-19 Apple Inc.                US0378331005    10  101,60 287%  3.933,00  30%
+
+There you can see last buy/sell date, name and symbol, pieces, last self traded price,
+performance, actual value and depot portion.
+
+
+2- Create a depot step by step
+================================
+Create the depot:
+
+agentf add broker MyBank "5.95 + OV * 0.001"
+agentf add depot TestDepot Me SimpleRule USD MyBank
+
+Add an existing position to the depot:
+
+  agentf add depotPos 2009-03-19 AAPL NYSE 10 101.60 "Sadly only fake data" --dp TestDepot Me
+
+Transfer money to the depot account:
+
+  agentf add post 2011-07-22 CashIn "Our fake chance" 8000 --dp TestDepot Me
+
+Place an order:
+
+  agentf add order 2011-02-28 2011-12-31 AAPL NYSE 10 500 Sell Active "Will we see 500$?" --dp TestDepot Me
+
+
+3- Create a depot by import file
+==================================
+
+  agentf imp doc/example-depot.imp
