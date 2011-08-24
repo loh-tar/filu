@@ -88,9 +88,6 @@ class AgentF : public FCoreApp
 
     QTextStream        mConsole;/*(stdout);*/
     QTextStream        mErrConsole;
-
-    // Setting variables
-    //int                mDebugLevel;
 };
 
 #endif

@@ -48,12 +48,11 @@ RcFile::RcFile(Newswire* parent)
   mDefault.insert("SqlPath",           "/usr/local/lib/Filu/sqls/");
   mDefault.insert("CommitBlockSize",   500);
   mDefault.insert("DaysToFetchIfNoData",    365);
-  mDefault.insert("SqlDebugLevel",      1);
+  mDefault.insert("SqlDebugLevel",      "Quiet");
 
   // Agent stuff
   mDefault.insert("MaxClones",         5);
   mDefault.insert("LogFile",           "filu.log");
-  mDefault.insert("DebugLevel",        0);
 
   // Performer stuff
   mDefault.insert("PerformerSize",     QSize(832,512));

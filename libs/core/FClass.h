@@ -44,7 +44,6 @@ class FClass : public Newswire
 
     RcFile*        mRcFile;
     FiluU*         mFilu;
-    int            mDebugLevel;
 
   private:
     bool           mRoot;

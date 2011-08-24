@@ -73,7 +73,7 @@ void AgentF::quit()
 
 void AgentF::readSettings()
 {
-  if(mRcFile->getIT("DebugLevel")) printSettings();
+  if(verboseLevel(eMax)) printSettings();
 }
 
 bool AgentF::dateIsNotValid(QString& date)
@@ -532,7 +532,7 @@ void AgentF::execCmd(const QStringList& parm)
   else if(cmd == "filu")     filu(parm);
   else if(cmd == "info")
   {
-    if(mRcFile->getIT("DebugLevel")) return; // Already printed, don't print twice
+    if(verboseLevel(eMax)) return; // Already printed, don't print twice
     else printSettings();
   }
   else
@@ -583,7 +583,7 @@ void AgentF::printSettings()
   print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf")); //FIXME: how to make system independent?
   print(txt.arg("ProviderPath", width).arg(mRcFile->getST("ProviderPath")));
   print(txt.arg("MaxClones", width).arg(mRcFile->getIT("MaxClones")));
-  print(txt.arg("DebugLevel", width).arg(mRcFile->getIT("DebugLevel")));
+  print(txt.arg("VerboseLevel", width).arg(verboseLevel()));
   print(txt.arg("LogFile", width).arg(mRcFile->getST("LogFile")));
 
   mFilu->printSettings();

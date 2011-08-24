@@ -23,14 +23,12 @@ FClass::FClass(FClass* parent, const QString& className)
       : Newswire(parent, className)
       , mRcFile(parent->mRcFile)
       , mFilu(parent->mFilu)
-      , mDebugLevel(parent->mDebugLevel)
 {}
 
 FClass::FClass(const QString& connectionName)
       : Newswire(connectionName)
       , mRcFile(new RcFile(this))
       , mFilu(0)
-      , mDebugLevel(mRcFile->getIT("DebugLevel"))
 {
   mFilu = new FiluU(connectionName, mRcFile);
 }
