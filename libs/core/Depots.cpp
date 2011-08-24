@@ -161,7 +161,6 @@ void Depots::listDepot(const QSqlRecord& depot)
   if(!positions->size())
   {
     print(tr("Depot is empty."));
-    return;
   }
 
   while(positions->next())
@@ -204,6 +203,11 @@ void Depots::listOrders(const QSqlRecord& depot)
   listOrders(orders, FiluU::eOrderExecuted);
   listOrders(orders, FiluU::eOrderExperied);
 
+  if(!orders->size())
+  {
+    print(tr("No orders found."));
+  }
+
   print("");
 }
 
@@ -214,7 +218,7 @@ void Depots::listOrders(QSqlQuery* orders, int status)
   orders->seek(-1); // Like rewind();
   while(orders->next())
   {
-    if(orders->value(10).toInt() != status) continue;
+    if(orders->value(11).toInt() != status) continue;
 
     printOrder(orders->record());
   }
