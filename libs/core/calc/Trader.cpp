@@ -910,7 +910,7 @@ bool Trader::initVariables()
     // Test if we can convert money
     clearErrors();
     inFiCurrency(1.0);
-    if(mFilu->hasError()) // FIXME: don't ask filu
+    if(mFilu->hasMessage()) // FIXME: don't ask filu (Umm, why not?)
     {
       verbose(FUNC, tr("WARNING No data to convert currency %1, printed pieces are wrong.").arg(market->currName()));
       mSettings.insert(QString("MarketCurrency%1").arg(marketId), mSettings.value("DepotCurrencyId"));
@@ -948,12 +948,13 @@ double Trader::inFiCurrency(double money)
     mData->rewind();
   }
   QString dateString = date.toString(Qt::ISODate);
+
   mFilu->convertCurrency(money
                        , mSettings.value("DepotCurrencyId").toInt()
                        , mSettings.value("FiCurrencyId").toInt()
                        , date);
 
-  if(mFilu->hasError())
+  if(mFilu->hasMessage())
   {
     // Don't try again to convert money
     mSettings.insert("FiCurrencyId", mSettings.value("DepotCurrencyId"));
@@ -982,7 +983,7 @@ double Trader::inDepotCurrency(double money)
                        , mSettings.value("DepotCurrencyId").toInt()
                        , date);
 
-  if(mFilu->hasError())
+  if(mFilu->hasMessage())
   {
     // Don't try again to convert money
     mSettings.insert("FiCurrencyId", mSettings.value("DepotCurrencyId"));
