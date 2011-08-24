@@ -39,6 +39,7 @@ bool Depots::exec(const QStringList& command)
   // Look for each command, and execute them if was given.
   // The order of look up is important.
   if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
+  if(command.contains("--clo"))       clearOrders(command);
   if(command.contains("--check"))     check(command);
   if(command.contains("--lsd"))       listDepots(command);
   if(command.contains("--lso"))       listOrders(command);
@@ -133,6 +134,23 @@ void Depots::checkAll(const QStringList& parm)
   while(depots->next()) listOrders(depots->record());
 
   return;
+}
+
+void Depots::clearOrders(const QStringList& parm)
+{
+  QSqlQuery* depots = getDepots();
+  if(!depots) return;
+
+  while(depots->next())
+  {
+    QSqlQuery* orders = mFilu->getOrders(depots->record().value("DepotId").toInt());
+    while(orders->next())
+    {
+      if(orders->value(11).toInt() == FiluU::eOrderActive) continue;
+
+      mFilu->deleteRecord(":user", "order", orders->value(0).toInt());
+    }
+  }
 }
 
 void Depots::listDepots(const QStringList& parm)

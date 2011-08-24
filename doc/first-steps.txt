@@ -134,6 +134,9 @@ check
  Yes, run a check over all your portfolios and print suggestions to order based
  on the TradingRule file associated to your depot.
 
+clo
+  Clears all orders which are not active.
+
 lsd
   List all depots.
 
