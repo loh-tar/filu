@@ -613,7 +613,7 @@ void AgentF::startClones()
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
 
     QString cmd = QString("%1 %2 %3").arg(QCoreApplication::applicationFilePath(), "daemon").arg(i);
-    if(mFiluParms.size()) cmd.append(" --Filu " + mFiluParms.join(" "));
+    if(mConfigParms.size()) cmd.append(" --config " + mConfigParms.join(" "));
     clone->start(cmd);
 
     if(!clone->waitForStarted())

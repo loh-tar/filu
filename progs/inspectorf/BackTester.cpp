@@ -31,7 +31,7 @@ BackTester::BackTester()
           , mTrader(0)
 {
   QStringList parms = QCoreApplication::arguments();
-  mRcFile->takeFiluParms(parms);
+  mRcFile->takeConfigParms(parms);
   mFilu->openDB();
   init();
 }

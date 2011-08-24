@@ -352,7 +352,7 @@ Example 2
 ===========
 Add a symbol to an existing FI interactiv in a console.
 
-  [lot@N110 ~/FiluSource]$ agentf imp --Filu VerboseLevel=2
+  [lot@N110 ~/FiluSource]$ agentf imp --config VerboseLevel=2
   [Header]RefSymbol;ISIN
   AAPL;US0378331005
   [Line:    2      39B][  1/1  ] Symbols...................Ok (Ref: AAPL) ISIN US0378331005 NoMarket

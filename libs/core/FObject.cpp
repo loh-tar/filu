@@ -41,7 +41,7 @@ FCoreApp::FCoreApp(const QString& connectionName, QCoreApplication& app)
         : FObject(connectionName, app)
 {
   mCommandLine = app.arguments();
-  mFiluParms   = mRcFile->takeFiluParms(mCommandLine);
+  mConfigParms = mRcFile->takeConfigParms(mCommandLine);
   mFilu->openDB();
   addMessages(mFilu->messages());
 }

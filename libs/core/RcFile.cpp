@@ -157,13 +157,13 @@ void RcFile::restoreGroup()
   beginGroup(mDefault.value("_SavedGroup").toString());
 }
 
-QStringList RcFile::takeFiluParms(QStringList& cmdLine)
+QStringList RcFile::takeConfigParms(QStringList& cmdLine)
 {
   mNewswire->setVerboseLevel(FUNC, getST("VerboseLevel"));
 
   QStringList filuParms;
 
-  int pos = cmdLine.indexOf("--Filu");
+  int pos = cmdLine.indexOf("--config");
 
   if(-1 == pos)
   {
@@ -171,7 +171,7 @@ QStringList RcFile::takeFiluParms(QStringList& cmdLine)
     return filuParms;
   }
 
-  cmdLine.takeAt(pos); // Remove --Filu
+  cmdLine.takeAt(pos); // Remove --config
 
   QString parm;
   while(pos < cmdLine.size())
@@ -198,7 +198,7 @@ QStringList RcFile::takeFiluParms(QStringList& cmdLine)
 
     QStringList keys = mForced.keys();
     foreach(QString key, keys)
-      mNewswire->verbose(FUNC, tr("Taken Filu parm: Set  '%1' to '%2'").arg(key).arg(mForced.value(key).toString()), Newswire::eInfo);
+      mNewswire->verbose(FUNC, tr("Taken config parm: Set  '%1' to '%2'").arg(key).arg(mForced.value(key).toString()), Newswire::eInfo);
   }
 
   return filuParms;

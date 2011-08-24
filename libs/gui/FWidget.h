@@ -47,7 +47,7 @@ class FMainApp : public QMainWindow, public FClass
 
   protected:
     QStringList mCommandLine;
-    QStringList mFiluParms;
+    QStringList mConfigParms;
 };
 
 #endif

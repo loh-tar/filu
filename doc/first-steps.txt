@@ -99,12 +99,12 @@ or be known to be improved.
 
 All Progs
 ===========
-...take on the command line the parameter '--Filu key=value [key=value...]'.
+...take on the command line the parameter '--config key=value [key=value...]'.
 Where as 'key' a config file key is. That mean you could overwrite any config
-setting on the command line. To be on the save side only append these as last
-parameter, e.g.
+setting on the command line, see doc/config-file.txt. To be on the save side
+only append these as last parameter, e.g.
 
-  agentf full 2001-01-01 --Filu DatabaseName=MyNewTestDB VerboseLevel=Max
+  agentf full 2001-01-01 --config DatabaseName=MyNewTestDB VerboseLevel=Max
 
 
 AgentF
@@ -153,7 +153,6 @@ Export data from the database. See doc/export-data.txt.
 filu
 ------
 Create or update the Filu database.
-NOTE: Not to be confused with '--Filu' to overwrite a config setting.
 
 create [--db <db-name>] [--schema <schema>]
   Create a new Filu database. Defaults of <db-name> and <schema> are 'filu'.

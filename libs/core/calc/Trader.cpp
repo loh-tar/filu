@@ -338,7 +338,7 @@ bool Trader::prepare(const QSqlRecord& depot)
       mRealVar.insert("OffMarket", 0.0);
 
       // Take here again mLastCheckDate to prevent doing
-      // stupid things if --Filu LastDepotCheck='anno x' was given
+      // stupid things if --config LastDepotCheck='anno x' was given
       mLastCheckDate = mRcFile->getDT("LastDepotCheck");
       if(mLastCheckDate < posDate) mLastCheckDate = posDate;
 

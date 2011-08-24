@@ -48,7 +48,7 @@ class FCoreApp : public FObject
 
   protected:
     QStringList mCommandLine;
-    QStringList mFiluParms;
+    QStringList mConfigParms;
 };
 
 #endif
