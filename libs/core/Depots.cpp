@@ -415,6 +415,11 @@ QString Depots::depotStatusLine(const QSqlRecord& depot)
   mFilu->setSqlParm(":fiId",  -1);
   QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
 
+  if((mDP.balance < mDP.value) or (mDP.value < 0.0))
+  {
+    warning(FUNC, tr("It seems it lacks currency data."));
+  }
+
   return QString("%1, Id: %6, Value: %L3 %2, AvCash: %L4 %2, Positions: %5")
                 .arg(depot.value("Name").toString(), depot.value("Currency").toString())
                 .arg(mDP.balance, 0, 'f', 2)
