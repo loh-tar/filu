@@ -575,8 +575,14 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
     for(int i = 0; i - line.size(); ++i)
     {
       QChar ch = line.at(i);
-      if(ch == ' ') continue;
+      if(ch == ' ')
+      {
+        if(!part.isEmpty()) parts << part;
+        part.clear();
+        continue;
+      }
 
+      // Build numbers, function and variable names
       uint u = uint(ch.unicode());
       // Matches [a-zA-Z0-9_.]
       if((u - 'a' < 26 || u - 'A' < 26 || u - '0' < 10 || u == '_' || u == '.'))
@@ -585,17 +591,24 @@ qDebug() << "Indicator::prepare:load extra FIs" << parameters;
         continue;
       }
 
+      // Now we have part = 'midPrice' or 'MUP' or '0.5'
       if(!part.isEmpty()) parts << part;
       part.clear();
 
+      // Special threatment, #123456 may used as color
+      // and the minus sign paste to the next number or variable
+      // because of lazyness in eg. CalcTALib, may to be FIXME
       if( (ch == '-') or (ch == '#') ) part += ch;
-      else if( (ch == '=') and (parts.size() > 0) )
+      else if(parts.size())
       {
-        // Build operators: <=, >=, !=, ==
-        if(parts.last().contains(QRegExp("[\\<\\>\\!\\=]"))) parts.last() += ch;
-        else parts << ch;
+        // Build operators: <=, >=, !=, ==, &&, ||
+        if(parts.last().contains(QRegExp("[\\<\\>\\!\\=\\&\\|]"))) parts.last() += ch;
+        else if(ch != ',') parts << ch;
       }
-      else if(ch != ',') parts << ch;
+      else if(ch != ',') parts << ch; // Comma are thrown away, but is a problem with muParser 1.34
+                                      // "Seperator can now be used outside of functions. This allows compund
+                                      // expressions like: "a=10,b=20,c=a*b" The last "argument" will be taken
+                                      // as the return value"
     }
 
     //qDebug() << "\nparts: " << parts;

@@ -232,8 +232,7 @@ FILU(<function>[, <parameter>...])
 
 MUP(<expression>)
   <expression> could be a full complex math or bool expression. For details
-  of supported operators and functions see:
-  http://muparser.sourceforge.net/mup_features.html#idDef2
+  of supported operators and functions see the documentation of muParser.
 
     midPrice = MUP((HIGH + LOW ) / 2)
     signal = MUP((foo1 < foo2) and (foo3 xor (foo4 > foo5)))

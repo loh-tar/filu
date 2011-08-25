@@ -140,8 +140,6 @@ L: logarithmic Y-Scaling
 
 Indicator
 ===========
-H: fix parsing, MUP() doesn't got operators 'or'/'and'. Since when??? I'm sure
-   that has worked.
 M: change the parsing, split it just after the reading from file into parts
    with the algorithm used at function parsing. Include the original line number
    of the indicator file as first parameter given to CalcFoo to improve error
