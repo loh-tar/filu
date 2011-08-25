@@ -251,9 +251,6 @@ void Depots::printPosition(const QSqlRecord& pos)
 
   QString symbol = isin(pos.value("FiId").toInt());
 
-  QString text;
-  QTextStream out(&text);
-
   int pieces    = pos.value("Pieces").toInt();
   double ePrice = pos.value("Price").toDouble();
 
@@ -267,17 +264,17 @@ void Depots::printPosition(const QSqlRecord& pos)
   //QDate date    = pos.value("Date").toDate();
   double slice = 100 * (value) / mDP.balance;
 
-  // FIXME: What looks better, this way or done at printOrder? Both shitty!
-  out << pos.value("Date").toString() << fc;
-  out << qSetFieldWidth(30) << left << pos.value("FiName").toString();
-  out << qSetFieldWidth(12) << center << symbol;
-  out << qSetFieldWidth(6)  << right << pieces;
-  out << qSetFieldWidth(0);
-  out << QString("%L1").arg(ePrice, 8, 'f', 2, fc);
-  out << QString("%L1%").arg(change, 4, 'f', 0, fc);
+  QString text = "%1 %2 %3 %4 %L5 %L6%  %L7 %L8%";
+  text.replace(' ', fc); // For a comment see printOrder(..)
 
-  out << QString("%L1").arg(value, 10, 'f', 2, fc);
-  out << QString("%L1%").arg(slice, 4, 'f', 0, fc);
+  text = text.arg(pos.value("Date").toString())
+             .arg(pos.value("FiName").toString(), -30, fc)
+             .arg(symbol, 12, fc)
+             .arg(pieces, 4, 10, fc)
+             .arg(ePrice, 8, 'f', 2, fc)
+             .arg(change, 4, 'f', 0, fc)
+             .arg(value, 10, 'f', 2, fc)
+             .arg(slice, 4, 'f', 0, fc);
 
   print(text);
 }
@@ -369,17 +366,20 @@ void Depots::printOrder(const QSqlRecord& order)
     fiName.append("~+");
   }
 
-  // FIXME: What looks better, this way or done at printPosition? Both shitty!
-  QString text = QString("%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9")
-                    .arg(fc)
-                    .arg(oDate.toString(Qt::ISODate))
-                    .arg(oType, -4, fc)
-                    .arg(pieces, 4, 10, fc)
-                    .arg(symbol, 12, fc)
-                    .arg(fiName, -30, fc)
-                    .arg(limitTxt, 12, fc)
-                    .arg(statusTxt, -8, fc)
-                    .arg(note);
+  QString text = "%1 %2 %3 %4 %5%6  %7 %8";
+  text.replace(' ', fc); // Do it below would looks like
+                         // QString text = "%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9"
+                         // and that's pretty confusing
+
+  // Don't print here vDate and market, would be to long, user is clever enough
+  text = text.arg(oDate.toString(Qt::ISODate))
+             .arg(oType, -4, fc)
+             .arg(pieces, 4, 10, fc)
+             .arg(symbol, 12, fc)
+             .arg(fiName, -30, fc)
+             .arg(limitTxt, 12, fc)
+             .arg(statusTxt, -8, fc)
+             .arg(note);
 
   print(text);
 }
