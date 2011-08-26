@@ -36,6 +36,8 @@ M: write new GetSymbols.sql, now is too complicate an delivers not ever what
    expected.
 M: Create the main DB like the user tables => No need to use the console, let it
    do ManagerF resp. AgentF.
+L: Oops, the Password setting take no effekt. I guess it is the consequence of
+   the "trust" setting in /etc/postgresql/.../pg_hba.conf
 L: figure out optimum postgres parameters.
 L: list all markets a specific provider provides (?)
 

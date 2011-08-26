@@ -41,7 +41,7 @@ RcFile::RcFile(Newswire* parent)
   // Filu stuff
   mDefault.insert("HostName",          "localhost");
   mDefault.insert("HostPort",          5432);
-  mDefault.insert("UserName",          "filu");
+  mDefault.insert("PgUserRole",        "filu");
   mDefault.insert("Password",          "filu"); // FIXME: hmm, pw in clear text...
   mDefault.insert("DatabaseName",      "filu");
   mDefault.insert("FiluSchema",        "filu");

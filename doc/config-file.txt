@@ -46,7 +46,7 @@ HostName=localhost
 HostPort=5432
 FiluSchema=filu
 Password=filu
-UserName=filu
+PgUserRole=filu
   Which database is to use and how could it be accessed. Yes, Password in clear text
   looks like that there could things improved.
 

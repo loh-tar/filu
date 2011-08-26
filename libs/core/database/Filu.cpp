@@ -1189,7 +1189,7 @@ void Filu::openDB()
   db.setHostName(mRcFile->getST("HostName"));
   db.setPort(mRcFile->getIT("HostPort"));
   db.setDatabaseName(mRcFile->getST("DatabaseName"));
-  db.setUserName(mRcFile->getST("UserName"));
+  db.setUserName(mRcFile->getST("PgUserRole"));
   db.setPassword(mRcFile->getST("Password"));
   bool ok = db.open();
   if(!ok)
@@ -1549,7 +1549,7 @@ void Filu::printSettings()
   print(txt.arg("HostPort", width).arg(mRcFile->getIT("HostPort")));
   print(txt.arg("DatabaseName", width).arg(mRcFile->getST("DatabaseName")));
   print(txt.arg("FiluSchema", width).arg(mFiluSchema));
-  print(txt.arg("UserName", width).arg(mRcFile->getST("UserName")));
+  print(txt.arg("PgUserRole", width).arg(mRcFile->getST("PgUserRole")));
   print(txt.arg("Password", width).arg(mRcFile->getST("Password")));
   print(txt.arg("CommitBlockSize", width).arg(mCommitBlockSize));
   print(txt.arg("DaysToFetchIfNoData", width).arg(mDaysToFetchIfNoData));
