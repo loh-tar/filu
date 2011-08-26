@@ -577,7 +577,7 @@ void AgentF::printUsage()
 void AgentF::printSettings()
 {
   QString txt = "%1 = %2";
-  int width = -15; // Negative value = left-aligned
+  int width = -20; // Negative value = left-aligned
   print(tr("AgentF settings are:"));
   print(txt.arg("Using QtVersion", width).arg(qVersion()));
   print(txt.arg("Using muParser", width).arg(mu::Parser().GetVersion().data()));
