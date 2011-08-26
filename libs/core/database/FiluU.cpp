@@ -36,7 +36,7 @@ void FiluU::openDB()
 
   mUserSchema = "user_" + qgetenv("USER");
 
-  QString sql("select nspname from pg_namespace where nspname = ':user'");
+  QString sql("SELECT nspname FROM pg_namespace WHERE nspname = ':user'");
   sql.replace(":user", mUserSchema);
 
   QSqlQuery query(QSqlDatabase::database(mConnectionName));

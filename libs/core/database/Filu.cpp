@@ -1195,13 +1195,25 @@ void Filu::openDB()
   if(!ok)
   {
     QSqlError err = db.lastError();
-    fatal(FUNC, tr("Can't open DB."));
+    error(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
     if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
   }
   else
   {
-    verbose(FUNC, "Successful connected to Filu :-)");
+    QString sql("SELECT nspname FROM pg_namespace WHERE nspname = ':filu'");
+    sql.replace(":filu", mFiluSchema);
+
+    QSqlQuery query(QSqlDatabase::database(mConnectionName));
+    query.prepare(sql);
+    execute(&query);
+    if(query.size()) verbose(FUNC, "Successful connected to Filu :-)");
+    else
+    {
+      if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
+      error(FUNC, tr("FiluSchema '%1' does not exist.").arg(mFiluSchema));
+      errInfo(FUNC, tr("Are you sure that you have already created the db?"));
+    }
   }
 }
 
@@ -1560,10 +1572,10 @@ void Filu::printSettings()
   print(txt.arg("Postgres version", width).arg(dbVersion));
   print(txt.arg("HostName", width).arg(mRcFile->getST("HostName")));
   print(txt.arg("HostPort", width).arg(mRcFile->getIT("HostPort")));
-  print(txt.arg("DatabaseName", width).arg(mRcFile->getST("DatabaseName")));
-  print(txt.arg("FiluSchema", width).arg(mFiluSchema));
   print(txt.arg("PgUserRole", width).arg(mRcFile->getST("PgUserRole")));
   print(txt.arg("Password", width).arg(mRcFile->getST("Password")));
+  print(txt.arg("DatabaseName", width).arg(mRcFile->getST("DatabaseName")));
+  print(txt.arg("FiluSchema", width).arg(mFiluSchema));
   print(txt.arg("SqlPath ", width).arg(mSqlPath));
   print(txt.arg("CommitBlockSize", width).arg(mCommitBlockSize));
   print(txt.arg("DaysToFetchIfNoData", width).arg(mDaysToFetchIfNoData));
