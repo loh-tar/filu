@@ -1569,6 +1569,7 @@ void Filu::printSettings()
   QString txt = "%1 = %2";
   int width = -20; // Negative value = left-aligned
   print("Filu settings are:");
+  print(txt.arg("Using QtVersion", width).arg(qVersion()));
   print(txt.arg("Postgres version", width).arg(dbVersion));
   print(txt.arg("HostName", width).arg(mRcFile->getST("HostName")));
   print(txt.arg("HostPort", width).arg(mRcFile->getIT("HostPort")));
