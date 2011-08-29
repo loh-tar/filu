@@ -633,7 +633,8 @@ LANGUAGE PLPGSQL VOLATILE;
 CREATE OR REPLACE FUNCTION :user.depotpos_traderview
 (
   aDepotId   :user.depot.depot_id%TYPE,
-  aFiId      :filu.fi.fi_id%TYPE
+  aFiId      :filu.fi.fi_id%TYPE,
+  aDate      date
 )
 RETURNS TABLE(rpdate     :user.depotpos.pdate%TYPE
             , rfi_id     :user.depotpos.fi_id%TYPE
@@ -657,6 +658,7 @@ BEGIN
       LEFT JOIN :filu.fi AS f USING(fi_id)
       LEFT JOIN :filu.market AS m USING(market_id)
       WHERE p.depot_id = aDepotId
+            and p.pdate <= aDate
             and CASE WHEN aFiId = -1  THEN true ELSE p.fi_id = aFiId END
       GROUP BY fi_id, f.caption, market_id
       --ORDER BY max(pdate) DESC
@@ -671,7 +673,7 @@ BEGIN
       FOR mPieces, mPrice IN
         SELECT pieces, price
           FROM :user.depotpos
-          WHERE depot_id = aDepotId and fi_id = rfi_id
+          WHERE depot_id = aDepotId and fi_id = rfi_id and pdate <= aDate
           ORDER BY pdate DESC
       LOOP
         IF mPieces < 0

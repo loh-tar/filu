@@ -129,25 +129,42 @@ The optional name parameter is only used at message logging.
 depots
 --------
 Performs actions with your portfolios. See also doc/depot-management.txt.
+Most depots commands respekt the optional filter settings:
+  --owner <Owner> (only depots by...)
+  --depotId <DepotId>
+  --from <FromDate>
+  --to <ToDate>
+  --4date <ForDate> (the same as --to)
 
 check
- Yes, run a check over all your portfolios and print suggestions to order based
- on the TradingRule file associated to your depot.
+ Yes, run a check over all your portfolios and save suggestions to order, based
+ on the trading rule file associated noted in your depot. To list the
+ suggestions use --lso.
 
 clo
   Clears all orders which are not active.
 
 lsd
-  List all depots.
+  List depots.
 
 lso
   List all orders.
+
+simtrade <Trader> <CurrencySymbol> <BrokerName> <fromDate> <toDate>
+        [--weekly <n> (check only each n weeks, when not given each day is checked)
+        [--checkDay <DayName> (default Friday)]]
+  Creates a new depot owned by 'Simulator' with a auto generated name and runs a
+  full complex trading simulation.
+  FIXME: Not yet implemented.
 
 verbose
   Set the verbosity, values are the same as for global 'VerboseLevel', see
   doc/config-file.txt.
 
-  agentf depots --check --verbose Ample
+  agentf depots --lsd --4day 2011-05-01
+  agentf depots --check --lso --verbose Ample
+  agentf depots --simtrade SimpleRule EUR MyBank 2005-05-01 2011-05-01 \
+                --weekly 2 --checkDay Monday
 
 exp
 -----

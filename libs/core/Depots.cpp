@@ -36,41 +36,69 @@ Depots::~Depots()
 
 bool Depots::exec(const QStringList& command)
 {
+  mToday = QDate::currentDate();
+  mLastCheck = mRcFile->getDT("LastDepotCheck");
+
   // Look for each command, and execute them if was given.
   // The order of look up is important.
   if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
+  if(command.contains("--4day"))      mToday = optionDate(command, "4day");
+  if(command.contains("--to"))        mToday = optionDate(command, "to");
+  if(command.contains("--from"))      mLastCheck = optionDate(command, "from");
+
+  if(hasError()) return false;
+
   if(command.contains("--clo"))       clearOrders(command);
   if(command.contains("--check"))     check(command);
   if(command.contains("--lsd"))       listDepots(command);
   if(command.contains("--lso"))       listOrders(command);
 
-  return hasError();
+  return !hasError();
+}
+
+QDate Depots::optionDate(const QStringList& parm, const QString& optName)
+{
+  QDate date;
+  QStringList opt;
+
+  if(FTool::getParameter(parm, QString("--%1").arg(optName), opt) < 1)
+  {
+    error(FUNC, tr("No date at '--%1' given.").arg(optName));
+    return date;
+  }
+
+  date = QDate::fromString(opt.at(0), Qt::ISODate);
+
+  if(!date.isValid()) error(FUNC, tr("Given date '%1' at '--%2' is not valid.").arg(opt.at(0), optName));
+
+  return date;
 }
 
 void Depots::check(const QStringList& parm)
 {
-  QStringList opt;
-  FTool::getParameter(parm, "--check", opt);
+  // Ignore filter settings --from --to
+  //mToday = QDate::currentDate();
+  //mLastCheck = mRcFile->getDT("LastDepotCheck");
 
-  if(!opt.size())
-  {
-    checkAll(parm);
-    return;
-  }
+  checkDepots(getDepots(parm));
 
-//   bool autoSetup = false;
-//   if(parm.contains("--auto")) autoSetup = true;
+  if(hasError()) return;
+
+  // FIXME What if we have more depots but --depotId was given?
+  // add a "LastChecked" field in depot table?
+  mRcFile->set("LastDepotCheck", QDate::currentDate().toString(Qt::ISODate));
+  //mRcFile->set("LastDepotCheck", mToday.toString(Qt::ISODate));
 }
 
-void Depots::checkAll(const QStringList& parm)
+void Depots::checkDepots(QSqlQuery* depots)
 {
-  QSqlQuery* depots = getDepots();
   if(!depots) return;
 
   QList<Trader*> traders;
   QList<QStringList> groups;
   QSet<QString> allGroups;
-  QDate fromDate = QDate::currentDate();
+
+  QDate fromDate = mLastCheck;
 
   while(depots->next())
   {
@@ -78,7 +106,7 @@ void Depots::checkAll(const QStringList& parm)
     trader->setMsgTargetFormat(eVerbose, "%c: %x");
 
     QSqlRecord depot = depots->record();
-    if(!trader->prepare(depot))
+    if(!trader->prepare(depot, mLastCheck, mToday))
     {
       if(trader->hasError()) addErrors(trader->errors());
       delete trader;
@@ -90,33 +118,60 @@ void Depots::checkAll(const QStringList& parm)
     foreach(QString group, trader->workOnGroups()) allGroups.insert(group);
 
     if(fromDate > trader->needBarsFrom()) fromDate = trader->needBarsFrom();
-    //qDebug() << trader->needBarsFrom() << trader->workOnGroups() << allGroups;
+
+    if(verboseLevel(eAmple))
+    {
+      verbose(FUNC, tr("Depot with ID:  %1").arg(depots->value(0).toInt()));
+      verbose(FUNC, tr("Work on groups: %1").arg(trader->workOnGroups().join(" ")));
+      verbose(FUNC, tr("Need bars from: %1").arg(trader->needBarsFrom().toString(Qt::ISODate)));
+    }
+  }
+
+  if(verboseLevel(eAmple) and depots->size() > 1)
+  {
+    verbose(FUNC, tr("Total work on groups: %1").arg(QStringList(allGroups.toList()).join(" ")));
+    verbose(FUNC, tr("Total need bars from: %1").arg(fromDate.toString(Qt::ISODate)));
   }
 
   QSet<int> alreadyChecked;
   foreach(QString group, allGroups)
   {
-    QSqlQuery* fis = mFilu->getGMembers(mFilu->getGroupId(group));
-    if(!fis) continue;
+    int gid = mFilu->getGroupId(group);
+    if(gid < 0)
+    {
+      warning(FUNC, tr("Group '%1' not found.").arg(group));
+      continue;
+    }
+
+    QSqlQuery* fis = mFilu->getGMembers(gid);
+    if(!fis)
+    {
+      if(check4FiluError(FUNC)) continue;
+      warning(FUNC, tr("No FIs in group '%1'").arg(group));
+      continue;
+    }
+
+    verbose(FUNC, tr("Group %1 contains %2 FIs.").arg(group).arg(fis->size()), eAmple);
 
     while(fis->next())
     {
-      //qDebug() << fis->value(1) << fis->value(2) << fis->value(3) << fis->value(4);
-
       int fiId     = fis->value(1).toInt();
       int marketId = fis->value(4).toInt();
 
       if(alreadyChecked.contains(fiId)) continue;
       alreadyChecked.insert(fiId);
 
-      BarTuple* bars = mFilu->getBars(fiId, marketId, fromDate.toString(Qt::ISODate));
+      verbose(FUNC, tr("Check %1 at %2").arg(fis->value(2).toString(), fis->value(3).toString()), eAmple);
+
+      BarTuple* bars = mFilu->getBars(fiId, marketId, fromDate.toString(Qt::ISODate)
+                                                    , mToday.toString(Qt::ISODate));
       if(!bars) continue;
 
       for(int i = 0; i < traders.size(); ++i)
       {
         if(!groups.at(i).contains(group)) continue;
 
-        traders.at(i)->check(bars);
+        traders.at(i)->check(bars, mLastCheck);
       }
 
       delete bars;
@@ -125,20 +180,11 @@ void Depots::checkAll(const QStringList& parm)
 
   // Clean up
   foreach(Trader* trader, traders) delete trader;
-
-  if(hasError()) return;
-
-  mRcFile->set("LastDepotCheck", QDate::currentDate().toString(Qt::ISODate));
-
-  depots->seek(-1); // Like rewind();
-  while(depots->next()) listOrders(depots->record());
-
-  return;
 }
 
 void Depots::clearOrders(const QStringList& parm)
 {
-  QSqlQuery* depots = getDepots();
+  QSqlQuery* depots = getDepots(parm);
   if(!depots) return;
 
   while(depots->next())
@@ -155,7 +201,7 @@ void Depots::clearOrders(const QStringList& parm)
 
 void Depots::listDepots(const QStringList& parm)
 {
-  QSqlQuery* depots = getDepots();
+  QSqlQuery* depots = getDepots(parm);
   if(!depots) return;
 
   while(depots->next())
@@ -174,6 +220,9 @@ void Depots::listDepot(const QSqlRecord& depot)
 
   print(tr("All positions for depot: %1").arg(depotStatusLine(depot)));
 
+  mFilu->setSqlParm(":depotId", depot.value("DepotId").toInt());
+  mFilu->setSqlParm(":fiId",  -1);
+  mFilu->setSqlParm(":today",  mToday.toString(Qt::ISODate));
   QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
 
   if(!positions->size())
@@ -191,7 +240,7 @@ void Depots::listDepot(const QSqlRecord& depot)
 
 void Depots::listOrders(const QStringList& parm)
 {
-  QSqlQuery* depots = getDepots();
+  QSqlQuery* depots = getDepots(parm);
   if(!depots) return;
 
   while(depots->next())
@@ -255,7 +304,28 @@ void Depots::printPosition(const QSqlRecord& pos)
   double ePrice = pos.value("Price").toDouble();
 
   BarTuple*  bt = mFilu->getBars(pos.value("FiId").toInt(), pos.value("MarketId").toInt(), 1);
+  if(!bt)
+  {
+    warning(FUNC, tr("Oops? Absolutely no bars for %1.").arg(pos.value("FiName").toString()));
+    return;
+  }
+
   bt->next();
+
+  if(bt->date() > mToday)  // Last bar in DB is newer then requested
+  {
+    delete bt;
+    bt = mFilu->getBars(pos.value("FiId").toInt(), pos.value("MarketId").toInt()
+                                                 , mToday.toString(Qt::ISODate));
+    if(!bt)
+    {
+      warning(FUNC, tr("Oops? No bars for %1 at %2.").arg(pos.value("FiName").toString()
+                                                         , mToday.toString(Qt::ISODate)));
+      return;
+    }
+    bt->next();
+  }
+
   double price  = bt->close();
   delete bt;
 
@@ -384,9 +454,16 @@ void Depots::printOrder(const QSqlRecord& order)
   print(text);
 }
 
-QSqlQuery* Depots::getDepots()
+QSqlQuery* Depots::getDepots(const QStringList& parm)
 {
-  QSqlQuery* depots = mFilu->execSql("GetAllDepots");
+  QStringList opt;
+  if(FTool::getParameter(parm, "--owner", opt) > 0) mFilu->setSqlParm(":owner",  opt.at(0));
+  else mFilu->setSqlParm(":owner",  "");
+
+  if(FTool::getParameter(parm, "--depotId", opt) > 0) mFilu->setSqlParm(":depotId",  opt.at(0));
+  else mFilu->setSqlParm(":depotId",  -1);
+
+  QSqlQuery* depots = mFilu->execSql("GetDepots");
   if(!depots)
   {
     check4FiluError(FUNC);
@@ -405,14 +482,15 @@ QSqlQuery* Depots::getDepots()
 QString Depots::depotStatusLine(const QSqlRecord& depot)
 {
   mDP.id = depot.value("DepotId").toInt();
-  mDP.cash = mFilu->getDepotCash(mDP.id);
-  mDP.neededCash = mFilu->getDepotNeededCash(mDP.id);
-  mDP.value = mFilu->getDepotValue(mDP.id);
+  mDP.cash = mFilu->getDepotCash(mDP.id, mToday);
+  mDP.neededCash = mFilu->getDepotNeededCash(mDP.id, mToday);
+  mDP.value = mFilu->getDepotValue(mDP.id, mToday);
   mDP.availCash = mDP.cash - mDP.neededCash;
   mDP.balance = mDP.value + mDP.cash;
 
   mFilu->setSqlParm(":depotId", mDP.id);
   mFilu->setSqlParm(":fiId",  -1);
+  mFilu->setSqlParm(":today",  mToday.toString(Qt::ISODate));
   QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
 
   if((mDP.balance < mDP.value) or (mDP.value < 0.0))

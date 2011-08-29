@@ -48,8 +48,10 @@ class Depots : public FClass
       double balance;
     };
 
+    QDate         optionDate(const QStringList& parm, const QString& optName);
+
     void          check(const QStringList& parm);
-    void          checkAll(const QStringList& parm);
+    void          checkDepots(QSqlQuery* depots);
     void          clearOrders(const QStringList& parm);
     void          listDepots(const QStringList& parm);
     void          listDepot(const QSqlRecord& depot);
@@ -59,12 +61,14 @@ class Depots : public FClass
     void          printPosition(const QSqlRecord& pos);
     void          printOrder(const QSqlRecord& order);
 
-    QSqlQuery*    getDepots();
+    QSqlQuery*    getDepots(const QStringList& parm);
     QString       depotStatusLine(const QSqlRecord& depot);
     QString       isin(int fiId);
 
     DepotStatus   mDP;
     int           mLineNo;
+    QDate         mToday;
+    QDate         mLastCheck;
 
   private:
 };

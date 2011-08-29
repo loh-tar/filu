@@ -114,7 +114,7 @@ void Trader::getIndicator(QStringList& indicator)
   mIndicator->getIndicator(indicator);
 }
 
-bool Trader::prepare(const QSqlRecord& depot)
+bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate& toDate)
 {
   // What we have todo is:
   // - Load and setup the trading rule
@@ -133,15 +133,8 @@ bool Trader::prepare(const QSqlRecord& depot)
   //
   // Get and set our status
   //
-  mLastCheckDate = mRcFile->getDT("LastDepotCheck");
-  if(!mLastCheckDate.isValid())
-  {
-    mLastCheckDate = QDate::currentDate().addDays(-60);
-    mRcFile->set("LastDepotCheck", mLastCheckDate.toString(Qt::ISODate));
-  }
-
-  mFromDate  = mLastCheckDate.addDays(mBarsNeeded * -1.4);
-  mToDate    = QDate::currentDate();
+  mFromDate  = fromDate.addDays(mBarsNeeded * -1.4);
+  mToDate    = toDate;
   mDepotId   = depot.value("DepotId").toInt();
   mSettings.insert("DepotName", depot.value("Name").toString());
   mSettings.insert("DepotCurrency", depot.value("Currency").toString());
@@ -150,9 +143,9 @@ bool Trader::prepare(const QSqlRecord& depot)
   setFeeFormula(broker->feeFormula());
   delete broker;
 
-  double depCash  = mFilu->getDepotCash(mDepotId);
-  double depNeedC = mFilu->getDepotNeededCash(mDepotId);
-  double depValue = mFilu->getDepotValue(mDepotId);
+  double depCash  = mFilu->getDepotCash(mDepotId, mToDate);
+  double depNeedC = mFilu->getDepotNeededCash(mDepotId, mToDate);
+  double depValue = mFilu->getDepotValue(mDepotId, mToDate);
   mRealVar.insert("Cash", depCash - depNeedC);
   mRealVar.insert("TotalBalance", depValue + depCash);
 
@@ -160,6 +153,7 @@ bool Trader::prepare(const QSqlRecord& depot)
 
   mFilu->setSqlParm(":depotId", mDepotId);
   mFilu->setSqlParm(":fiId",  -1);
+  mFilu->setSqlParm(":today",  mToDate.toString(Qt::ISODate));
   QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
 
   verbose(FUNC, tr("Check depot: %1, Id: %7, Value: %L3 %2, AvCash: %L4 %2, Positions: %5, OpOrders: %6")
@@ -337,12 +331,7 @@ bool Trader::prepare(const QSqlRecord& depot)
       mRealVar.insert("AvgLong", pos.value("Price").toDouble());
       mRealVar.insert("OffMarket", 0.0);
 
-      // Take here again mLastCheckDate to prevent doing
-      // stupid things if --config LastDepotCheck='anno x' was given
-      mLastCheckDate = mRcFile->getDT("LastDepotCheck");
-      if(mLastCheckDate < posDate) mLastCheckDate = posDate;
-
-      if(!check(bars))
+      if(!check(bars, fromDate))
       {
         verbText.append(tr("Nothing todo."));
         verbose(FUNC, verbText);
@@ -363,7 +352,6 @@ bool Trader::prepare(const QSqlRecord& depot)
   mRealVar.remove("AvgLong");
   mRealVar.remove("OffMarket");
 
-  mLastCheckDate = mRcFile->getDT("LastDepotCheck");
   mSettings.remove("VerboseText");
 
   verbose(FUNC, "");
@@ -381,7 +369,7 @@ QStringList Trader::workOnGroups()
   return mSettings.value("WorkOnFiGroup").split(",");
 }
 
-bool Trader::check(BarTuple* bars)
+bool Trader::check(BarTuple* bars, const QDate& fromDate)
 {
   // Returns true if you should buy and false...if not
 
@@ -430,7 +418,7 @@ bool Trader::check(BarTuple* bars)
 
     QDate date;
     mData->getDate(date);
-    if(date <= mLastCheckDate) break;
+    if(date <= fromDate) break;
 
     calcGain();
     checkOpenOrders();

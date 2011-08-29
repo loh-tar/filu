@@ -27,12 +27,10 @@ data available. NOTE: IIRC there was something buggy :-/
 Let's assume your depots are set up nicely. After an update of eodbar data you
 can check all depots if any action is needed. Just by running
 
-  agentf depots --check
+  agentf depots --check --lso
 
 At the end will be a list with orders printed with suggestions by your trading
-rule what to buy or sell. These list could you print again by running
-
-   agentf depots --lso
+rule what to buy or sell.
 
 One suggestion (notice the 'Advice') may looks like:
 

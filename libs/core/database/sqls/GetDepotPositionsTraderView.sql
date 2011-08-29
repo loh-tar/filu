@@ -5,6 +5,7 @@
  *  Inputs: (variable names are important and begins with a colon)
  *     :depotId
  *     :fiId
+ *     :today
  *
  *  Outputs: (order *and* names are important)
  *     pdate     as "Date"
@@ -21,4 +22,4 @@ SELECT rpdate     as "Date"
      , rpieces    as "Pieces"
      , rprice     as "Price"
      , rmarket_id as "MarketId"
-FROM :user.depotpos_traderview(:depotId, :fiId)
+FROM :user.depotpos_traderview(:depotId, :fiId, :today)

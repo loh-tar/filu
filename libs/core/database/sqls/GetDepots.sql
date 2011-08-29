@@ -1,8 +1,10 @@
 /*
  *  Purpose:
- *     Fetch all depots
+ *     Fetch all depots, optional filtered by owner or depotId
  *
  *  Inputs: (variable names are important and begins with a colon)
+ *     :depotId
+ *     :owner
  *
  *  Outputs: (order *and* names are important)
  *     depot_id   as "DepotId"
@@ -15,7 +17,7 @@
  *     br.caption as "Broker"
  */
 
--- GetAllDepots.sql.sql
+-- GetDepots.sql.sql
 SELECT  depot_id     AS "DepotId"
       , dp.caption   AS "Name"
       , trader       AS "Trader"
@@ -28,3 +30,6 @@ SELECT  depot_id     AS "DepotId"
   FROM :user.depot AS dp
   LEFT JOIN :filu.lovelysymbol AS ls ON fi_id=currency
   LEFT JOIN :filu.broker AS br ON dp.broker_id=br.broker_id
+
+  WHERE CASE WHEN :depotId < 0 THEN true ELSE depot_id = :depotId END
+    and CASE WHEN length(:owner) = 0  THEN true ELSE lower(owner) = lower(:owner) END
