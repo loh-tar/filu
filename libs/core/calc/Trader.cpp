@@ -388,7 +388,7 @@ bool Trader::check(BarTuple* bars, const QDate& fromDate)
   setTo("MinPositionSize", inFiCurrency(mVariable.value("MinPositionSize")));
 
   // Look for open orders and calc our status
-  QSqlQuery* orders = mFilu->getOrders(mDepotId, bars->fiId());
+  QSqlQuery* orders = mFilu->getOrders(mDepotId, FiluU::eOrderActive, bars->fiId());
   if(orders)
   {
     while(orders->next())
