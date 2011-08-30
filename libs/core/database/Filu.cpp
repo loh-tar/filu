@@ -119,7 +119,8 @@ BarTuple* Filu::getBars(int fiId, int marketId
   return bars;
 }
 
-BarTuple* Filu::getBars(const QString& symbol, const QString& market, int limit)
+BarTuple* Filu::getBars(const QString& symbol, const QString& market
+                       , int limit, const QString& toDate/* = "3000-01-01"*/)
 {
   int retVal;
 
@@ -131,10 +132,11 @@ BarTuple* Filu::getBars(const QString& symbol, const QString& market, int limit)
   retVal = getMarketId(market);
   if(retVal < eData) return 0;
 
-  return getBars(fiId, retVal, limit);
+  return getBars(fiId, retVal, limit, toDate);
 }
 
-BarTuple* Filu::getBars(int fiId, int marketId, int limit)
+BarTuple* Filu::getBars(int fiId, int marketId
+                       , int limit, const QString& toDate/* = "3000-01-01"*/)
 {
   if(!limit) return 0;
 
@@ -145,6 +147,7 @@ BarTuple* Filu::getBars(int fiId, int marketId, int limit)
   query->bindValue(":fiId", fiId);
   query->bindValue(":marketId", marketId);
   query->bindValue(":limit", limit);
+  query->bindValue(":toDate", toDate);
 
   if(execute(query) < eData) return 0;
 

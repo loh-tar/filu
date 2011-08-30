@@ -92,8 +92,11 @@ class Filu : public Newswire
                        , const QString& fromDate = "1000-01-01"
                        , const QString& toDate   = "3000-01-01");
 
-    BarTuple*    getBars(const QString& symbol, const QString& market, int limit);
-    BarTuple*    getBars(int fiId, int marketId, int limit);
+    BarTuple*    getBars(const QString& symbol, const QString& market
+                       , int limit, const QString& toDate = "3000-01-01");
+
+    BarTuple*    getBars(int fiId, int marketId
+                       , int limit, const QString& toDate = "3000-01-01");
 
     MarketTuple* getMarkets(const QString& name = "");
     MarketTuple* getMarket(int marketId);
