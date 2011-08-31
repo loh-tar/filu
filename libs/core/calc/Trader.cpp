@@ -133,7 +133,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
   //
   // Get and set our status
   //
-  mFromDate  = fromDate.addDays(mBarsNeeded * -1.4);
+  mFromDate  = fromDate.addDays(mBarsNeeded * -1.6);
   mToDate    = toDate;
   mDepotId   = depot.value("DepotId").toInt();
   mSettings.insert("DepotName", depot.value("Name").toString());
@@ -189,7 +189,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
       mSettings.insert("VerboseText", verbText);
 
       BarTuple* bars = mFilu->getBars(order.value("FiId").toInt(), order.value("MarketId").toInt()
-                                    , oDate.addDays(mBarsNeeded * -1.4).toString(Qt::ISODate)
+                                    , oDate.addDays(mBarsNeeded * -1.6).toString(Qt::ISODate)
                                     , mToDate.toString(Qt::ISODate));
       if(!bars)
       {
@@ -317,7 +317,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
 
       QDate posDate  = pos.value("Date").toDate();
       BarTuple* bars = mFilu->getBars(pos.value("FiId").toInt(), pos.value("MarketId").toInt()
-                                    , posDate.addDays(mBarsNeeded * -1.4).toString(Qt::ISODate)
+                                    , posDate.addDays(mBarsNeeded * -1.6).toString(Qt::ISODate)
                                     , mToDate.toString(Qt::ISODate));
 
       if(!bars)
@@ -415,9 +415,9 @@ bool Trader::check(BarTuple* bars, const QDate& fromDate)
   while(idx)
   {
     mData->rewind(--idx);
-
     QDate date;
     mData->getDate(date);
+// qDebug() << FUNC << fromDate << date << (date <= fromDate);
     if(date <= fromDate) break;
 
     calcGain();
@@ -433,7 +433,7 @@ bool Trader::check(BarTuple* bars, const QDate& fromDate)
         error(FUNC, "Bad value from mu::Parser");
         continue;
       }
-
+// qDebug() << FUNC << condition << mRules.at(i).second;
       if(condition > 0.0) takeActions(mRules.at(i).second);
     }
 
@@ -456,7 +456,7 @@ bool Trader::check(BarTuple* bars, const QDate& fromDate)
     oDate.addDays(1); // Today we have a signal, the order could only be placed tomorrow
     while(oDate.dayOfWeek() > 5) oDate.addDays(1); // Skip Saturday/Sunday
 
-    QDate  vDate  = oDate.addDays(o.at(5).toInt() * 1.4);
+    QDate  vDate  = oDate.addDays(o.at(5).toInt() * 1.6);
     bool   buy    = o.at(1).startsWith("BUY")  ? true : false;
     int    pieces = o.at(3).toInt();
     double limit  = o.at(4).startsWith("Best") ?  0.0 : o.at(4).toDouble();
@@ -1203,7 +1203,8 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
   // But because the indicator needs a minumum amount of bars to produce
   // a result, we have to sub a fitting count of days...
   // FIXME: (7 days a week, 5days open markets) you know a better formula?
-  mFromDate = fromDate.addDays(mBarsNeeded * -1.4);
+  //        Changed from 1.4 to 1.6, sometimes was it not enough
+  mFromDate = fromDate.addDays(mBarsNeeded * -1.6);
   mToDate   = toDate;
 
   return mFi->size();
