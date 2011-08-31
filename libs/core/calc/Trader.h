@@ -122,6 +122,7 @@ class Trader : public FClass
     QSqlQuery*     mFi;
     QDate          mFromDate;
     QDate          mToDate;
+    QDate          mToday;          // Hold the current (or simulated) date
 
     bool           mAutoLoadIndicator;
     bool           mOkSettings;

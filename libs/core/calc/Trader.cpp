@@ -135,6 +135,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
   //
   mFromDate  = lastCheck.addDays(mBarsNeeded * -1.6);
   mToDate    = today;
+  mToday     = today;
 
   mDepotId   = depot.value("DepotId").toInt();
   mSettings.insert("DepotName", depot.value("Name").toString());
@@ -423,7 +424,7 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
     if(date <= lastCheck) break;
 
     calcGain();
-    checkOpenOrders();
+//     checkOpenOrders();
     // Third, check each rule
     for(int i = 0; i < mRules.size(); ++i)
     {
@@ -455,9 +456,6 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
     // Order looks like
     // <date>, BUY, <type>, <piece>, <limit value>, <rest validity>, <condition>
     QDate  oDate  = QDate::fromString(o.at(0), Qt::ISODate);
-    oDate.addDays(1); // Today we have a signal, the order could only be placed tomorrow
-    while(oDate.dayOfWeek() > 5) oDate.addDays(1); // Skip Saturday/Sunday
-
     QDate  vDate  = oDate.addDays(o.at(5).toInt() * 1.6);
     bool   buy    = o.at(1).startsWith("BUY")  ? true : false;
     int    pieces = o.at(3).toInt();
@@ -466,7 +464,7 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
     mFilu->addOrder(mDepotId, oDate, vDate, bars->fiId(), pieces
                   , limit, buy, bars->marketId(), 0, o.at(6)); // 0=status=suggestion
 
-    verbose(FUNC, mSettings.value("VerboseText") + tr("Signal: %1").arg(o.at(6)));
+//     verbose(FUNC, mSettings.value("VerboseText") + tr("Signal: %1").arg(o.at(6)));
 
     if(verboseLevel(eAmple))
     {
@@ -1016,6 +1014,8 @@ bool Trader::simulate(DataTupleSet* data)
   mData->rewind(mBarsNeeded - 2);
   while(mData->next())
   {
+    mData->getDate(mToday);
+
     // First, calculate our status
     calcGain();
 
@@ -1303,9 +1303,11 @@ void Trader::actionBuy(const QStringList& action)
   // <BUY>, <Long/Short>, <size in %>, <limit>, <validity>, <condition>
   // BUY, Long, 20, OPEN, 5, SCAN4
 
-  QDate date;
-  mData->getDate(date);
-  QString dateString = date.toString(Qt::ISODate);
+  // Today we have a signal, the order could only be placed tomorrow
+  QDate oDate = mToday.addDays(1);
+  while(oDate.dayOfWeek() > 5) oDate = oDate.addDays(1); // Skip Saturday/Sunday
+
+  QString dateString = oDate.toString(Qt::ISODate);
 
   if(action.at(1) == "Long")
   {
@@ -1393,9 +1395,11 @@ void Trader::actionSell(const QStringList& action)
   // <SELL>, <Long/Short>, <size in %>, <limit>, <validity>, <condition>
   // SELL, Long, 100, OPEN, 5, Gain > 50
 
-  QDate date;
-  mData->getDate(date);
-  QString dateString = date.toString(Qt::ISODate);
+  // Today we have a signal, the order could only be placed tomorrow
+  QDate oDate = mToday.addDays(1);
+  while(oDate.dayOfWeek() > 5) oDate = oDate.addDays(1); // Skip Saturday/Sunday
+
+  QString dateString = oDate.toString(Qt::ISODate);
 
   if(action.at(1) == "Long")
   {
