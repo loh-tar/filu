@@ -533,7 +533,7 @@ void Trader::postExecutedOrder(const QSqlRecord& order, const QDate& execDate, d
 
   // Add commission to account
   txt = tr("Commission for %1 %3x %2").arg(oType, fiName).arg(pieces);
-  mFilu->addAccPosting(mDepotId, execDate, FiluU::ePostFee, txt, calcFee(volume));
+  mFilu->addAccPosting(mDepotId, execDate, FiluU::ePostFee, txt, -calcFee(volume));
 }
 
 bool Trader::parseRule()
