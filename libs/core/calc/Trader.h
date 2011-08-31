@@ -62,10 +62,10 @@ class Trader : public FClass
     void        getIndicator(QStringList& indicator);                // InspectorF only
 
     // For real Trading
-    bool        prepare(const QSqlRecord& depot, const QDate& fromDate , const QDate& toDate);
+    bool        prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDate& today);
     QDate       needBarsFrom();
     QStringList workOnGroups();
-    bool        check(BarTuple* bars, const QDate& fromDate);
+    bool        check(BarTuple* bars, const QDate& lastCheck);
     void        postExecutedOrder(const QSqlRecord& order, const QDate& execDate, double execPrice);
 
     bool        simulate(DataTupleSet* data);

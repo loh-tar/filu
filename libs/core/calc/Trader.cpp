@@ -114,7 +114,7 @@ void Trader::getIndicator(QStringList& indicator)
   mIndicator->getIndicator(indicator);
 }
 
-bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate& toDate)
+bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDate& today)
 {
   // What we have todo is:
   // - Load and setup the trading rule
@@ -133,8 +133,9 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
   //
   // Get and set our status
   //
-  mFromDate  = fromDate.addDays(mBarsNeeded * -1.6);
-  mToDate    = toDate;
+  mFromDate  = lastCheck.addDays(mBarsNeeded * -1.6);
+  mToDate    = today;
+
   mDepotId   = depot.value("DepotId").toInt();
   mSettings.insert("DepotName", depot.value("Name").toString());
   mSettings.insert("DepotCurrency", depot.value("Currency").toString());
@@ -143,9 +144,9 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
   setFeeFormula(broker->feeFormula());
   delete broker;
 
-  double depCash  = mFilu->getDepotCash(mDepotId, mToDate);
-  double depNeedC = mFilu->getDepotNeededCash(mDepotId, mToDate);
-  double depValue = mFilu->getDepotValue(mDepotId, mToDate);
+  double depCash  = mFilu->getDepotCash(mDepotId, today);
+  double depNeedC = mFilu->getDepotNeededCash(mDepotId, today);
+  double depValue = mFilu->getDepotValue(mDepotId, today);
   mRealVar.insert("Cash", depCash - depNeedC);
   mRealVar.insert("TotalBalance", depValue + depCash);
 
@@ -153,7 +154,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
 
   mFilu->setSqlParm(":depotId", mDepotId);
   mFilu->setSqlParm(":fiId",  -1);
-  mFilu->setSqlParm(":today",  mToDate.toString(Qt::ISODate));
+  mFilu->setSqlParm(":today",  today.toString(Qt::ISODate));
   QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
 
   verbose(FUNC, tr("Check depot: %1, Id: %7, Value: %L3 %2, AvCash: %L4 %2, Positions: %5, OpOrders: %6")
@@ -190,7 +191,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
 
       BarTuple* bars = mFilu->getBars(order.value("FiId").toInt(), order.value("MarketId").toInt()
                                     , oDate.addDays(mBarsNeeded * -1.6).toString(Qt::ISODate)
-                                    , mToDate.toString(Qt::ISODate));
+                                    , today.toString(Qt::ISODate));
       if(!bars)
       {
         verbText.append(tr("*** WARNING *** Got no bars."));
@@ -318,7 +319,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
       QDate posDate  = pos.value("Date").toDate();
       BarTuple* bars = mFilu->getBars(pos.value("FiId").toInt(), pos.value("MarketId").toInt()
                                     , posDate.addDays(mBarsNeeded * -1.6).toString(Qt::ISODate)
-                                    , mToDate.toString(Qt::ISODate));
+                                    , today.toString(Qt::ISODate));
 
       if(!bars)
       {
@@ -331,7 +332,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& fromDate, const QDate
       mRealVar.insert("AvgLong", pos.value("Price").toDouble());
       mRealVar.insert("OffMarket", 0.0);
 
-      if(!check(bars, fromDate))
+      if(!check(bars, lastCheck))
       {
         verbText.append(tr("Nothing todo."));
         verbose(FUNC, verbText);
@@ -369,7 +370,7 @@ QStringList Trader::workOnGroups()
   return mSettings.value("WorkOnFiGroup").split(",");
 }
 
-bool Trader::check(BarTuple* bars, const QDate& fromDate)
+bool Trader::check(BarTuple* bars, const QDate& lastCheck)
 {
   // Returns true if you should buy and false...if not
 
@@ -417,8 +418,8 @@ bool Trader::check(BarTuple* bars, const QDate& fromDate)
     mData->rewind(--idx);
     QDate date;
     mData->getDate(date);
-// qDebug() << FUNC << fromDate << date << (date <= fromDate);
-    if(date <= fromDate) break;
+// qDebug() << FUNC << lastCheck << date << (date <= lastCheck);
+    if(date <= lastCheck) break;
 
     calcGain();
     checkOpenOrders();
