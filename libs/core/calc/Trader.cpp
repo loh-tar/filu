@@ -303,6 +303,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
   //
   // Check portfolio for signals
   //
+  positions = mFilu->execSql("GetDepotPositionsTraderView"); // Fetch again if something has changed
   if(positions)
   {
     while(positions->next())
