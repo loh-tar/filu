@@ -130,7 +130,7 @@ CREATE TABLE :user.depotpos(
                                        -- How should you decide WHERE is the right place to sell?
   note            text,
 
-FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE RESTRICT,
+FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE CASCADE,
 FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT,
 FOREIGN KEY(market_id) REFERENCES :filu.market(market_id) ON DELETE RESTRICT
 );
@@ -150,7 +150,7 @@ CREATE TABLE :user.order(
   status          int2      NOT NULL, -- see FiluU.h
   note            varchar(100),
 
-FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE RESTRICT,
+FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE CASCADE,
 FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT,
 FOREIGN KEY(market_id) REFERENCES :filu.market(market_id) ON DELETE RESTRICT
 );
@@ -165,7 +165,7 @@ CREATE TABLE :user.account(
   btext           varchar(100) NOT NULL, -- valid date
   bvalue          float4       NOT NULL, -- booking value/amount posted
 
-FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE RESTRICT
+FOREIGN KEY(depot_id) REFERENCES :user.depot(depot_id) ON DELETE CASCADE
 );
 --
 --
