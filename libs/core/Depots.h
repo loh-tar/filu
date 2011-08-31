@@ -49,7 +49,9 @@ class Depots : public FClass
     };
 
     QDate         optionDate(const QStringList& parm, const QString& optName);
+    QDate         nextCheckday(const QList<int>& checking);
 
+    void          simtrade(const QStringList& parm);
     void          check(const QStringList& parm);
     void          checkDepots(QSqlQuery* depots);
     void          clearOrders(const QStringList& parm);

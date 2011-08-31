@@ -46,6 +46,8 @@ bool Depots::exec(const QStringList& command)
   if(command.contains("--to"))        mToday = optionDate(command, "to");
   if(command.contains("--from"))      mLastCheck = optionDate(command, "from");
 
+  if(command.contains("--simtrade"))  simtrade(command);
+
   if(hasError()) return false;
 
   if(command.contains("--clo"))       clearOrders(command);
@@ -72,6 +74,139 @@ QDate Depots::optionDate(const QStringList& parm, const QString& optName)
   if(!date.isValid()) error(FUNC, tr("Given date '%1' at '--%2' is not valid.").arg(opt.at(0), optName));
 
   return date;
+}
+
+QDate Depots::nextCheckday(const QList<int>& checking)
+{
+  mToday = mToday.addDays(checking.at(0));
+
+  if(checking.size() > 1)
+  {
+     while(mToday.dayOfWeek() != checking.at(1))
+    {
+      //qDebug() << "Shift to given week day" << mToday;
+      mToday = mToday.addDays(1);
+    }
+  }
+
+  while(mToday.dayOfWeek() > 5)
+  {
+    //qDebug() << "Shift weekend" << mToday;
+    mToday = mToday.addDays(1);
+  }
+
+  return mToday;
+}
+
+void Depots::simtrade(const QStringList& parm)
+{
+  // simtrade <Trader> <CurrencySymbol> <BrokerName> <fromDate> <toDate>
+  //         [--weekly [<n>] (check only each n weeks, when not given each day is checked)
+  //         [--checkDay <DayName> (default Friday)]]
+
+  QString depotName;
+  QDate fromDate;
+  QDate toDate;
+  QList<int> checking; // Hold at pos 0 day interval, at pos 1 the day of week
+                       // FIXME Use and name it something better :-/
+
+  checking << 1; // Check each day
+
+  QStringList simParm;
+  if(FTool::getParameter(parm, "--simtrade", simParm) < 5)
+  {
+    error(FUNC, tr("To less arguments for '--simtrade'"));
+    errInfo(FUNC, tr("simtrade <Trader> <CurrencySymbol> <BrokerName> <fromDate> <toDate>"));
+  }
+  else
+  {
+    depotName = simParm.at(0); // Start with trader file name
+    simParm.insert(3, "--fromDate");
+    simParm.insert(5, "--toDate");
+
+    fromDate = optionDate(simParm, "fromDate");
+    toDate   = optionDate(simParm, "toDate");
+  }
+
+  QStringList opt;
+  if(FTool::getParameter(parm, "--weekly", opt) > -1)
+  {
+    depotName.append("Weekly");
+    checking << 5; // Add checkDay=Friday
+
+    if(opt.size())
+    {
+      bool ok;
+      checking[0] = 7 * opt.at(0).toInt(&ok);
+      if(!ok) error(FUNC, tr("Bad --weekly option."));
+    }
+    else
+    {
+      checking[0] = 7;
+    }
+
+    if(FTool::getParameter(parm, "--checkDay", opt) > 0)
+    {
+      QStringList dayNames;
+      dayNames << "Mon" << "Tue" << "Wed" << "Thu" << "Fri";
+      int idx = dayNames.indexOf(QRegExp(opt.at(0), Qt::CaseInsensitive, QRegExp::Wildcard));
+      if(idx < 0)
+      {
+        error(FUNC, tr("Given --checkDay is unknown."));
+        errInfo(FUNC, tr("Try (not case sensitive): %1").arg("Mon, Tue, Wed, Thu, Fri"));
+      }
+      else
+      {
+        depotName.append(dayNames.at(idx));
+        checking[1] = idx + 1;
+      }
+    }
+  }
+
+  if(hasError()) return;
+
+  // FIXME Ask here Trader, check if Trading rule is ok. Ask for hash. Ask for indicator.
+
+  // Create depot
+  int depotId = mFilu->addDepot(depotName, "Simulator", simParm.at(0), simParm.at(1), simParm.at(2));
+  if(check4FiluError(FUNC, tr("Can't create depot."))) return;
+
+  // Add initial cash to depot
+  mFilu->addAccPosting(depotId, fromDate.addDays(-1), FiluU::ePostCashIn, "Your fake chance", 10000.00);
+
+
+  QSqlQuery* depot = getDepots(QStringList() << "--depotId" << QString::number(depotId));
+
+  // Travel across the time
+  mLastCheck = fromDate.addDays(-1);
+  mToday = mLastCheck;
+  mToday = nextCheckday(checking);
+  int totalDays = fromDate.daysTo(toDate);
+  while(mToday <= toDate)
+  {
+    if(!verboseLevel())
+    {
+      // FIXME Do it much more nicer
+      int done = 100 * fromDate.daysTo(mToday) / totalDays;
+      QString info = QString("Processing...%1%").arg(done);
+      qDebug() << info;
+    }
+
+    // Check depot
+    checkDepots(depot);
+
+    // Check for order advices and change them to active
+    QSqlQuery*  advices = mFilu->getOrders(depotId, FiluU::eOrderAdvice);
+    while(advices->next())
+    {
+      mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", advices->value(0).toInt());
+    }
+
+    // Next day
+    depot->seek(-1);
+    mLastCheck = mToday;
+    mToday = nextCheckday(checking);
+  }
 }
 
 void Depots::check(const QStringList& parm)
@@ -132,6 +267,8 @@ void Depots::checkDepots(QSqlQuery* depots)
     verbose(FUNC, tr("Total work on groups: %1").arg(QStringList(allGroups.toList()).join(" ")));
     verbose(FUNC, tr("Total need bars from: %1").arg(fromDate.toString(Qt::ISODate)));
   }
+
+  verbose(FUNC, tr("Check for day:  %1").arg(mToday.toString(Qt::ISODate)), eAmple);
 
   QSet<int> alreadyChecked;
   foreach(QString group, allGroups)

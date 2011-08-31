@@ -138,24 +138,22 @@ Most depots commands respekt the optional filter settings:
 
 check
  Yes, run a check over all your portfolios and save suggestions to order, based
- on the trading rule file associated noted in your depot. To list the
- suggestions use --lso.
+ on the trading rule file noted in the depot. To list the suggestions use --lso.
 
 clo
-  Clears all orders which are not active.
+  Clears orders which are not active.
 
 lsd
   List depots.
 
 lso
-  List all orders.
+  List orders.
 
 simtrade <Trader> <CurrencySymbol> <BrokerName> <fromDate> <toDate>
-        [--weekly <n> (check only each n weeks, when not given each day is checked)
-        [--checkDay <DayName> (default Friday)]]
+        [--weekly [<n>] (check only each n weeks, when not given each day is checked)
+        [--checkDay <ShortDayName> (default Fri)]]
   Creates a new depot owned by 'Simulator' with a auto generated name and runs a
   full complex trading simulation.
-  FIXME: Not yet implemented.
 
 verbose
   Set the verbosity, values are the same as for global 'VerboseLevel', see
@@ -164,7 +162,7 @@ verbose
   agentf depots --lsd --4day 2011-05-01
   agentf depots --check --lso --verbose Ample
   agentf depots --simtrade SimpleRule EUR MyBank 2005-05-01 2011-05-01 \
-                --weekly 2 --checkDay Monday
+                --weekly 2 --checkDay Mon
 
 exp
 -----
