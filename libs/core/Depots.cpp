@@ -195,11 +195,36 @@ void Depots::simtrade(const QStringList& parm)
     // Check depot
     checkDepots(depot);
 
+    //
     // Check for order advices and change them to active
+    // but take care that we not run out of money.
     QSqlQuery*  advices = mFilu->getOrders(depotId, FiluU::eOrderAdvice);
+
+    double cash;
+    if(advices->size()) cash = mFilu->getDepotCash(depotId, mToday); // Only asks if it make sense
+
+    // FIXME That expensive stuff could be avoid if had a always a price
+    //       in the order table. (Best-Price is noted with 0.0)
     while(advices->next())
     {
-      mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", advices->value(0).toInt());
+      if(advices->value(12).toBool()) // Check if buy order
+      {
+        // Ok, make them active...
+        mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", advices->value(0).toInt());
+
+        // ..but check if we have now some cash left
+        double neededCash = mFilu->getDepotNeededCash(depotId, advices->value(2).toDate());
+        if(cash - neededCash < 0)
+        {
+          // No, we haven't. Kill that order
+          mFilu->updateField("status", FiluU::eOrderCanceled, ":user", "order", advices->value(0).toInt());
+        }
+      }
+      else
+      {
+        // No problem, we can always sell
+        mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", advices->value(0).toInt());
+      }
     }
 
     // Next day

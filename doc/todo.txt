@@ -30,6 +30,10 @@ L: create and use fancy Icons in the user interfaces. But do it conform with
 
 Filu/Database
 ===============
+H: Add to order table a 'Best'-bool field. Then can in olimit always noted a
+   price which is in case of Best=true only a estimated price. But that would
+   simplify some things. e.g. getNeededCash, check if order can be make active,
+   and who knows what else. Needs review Trader/Depots/SQLs
 H: Add (or move) a (the) currency field to the broker table. That would simplify
    creation of depots (no need to give currency). In the very rare cases that
    you need a different currency from the same bank just simple create a new
@@ -76,9 +80,7 @@ M: Change the way how 'Serial Test' works. Now is one strategy build and then
    each FI tested. But fetching bars out of the DB is much more expensive than
    rebuid and/or recalculate an indicator. That should result in nice
    performance improvement when testing many combinations and/or FIs.
-M: Add 'Complex Test' (or 'Real Test') which runs a nicely expensive test where
-   each day of the simulation time frame is checked each FI. As opposite checks
-   'Serial Test' one FI over the time frame and takes than the next FI.
+L: Use somehow 'Complex Test' from depots simtrade.
 
 
 PerformerF
