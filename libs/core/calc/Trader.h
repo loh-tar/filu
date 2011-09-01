@@ -76,6 +76,14 @@ class Trader : public FClass
     void        getVariablesList(QSet<QString>* list);
 
   protected:
+    struct FiInfo
+    {
+      QString   symbol;
+      QString   market;
+      int       fiId;
+      int       marketId;
+    };
+
     bool        parseRule();
     bool        nextLine(bool nextBlock = false);
     void        readSettings();
@@ -119,7 +127,7 @@ class Trader : public FClass
     Indicator*     mIndicator;
     int            mBarsNeeded;
     DataTupleSet*  mData;
-    QSqlQuery*     mFi;
+    QList<FiInfo>  mFi;
     QDate          mFromDate;
     QDate          mToDate;
     QDate          mToday;          // Hold the current (or simulated) date

@@ -34,7 +34,6 @@ Trader::Trader(FClass* parent)
       , mIndicator(0)
       , mBarsNeeded(0)
       , mData(0)
-      , mFi(0)
 {
   mTradingRulePath = mRcFile->getST("TradingRulePath");
 }
@@ -1159,48 +1158,51 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
   // 1st, and that's the major task, adjust the fromDate
   // 2nd, return the amound of Fi in the group to use for a forcast
   //      of the needet run time
-  // FIXME: add to the group search the "path". currently the first fitting
-  //        group is used, anyway who is the mother group
 
-  QString group = mSettings.value("WorkOnFiGroup");
+  QStringList groups = mSettings.value("WorkOnFiGroup").split(",");
 
-  if(group.isEmpty())
+  if(groups.isEmpty())
   {
     error(FUNC, tr("No group set to use."));
     return -1;
   }
 
-  QSqlQuery* allGroups = mFilu->getGroups();
-  if(!allGroups)
-  {
-    error(FUNC, tr("No groups found."));
-    return -1;
-  }
+  mFi.clear();
 
-  bool found = false;
-  while(allGroups->next())
+  QSet<QString> onTheList;
+  foreach(QString group, groups)
   {
-    if(allGroups->value(1).toString() == group)
+    int gid = mFilu->getGroupId(group);
+
+    if(gid < 1)
     {
-      found = true;
-      break;
+      error(FUNC, tr("Group '%1' not found.").arg(group));
+      return -1;
+    }
+
+    QSqlQuery* gm = mFilu->getGMembers(gid);
+
+    if(!gm)
+    {
+      warning(FUNC, tr("No FI found in group '%1'.").arg(group));
+      continue;
+    }
+
+    while(gm->next())
+    {
+      FiInfo fi;
+      fi.symbol   = gm->value(2).toString();
+      fi.market   = gm->value(3).toString();
+      fi.fiId     = gm->value(1).toInt();
+      fi.marketId = gm->value(4).toInt();
+
+      QString symbolmarket = fi.symbol + fi.market;
+      if(onTheList.contains(symbolmarket)) continue;
+
+      onTheList.insert(symbolmarket);
+      mFi.append(fi);
     }
   }
-
-  if(!found)
-  {
-    error(FUNC, tr("Group '%1' not found.").arg(group));
-    return -1;
-  }
-
-  mFi = mFilu->getGMembers(allGroups->value(0).toInt());
-
-  if(!mFi)
-  {
-    error(FUNC, tr("No FI found in group '%1'.").arg(group));
-    return -1;
-  }
-
   // Adjust the fromDate. we want start with the simulation at fromDate.
   // But because the indicator needs a minumum amount of bars to produce
   // a result, we have to sub a fitting count of days...
@@ -1209,7 +1211,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
   mFromDate = fromDate.addDays(mBarsNeeded * -1.6);
   mToDate   = toDate;
 
-  return mFi->size();
+  return mFi.size();
 }
 
 int Trader::simulateNext()
@@ -1219,23 +1221,19 @@ int Trader::simulateNext()
   //   1 all looks fine
   //   2 any problem while simulation
 
-  if(!mFi)
-  {
-    fatal(FUNC, "No mFi");
-    return 0;
-  }
+  if(!mFi.size()) return 0;
 
-  if(!mFi->next()) return 0;
+  FiInfo fi = mFi.takeFirst();
 
-  //verbose(FUNC, "simsalabim" << mFi->value(2).toString() << mFi->value(3).toString();
+  //verbose(FUNC, "simsalabim" << fi.symbol << fi.market << fi.fiId << fi.marketId;
 
-  BarTuple* bars = mFilu->getBars( mFi->value(1).toInt(), mFi->value(4).toInt(),
+  BarTuple* bars = mFilu->getBars(fi.fiId, fi.marketId,
                                    mFromDate.toString(Qt::ISODate),
                                    mToDate.toString(Qt::ISODate) );
 
   if(!bars)
   {
-    verbose(FUNC, QString("No bars for: %1, %2").arg(mFi->value(2).toString(), mFi->value(3).toString()), eEver);
+    verbose(FUNC, QString("No bars for: %1, %2").arg(fi.symbol, fi.market), eEver);
     return 2; // Don't break complete simulation
   }
 
