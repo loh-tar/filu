@@ -84,6 +84,10 @@ Commands
 
     DEF(pi, 3.1415926)
 
+-DEFCALL(<variable>=<default>[, <variable2>=<default2>...])
+  Defines together with RETURN() the function call of this indicator.
+  See also CALL and RETURN.
+
 INCLUDE(<indicator-name>[, IGNOREPLOT])
   Include the given indicator file and ignore any plot stuff located in that
   file when IGNOREPLOT is given.
@@ -112,6 +116,10 @@ INCLTALIB(<type>, <parameter>[, <parameter>...])
 PRIMARY(<variable>)
   The primary variable is used to place the cursor on the y-scale. When no
   primary variable is set, CLOSE, VOLUME or the first plottet variable is used.
+
+-RETURN(<variable>[, <variable2>...])
+  Declares which variables will be returned when this indicator is called as
+  function by another indicator. See also CALL and DEFCALL.
 
 SIMTRADE(<trading-rule-name>)
   This includes all variables produced by the indicator used by the trading
@@ -209,6 +217,13 @@ Functions
   by an INCLTALIB() command.
 
     foo2 = ALIAS(foo)
+
+-CALL(<indicator-name>, <variable>[, <variable2>...])
+  Calls the noted indicator with given variables as parameter.
+  See also DEFCALL and RETURN.
+
+    foo2 = CALL(FuncIndi, foo)
+    foo3, foo4 = CALL(FuncIndi2, foo)
 
 -COUNTER(<start-trig>, <stop-trig>, <reset-trig>)
 
