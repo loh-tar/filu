@@ -1,0 +1,127 @@
+* This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
+*
+*
+***
+*
+* All FI types.
+*
+[Header]FiType
+
+Currency
+Index
+Stock
+
+***
+*
+* All symbol types.
+*
+[Header]SymbolType;SEQ;IsProvider
+
+Reuters;100;0
+Yahoo;200;1
+ISIN;1100;0
+
+***
+*
+* All markets with currency and currency symbol.
+*
+[Header]Market;OpenTime;CloseTime;Currency;CurrencySymbol
+
+NYSE;00:00:00;23:59:59;US Dollar;USD;
+
+***
+*
+* FI names with full lovely symbol set as reference.
+*
+[Header]Name;DDate;Symbol;Provider;Market;IDate;MDate
+
+*
+* FiType: Currency
+*
+[Type]Currency
+US Dollar;3000-01-01;USD;Reuters;NoMarket;1000-01-01;3000-01-01;
+*
+* FiType: Stock
+*
+[Type]Stock
+Apple Inc.;3000-01-01;AAPL;Yahoo;NYSE;1000-01-01;3000-01-01;
+Boeing;3000-01-01;BA;Yahoo;NYSE;1000-01-01;3000-01-01;
+Coca-Cola;3000-01-01;KO;Yahoo;NYSE;1000-01-01;3000-01-01;
+Dell Inc.;3000-01-01;DELL;Yahoo;NYSE;1000-01-01;3000-01-01;
+Expedia;3000-01-01;EXPE;Yahoo;NYSE;1000-01-01;3000-01-01;
+Exxon Mobil;3000-01-01;XOM;Yahoo;NYSE;1000-01-01;3000-01-01;
+Google Inc.;3000-01-01;GOOG;Yahoo;NYSE;1000-01-01;3000-01-01;
+Intel;3000-01-01;INTC;Yahoo;NYSE;1000-01-01;3000-01-01;
+JP Morgan Chase & Co.;3000-01-01;JPM;Yahoo;NYSE;1000-01-01;3000-01-01;
+Mattel;3000-01-01;MAT;Yahoo;NYSE;1000-01-01;3000-01-01;
+Pepsico;3000-01-01;PEP;Yahoo;NYSE;1000-01-01;3000-01-01;
+Starbucks;3000-01-01;SBUX;Yahoo;NYSE;1000-01-01;3000-01-01;
+Walt Disney;3000-01-01;DIS;Yahoo;NYSE;1000-01-01;3000-01-01;
+Yahoo! Inc.;3000-01-01;YHOO;Yahoo;NYSE;1000-01-01;3000-01-01;
+
+
+***
+*
+* All symbols with leading lovely symbol as reference.
+*
+[Header]RefSymbol;Symbol;IDate;MDate
+
+*
+* Type:Stock  Provider:ISIN  Market:NoMarket
+*
+[Type]Stock
+[Provider]ISIN
+[Market]NoMarket
+AAPL;US0378331005;1000-01-01;3000-01-01
+BA;US0970231058;1000-01-01;3000-01-01
+KO;US1912161007;1000-01-01;3000-01-01
+DELL;US24702R1014;1000-01-01;3000-01-01
+EXPE;US30212P1057;1000-01-01;3000-01-01
+XOM;US30231G1022;1000-01-01;3000-01-01
+GOOG;US38259P5089;1000-01-01;3000-01-01
+INTC;US4581401001;1000-01-01;3000-01-01
+JPM;US46625H1005;1000-01-01;3000-01-01
+MAT;US5770811025;1000-01-01;3000-01-01
+PEP;US7134481081;1000-01-01;3000-01-01
+SBUX;US8552441094;1000-01-01;3000-01-01
+DIS;US2546871060;1000-01-01;3000-01-01
+YHOO;US9843321061;1000-01-01;3000-01-01
+
+***
+*
+* Split data
+*
+[Header]RefSymbol;SplitDate;SplitComment;SplitRatio
+
+SBUX;2005-10-24;Split 1:2;0.5
+
+***
+*
+* Group data
+*
+[Header]RefSymbol
+
+*
+* Group members of /Examples/SomeUS-Stocks
+*
+[GroupPath]/Examples/SomeUS-Stocks
+AAPL
+BA
+DELL
+DIS
+EXPE
+GOOG
+INTC
+JPM
+KO
+MAT
+PEP
+SBUX
+XOM
+YHOO
+
+*
+* Broker
+*
+[Header]BrokerName;FeeFormula
+MyBank;5.95 + OV * 0.001
