@@ -27,7 +27,7 @@ FROM (
         LEFT JOIN :filu.market AS m USING(market_id)
         LEFT JOIN :filu.fi ON fi.fi_id = p.market_id
         LEFT JOIN :user.depot AS d USING (depot_id)
-        WHERE depot_id = :depotId
+        WHERE depot_id = :depotId and pdate <= :date
         GROUP BY p.fi_id, m.currency_fi_id, d.currency
 
     ) as acc
