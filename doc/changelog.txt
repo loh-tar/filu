@@ -1,3 +1,23 @@
+2011-09-01
+============
+Sundries
+----------
+ - Change command line parameter --Filu to --config which all progs take.
+ - Indicator, Fix parsing, MUP() doesn't got operators 'or'/'and'.
+ - Trader, Fix to fit docu, WorkOnFiGroup could now be a list.
+ - Filu, Change config key 'UserName' to 'PgUserRole'
+ - DB, Some changes and fixes. Running 'agentf filu --update' is enough.
+ - Doc, New read depot-management.txt.
+ - Some more small changes and fixes.
+
+AgentF
+--------
+Command 'depots' has some new switches/sub-commands:
+ - clo, clear orders.
+ - simtrade, Creates a new depot owned by 'Simulator' with a auto generated name
+   and runs a full complex trading simulation.
+
+
 2011-08-06
 ============
 Sundries
