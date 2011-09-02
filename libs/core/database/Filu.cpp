@@ -1565,7 +1565,7 @@ void Filu::readSettings()
   mDaysToFetchIfNoData = mRcFile->getIT("DaysToFetchIfNoData");
 
   setLogFile(/*FIXME:FUNC, */mRcFile->getST("LogFile"));
-  setVerboseLevel(FUNC, mRcFile->getST("SqlDebugLevel"));
+  setVerboseLevel(FUNC, mRcFile->getST("SqlDebug"));
 
   if(verboseLevel(eMax)) printSettings();
 }
@@ -1599,5 +1599,5 @@ void Filu::printSettings()
   print(txt.arg("SqlPath ", width).arg(mSqlPath));
   print(txt.arg("CommitBlockSize", width).arg(mCommitBlockSize));
   print(txt.arg("DaysToFetchIfNoData", width).arg(mDaysToFetchIfNoData));
-  print(txt.arg("SqlDebugLevel", width).arg(verboseLevel()));
+  print(txt.arg("SqlDebug", width).arg(verboseLevel()));
 }

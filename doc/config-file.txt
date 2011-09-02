@@ -67,6 +67,6 @@ VerboseLevel=Info
   How many info while running an application will be printed. Possible values
   are Quiet, Info, Ample and Max or 0/1/2/3. The names are not case sensitive.
 
-SqlDebugLevel=Quiet
+SqlDebug=Quiet
   How many infos by the DB access will be printed while running. Same possible
   values as VerboseLevel has.
