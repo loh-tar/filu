@@ -677,8 +677,9 @@ QString Depots::isin(int fiId)
 
   if(st->owner() != "ISIN")
   {
+    // No ISIN, take the first Symbol (which is the lovely one)
     st->rewind();
-    while(st->next()) if(st->owner() == "Reuters") break;
+    st->next();
   }
 
   QString isin = st->caption();
