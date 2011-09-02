@@ -181,27 +181,20 @@ SymbolTuple* Filu::getSymbols(int fiId, const QString& fiType
 
   if(execute(query) < eData) return 0;
 
-  // Fill the object to be returned to client
-  SymbolTuple* symbols= new SymbolTuple(query->size());
-  while(symbols->next())
-  {
-    query->next();
-
-    int i = symbols->mIndex;
-    symbols->mFiId[i]     = query->value(0).toInt();
-    symbols->mMarketId[i] = query->value(1).toInt();
-    symbols->mCaption[i]  = query->value(2).toString();
-    symbols->mMarket[i]   = query->value(3).toString();
-    symbols->mOwner[i]    = query->value(4).toString();
-  }
-  symbols->rewind();
-
-  return symbols;
+  return fillSymbolTuple(query);
 }
 
 SymbolTuple* Filu::getSymbols(int fiId)
 {
-  return getSymbols(fiId, "", "", "", "", false);
+  if(!initQuery("GetSymbolsToFiId")) return 0;
+
+  QSqlQuery* query = mSQLs.value("GetSymbolsToFiId");
+
+  query->bindValue(":fiId", fiId);
+
+  if(execute(query) < eData) return 0;
+
+  return fillSymbolTuple(query);
 }
 
 SymbolTuple* Filu::getAllProviderSymbols()
@@ -1281,7 +1274,7 @@ FiTuple* Filu::fillFiTuple(QSqlQuery* tuple)
   return fi;
 }
 
-MarketTuple*  Filu::fillMarketTuple(QSqlQuery* query)
+MarketTuple* Filu::fillMarketTuple(QSqlQuery* query)
 {
   int count = query->size();
   if(!count) return 0;
@@ -1303,6 +1296,29 @@ MarketTuple*  Filu::fillMarketTuple(QSqlQuery* query)
   market->rewind();
 
   return market;
+}
+
+SymbolTuple* Filu::fillSymbolTuple(QSqlQuery* query)
+{
+  int count = query->size();
+  if(!count) return 0;
+
+  // Fill the object to be returned to client
+  SymbolTuple* symbols= new SymbolTuple(query->size());
+  while(symbols->next())
+  {
+    query->next();
+
+    int i = symbols->mIndex;
+    symbols->mFiId[i]     = query->value(0).toInt();
+    symbols->mMarketId[i] = query->value(1).toInt();
+    symbols->mCaption[i]  = query->value(2).toString();
+    symbols->mMarket[i]   = query->value(3).toString();
+    symbols->mOwner[i]    = query->value(4).toString();
+  }
+  symbols->rewind();
+
+  return symbols;
 }
 
 bool Filu::initQuery(const QString& name)

@@ -229,6 +229,7 @@ class Filu : public Newswire
     BarTuple*     fillQuoteTuple(QSqlQuery*);
     FiTuple*      fillFiTuple(QSqlQuery*);
     MarketTuple*  fillMarketTuple(QSqlQuery*);
+    SymbolTuple*  fillSymbolTuple(QSqlQuery*);
 
     // Some Filu Settings
     void        readSettings();
