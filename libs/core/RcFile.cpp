@@ -36,7 +36,7 @@ RcFile::RcFile(Newswire* parent)
   mDefault.insert("TradingRulePath",   "TradingRules/");
   mDefault.insert("IndiFilterSetPath", "IndicatorFilterSettings/");
   mDefault.insert("MakeNameNice",      "true");
-  mDefault.insert("VerboseLevel",      "Info");
+  mDefault.insert("Verbose",           "Info");
 
   // Filu stuff
   mDefault.insert("HostName",          "localhost");
@@ -158,7 +158,7 @@ void RcFile::restoreGroup()
 
 QStringList RcFile::takeConfigParms(QStringList& cmdLine)
 {
-  mNewswire->setVerboseLevel(FUNC, getST("VerboseLevel"));
+  mNewswire->setVerboseLevel(FUNC, getST("Verbose"));
 
   QStringList filuParms;
 
@@ -192,8 +192,8 @@ QStringList RcFile::takeConfigParms(QStringList& cmdLine)
     if(mForced.contains("LogFile"))
       mNewswire->setLogFile(getST("LogFile"));
 
-    if(mForced.contains("VerboseLevel"))
-      mNewswire->setVerboseLevel(FUNC, mForced.value("VerboseLevel").toString());
+    if(mForced.contains("Verbose"))
+      mNewswire->setVerboseLevel(FUNC, mForced.value("Verbose").toString());
 
     QStringList keys = mForced.keys();
     foreach(QString key, keys)

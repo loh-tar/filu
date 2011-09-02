@@ -63,10 +63,10 @@ MakeNameNice=true
 MaxClones=5
   How many AgentFs will be started to do a big job, e.g at 'full'.
 
-VerboseLevel=Info
+Verbose=Info
   How many info while running an application will be printed. Possible values
   are Quiet, Info, Ample and Max or 0/1/2/3. The names are not case sensitive.
 
 SqlDebug=Quiet
   How many infos by the DB access will be printed while running. Same possible
-  values as VerboseLevel has.
+  values as Verbose has.

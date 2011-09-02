@@ -585,7 +585,7 @@ void AgentF::printSettings()
   print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf")); //FIXME: how to make system independent?
   print(txt.arg("ProviderPath", width).arg(mRcFile->getST("ProviderPath")));
   print(txt.arg("MaxClones", width).arg(mRcFile->getIT("MaxClones")));
-  print(txt.arg("VerboseLevel", width).arg(verboseLevel()));
+  print(txt.arg("Verbose", width).arg(verboseLevel()));
   print(txt.arg("LogFile", width).arg(mRcFile->getST("LogFile")));
 
   mFilu->printSettings();
