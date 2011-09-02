@@ -131,7 +131,7 @@ depots
 Performs actions with your portfolios. See also doc/depot-management.txt.
 Most depots commands respekt the optional filter settings:
   --owner <Owner> (only depots by...)
-  --depotId <DepotId>
+  --dpid <DepotId>
   --from <FromDate>
   --to <ToDate>
   --4date <ForDate> (the same as --to)

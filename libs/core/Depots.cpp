@@ -175,7 +175,7 @@ void Depots::simtrade(const QStringList& parm)
   mFilu->addAccPosting(depotId, fromDate.addDays(-1), FiluU::ePostCashIn, "Your fake chance", 10000.00);
 
 
-  QSqlQuery* depot = getDepots(QStringList() << "--depotId" << QString::number(depotId));
+  QSqlQuery* depot = getDepots(QStringList() << "--dpid" << QString::number(depotId));
 
   // Travel across the time
   mLastCheck = fromDate.addDays(-1);
@@ -244,7 +244,7 @@ void Depots::check(const QStringList& parm)
 
   if(hasError()) return;
 
-  // FIXME What if we have more depots but --depotId was given?
+  // FIXME What if we have more depots but --dpid was given?
   // add a "LastChecked" field in depot table?
   mRcFile->set("LastDepotCheck", QDate::currentDate().toString(Qt::ISODate));
   //mRcFile->set("LastDepotCheck", mToday.toString(Qt::ISODate));
@@ -622,7 +622,7 @@ QSqlQuery* Depots::getDepots(const QStringList& parm)
   if(FTool::getParameter(parm, "--owner", opt) > 0) mFilu->setSqlParm(":owner",  opt.at(0));
   else mFilu->setSqlParm(":owner",  "");
 
-  if(FTool::getParameter(parm, "--depotId", opt) > 0) mFilu->setSqlParm(":depotId",  opt.at(0));
+  if(FTool::getParameter(parm, "--dpid", opt) > 0) mFilu->setSqlParm(":depotId",  opt.at(0));
   else mFilu->setSqlParm(":depotId",  -1);
 
   QSqlQuery* depots = mFilu->execSql("GetDepots");
