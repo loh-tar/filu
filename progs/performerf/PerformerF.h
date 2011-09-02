@@ -49,7 +49,7 @@ class PerformerF : public FMainApp
     IndiWidgetGroup*  mIndiGroup;
     FiGroupWidget*    mGroupNavi;
     FiGroupWidget*    mGroupNavi2;
-    IndiWidgetSimple* mZoomOutWidget;
+    IndiWidgetSimple* mZoomWidget;
     LaunchPad*        mLaunchPad;
     QString           mWindowTitel;
 };

@@ -88,7 +88,6 @@ PerformerF
 H: add a shortcut to display/hide the toolbar, now you can disable the tb with
    right-click by the mouse, but how you can bring them back?
 H: Fix search FI widget to set cursor inside when aktivated and show all FI
-M: Rename ZoomOutWidget to ZoomWidget
 M: add an "about" button with copyright and other stuff
 L: add buttons to change the density quickly. Since the new IndiSetPad might
    this no longer needed.

@@ -366,13 +366,13 @@ the current viewing FI. For details see doc/launchpad-file-format.txt. You can
 edit, add and remove buttons of the LaunchPad by Right-Click with the mouse and
 move around the buttons by Ctrl-LeftMouseBtn.
 
-Zoom Out View
----------------
+Zoom View
+-----------
 This is a single and a little simplified indicator screen. The idea is to have a
 small window which give an overview with a longer time frame. The widget uses an
-indicator settings file 'ZoomOutWidget' in ~/Filu/IndicatorSets. To use an
+indicator settings file 'ZoomWidget' in ~/Filu/IndicatorSets. To use an
 indicator of your choice append a 'Indicator=YourChoice' line or select in the
-ComboBox of the IndiSetPad 'ZoomOutWidget', select a different indicator and
+ComboBox of the IndiSetPad 'ZoomWidget', select a different indicator and
 restart PerformerF.
 
 

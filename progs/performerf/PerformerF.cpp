@@ -116,12 +116,12 @@ PerformerF::PerformerF(QApplication& app)
   addDockWidget(Qt::RightDockWidgetArea, dw);
 
   //
-  // Create the ZoomOut Dock
-  mZoomOutWidget = new IndiWidgetSimple("ZoomOutWidget", this);
-  dw = new QDockWidget(tr("Zoom Out View"), this);
-  dw->setObjectName("ZoomOutView");
+  // Create the Zoom Dock
+  mZoomWidget = new IndiWidgetSimple("ZoomWidget", this);
+  dw = new QDockWidget(tr("Zoom View"), this);
+  dw->setObjectName("ZoomView");
   dw->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  dw->setWidget(mZoomOutWidget);
+  dw->setWidget(mZoomWidget);
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
   icon.fill(Qt::black);
@@ -262,7 +262,7 @@ void PerformerF::loadData(int fiId, int marketId)
                                 , QDate::currentDate().toString(Qt::ISODate));
 
   mIndiGroup->showBarData(bars);     // Will eaten "bars", no need to delete them here
-  mZoomOutWidget->showBarData(bars);
+  mZoomWidget->showBarData(bars);
 
   mLaunchPad->newSelection(fiId, marketId);
 }
