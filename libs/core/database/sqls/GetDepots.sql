@@ -26,6 +26,7 @@ SELECT  depot_id     AS "DepotId"
       , ls.symbol    AS "Currency"
       , dp.broker_id AS "BrokerId"
       , br.caption   AS "Broker"
+      , br.feeformula AS "FeeFormula"
 
   FROM :user.depot AS dp
   LEFT JOIN :filu.lovelysymbol AS ls ON fi_id=currency

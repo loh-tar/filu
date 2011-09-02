@@ -140,9 +140,8 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
   mSettings.insert("DepotName", depot.value("Name").toString());
   mSettings.insert("DepotCurrency", depot.value("Currency").toString());
   mSettings.insert("DepotCurrencyId", depot.value("CurrencyId").toString());
-  BrokerTuple* broker = mFilu->getBroker(depot.value("BrokerId").toInt());
-  setFeeFormula(broker->feeFormula());
-  delete broker;
+
+  if(!setFeeFormula(depot.value("FeeFormula").toString())) return false;
 
   double depCash  = mFilu->getDepotCash(mDepotId, today);
   double depNeedC = mFilu->getDepotNeededCash(mDepotId, today);
