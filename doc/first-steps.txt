@@ -143,6 +143,11 @@ check
 clo
   Clears orders which are not active.
 
+delete
+  Delete depots with all relating data, (positions, account, orders). There will
+  a confirmation prompted for each depot unless '--I-am-sure' was given. It is
+  highly recommended to use '--dpid <n>' for filtering.
+
 lsd
   List depots.
 
@@ -163,6 +168,7 @@ verbose
   agentf depots --check --lso --verbose Ample
   agentf depots --simtrade SimpleRule EUR MyBank 2005-05-01 2011-05-01 \
                 --weekly 2 --checkDay Mon
+  agentf depots --delete --owner Simulator --I-am-sure  // Use it carefully !
 
 exp
 -----

@@ -55,6 +55,7 @@ class Depots : public FClass
     void          check(const QStringList& parm);
     void          checkDepots(QSqlQuery* depots);
     void          clearOrders(const QStringList& parm);
+    void          deleteDepots(const QStringList& parm);
     void          listDepots(const QStringList& parm);
     void          listDepot(const QSqlRecord& depot);
     void          listOrders(const QStringList& parm);

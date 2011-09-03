@@ -47,6 +47,7 @@ bool Depots::exec(const QStringList& command)
   if(command.contains("--from"))      mLastCheck = optionDate(command, "from");
 
   if(command.contains("--simtrade"))  simtrade(command);
+  if(command.contains("--delete"))    deleteDepots(command);
 
   if(hasError()) return false;
 
@@ -358,6 +359,43 @@ void Depots::clearOrders(const QStringList& parm)
 
       mFilu->deleteRecord(":user", "order", orders->value(0).toInt());
     }
+  }
+}
+
+void Depots::deleteDepots(const QStringList& parm)
+{
+  QSqlQuery* depots = getDepots(parm);
+  if(!depots) return;
+
+  while(depots->next())
+  {
+    if(!parm.contains("--I-am-sure"))
+    {
+      print("");
+      print("!!!");
+      print(tr("!!! BE WARNED - You will lost the complete depot history !!!"));
+      print("!!!");
+
+      printDepotHeader(depots->record());
+      print("");
+
+      QTextStream out(stdout);
+      out << tr("Are you sure to delete this depot [Yes]? ") << flush;
+
+      QTextStream in(stdin);
+      QString line;
+      line = in.readLine(10);
+
+      if(line.compare(tr("Yes"), Qt::CaseInsensitive))
+      {
+        print(tr("Ok, nothing happens."));
+        return;
+      }
+    }
+
+    mFilu->deleteRecord(":user", "depot", depots->value(0).toInt());
+
+    verbose(FUNC, tr("R.I.P. Depot with Id %1 has been deleted.").arg(depots->value(0).toInt()));
   }
 }
 
