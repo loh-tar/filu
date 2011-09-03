@@ -64,7 +64,7 @@ class Depots : public FClass
     void          printOrder(const QSqlRecord& order);
 
     QSqlQuery*    getDepots(const QStringList& parm);
-    QString       depotStatusLine(const QSqlRecord& depot);
+    void          printDepotHeader(const QSqlRecord& depot);
     QString       isin(int fiId);
 
     DepotStatus   mDP;

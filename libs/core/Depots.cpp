@@ -380,7 +380,7 @@ void Depots::listDepot(const QSqlRecord& depot)
     return;
   }
 
-  print(tr("All positions for depot: %1").arg(depotStatusLine(depot)));
+  printDepotHeader(depot);
 
   mFilu->setSqlParm(":depotId", depot.value("DepotId").toInt());
   mFilu->setSqlParm(":fiId",  -1);
@@ -420,8 +420,7 @@ void Depots::listOrders(const QSqlRecord& depot)
   }
 
   mLineNo = 0;
-
-  print(tr("All orders for depot: %1").arg(depotStatusLine(depot)));
+  printDepotHeader(depot);
 
   QSqlQuery* orders = mFilu->getOrders(depot.value("DepotId").toInt());
 
@@ -641,14 +640,14 @@ QSqlQuery* Depots::getDepots(const QStringList& parm)
   return depots;
 }
 
-QString Depots::depotStatusLine(const QSqlRecord& depot)
+void Depots::printDepotHeader(const QSqlRecord& depot)
 {
-  mDP.id = depot.value("DepotId").toInt();
-  mDP.cash = mFilu->getDepotCash(mDP.id, mToday);
+  mDP.id         = depot.value("DepotId").toInt();
+  mDP.cash       = mFilu->getDepotCash(mDP.id, mToday);
   mDP.neededCash = mFilu->getDepotNeededCash(mDP.id, mToday);
-  mDP.value = mFilu->getDepotValue(mDP.id, mToday);
-  mDP.availCash = mDP.cash - mDP.neededCash;
-  mDP.balance = mDP.value + mDP.cash;
+  mDP.value      = mFilu->getDepotValue(mDP.id, mToday);
+  mDP.availCash  = mDP.cash - mDP.neededCash;
+  mDP.balance    = mDP.value + mDP.cash;
 
   mFilu->setSqlParm(":depotId", mDP.id);
   mFilu->setSqlParm(":fiId",  -1);
@@ -660,12 +659,20 @@ QString Depots::depotStatusLine(const QSqlRecord& depot)
     warning(FUNC, tr("It seems it lacks currency data."));
   }
 
-  return QString("%1, Id: %6, Value: %L3 %2, AvCash: %L4 %2, Positions: %5")
-                .arg(depot.value("Name").toString(), depot.value("Currency").toString())
-                .arg(mDP.balance, 0, 'f', 2)
-                .arg(mDP.availCash, 0, 'f', 2)
-                .arg(positions->size())
-                .arg(mDP.id);
+  QSqlQuery* orders = mFilu->getOrders(mDP.id, FiluU::eOrderActive);
+  int opOrders = 0;
+  if(orders) opOrders = orders->size();
+
+  print(tr("DepotId: %1, Name: %2, Owner: %3, Date: %4")
+          .arg(mDP.id)
+          .arg(depot.value("Name").toString(), depot.value("Owner").toString(), mToday.toString(Qt::ISODate)));
+
+  print(tr("Positions: %2, Value: %L3 %1, AvCash: %L4 %1, OpenOrders: %5")
+          .arg(depot.value("Currency").toString())
+          .arg(positions->size())
+          .arg(mDP.balance, 0, 'f', 2)
+          .arg(mDP.availCash, 0, 'f', 2)
+          .arg(opOrders));
 }
 
 QString Depots::isin(int fiId)
