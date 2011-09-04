@@ -156,18 +156,27 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
   mFilu->setSqlParm(":today",  today.toString(Qt::ISODate));
   QSqlQuery* positions = mFilu->execSql("GetDepotPositionsTraderView");
 
-  verbose(FUNC, tr("Check depot: %1, Id: %7, Value: %L3 %2, AvCash: %L4 %2, Positions: %5, OpOrders: %6")
-                  .arg(mSettings.value("DepotName"), mSettings.value("DepotCurrency"))
+  verbose(FUNC, tr("Check depot: %1, Name: %2, Owner: %3, Date: %4")
+                  .arg(mDepotId)
+                  .arg(depot.value("Name").toString(), depot.value("Owner").toString(), mToday.toString(Qt::ISODate)));
+
+  verbose(FUNC, tr("Positions: %2, Value: %L3 %1, AvCash: %L4 %1, OpenOrders: %5")
+                  .arg(depot.value("Currency").toString())
+                  .arg(positions->size())
                   .arg(mRealVar.value("TotalBalance"), 0, 'f', 2)
                   .arg(mRealVar.value("Cash"), 0, 'f', 2)
-                  .arg(positions->size())
-                  .arg(orders->size())
-                  .arg(mDepotId) );
+                  .arg(orders->size()));
 
   //
   // Check open orders
   //
-  if(orders)
+  if(!orders) return false; // Because of an error while getting orders we should break here
+
+  if(!orders->size())
+  {
+    verbose(FUNC, tr("No orders pending."));
+  }
+  else
   {
     while(orders->next())
     {
@@ -293,11 +302,6 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
       delete mData;
     } // while(orders->next())
   }
-  else
-  {
-    // Because of an error while getting orders we should break here
-    return false;
-  }
 
   //
   // Check portfolio for signals
@@ -305,6 +309,8 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
   positions = mFilu->execSql("GetDepotPositionsTraderView"); // Fetch again if something has changed
   if(positions)
   {
+    if(!positions->size()) verbose(FUNC, tr("Depot is empty."));
+
     while(positions->next())
     {
       QSqlRecord pos = positions->record();
@@ -337,6 +343,11 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
         verbText.append(tr("Nothing todo."));
         verbose(FUNC, verbText);
       }
+      else
+      {
+        verbText.append(mSettings.value("VerboseTextResult"));
+        verbose(FUNC, verbText);
+      }
 
       mInStock.insert(bars->fiId());
 
@@ -346,6 +357,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
   if(mRealVar.value("Cash") < mSettings.value("MinPositionSize").toDouble())
   {
     verbose(FUNC, tr("Not enough cash to buy something."));
+    verbose(FUNC, "");
     return false;
   }
 
@@ -463,6 +475,7 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
                   , limit, buy, bars->marketId(), 0, o.at(6)); // 0=status=suggestion
 
 //     verbose(FUNC, mSettings.value("VerboseText") + tr("Signal: %1").arg(o.at(6)));
+    mSettings.insert("VerboseTextResult", tr("Signal: %1").arg(o.at(6)));
 
     if(verboseLevel(eAmple))
     {
