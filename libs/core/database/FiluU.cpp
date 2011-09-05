@@ -500,6 +500,7 @@ QSqlQuery* FiluU::getOrders(int depotId, int status/* = -1*/, int fiId/* = -1*/)
 
   QSqlQuery* query = mSQLs.value("GetDepotOrders");
 
+  query->bindValue(":orderId", -1);
   query->bindValue(":depotId", depotId);
   query->bindValue(":status", status);
   query->bindValue(":fiId", fiId);

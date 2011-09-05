@@ -52,6 +52,7 @@ class Depots : public FClass
     QDate         nextCheckday(const QList<int>& checking);
 
     void          simtrade(const QStringList& parm);
+    void          cancelOrder(const QStringList& parm);
     void          check(const QStringList& parm);
     void          checkDepots(QSqlQuery* depots);
     void          clearOrders(const QStringList& parm);
@@ -64,6 +65,7 @@ class Depots : public FClass
     void          printPosition(const QSqlRecord& pos);
     void          printOrder(const QSqlRecord& order);
 
+    bool          getOrder(int id, QSqlRecord& order);
     QSqlQuery*    getDepots(const QStringList& parm);
     void          printDepotHeader(const QSqlRecord& depot);
     QString       isin(int fiId);

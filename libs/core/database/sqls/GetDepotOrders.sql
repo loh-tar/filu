@@ -2,6 +2,7 @@
  *  Purpose:
  *
  *  Inputs: (variable names are important and begins with a colon)
+ *     :orderId
  *     :depotId
  *     :fiId
  *     :status
@@ -47,12 +48,13 @@ SELECT order_id   as "OrderId"
     LEFT JOIN :filu.lovelysymbol AS lm ON lm.fi_id=currency_fi_id
     LEFT JOIN :filu.lovelysymbol AS lf ON lf.fi_id=o.fi_id
 
-  WHERE depot_id = :depotId
+  WHERE     CASE WHEN :orderId = -1 THEN true ELSE order_id = :orderId END
+        and CASE WHEN :depotId = -1 THEN true ELSE depot_id = :depotId END
         and CASE WHEN :fiId   = -1 THEN true ELSE o.fi_id  = :fiId END
         and CASE WHEN :status = -1 THEN true
                  WHEN :status =  5 THEN o.status > 3 -- Get not only 'active' but 'ask' too
                  ELSE o.status = :status
             END
 
-  ORDER BY o.status, o.odate DESC
+  ORDER BY o.odate DESC
 

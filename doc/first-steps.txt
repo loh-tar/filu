@@ -136,12 +136,15 @@ Most depots commands respekt the optional filter settings:
   --to <ToDate>
   --4date <ForDate> (the same as --to)
 
+cancel <OrderId>
+  Cancel order, which is active.
+
 check
  Yes, run a check over all your portfolios and save suggestions to order, based
  on the trading rule file noted in the depot. To list the suggestions use --lso.
 
 clo
-  Clears orders which are not active.
+  Clears orders, which are not active.
 
 delete
   Delete depots with all relating data, (positions, account, orders). There will
@@ -155,7 +158,7 @@ lso [m|t]
   List orders. Option 'm' means machine like form and 't' ticket format. Without
   option lists in a human friendly short format.
 
-simtrade <Trader> <CurrencySymbol> <BrokerName> <fromDate> <toDate>
+simtrade <Trader> <CurrencySymbol> <BrokerName> <FromDate> <ToDate>
         [--weekly [<n>] (check only each n weeks, when not given each day is checked)
         [--checkDay <ShortDayName> (default Fri)]]
   Creates a new depot owned by 'Simulator' with a auto generated name and runs a

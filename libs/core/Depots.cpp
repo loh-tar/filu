@@ -51,6 +51,7 @@ bool Depots::exec(const QStringList& command)
 
   if(hasError()) return false;
 
+  if(command.contains("--cancel"))    cancelOrder(command);
   if(command.contains("--clo"))       clearOrders(command);
   if(command.contains("--check"))     check(command);
   if(command.contains("--lsd"))       listDepots(command);
@@ -343,6 +344,43 @@ void Depots::checkDepots(QSqlQuery* depots)
 
   // Clean up
   foreach(Trader* trader, traders) delete trader;
+}
+
+void Depots::cancelOrder(const QStringList& parm)
+{
+  QStringList opt;
+  if(FTool::getParameter(parm, "--cancel", opt) < 1)
+  {
+    error(FUNC, tr("No OrderId given."));
+    return;
+  }
+
+  bool ok;
+  int id = opt.at(0).toInt(&ok);
+  if(!ok)
+  {
+    error(FUNC, tr("Given OrderId '%1' is not a number.").arg(opt.at(0)));
+    return;
+  }
+
+  QSqlRecord order;
+  if(!getOrder(id, order)) return;
+
+  if(order.value("Status").toInt() < FiluU::eOrderNeedHelp)
+  {
+    warning(FUNC, tr("Order with Id %1 is not active, can't cancel.").arg(id));
+    return;
+  }
+
+  mFilu->updateField("status", FiluU::eOrderCanceled, ":user", "order", id);
+
+  if(verboseLevel())
+  {
+    verbose(FUNC, tr("Order canceled."));
+    getOrder(id, order);
+    mOptions.insert("PrintOrder", "Human");
+    printOrder(order);
+  }
 }
 
 void Depots::clearOrders(const QStringList& parm)
@@ -706,6 +744,26 @@ void Depots::printOrder(const QSqlRecord& order)
     if(info.size()) print(txt.arg(tr("Info"), width).arg(info));
 //     print(txt.arg(tr(""), width).arg());
   }
+}
+
+bool Depots::getOrder(int id, QSqlRecord& order)
+{
+  mFilu->setSqlParm(":orderId", id);
+  mFilu->setSqlParm(":depotId", -1);
+  mFilu->setSqlParm(":fiId", -1);
+  mFilu->setSqlParm(":status", -1);
+
+  QSqlQuery* query = mFilu->execSql("GetDepotOrders");
+
+  if(query->size() < 1)
+  {
+    error(FUNC, tr("Order with Id %1 not found.").arg(id));
+    return false;
+  }
+
+  query->next();
+  order = query->record();
+  return true;
 }
 
 QSqlQuery* Depots::getDepots(const QStringList& parm)
