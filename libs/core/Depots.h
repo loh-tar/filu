@@ -73,6 +73,8 @@ class Depots : public FClass
     QDate         mToday;
     QDate         mLastCheck;
 
+    QHash<QString, QString> mOptions;
+
   private:
 };
 

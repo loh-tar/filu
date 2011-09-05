@@ -443,6 +443,16 @@ void Depots::listOrders(const QStringList& parm)
   QSqlQuery* depots = getDepots(parm);
   if(!depots) return;
 
+  mOptions.insert("PrintOrder", "Human");
+
+  QStringList opt;
+  if(FTool::getParameter(parm, "--lso", opt) > 0)
+  {
+    if(opt.at(0) == "m") mOptions.insert("PrintOrder", "Machine");
+    else if (opt.at(0) == "t") mOptions.insert("PrintOrder", "Ticket");
+    else warning(FUNC, tr("Unknown argument '%1' ignored.").arg(opt.at(0)));
+  }
+
   while(depots->next())
   {
     listOrders(depots->record());
@@ -557,31 +567,36 @@ void Depots::printOrder(const QSqlRecord& order)
   QChar fc = QChar(' ');
   //fc = mLineNo % -2 ? QChar(' ') : QChar(183); // Fill character middle dot
 
+  QString fiName    = order.value("FiName").toString();
   QString symbol    = isin(order.value("FiId").toInt());
-  QString statusTxt = mFilu->orderStatus(order.value("Status").toInt());
+  int orderId       = order.value("OrderId").toInt();
+  int status        = order.value("Status").toInt();
+  QString statusTxt = mFilu->orderStatus(status);
+  int pieces        = order.value("Pieces").toInt();
+  bool buyOrder     = order.value("Buy").toBool();
+  double limit      = order.value("Limit").toDouble();
+  QString curr      = order.value("Currency").toString();
+  QDate oDate       = order.value("ODate").toDate();
+  QDate vDate       = order.value("VDate").toDate();
+  QString oType     = mFilu->orderType(buyOrder);
+  QString market    = order.value("Market").toString();
+  QString note      = order.value("Note").toString();
 
-  int pieces    = order.value("Pieces").toInt();
-  bool buyOrder = order.value("Buy").toBool();
-  double limit  = order.value("Limit").toDouble();
-  QDate oDate   = order.value("ODate").toDate();
-  QDate vDate   = order.value("VDate").toDate();
+  QString printOrder = mOptions.value("PrintOrder");
 
-  QString oType = mFilu->orderType(buyOrder);
   QString limitTxt = limit == 0.0 ? tr("Best") : QString::number(limit, 'f', 2);
-  if(limit) limitTxt.append(" " + order.value("Currency").toString());
-  else limitTxt.append(QString(fc).repeated(4));
-
-  QString note = QString("%1%1").arg(fc);
-
-  if(order.value("Status").toInt() == FiluU::eOrderAdvice)
+  if(printOrder != "Machine")
   {
-    note.append(order.value("Note").toString());
+    if(limit) limitTxt.append(" " + curr);
+    else limitTxt.append(QString(fc).repeated(4));
   }
-  else if(order.value("Status").toInt() == FiluU::eOrderActive)
+
+  QString info;
+  if(printOrder != "Machine" and status >= FiluU::eOrderCanceled)
   {
     BarTuple* bars = mFilu->getBars(order.value("FiId").toInt()
                                   , order.value("MarketId").toInt()
-                                  , oDate.toString(Qt::ISODate));
+                                  , oDate.toString(Qt::ISODate), mToday.toString(Qt::ISODate));
 
     if(bars) // Be on the safe side
     {
@@ -607,50 +622,90 @@ void Depots::printOrder(const QSqlRecord& order)
 
       if(buyOrder)
       {
-        int days = minDate.daysTo(QDate::currentDate());
-        note.append(tr("%L1, %2 d.ago")
-                      .arg(min, 7, 'f', 2, fc).arg(days, 2));
+        int days = minDate.daysTo(mToday);
+        info.append(tr("Low  %L1 %3, %2 d.ago")
+                      .arg(min, 7, 'f', 2, fc).arg(days, 2).arg(curr));
       }
       else
       {
-        int days = minDate.daysTo(QDate::currentDate());
-        note.append(tr("%L1, %2 d.ago")
-                      .arg(max, 7, 'f', 2, fc).arg(days, 2));
+        int days = maxDate.daysTo(mToday);
+        info.append(tr("High %L1 %3, %2 d.ago")
+                      .arg(max, 7, 'f', 2, fc).arg(days, 2).arg(curr));
       }
 
-      note.append(", ");
+      info.append(", ");
     }
 
-    if(note.length() == 2) note.append(QString(fc).repeated(19));
-    note.append(tr("%1 d.left").arg(QDate::currentDate().daysTo(vDate), 2));
-
+    info.append(tr("%1 d.left").arg(mToday.daysTo(vDate), 2));
   }
 
-  if(note.length() == 2) note.clear();
-
-  QString fiName = order.value("FiName").toString();
-  if(fiName.length() > 30)
+  if(printOrder == "Human")
   {
-    fiName.truncate(28);
-    fiName.append("~+");
+    if(fiName.length() > 30)
+    {
+      fiName.truncate(28);
+      fiName.append("~+");
+    }
+
+    QString text = "%9 %1 %2 %3x %5%6  %7 %8";
+    text.replace(' ', fc); // Do it below would looks like
+                          // QString text = "%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9"
+                          // and that's pretty confusing
+
+    // Don't print here vDate and market, would be to long, user is clever enough
+    text = text.arg(oDate.toString(Qt::ISODate))
+              .arg(oType, -4, fc)
+              .arg(pieces, 4, 10, fc)
+              .arg(fiName, -30, fc)
+              .arg(limitTxt, 12, fc)
+              .arg(statusTxt, -8, fc)
+              .arg(status == FiluU::eOrderActive ? info : note)
+              .arg(orderId);
+
+    print(text);
   }
+  else if(printOrder == "Machine")
+  {
+    QString text = "%11 %1 %2 %3 %4 %5 %6 %7 %8 \"%9\"";
+    text.replace(' ', fc); // Do it below would looks like
+                          // QString text = "%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9"
+                          // and that's pretty confusing
 
-  QString text = "%1 %2 %3 %4 %5%6  %7 %8";
-  text.replace(' ', fc); // Do it below would looks like
-                         // QString text = "%2%1%1%3%1%4x%1%5%1%6%7%1%1%8%9"
-                         // and that's pretty confusing
+    text = text.arg(oDate.toString(Qt::ISODate))
+               .arg(vDate.toString(Qt::ISODate))
+               .arg(symbol, 12, fc)
+               .arg(market, 10, fc)
+               .arg(pieces, 4, 10, fc)
+               .arg(limitTxt, 12, fc)
+               .arg(oType, -4, fc)
+               .arg(statusTxt, -8, fc)
+               .arg(note)
+               .arg(orderId);
 
-  // Don't print here vDate and market, would be to long, user is clever enough
-  text = text.arg(oDate.toString(Qt::ISODate))
-             .arg(oType, -4, fc)
-             .arg(pieces, 4, 10, fc)
-             .arg(symbol, 12, fc)
-             .arg(fiName, -30, fc)
-             .arg(limitTxt, 12, fc)
-             .arg(statusTxt, -8, fc)
-             .arg(note);
+    text.replace(QRegExp("\\s+"), " ");
 
-  print(text);
+    print(text);
+  }
+  else if(printOrder == "Ticket")
+  {
+    QString txt = "%1 : %2";
+    int width = -10; // Negative value = left-aligned
+
+    print("");
+    print(txt.arg(tr("OrderId"), width).arg(orderId));
+    print(txt.arg(tr("Date"), width).arg(oDate.toString(Qt::ISODate)));
+    print(txt.arg(tr("Type"), width).arg(oType));
+    print(txt.arg(tr("Pieces"), width).arg(pieces));
+    print(txt.arg(tr("Name"), width).arg(fiName));
+    print(txt.arg(tr("Symbol"), width).arg(symbol));
+    print(txt.arg(tr("Market"), width).arg(market));
+    print(txt.arg(tr("Limit"), width).arg(limitTxt));
+    print(txt.arg(tr("Valid"), width).arg(vDate.toString(Qt::ISODate)));
+    print(txt.arg(tr("Status"), width).arg(statusTxt));
+    print(txt.arg(tr("Note"), width).arg(note));
+    if(info.size()) print(txt.arg(tr("Info"), width).arg(info));
+//     print(txt.arg(tr(""), width).arg());
+  }
 }
 
 QSqlQuery* Depots::getDepots(const QStringList& parm)
