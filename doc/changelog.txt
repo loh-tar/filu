@@ -1,3 +1,54 @@
+2011-09-07
+============
+Depots
+--------
+ - Change option '--depotId' to '--dpid'.
+ - Add optional parameter m|t to '--lso'.
+ - Add command '--delete' (depot).
+ - Add command '--cancel' (order).
+ - Add command '--cho' (change order).
+ - Improve command parsing to omit -- at first cmd/switch.
+
+To became these working you have to fix your existing Filu-DB.
+Save these lines as 'filu-dbfix-2011-09-04.sql'.
+
+  -- Change 'RESTRICT' to 'CASCADE' at depot stuff
+  \set user '' `echo 'user_'$USER` ''
+  ALTER TABLE :user.account DROP CONSTRAINT account_depot_id_fkey;
+  ALTER TABLE :user.account ADD FOREIGN KEY(depot_id)
+    REFERENCES :user.depot(depot_id) ON DELETE CASCADE;
+  ALTER TABLE :user.depotpos DROP CONSTRAINT depotpos_depot_id_fkey;
+  ALTER TABLE :user.depotpos ADD FOREIGN KEY(depot_id)
+    REFERENCES :user.depot(depot_id) ON DELETE CASCADE;
+  ALTER TABLE :user.order DROP CONSTRAINT order_depot_id_fkey;
+  ALTER TABLE :user.order ADD FOREIGN KEY(depot_id)
+    REFERENCES :user.depot(depot_id) ON DELETE CASCADE;
+
+Supposed that you use a default configuration run now:
+
+  psql filu filu --file /path-to/filu-dbfix-2011-09-04.sql
+
+Here is the first 'filu' the DB name and the second the Postgres User/Role.
+These fix only the user tables of Filu and will not lost data. So if you use
+Filu in a multi user environment has each user to run these command.
+
+RcFile
+--------
+ - Change key VerboseLevel to Verbose
+ - Change key SqlDebugLevel to SqlDebug
+
+PerformerF
+------------
+ - Rename ZoomOutWidget to ZoomWidget. This change also the used IndicatorSet
+   and will disarrange your program look, sorry.
+
+Sundries
+----------
+ - Update MakeNameNice.conf to fit changes by Yahoo. You have to copy by hand to
+   your ~/Filu folder in case of an update.
+ - Some more small changes and fixes.
+
+
 2011-09-01
 ============
 Sundries
