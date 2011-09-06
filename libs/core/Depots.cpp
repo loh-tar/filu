@@ -36,27 +36,33 @@ Depots::~Depots()
 
 bool Depots::exec(const QStringList& command)
 {
+  // command looks like
+  // "agentf", "depots", "foo", "--bar"
+  QStringList cmd = command;
+  if(cmd.size() < 3) return true;
+  if(!cmd.at(2).startsWith("--")) cmd[2].prepend("--"); // Now we can omit the -- at first command
+
   mToday = QDate::currentDate();
   mLastCheck = mRcFile->getDT("LastDepotCheck");
 
   // Look for each command, and execute them if was given.
   // The order of look up is important.
-  if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
-  if(command.contains("--4day"))      mToday = optionDate(command, "4day");
-  if(command.contains("--to"))        mToday = optionDate(command, "to");
-  if(command.contains("--from"))      mLastCheck = optionDate(command, "from");
+  if(cmd.contains("--verbose"))   setVerboseLevel(FUNC, cmd);
+  if(cmd.contains("--4day"))      mToday = optionDate(cmd, "4day");
+  if(cmd.contains("--to"))        mToday = optionDate(cmd, "to");
+  if(cmd.contains("--from"))      mLastCheck = optionDate(cmd, "from");
 
-  if(command.contains("--simtrade"))  simtrade(command);
-  if(command.contains("--delete"))    deleteDepots(command);
+  if(cmd.contains("--delete"))    deleteDepots(cmd);
+  if(cmd.contains("--simtrade"))  simtrade(cmd);
 
   if(hasError()) return false;
 
-  if(command.contains("--cancel"))    cancelOrder(command);
-  if(command.contains("--cho"))       changeOrder(command);
-  if(command.contains("--clo"))       clearOrders(command);
-  if(command.contains("--check"))     check(command);
-  if(command.contains("--lsd"))       listDepots(command);
-  if(command.contains("--lso"))       listOrders(command);
+  if(cmd.contains("--cancel"))    cancelOrder(cmd);
+  if(cmd.contains("--cho"))       changeOrder(cmd);
+  if(cmd.contains("--clo"))       clearOrders(cmd);
+  if(cmd.contains("--check"))     check(cmd);
+  if(cmd.contains("--lsd"))       listDepots(cmd);
+  if(cmd.contains("--lso"))       listOrders(cmd);
 
   return !hasError();
 }

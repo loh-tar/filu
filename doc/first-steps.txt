@@ -136,6 +136,8 @@ Most depots commands respekt the optional filter settings:
   --to <ToDate>
   --4date <ForDate> (the same as --to)
 
+At the first command/switch after 'depots' can the double hyphens be omitted.
+
 cancel <OrderId>
   Cancel order, which is active.
 
@@ -144,7 +146,7 @@ check
  on the trading rule file noted in the depot. To list the suggestions use --lso.
 
 cho <OrderId> [<Field=Value>...]
-  Change order, which are not executet and make them active.
+  Change order, which was not executet and make them active.
   Possible Fields are Limit, Pieces, Date and Valid. When no Field=Value is
   given the order is still changed to Active. You could say it is the
   counterpart to '--cancel'.
@@ -174,11 +176,11 @@ verbose
   Set the verbosity, values are the same as for global 'Verbose', see
   doc/config-file.txt.
 
-  agentf depots --lsd --4day 2011-05-01
-  agentf depots --check --lso --verbose Ample
-  agentf depots --simtrade SimpleRule EUR MyBank 2005-05-01 2011-05-01 \
+  agentf depots lsd --4day 2011-05-01
+  agentf depots check --lso --verbose Ample
+  agentf depots simtrade SimpleRule EUR MyBank 2005-05-01 2011-05-01 \
                 --weekly 2 --checkDay Mon
-  agentf depots --delete --owner Simulator --I-am-sure  // Use it carefully !
+  agentf depots delete --owner Simulator --I-am-sure  // Use it carefully !
 
 exp
 -----
