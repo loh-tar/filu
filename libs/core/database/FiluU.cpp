@@ -39,7 +39,7 @@ void FiluU::openDB()
   QString sql("SELECT nspname FROM pg_namespace WHERE nspname = ':user'");
   sql.replace(":user", mUserSchema);
 
-  QSqlQuery query(QSqlDatabase::database(mConnectionName));
+  QSqlQuery query(mFiluDB);
   query.prepare(sql);
   execute(&query);
   if(query.size() == 0) createTables();
@@ -201,7 +201,7 @@ bool FiluU::putCOs(COTuple& co)
 
   QSqlQuery* query = mSQLs.value("PutCOs");
 
-  QSqlDatabase::database(mConnectionName).transaction();
+  mFiluDB.transaction();
   co.rewind();
   while(co.next())
   {
@@ -220,12 +220,12 @@ bool FiluU::putCOs(COTuple& co)
     if(execute(query) <= eError)
     {
       qDebug() << "FiluU::putCO: fail";
-      QSqlDatabase::database(mConnectionName).rollback();
+      mFiluDB.rollback();
       return false;
     }
   }
 
-  QSqlDatabase::database(mConnectionName).commit();
+  mFiluDB.commit();
   return true;
 }
 

@@ -544,7 +544,7 @@ int Filu::prepareIndicator(const QString& name, const QString& call /* = "" */)
     }
   }
 
-  QSqlQuery* query = new QSqlQuery(QSqlDatabase::database(mConnectionName));
+  QSqlQuery* query = new QSqlQuery(mFiluDB);
 
   bool ok = query->prepare(sql);
   if(!ok)
@@ -766,7 +766,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
   int iOI = header.indexOf("OpenInterest");
   int iQ  = header.indexOf("Quality");
 
-  QSqlDatabase::database(mConnectionName).transaction();
+  mFiluDB.transaction();
   // Add a list of bars to the DB
   if(!initQuery("AddBars")) return eInitError;
 
@@ -822,7 +822,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
 
     if(execute(query) <= eError)
     {
-      QSqlDatabase::database(mConnectionName).rollback();
+      mFiluDB.rollback();
       error(FUNC, tr("Error while add EODBar with date '%1'.").arg(values[0]));
       if(barCount) errInfo(FUNC, tr("%1 bars previus added without trouble.").arg(barCount));
       return eExecError;
@@ -830,8 +830,8 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
 
     if(sqlExecCounter == mCommitBlockSize)
     {
-      QSqlDatabase::database(mConnectionName).commit();
-      QSqlDatabase::database(mConnectionName).transaction();
+      mFiluDB.commit();
+      mFiluDB.transaction();
 
 //       console << ".";
 
@@ -841,7 +841,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
     j += increment;
   }
  // if(sqlExecCounter > 0)
-      QSqlDatabase::database(mConnectionName).commit();
+      mFiluDB.commit();
 
 //    console /*<< "Filu::addEODBarData: " */<< barCount << " bars added in "
 //            << time.elapsed() << " ms\n" << flush;
@@ -1125,7 +1125,7 @@ void Filu::deleteRecord(const QString& schema, const QString& table, int id /*= 
   sql.replace(":user", mUserSchema);
   verbose(FUNC, sql, eAmple);
 
-  QSqlQuery query(QSqlDatabase::database(mConnectionName));
+  QSqlQuery query(mFiluDB);
   query.prepare(sql);
   execute(&query);
 }
@@ -1141,7 +1141,7 @@ int Filu::updateField(const QString& field, const QVariant& newValue
   sql.replace(":user", mUserSchema);
   verbose(FUNC, sql, eAmple);
 
-  QSqlQuery query(QSqlDatabase::database(mConnectionName));
+  QSqlQuery query(mFiluDB);
   query.prepare(sql);
   execute(&query);
 }
@@ -1170,7 +1170,7 @@ int Filu::getNextId(const QString& schema, const QString& table)
   sql.replace(":user", mUserSchema);
   verbose(FUNC, sql, eAmple);
 
-  QSqlQuery query(QSqlDatabase::database(mConnectionName));
+  QSqlQuery query(mFiluDB);
   query.prepare(sql);
 
   if(execute(&query) <= eError) return eExecError;
@@ -1181,16 +1181,17 @@ int Filu::getNextId(const QString& schema, const QString& table)
 void Filu::openDB()
 {
   readSettings();
-  QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", mConnectionName);
-  db.setHostName(mRcFile->getST("HostName"));
-  db.setPort(mRcFile->getIT("HostPort"));
-  db.setDatabaseName(mRcFile->getST("DatabaseName"));
-  db.setUserName(mRcFile->getST("PgUserRole"));
-  db.setPassword(mRcFile->getST("Password"));
-  bool ok = db.open();
+  mFiluDB = QSqlDatabase::addDatabase("QPSQL", mConnectionName);
+
+  mFiluDB.setHostName(mRcFile->getST("HostName"));
+  mFiluDB.setPort(mRcFile->getIT("HostPort"));
+  mFiluDB.setDatabaseName(mRcFile->getST("DatabaseName"));
+  mFiluDB.setUserName(mRcFile->getST("PgUserRole"));
+  mFiluDB.setPassword(mRcFile->getST("Password"));
+  bool ok = mFiluDB.open();
   if(!ok)
   {
-    QSqlError err = db.lastError();
+    QSqlError err = mFiluDB.lastError();
     error(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
     if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
@@ -1200,7 +1201,7 @@ void Filu::openDB()
     QString sql("SELECT nspname FROM pg_namespace WHERE nspname = ':filu'");
     sql.replace(":filu", mFiluSchema);
 
-    QSqlQuery query(QSqlDatabase::database(mConnectionName));
+    QSqlQuery query(mFiluDB);
     query.prepare(sql);
     execute(&query);
     if(query.size()) verbose(FUNC, "Successful connected to Filu :-)");
@@ -1218,7 +1219,8 @@ void Filu::closeDB()
   QHashIterator<QString, QSqlQuery*> i(mSQLs);
   while(i.hasNext()) delete i.next().value();
 
-  QSqlDatabase::database(mConnectionName).close();
+  mFiluDB.close();
+  mFiluDB = QSqlDatabase(); // http://lists.trolltech.com/qt-interest/2005-11/thread00735-0.html
   QSqlDatabase::removeDatabase(mConnectionName);
 }
 
@@ -1334,7 +1336,7 @@ bool Filu::initQuery(const QString& name)
   QString sql;
   if(!readSqlStatement(name, sql)) return false;
 
-  QSqlQuery* query = new QSqlQuery(QSqlDatabase::database(mConnectionName));
+  QSqlQuery* query = new QSqlQuery(mFiluDB);
 
   bool ok = query->prepare(sql);
   if(!ok)
@@ -1573,9 +1575,9 @@ void Filu::readSettings()
 void Filu::printSettings()
 {
   QString dbVersion = "Not connected";
-  if(QSqlDatabase::database(mConnectionName, false /*Don't try to open now*/).isOpen())
+  if(mFiluDB.isOpen())
   {
-    QSqlQuery query(QSqlDatabase::database(mConnectionName));
+    QSqlQuery query(mFiluDB);
     query.prepare("SELECT version()");
     query.exec();
     if(query.isActive())

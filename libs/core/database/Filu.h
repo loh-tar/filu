@@ -77,9 +77,9 @@ class Filu : public Newswire
     virtual void openDB();
             void closeDB();
 
-    bool transaction() { return QSqlDatabase::database(mConnectionName).transaction(); };
-    bool commit()      { return QSqlDatabase::database(mConnectionName).commit(); };
-    bool rollback()    { return QSqlDatabase::database(mConnectionName).rollback(); };
+    bool transaction() { return mFiluDB.transaction(); };
+    bool commit()      { return mFiluDB.commit(); };
+    bool rollback()    { return mFiluDB.rollback(); };
 
     // Set Functions
     void setBarsToLoad(int);
@@ -225,6 +225,7 @@ class Filu : public Newswire
     QString     mExecSql;
     int         mLastResult; // ErrorNo, eNoData, eData or Id
 
+    QSqlDatabase                mFiluDB;
     QHash<QString, QSqlQuery*>  mSQLs;
     QHash<QString, QVariant>    mSqlParm;      // Holds all values of ':foo' sql parameters
                                                // to all SQLs
