@@ -77,6 +77,10 @@ class Filu : public Newswire
     virtual void openDB();
             void closeDB();
 
+    bool transaction() { return QSqlDatabase::database(mConnectionName).transaction(); };
+    bool commit()      { return QSqlDatabase::database(mConnectionName).commit(); };
+    bool rollback()    { return QSqlDatabase::database(mConnectionName).rollback(); };
+
     // Set Functions
     void setBarsToLoad(int);
     void setDaysToFetchIfNoData(int);      // Unused
@@ -184,7 +188,8 @@ class Filu : public Newswire
     QSqlQuery*  callIndicator(const QString& name);
 
     // Non Of The Above Stuff
-    // The 2nd and most filexible way to access data
+    // The 2nd and most filexible way to access data, but a bad style.
+    // Should only be used in rare cases or while development.
     QSqlQuery*  execSql(const QString& name);
     void        setSqlParm(const QString& parm, const QVariant& value);
 
