@@ -105,26 +105,22 @@ QSqlQuery* FiluU::getGMembers(int groupId)
 
 int FiluU::getGroupId(const QString& path)
 {
-  QStringList groups = path.split("/", QString::SkipEmptyParts);
-
-  int groupId  = 0; // Set to root group
-  foreach(QString group, groups)
+  if(!mSQLs.contains("_GetGroupId"))
   {
-    QSqlQuery* query = getGroups(groupId);
-    groupId = -1; // Set to not valid
-    while(query->next())
-    {
-      if(query->value(1).toString() == group)
-      {
-        groupId = query->value(0).toInt();
-        break;
-      }
-    }
+    QString sql("SELECT * FROM :user.group_id_from_path(:path)");
+    sql.replace(":user", mUserSchema);
 
-    if(groupId < 0) break; // Not found
+    QSqlQuery* query = new QSqlQuery(mFiluDB);
+    query->prepare(sql);
+    mSQLs.insert("_GetGroupId", query);
   }
 
-  return groupId;
+  QSqlQuery* query = mSQLs.value("_GetGroupId");
+  query->bindValue(":path", path);
+  execute(query);
+  query->next();
+
+  return query->value(0).toInt();
 }
 
 void FiluU::addToGroup(int groupId, int fiId)
