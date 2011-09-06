@@ -23,36 +23,37 @@ account and therefore a currency.
 
 When your account currency is different from the market where you place your
 order Filu will note the exchange rate. Therefore you must have the currency
-data available. NOTE: IIRC there was something buggy :-/
+data available. NOTE: IIRC there was something buggy.
 
 Let's assume your depots are set up nicely. After an update of eodbar data you
-can check all depots if any action is needed. Just by running
+can check all depots if any action is needed. Just by running:
 
-  agentf depots --check --lso
+  agentf depots check --lso
 
 At the end will be a list with orders printed with suggestions by your trading
-rule what to buy or sell.
+rule what to buy or sell. One suggestion (notice the 'Advice') may looks like:
 
-One suggestion (notice the 'Advice') may looks like:
-
-  All orders for depot: TestDepot, Id: 1, Value: 12.915,44 USD, AvCash: 8.982,44 USD, Positions: 1
-  2011-07-22  Sell    10x US0378331005 Apple Inc.      393.30 USD    Advice    Gain > 20
+  DepotId: 1, Name: TestDepot, Owner: Me, Date: 2011-07-07
+  Positions: 1, Value: 12.554,44 USD, AvCash: 8.982,44 USD, OpenOrders: 0
+  2 2011-07-08 Sell    5x Apple Inc.                        Best      Advice   Gain >  50
 
 When you trust your rule, place that order as usual at your broker and inform
-Filu that we have now an active order.
+Filu that we have now an active order by changing this order.
 
-  agentf add order 2011-07-22 2011-07-29 AAPL NYSE 10 393.30 Sell Active "Gain > 20" --dp 1
+  agentf depots cho 2
 
 In the next days will Filu track if the order was executed and if yes updates
-the account and depot. To list the actual depot situation run
+the account and depot. To list the actual depot situation run:
 
-  agentf depots --lsd
+  agentf depots lsd
 
-  All positions for depot: TestDepot, Id: 1, Value: 12.915,44 USD, AvCash: 8.982,44 USD, Positions: 1
-  2009-03-19 Apple Inc.                US0378331005    10  101,60 287%  3.933,00  30%
+  DepotId: 1, Name: TestDepot, Owner: Me, Date: 2011-07-07
+  Positions: 1, Value: 12.554,44 USD, AvCash: 8.982,44 USD, OpenOrders: 1
+  2009-03-19 Apple Inc.                             AAPL   10   101,60  252%    3.572,00   28%
 
-There you can see last buy/sell date, name and symbol, pieces, last self traded price,
-performance, actual value and depot portion.
+There you can see the 'trader view' of the depot. Last buy/sell date, name and
+symbol, pieces, last self traded price, performance, actual value and depot
+portion.
 
 
 2- Create a depot step by step
@@ -77,6 +78,8 @@ Place an order:
 
 3- Create a depot by import file
 ==================================
+These example expect that you have Apple and USD installed, what is the case
+when you run the example at doc/first-steps.txt.
 
   agentf imp doc/example-depot.imp
 
@@ -91,7 +94,7 @@ trading setup, which takes much more time.
 
 In fact is it not many more than to create a depot and runs repetitive...
 
-  agentf depots --lso --check --dpid <foo> --from <lastCheck> --to <today>
+  agentf depots lso --check --dpid <foo> --from <lastCheck> --to <today>
 
 ...where you adjust <lastCheck> and <today> from run to run. And of course you
 have to add the advises as active order. When you like to simulate only one year
@@ -109,7 +112,7 @@ Try these commands to become an impression.
   agentf imp doc/example-some-us-stocks.imp
   agentf full 2008-01-01
 
-  agentf depots --simtrade SimpleRule USD MyBanK 2009-01-01 2011-01-01 \
+  agentf depots simtrade SimpleRule USD MyBanK 2009-01-01 2011-01-01 \
                 --checkDay Wed --weekly 4 --verbose 0
 
 As you can see I suggest '--weekly 4' which is to reduce the runtime and
@@ -117,7 +120,7 @@ As you can see I suggest '--weekly 4' which is to reduce the runtime and
 
 After finish you can investigate the depot like this (adjust the depotId).
 
-  agentf depots --lsd --lso
-  agentf depots --lsd --dpid 2 --4day 2009-06-01
-  agentf depots --lsd --dpid 2 --4day 2009-07-01
-  agentf depots --lsd --dpid 2 --4day 2009-08-01
+  agentf depots lsd --lso
+  agentf depots lsd --dpid 2 --4day 2009-06-01
+  agentf depots lsd --dpid 2 --4day 2009-07-01
+  agentf depots lsd --dpid 2 --4day 2009-08-01
