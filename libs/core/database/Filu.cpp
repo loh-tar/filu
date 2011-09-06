@@ -1134,7 +1134,7 @@ int Filu::updateField(const QString& field, const QVariant& newValue
                     , const QString& schema, const QString& table, int id)
 {
   QString sql;
-  sql = QString("UPDATE %1.%2  SET %3 = %4  WHERE %2_id = %5")
+  sql = QString("UPDATE %1.%2  SET %3 = '%4'  WHERE %2_id = %5")
                .arg(schema, table, field, newValue.toString()).arg(id);
 
   sql.replace(":filu", mFiluSchema);
