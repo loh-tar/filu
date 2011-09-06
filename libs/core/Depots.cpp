@@ -52,6 +52,7 @@ bool Depots::exec(const QStringList& command)
   if(hasError()) return false;
 
   if(command.contains("--cancel"))    cancelOrder(command);
+  if(command.contains("--cho"))       changeOrder(command);
   if(command.contains("--clo"))       clearOrders(command);
   if(command.contains("--check"))     check(command);
   if(command.contains("--lsd"))       listDepots(command);
@@ -344,6 +345,131 @@ void Depots::checkDepots(QSqlQuery* depots)
 
   // Clean up
   foreach(Trader* trader, traders) delete trader;
+}
+
+void Depots::changeOrder(const QStringList& parm)
+{
+  QStringList opt;
+  if(FTool::getParameter(parm, "--cho", opt) < 1)
+  {
+    error(FUNC, tr("No OrderId given."));
+    return;
+  }
+
+  bool ok;
+  int id = opt.at(0).toInt(&ok);
+  if(!ok)
+  {
+    error(FUNC, tr("Given OrderId '%1' is not a number.").arg(opt.at(0)));
+    return;
+  }
+
+  QSqlRecord order;
+  if(!getOrder(id, order)) return;
+
+  if(order.value("Status").toInt() == FiluU::eOrderExecuted)
+  {
+    warning(FUNC, tr("Order with Id %1 was executed, can't change.").arg(id));
+    return;
+  }
+
+  // Take care that we can restore changes
+  // in case of a later detected bad parameter
+  mFilu->transaction();
+
+  QString pair;
+  opt.takeAt(0); // Remove OrderId
+  while(opt.size())
+  {
+    pair.append(opt.takeAt(0));
+
+    QStringList keyVal = pair.split("=", QString::SkipEmptyParts);
+    if(keyVal.size() < 2) continue;
+    pair.clear();
+
+    QString key = keyVal.at(0).toLower();
+    if(key == "date" or key == "valid")
+    {
+      QDate date = QDate::fromString(keyVal.at(1), Qt::ISODate);
+      if(date.isValid())
+      {
+        if(key == "date")
+        {
+          mFilu->updateField("odate", date.toString(Qt::ISODate), ":user", "order", id);
+        }
+        else
+        {
+          mFilu->updateField("vdate", date.toString(Qt::ISODate), ":user", "order", id);
+        }
+      }
+      else
+      {
+        error(FUNC, tr("Bad date '%1'").arg(keyVal.at(1)));
+        break;
+      }
+    }
+    else if(key == "limit")
+    {
+      double limit = 0.0;
+      if(keyVal.at(1).compare("Best", Qt::CaseInsensitive) == 0)
+      {
+        ok = true;
+      }
+      else
+      {
+        limit = keyVal.at(1).toDouble(&ok);
+      }
+
+      if(ok)
+      {
+        mFilu->updateField("olimit", limit, ":user", "order", id);
+      }
+      else
+      {
+        error(FUNC, tr("Bad Limit '%1'").arg(keyVal.at(1)));
+        break;
+      }
+    }
+    else if(key == "pieces")
+    {
+      int pieces = keyVal.at(1).toInt(&ok);
+
+      if(ok)
+      {
+        mFilu->updateField("pieces", pieces, ":user", "order", id);
+      }
+      else
+      {
+        error(FUNC, tr("Bad Pieces '%1'").arg(keyVal.at(1)));
+        break;
+      }
+    }
+    else
+    {
+      error(FUNC, tr("Unknown or Unsupported Field '%1'.").arg(keyVal.at(0)));
+      break;
+    }
+
+    if(check4FiluError(FUNC)) break;
+  }
+
+  if(hasError())
+  {
+    // Restore original data
+    mFilu->rollback();
+    return;
+  }
+
+  mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", id);
+  mFilu->commit();  // All looks good
+
+  if(verboseLevel())
+  {
+    verbose(FUNC, tr("Order changed."));
+    getOrder(id, order);
+    mOptions.insert("PrintOrder", "Ticket");
+    printOrder(order);
+  }
 }
 
 void Depots::cancelOrder(const QStringList& parm)

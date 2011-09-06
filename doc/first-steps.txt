@@ -143,6 +143,12 @@ check
  Yes, run a check over all your portfolios and save suggestions to order, based
  on the trading rule file noted in the depot. To list the suggestions use --lso.
 
+cho <OrderId> [<Field=Value>...]
+  Change order, which are not executet and make them active.
+  Possible Fields are Limit, Pieces, Date and Valid. When no Field=Value is
+  given the order is still changed to Active. You could say it is the
+  counterpart to '--cancel'.
+
 clo
   Clears orders, which are not active.
 

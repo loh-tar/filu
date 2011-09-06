@@ -53,6 +53,7 @@ class Depots : public FClass
 
     void          simtrade(const QStringList& parm);
     void          cancelOrder(const QStringList& parm);
+    void          changeOrder(const QStringList& parm);
     void          check(const QStringList& parm);
     void          checkDepots(QSqlQuery* depots);
     void          clearOrders(const QStringList& parm);
