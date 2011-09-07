@@ -178,6 +178,10 @@ class Filu : public Newswire
                         , const int& quality = 2);
 
     int          addBroker(BrokerTuple& broker);
+    int          addBroker(const QString& name
+                         , const QString& feeFormula
+                         , const int quality
+                         , const int id = 0);
 
     // The Big Beef, Indicator Functions
     // These are *not* usual indicators. That's indicators provided by Filu,
@@ -209,7 +213,8 @@ class Filu : public Newswire
   protected:
     int         getNextId(const QString& schema, const QString& table);
     bool        initQuery(const QString& name);
-    bool        readSqlStatement(const QString& name, QString& sqlStatement);
+    bool        initQuery(const QString& name, const QString& rawSql);
+    bool        loadQuery(const QString& name, QString& sql);
     int         execute(QSqlQuery* query);
 
     RcFile*     mRcFile;

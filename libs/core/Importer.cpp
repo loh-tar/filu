@@ -1466,14 +1466,7 @@ void Importer::addSplit()
 
 void Importer::addBroker()
 {
-  // Hm, Filu has only a BrokerTuple add func, so we do it raw like
-  mFilu->setSqlParm(":brokerId", 0);
-  mFilu->setSqlParm(":name", mData.value("BrokerName"));
-  mFilu->setSqlParm(":feeFormula", mData.value("FeeFormula"));
-  mFilu->setSqlParm(":quality", mId.value("Quality"));
-
-  QSqlQuery* query = mFilu->execSql("AddBroker");
-  mFilu->result(FUNC, query);
+  mFilu->addBroker(mData.value("BrokerName"), mData.value("FeeFormula"), mId.value("Quality"));
 
   if(notAdded(mData.value("BrokerName"))) return;
 

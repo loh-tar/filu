@@ -51,9 +51,11 @@ int Filu::getFiIdBySymbol(const QString& caption)
 {
   setSqlParm(":symbol", caption);
 
-  if(!initQuery("GetFiIdBySymbol")) return eInitError;
+  const QString sql("SELECT * FROM :filu.fiid_from_symbolcaption(:symbol)");
 
-  QSqlQuery* query = mSQLs.value("GetFiIdBySymbol");
+  if(!initQuery("_GetFiIdBySymbol", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_GetFiIdBySymbol");
 
   query->bindValue(":symbol", caption);
 
@@ -97,9 +99,16 @@ BarTuple* Filu::getBars(int fiId, int marketId
                       , const QString& fromDate/* = "1000-01-01"*/
                       , const QString& toDate/* = "3000-01-01"*/)
 {
-  if(!initQuery("GetBars")) return 0;
+  const QString sql("SELECT * FROM :filu.eodbar_get"
+                    "( cast(:fiId     as int)"
+                    ", cast(:marketId as int)"
+                    ", cast(:fromDate as date)"
+                    ", cast(:toDate   as date)"
+                    ", cast(null      as int) )");
 
-  QSqlQuery* query = mSQLs.value("GetBars");
+  if(!initQuery("_GetBars", sql)) return 0;
+
+  QSqlQuery* query = mSQLs.value("_GetBars");
 
   query->bindValue(":fiId", fiId);
   query->bindValue(":marketId", marketId);
@@ -638,9 +647,11 @@ int Filu::convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& 
 {
   if(!money) return eData; // Nice, nothing todo
 
-  if(!initQuery("ConvertCurrency")) return eInitError;
+  const QString sql("SELECT * FROM :filu.convert_currency(:money, :sCurr, :dCurr, :date)");
 
-  QSqlQuery* query = mSQLs.value("ConvertCurrency");
+  if(!initQuery("_ConvertCurrency", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_ConvertCurrency");
 
   query->bindValue(":money", money);
   query->bindValue(":sCurr", sCurrId);
@@ -663,9 +674,11 @@ int Filu::convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& 
 
 int Filu::searchCaption(const QString& table, const QString& caption)
 {
-  if(!initQuery("GetIdByCaption")) return eInitError;
+  const QString sql("SELECT * FROM :filu.id_from_caption(:table, :caption)");
 
-  QSqlQuery* query = mSQLs.value("GetIdByCaption");
+  if(!initQuery("_GetIdByCaption", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_GetIdByCaption");
 
   query->bindValue(":table", table);
   query->bindValue(":caption", caption);
@@ -677,9 +690,11 @@ int Filu::searchCaption(const QString& table, const QString& caption)
 
 int Filu::addFiType(const QString& type, int id/* = 0*/)
 {
-  if(!initQuery("AddFiType")) return eInitError;
+  const QString sql("SELECT * FROM :filu.ftype_insert(:fiType, :fiTypeId)");
 
-  QSqlQuery* query = mSQLs.value("AddFiType");
+  if(!initQuery("_AddFiType", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddFiType");
 
   query->bindValue(":fiType", type);
   query->bindValue(":fiTypeId", id);
@@ -694,9 +709,11 @@ int Filu::addSymbolType(const QString& type
                        , const bool isProvider
                        , const int& id/* = 0*/)
 {
-  if(!initQuery("AddSymbolType")) return eInitError;
+  const QString sql("SELECT * FROM :filu.stype_insert(:stypeId, :symbolType, :seq, :isProvider)");
 
-  QSqlQuery* query = mSQLs.value("AddSymbolType");
+  if(!initQuery("_AddSymbolType", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddSymbolType");
 
   query->bindValue(":symbolType", type);
   query->bindValue(":seq", seq);
@@ -712,9 +729,11 @@ int Filu::addMarket(const QString& market
                   , const QString& currency
                   , const QString& currSymbol)
 {
-  if(!initQuery("AddMarket")) return eInitError;
+  const QString sql("SELECT * FROM :filu.market_insert(:market, :currencyName, :currencySymbol)");
 
-  QSqlQuery* query = mSQLs.value("AddMarket");
+  if(!initQuery("_AddMarket", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddMarket");
 
   query->bindValue(":market", market);
   query->bindValue(":currencyName", currency);
@@ -1003,9 +1022,11 @@ int Filu::addFi(const QString& name
     return (eError);
   }
 
-  if(!initQuery("AddFi")) return eInitError;
+  const QString sql("SELECT * FROM :filu.fi_insert(:fiId, :name, :fType, :symbol, :sType, :market)");
 
-  QSqlQuery* query = mSQLs.value("AddFi");
+  if(!initQuery("_AddFi", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddFi");
 
   query->bindValue(":fiId", fiId);
   query->bindValue(":name", name);
@@ -1025,9 +1046,11 @@ int Filu::addSymbol(const QString& symbol
                   , int fiId/* = 0*/
                   , int symbolId/* = 0*/)
 {
-  if(!initQuery("AddSymbol")) return eInitError;
+  const QString sql("SELECT * FROM :filu.symbol_insert(:fiId, :symbolId, :caption, :market, :sType)");
 
-  QSqlQuery* query = mSQLs.value("AddSymbol");
+  if(!initQuery("_AddSymbol", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddSymbol");
 
   query->bindValue(":fiId", fiId);
   query->bindValue(":symbolId", symbolId);
@@ -1050,9 +1073,11 @@ int Filu::addUnderlying(const QString& mother
   // all other addFoo functions.
   // To remove all existing underlyings call execSql("DelAllUnderlyingsFromMother");
 
-  if(!initQuery("AddUnderlying")) return eInitError;
+  const QString sql("SELECT * FROM :filu.underlying_insert(:motherSymbol, :symbol, :weight)");
 
-  QSqlQuery* query = mSQLs.value("AddUnderlying");
+  if(!initQuery("_AddUnderlying", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddUnderlying");
 
   query->bindValue(":motherSymbol", mother);
   query->bindValue(":symbol", symbol);
@@ -1086,26 +1111,40 @@ int Filu::addSplit(const QString& symbol
   return result(FUNC, query);
 }
 
-int Filu::addBroker(BrokerTuple& broker)
+int Filu::addBroker(BrokerTuple& bt)
 {
-  if(broker.isInvalid()) return eError;
+  if(bt.isInvalid()) return eError;
 
-  if(!initQuery("AddBroker")) return eInitError;
+  int retVal = addBroker(bt.name(), bt.feeFormula(), bt.quality(), bt.id());
 
-  QSqlQuery* query = mSQLs.value("AddBroker");
+  if(retVal >= eData) bt.setId(retVal);
 
-  query->bindValue(":brokerId", broker.id());
-  query->bindValue(":name", broker.name());
-  query->bindValue(":feeFormula", broker.feeFormula());
-  query->bindValue(":quality", broker.quality());
+  return retVal;
+}
+
+int Filu::addBroker(const QString& name
+                  , const QString& feeFormula
+                  , const int quality
+                  , const int id/* = 0*/)
+{
+
+  const QString sql("SELECT * FROM :filu.broker_insert"
+                    "( :name, :feeFormula"
+                    ", cast(:quality as int2)"
+                    ", cast(:brokerId as int4))");
+
+  if(!initQuery("_AddBroker", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddBroker");
+
+  query->bindValue(":brokerId", id);
+  query->bindValue(":name", name);
+  query->bindValue(":feeFormula", feeFormula);
+  query->bindValue(":quality", quality);
 
   if(execute(query) <= eError) return eExecError;
 
-  int retVal = result(FUNC, query);
-
-  if(retVal >= eData) broker.setId(retVal);
-
-  return retVal;
+  return result(FUNC, query);
 }
 
 void Filu::deleteRecord(const QString& schema, const QString& table, int id /*= -1*/)
@@ -1346,17 +1385,33 @@ bool Filu::initQuery(const QString& name)
   mLastResult = eInitError; // The glass is always half-empty
 
   QString sql;
-  if(!readSqlStatement(name, sql)) return false;
+  if(!loadQuery(name, sql)) return false;
+
+  return initQuery(name, sql);
+}
+
+bool Filu::initQuery(const QString& name, const QString& rawSql)
+{
+  clearErrors();
+
+  if(mSQLs.contains(name)) return true;
+
+  verbose(FUNC, name, eAmple);
+
+  mLastResult = eInitError; // The glass is always half-empty
+
+  QString sql = rawSql;
+
+  // Fix the schema and client place holder
+  sql.replace(":filu", mFiluSchema);
+  sql.replace(":user", mUserSchema);
 
   QSqlQuery* query = new QSqlQuery(mFiluDB);
-
   bool ok = query->prepare(sql);
   if(!ok)
   {
     fatal(FUNC, tr("Can't prepare sql '%1'.").arg(name));
-    QSqlError err = query->lastError();
-    errInfo(FUNC, err.databaseText());
-
+    errInfo(FUNC, query->lastError().databaseText());
     return false;
   }
 
@@ -1365,7 +1420,7 @@ bool Filu::initQuery(const QString& name)
   return true;
 }
 
-bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
+bool Filu::loadQuery(const QString& name, QString& sql)
 {
   // Build the fulpath to the file where the sql is stored
   QString fileName(mSqlPath);
@@ -1374,7 +1429,7 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
   verbose(FUNC, fileName, eAmple);
 
   // Make sure we have no garbage in the statement
-  sqlStatement.clear();
+  sql.clear();
 
   QFile file(fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -1430,7 +1485,7 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
       pos += rx.matchedLength();
     }
 
-    sqlStatement.append(line);
+    sql.append(line);
   }
 
   if(verboseLevel(eAmple))
@@ -1438,7 +1493,7 @@ bool Filu::readSqlStatement(const QString& name, QString& sqlStatement)
     QString parms;
     foreach(QString parm, parameters.toList()) parms.append(parm + " ");
     verbose(FUNC, QString("SQL '%1' has parameters: %2").arg(name, parms));
-    verbose(FUNC, sqlStatement);
+    verbose(FUNC, sql);
   }
 
   mSqlParmNames.insert(name, parameters);

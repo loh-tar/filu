@@ -137,9 +137,11 @@ void FiluU::addToGroup(int groupId, int fiId)
 int FiluU::addGroup(const QString& path)
 {
   // Returns GroupId or error
-  if(!initQuery("AddGroup")) return eInitError;
+  const QString sql("SELECT * FROM :user.group_insert(:groupPath)");
 
-  QSqlQuery* query = mSQLs.value("AddGroup");
+  if(!initQuery("_AddGroup", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddGroup");
 
   query->bindValue(":groupPath", path);
 
@@ -356,9 +358,17 @@ int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiI
                   , double limit, bool buy, int marketId, int status, const QString& note, int orderId/* = 0*/)
 {
   // Returns Id or error
-  if(!initQuery("AddDepotOrder")) return eInitError;
+  const QString sql("SELECT * FROM :user.order_insert"
+                    "( :orderId, :depotId"
+                    ", CAST(:oDate as date)"
+                    ", CAST(:vDate as date)"
+                    ", :fiId, :pieces, :limit, :buy, :marketId"
+                    ", CAST(:status as smallint)"
+                    ", :note)");
 
-  QSqlQuery* query = mSQLs.value("AddDepotOrder");
+  if(!initQuery("_AddDepotOrder", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddDepotOrder");
 
   query->bindValue(":depotId", depotId);
   query->bindValue(":oDate", oDate);
@@ -381,9 +391,12 @@ int FiluU::addDepot(const QString& name, const QString& owner, const QString& tr
                   , const QString& currency, const QString& broker, int depotId/* = 0*/)
 {
   // Returns Id or error
-  if(!initQuery("AddDepot")) return eInitError;
+  const QString sql("SELECT * FROM :user.depot_insert("
+                    ":depotId, :name, :trader, :owner, :currency, :broker)");
 
-  QSqlQuery* query = mSQLs.value("AddDepot");
+  if(!initQuery("_AddDepot", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddDepot");
 
   query->bindValue(":depotId", depotId);
   query->bindValue(":name", name);
@@ -402,9 +415,13 @@ int FiluU::addDepotPos(int depotId, const QDate& date
                      , int marketId, const QString& note, int depotPosId/* = 0*/)
 {
   // Returns Id or error
-  if(!initQuery("AddDepotPos")) return eInitError;
+  const QString sql("SELECT * FROM :user.depotpos_insert("
+                    "  :depotPosId, :depotId, CAST(:date as date)"
+                    ", :fiId, :pieces, :price, :marketId, :note)");
 
-  QSqlQuery* query = mSQLs.value("AddDepotPos");
+  if(!initQuery("_AddDepotPos", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddDepotPos");
 
   query->bindValue(":depotId", depotId);
   query->bindValue(":date", date.toString(Qt::ISODate));
@@ -424,10 +441,13 @@ int FiluU::addAccPosting(int depotId, const QDate& date
                        , int type, const QString& text
                        , double value, double accPostingId/* = 0*/)
 {
-  // Returns Id or error
-  if(!initQuery("AddAccountPos")) return eInitError;
+  const QString sql("SELECT * FROM :user.account_insert("
+                    ":accountId, :depotId, :date, CAST(:type as smallint), :text, :value)");
 
-  QSqlQuery* query = mSQLs.value("AddAccountPos");
+  // Returns Id or error
+  if(!initQuery("_AddAccountPos", sql)) return eInitError;
+
+  QSqlQuery* query = mSQLs.value("_AddAccountPos");
 
   query->bindValue(":depotId", depotId);
   query->bindValue(":date", date.toString(Qt::ISODate));
