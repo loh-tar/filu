@@ -17,7 +17,7 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO <schema>.error(caption, etext) VALUES('SymbolNUQ', 'Symbol references different FIs.');
+INSERT INTO <schema>.error(caption, etext) VALUES('SymbolCaptionNUQ', 'Symbol references different FIs.');
 
 CREATE OR REPLACE FUNCTION <schema>.fiid_from_symbolcaption
 (
@@ -41,7 +41,7 @@ BEGIN
                  WHERE lower(caption) LIKE lower(mSymbol)
   LOOP
       IF (mFiId2 = -1) THEN mFiId2 := mFiId; END IF;
-      IF mFiId2 <> mFiId THEN RETURN <schema>.error_code('SymbolNUQ'); END IF;
+      IF mFiId2 <> mFiId THEN RETURN <schema>.error_code('SymbolCaptionNUQ'); END IF;
 
   END LOOP;
 

@@ -43,7 +43,7 @@ BEGIN
 
   mMotherFi := <schema>.fiid_from_symbolcaption(aMotherSymbol);
   IF mMotherFi < 1 THEN
-    IF mMotherFi = <schema>.error_code('SymbolNUQ') THEN RETURN <schema>.error_code('MotherSymbolNUQ');
+    IF mMotherFi = <schema>.error_code('SymbolCaptionNUQ') THEN RETURN <schema>.error_code('MotherSymbolNUQ');
       ELSEIF mMotherFi = <schema>.error_code('SymbolNF') THEN RETURN <schema>.error_code('MotherSymbolNF');
       ELSE RETURN <schema>.error_code('MotherSymbolEY');
     END IF;
@@ -51,7 +51,7 @@ BEGIN
 
   mUndlyFi := <schema>.fiid_from_symbolcaption(aSymbol);
   IF mUndlyFi < 1 THEN
-    IF mMotherFi = <schema>.error_code('SymbolNUQ') THEN RETURN <schema>.error_code('UlySymbolNUQ');
+    IF mMotherFi = <schema>.error_code('SymbolCaptionNUQ') THEN RETURN <schema>.error_code('UlySymbolNUQ');
       ELSEIF mMotherFi = <schema>.error_code('SymbolNF') THEN RETURN <schema>.error_code('UlySymbolNF');
       ELSE RETURN <schema>.error_code('UlySymbolEY');
     END IF;
