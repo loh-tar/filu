@@ -240,7 +240,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
           verbText.append(tr("Experied on %1").arg(date.toString(Qt::ISODate)));
           verbose(FUNC, verbText);
 
-          mFilu->updateField("status", 1, ":user", "order", orderId); // 1=experied
+          mFilu->updateField("status", FiluU::eOrderExperied, ":user", "order", orderId);
           break;
         }
 
@@ -283,7 +283,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
         else if(executedPrice == -2.0)
         {
           // Update DB
-          mFilu->updateField("status", 4, ":user", "order", orderId); // 4=ask user
+          mFilu->updateField("status", FiluU::eOrderNeedHelp, ":user", "order", orderId);
 
           verbose(FUNC, verbText + tr("Unsure if executed on %1").arg(date.toString(Qt::ISODate)));
 
@@ -472,7 +472,7 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
     double limit  = o.at(4).startsWith("Best") ?  0.0 : o.at(4).toDouble();
 
     mFilu->addOrder(mDepotId, oDate, vDate, bars->fiId(), pieces
-                  , limit, buy, bars->marketId(), 0, o.at(6)); // 0=status=suggestion
+                  , limit, buy, bars->marketId(), FiluU::eOrderAdvice, o.at(6));
 
 //     verbose(FUNC, mSettings.value("VerboseText") + tr("Signal: %1").arg(o.at(6)));
     mSettings.insert("VerboseTextResult", tr("Signal: %1").arg(o.at(6)));
@@ -513,7 +513,7 @@ void Trader::postExecutedOrder(const QSqlRecord& order, const QDate& execDate, d
   verbose(FUNC, verbText);
 
   // Update DB
-  mFilu->updateField("status", 2, ":user", "order", order.value("OrderId").toInt()); // 2=executed
+  mFilu->updateField("status", FiluU::eOrderExecuted, ":user", "order", order.value("OrderId").toInt());
 
   int p = execPrice < 2.0 ? 4 : 2; // Precision
   QString txt = tr("%1 %4x %2 at %L5 %3").arg(oType, fiName, curry).arg(pieces).arg(execPrice, 0, 'f', p);

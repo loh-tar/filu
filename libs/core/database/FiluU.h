@@ -43,13 +43,14 @@ class FiluU : public Filu
 
     enum OrderStatus
     {
-      // If you change here something take a look at orderStatus(...)
-      eOrderAdvice   = 0,
-      eOrderExperied = 1,
-      eOrderExecuted = 2,
-      eOrderCanceled = 3,
-      eOrderNeedHelp = 4,
-      eOrderActive   = 5
+      // If you change here something take a look at orderStatus(...), Depots, Trader, GetDepotOrders.sql
+      eOrderExecuted  =  10,
+      eOrderCanceled  =  20,
+      eOrderExperied  =  30,
+      eOrderAdvice    =  50,
+      eOrderActive    = 100,
+      eOrderAdvCancel = 110,
+      eOrderNeedHelp  = 120
     };
 
     enum AccPostingType

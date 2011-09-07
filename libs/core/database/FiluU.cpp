@@ -532,7 +532,8 @@ int FiluU::FiluU::orderStatus(const QString& status)
   int s = status.toInt(&ok);
   if(ok)
   {
-    if((s >= eOrderAdvice) and (s <= eOrderActive)) return s;
+    if(s == eOrderAdvice || s == eOrderExperied || s == eOrderExecuted || s == eOrderCanceled ||
+       s == eOrderNeedHelp || s == eOrderActive || s == eOrderAdvCancel) return s;
   }
   else
   {
@@ -543,6 +544,7 @@ int FiluU::FiluU::orderStatus(const QString& status)
     if(sl == orderStatus(eOrderCanceled).toLower()) return eOrderCanceled;
     if(sl == orderStatus(eOrderNeedHelp).toLower()) return eOrderNeedHelp;
     if(sl == orderStatus(eOrderActive).toLower())   return eOrderActive;
+    if(sl == orderStatus(eOrderAdvCancel).toLower()) return eOrderAdvCancel;
   }
 
   error(FUNC, tr("Order status '%1' is unknown.").arg(status));
@@ -560,6 +562,7 @@ QString FiluU::orderStatus(int status)
     case eOrderCanceled: return tr("Canceled");
     case eOrderNeedHelp: return tr("Unsure");
     case eOrderActive:   return tr("Active");
+    case eOrderAdvCancel: return tr("AdvCancel");
     default:             break;
   }
 

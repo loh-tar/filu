@@ -498,7 +498,7 @@ void Depots::cancelOrder(const QStringList& parm)
   QSqlRecord order;
   if(!getOrder(id, order)) return;
 
-  if(order.value("Status").toInt() < FiluU::eOrderNeedHelp)
+  if(order.value("Status").toInt() < FiluU::eOrderActive)
   {
     warning(FUNC, tr("Order with Id %1 is not active, can't cancel.").arg(id));
     return;
@@ -525,7 +525,7 @@ void Depots::clearOrders(const QStringList& parm)
     QSqlQuery* orders = mFilu->getOrders(depots->record().value("DepotId").toInt());
     while(orders->next())
     {
-      if(orders->value(11).toInt() == FiluU::eOrderActive) continue;
+      if(orders->value(11).toInt() >= FiluU::eOrderActive) continue;
 
       mFilu->deleteRecord(":user", "order", orders->value(0).toInt());
     }
@@ -762,7 +762,7 @@ void Depots::printOrder(const QSqlRecord& order)
   }
 
   QString info;
-  if(printOrder != "Machine" and status >= FiluU::eOrderCanceled)
+  if(printOrder != "Machine" and status >= FiluU::eOrderActive)
   {
     BarTuple* bars = mFilu->getBars(order.value("FiId").toInt()
                                   , order.value("MarketId").toInt()
@@ -829,7 +829,7 @@ void Depots::printOrder(const QSqlRecord& order)
               .arg(fiName, -30, fc)
               .arg(limitTxt, 12, fc)
               .arg(statusTxt, -8, fc)
-              .arg(status == FiluU::eOrderActive ? info : note)
+              .arg(status >= FiluU::eOrderActive ? info : note)
               .arg(orderId);
 
     print(text);

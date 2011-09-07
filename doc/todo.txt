@@ -30,10 +30,6 @@ L: create and use fancy Icons in the user interfaces. But do it conform with
 
 Filu/Database
 ===============
-H: Change enum OrderStatus. 'NeedHelp' must be higher than 'Active'. Be more
-   flexible for future changes and insert more space in the values,
-   e.g. eOrderAdvice=10, eOrderActive=100.
-   Add 'eOrderCancel' as a 2nd advice form (note.its not 'Canceled')
 H: Add to order table a 'Best'-bool field. Then can in olimit always noted a
    price which is in case of Best=true only a estimated price. But that would
    simplify some things. e.g. getNeededCash, check if order can be make active,

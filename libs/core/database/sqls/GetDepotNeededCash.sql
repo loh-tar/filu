@@ -42,7 +42,7 @@ from(
   WHERE depot_id = :depotId
         and :date BETWEEN o.odate and o.vdate
         and o.buy -- ignore sell orders, well an unlimited could make sense
-        and o.status > 3 -- only active orders
+        and o.status >= 100 -- all kind of active orders
 
   GROUP BY m.currency_fi_id, d.currency
 

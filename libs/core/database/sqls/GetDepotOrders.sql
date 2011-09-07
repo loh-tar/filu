@@ -52,7 +52,7 @@ SELECT order_id   as "OrderId"
         and CASE WHEN :depotId = -1 THEN true ELSE depot_id = :depotId END
         and CASE WHEN :fiId   = -1 THEN true ELSE o.fi_id  = :fiId END
         and CASE WHEN :status = -1 THEN true
-                 WHEN :status =  5 THEN o.status > 3 -- Get not only 'active' but 'ask' too
+                 WHEN :status = 100 THEN o.status >= 100 -- Get not only 'active' but 'ask' too
                  ELSE o.status = :status
             END
 
