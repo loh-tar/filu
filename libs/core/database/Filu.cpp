@@ -1211,6 +1211,18 @@ void Filu::openDB()
       error(FUNC, tr("FiluSchema '%1' does not exist.").arg(mFiluSchema));
       errInfo(FUNC, tr("Are you sure that you have already created the db?"));
     }
+
+    // Test if the driver works properly
+    sql = "SELECT :foo = :foo";
+    query.prepare(sql);
+    query.bindValue(":foo", 123);
+    execute(&query);
+    query.next();
+    if(!query.value(0).toBool())
+    {
+      fatal(FUNC, tr("The PSql Driver works not properly."));
+      errInfo(FUNC, tr("Did you install the fixed version as noted in the readme?"));
+    }
   }
 }
 
