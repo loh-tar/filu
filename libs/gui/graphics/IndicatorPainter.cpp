@@ -225,11 +225,9 @@ bool IndicatorPainter::calculate()
 
   calcSizes();
 
-  if(!mData)
-  {
-    addErrors(mIndicator->errors());
-    return false;
-  }
+  addMessages(mIndicator->messages());
+
+  if(!mData) return false;
 
   // Load chart objects
   mBars->rewind(0);
@@ -437,6 +435,7 @@ bool IndicatorPainter::paint()
   if(!mBars)
   {
     errInfo(FUNC, errTxt);
+    return false;
   }
   else
   {
@@ -446,7 +445,7 @@ bool IndicatorPainter::paint()
     }
   }
 
-  if(hasMessage()) return false;
+  if(hasError()) return false;
 
   if(mUpdateStaticSheet)
   {
