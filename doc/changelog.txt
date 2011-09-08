@@ -1,3 +1,45 @@
+2011-09-08
+============
+Sundries
+----------
+ - DB, Move currency from depot to broker.
+ - FiluU, Change enums eOrderFoo.
+
+These small notes discribes many changes under the hood which needs a lot of
+attention if you like to update your Filu.
+
+Save these lines as 'filu-dbfix-2011-09-08.sql'.
+
+  -- Move currency from depot to broker
+  \set user '' `echo 'user_'$USER` ''
+  \set filu 'filu'
+  DELETE FROM :user.depot;
+  DELETE FROM :filu.broker;
+  ALTER TABLE :filu.market DROP CONSTRAINT market_currency_fi_id_fkey;
+  ALTER TABLE :filu.market ADD FOREIGN KEY(currency_fi_id)
+    REFERENCES filu.fi (fi_id) ON DELETE RESTRICT;
+  ALTER TABLE :filu.broker ADD COLUMN currency_fi_id  int4 NOT NULL;
+  ALTER TABLE :filu.broker ADD FOREIGN KEY(currency_fi_id)
+    REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT;
+  INSERT INTO :filu.error(caption, etext) VALUES('BrokerNF', 'Broker not found.');
+  ALTER TABLE :user.depot DROP COLUMN currency ;
+
+To save most of the depot stuff you could run with your *old* progs:
+
+  agentf depots lsd --lso m 2>backup.depot
+
+But that will lost the account data and all broker, sorry. Afterwards edit the
+backup file to became an import file.
+
+Compile and install *now* the new code and run:
+
+  psql filu filu --file /path-to/filu-dbfix-2011-09-08.sql
+  agentf filu --update
+  agentf imp /path-to/your-fixed-backup.depot
+
+Good luck!
+
+
 2011-09-07
 ============
 Depots
