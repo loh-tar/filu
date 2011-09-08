@@ -30,10 +30,6 @@ L: create and use fancy Icons in the user interfaces. But do it conform with
 
 Filu/Database
 ===============
-H: Add to order table a 'Best'-bool field. Then can in olimit always noted a
-   price which is in case of Best=true only a estimated price. But that would
-   simplify some things. e.g. getNeededCash, check if order can be make active,
-   and who knows what else. Needs review Trader/Depots/SQLs
 H: Add (or move) a (the) currency field to the broker table. That would simplify
    creation of depots (no need to give currency). In the very rare cases that
    you need a different currency from the same bank just simple create a new

@@ -19,14 +19,13 @@ select :filu.convert_currency(cast(sum(acc."Required") as real), ficurr, depcurr
 from(
      SELECT -- select all open buy orders...
      sum( pieces *
-            CASE WHEN olimit=0.0
+            CASE WHEN olimit = 0.0
                       THEN ( select
-                              --b.qclose
                               avg(b.qclose)
                               from :filu.eodbar b
                               where fi_id = o.fi_id
-                                --and market_id = o.market_id
-                                and qdate BETWEEN o.odate-5 and o.vdate
+                                and market_id = o.market_id
+                                and b.qdate BETWEEN o.odate-5 and o.vdate
                             )
                       ELSE olimit
             END
