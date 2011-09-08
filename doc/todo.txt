@@ -30,11 +30,6 @@ L: create and use fancy Icons in the user interfaces. But do it conform with
 
 Filu/Database
 ===============
-H: Add (or move) a (the) currency field to the broker table. That would simplify
-   creation of depots (no need to give currency). In the very rare cases that
-   you need a different currency from the same bank just simple create a new
-   bank with a suffix, e.g. "MyBank EUR" and "MyBank-US USD".
-   Needs review of Importer/Exporter/CmdAdd/Depots/Trader (what else?)
 H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
 M: Add a diary where you can record your thoughts and feelings. These entrys

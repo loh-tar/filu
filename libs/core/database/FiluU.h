@@ -109,7 +109,7 @@ class FiluU : public Filu
                        , double limit, bool buy, int marketId, int status, const QString& note, int orderId = 0);
 
     int         addDepot(const QString& name, const QString& owner, const QString& trader
-                       , const QString& currency, const QString& broker, int depotId = 0);
+                       , const QString& broker, int depotId = 0);
 
     int         addDepotPos(int depotId, const QDate& date, int fiId, int pieces, double price
                           , int marketId, const QString& note, int depotPosId = 0);

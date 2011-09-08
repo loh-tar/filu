@@ -388,11 +388,11 @@ int FiluU::addOrder(int depotId, const QDate& oDate, const QDate& vDate, int fiI
 }
 
 int FiluU::addDepot(const QString& name, const QString& owner, const QString& trader
-                  , const QString& currency, const QString& broker, int depotId/* = 0*/)
+                  , const QString& broker, int depotId/* = 0*/)
 {
   // Returns Id or error
   const QString sql("SELECT * FROM :user.depot_insert("
-                    ":depotId, :name, :trader, :owner, :currency, :broker)");
+                    ":depotId, :name, :trader, :owner, :broker)");
 
   if(!initQuery("_AddDepot", sql)) return eInitError;
 
@@ -402,7 +402,6 @@ int FiluU::addDepot(const QString& name, const QString& owner, const QString& tr
   query->bindValue(":name", name);
   query->bindValue(":owner", owner);
   query->bindValue(":trader", trader);
-  query->bindValue(":currency", currency);
   query->bindValue(":broker", broker);
 
   if(execute(query) <= eError) return eExecError;

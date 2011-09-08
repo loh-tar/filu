@@ -22,6 +22,7 @@ INSERT INTO <schema>.error(caption, etext) VALUES('BrokerIdNF', 'Broker Id not f
 CREATE OR REPLACE FUNCTION <schema>.broker_insert
 (
   aCaption    <schema>.broker.caption%TYPE,
+  aCurrSymbol <schema>.symbol.caption%TYPE,
   aFeeFormula <schema>.broker.feeformula%TYPE,
   aQuality    <schema>.broker.quality%TYPE,
   aBrokerId   <schema>.broker.broker_id%TYPE-- could be 0/NULL
@@ -31,9 +32,13 @@ $BODY$
 
 DECLARE
   mId         <schema>.broker.broker_id%TYPE; -- New ID
+  mCurrId     <schema>.fi.fi_id%TYPE;
 
 BEGIN
 -- See also split_insert for a more smart check if exist/updateable
+
+  mCurrId := <schema>.fiid_from_symbolcaption(aCurrSymbol);
+  IF mCurrId < 1 THEN RETURN mCurrId; END IF;
 
   mId := COALESCE(aBrokerId, 0);
 
@@ -41,16 +46,17 @@ BEGIN
 
   IF mId < 1 THEN
       mId := nextval('<schema>.broker_broker_id_seq');
-      INSERT INTO <schema>.broker(broker_id, caption, feeformula, quality)
-             VALUES(mId, aCaption, aFeeFormula, aQuality);
+      INSERT INTO <schema>.broker(broker_id, caption, currency_fi_id, feeformula, quality)
+             VALUES(mId, aCaption, mCurrId, aFeeFormula, aQuality);
 
       RETURN mId;
 
   ELSE
       UPDATE <schema>.broker
-          SET caption    = aCaption,
-              feeformula = aFeeFormula,
-              quality    = aQuality
+          SET caption        = aCaption,
+              currency_fi_id = mCurrId,
+              feeformula     = aFeeFormula,
+              quality        = aQuality
           WHERE broker_id = mId and quality >= aQuality;
 
       IF FOUND

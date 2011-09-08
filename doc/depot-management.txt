@@ -61,7 +61,7 @@ portion.
 Create the depot:
 
 agentf add broker MyBank "5.95 + OV * 0.001"
-agentf add depot TestDepot Me SimpleRule USD MyBank
+agentf add depot TestDepot Me SimpleRule MyBank
 
 Add an existing position to the depot:
 
@@ -112,7 +112,7 @@ Try these commands to become an impression.
   agentf imp doc/example-some-us-stocks.imp
   agentf full 2008-01-01
 
-  agentf depots simtrade SimpleRule USD MyBanK 2009-01-01 2011-01-01 \
+  agentf depots simtrade SimpleRule MyBanK 2009-01-01 2011-01-01 \
                 --checkDay Wed --weekly 4 --verbose 0
 
 As you can see I suggest '--weekly 4' which is to reduce the runtime and

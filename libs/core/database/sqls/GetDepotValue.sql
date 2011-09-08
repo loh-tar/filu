@@ -18,7 +18,7 @@ FROM (
     select :filu.convert_currency(cast(sum(pieces * price) as real), ficurr, depcurr, :date) as "Value"
     from(
 
-        SELECT sum(p.pieces) AS pieces, m.currency_fi_id AS ficurr, d.currency AS depcurr,
+        SELECT sum(p.pieces) AS pieces, m.currency_fi_id AS ficurr, br.currency_fi_id AS depcurr,
           ( select qclose from :filu.eodbar
                           where fi_id = p.fi_id and qdate <= :date order by qdate DESC limit 1
           ) as price
@@ -27,8 +27,9 @@ FROM (
         LEFT JOIN :filu.market AS m USING(market_id)
         LEFT JOIN :filu.fi ON fi.fi_id = p.market_id
         LEFT JOIN :user.depot AS d USING (depot_id)
+        LEFT JOIN :filu.broker AS br USING(broker_id)
         WHERE depot_id = :depotId and pdate <= :date
-        GROUP BY p.fi_id, m.currency_fi_id, d.currency
+        GROUP BY p.fi_id, m.currency_fi_id, br.currency_fi_id
 
     ) as acc
     group by ficurr, depcurr

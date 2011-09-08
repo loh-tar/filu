@@ -196,7 +196,7 @@ void CmdAdd::addBroker(const QStringList& parm)
 {
   if(!mWantHelp)
   {
-    if(FTool::getParameter(parm, "--broker", mCmdArg) < 2)
+    if(FTool::getParameter(parm, "--broker", mCmdArg) < 3)
     {
       error(FUNC, mInfoTxt.value("TooLessArg"));
       mWantHelp = true;
@@ -206,15 +206,15 @@ void CmdAdd::addBroker(const QStringList& parm)
   if(mWantHelp)
   {
     print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("broker <BrokerName> <FeeFormula> [<Quality>]"));
+    print(mInfoTxt.value("CmdPrefix").arg("broker <BrokerName> <CurrencySymbol> <FeeFormula> [<Quality>]"));
     print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("broker MyBank \"5.95 + OV * 0.001\""));
+    print(mInfoTxt.value("CmdPrefix").arg("broker MyBank USD \"5.95 + OV * 0.001\""));
     return;
   }
 
-  QString header = "[Header]BrokerName;FeeFormula";
+  QString header = "[Header]BrokerName;CurrencySymbol;FeeFormula";
 
-  if(mCmdArg.size() > 2) header.append(";Quality");
+  if(mCmdArg.size() > 3) header.append(";Quality");
 
   import(header, mCmdArg.join(";"));
 }
@@ -405,7 +405,7 @@ void CmdAdd::addDepot(const QStringList& parm)
 {
   if(!mWantHelp)
   {
-    if(FTool::getParameter(parm, "--depot", mCmdArg) < 5)
+    if(FTool::getParameter(parm, "--depot", mCmdArg) < 4)
     {
       error(FUNC, mInfoTxt.value("TooLessArg"));
       mWantHelp = true;
@@ -415,15 +415,15 @@ void CmdAdd::addDepot(const QStringList& parm)
   if(mWantHelp)
   {
     print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("depot <DepotName> <DepotOwner> <Trader> <CurrencySymbol> <BrokerName> [<Quality>]"));
+    print(mInfoTxt.value("CmdPrefix").arg("depot <DepotName> <DepotOwner> <Trader> <BrokerName> [<Quality>]"));
     print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("depot SlowHand Me Watchdog USD MyBank"));
+    print(mInfoTxt.value("CmdPrefix").arg("depot SlowHand Me Watchdog MyBank"));
     return;
   }
 
-  QString header = "[Header]DepotName;DepotOwner;Trader;CurrencySymbol;BrokerName";
+  QString header = "[Header]DepotName;DepotOwner;Trader;BrokerName";
 
-  if(mCmdArg.size() > 5) header.append(";Quality");
+  if(mCmdArg.size() > 4) header.append(";Quality");
 
   import(header, mCmdArg.join(";"));
 }

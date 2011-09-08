@@ -106,10 +106,8 @@ CREATE TABLE :user.depot(
   caption    varchar(50)     NOT NULL,
   trader     varchar(50)     NOT NULL,
   owner      varchar(50)     NOT NULL,
-  currency   int4            NOT NULL,
   broker_id  int4            NOT NULL,
 
-FOREIGN KEY(currency) REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT,
 FOREIGN KEY(broker_id) REFERENCES :filu.broker(broker_id) ON DELETE RESTRICT
 );
 

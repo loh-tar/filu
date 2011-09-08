@@ -31,19 +31,20 @@ from(
             END
         ) AS "Required"
         , m.currency_fi_id AS ficurr
-        , d.currency AS depcurr
+        , br.currency_fi_id AS depcurr
 
   FROM :user.order AS o
   LEFT JOIN :filu.fi AS fi USING(fi_id)
   LEFT JOIN :filu.market AS m USING(market_id)
   LEFT JOIN :user.depot AS d USING(depot_id)
+  LEFT JOIN :filu.broker AS br USING(broker_id)
 
   WHERE depot_id = :depotId
         and :date BETWEEN o.odate and o.vdate
         and o.buy -- ignore sell orders, well an unlimited could make sense
         and o.status >= 100 -- all kind of active orders
 
-  GROUP BY m.currency_fi_id, d.currency
+  GROUP BY m.currency_fi_id, br.currency_fi_id
 
 ) as acc
 group by ficurr, depcurr

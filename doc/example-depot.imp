@@ -2,8 +2,8 @@
 *
 * Broker
 *
-[Header]BrokerName;FeeFormula
-MyBank;5.95 + OV * 0.001
+[Header]BrokerName;CurrencySymbol;FeeFormula
+MyBank;USD;5.95 + OV * 0.001
 
 *
 * Global settings, always needed below
@@ -13,8 +13,8 @@ MyBank;5.95 + OV * 0.001
 *
 * Depot
 *
-[Header]Trader;CurrencySymbol;BrokerName
-SimpleRule;USD;MyBank
+[Header]Trader;BrokerName
+SimpleRule;MyBank
 
 *
 * Positions

@@ -109,7 +109,7 @@ QDate Depots::nextCheckday(const QList<int>& checking)
 
 void Depots::simtrade(const QStringList& parm)
 {
-  // simtrade <Trader> <CurrencySymbol> <BrokerName> <fromDate> <toDate>
+  // simtrade <Trader> <BrokerName> <fromDate> <toDate>
   //         [--weekly [<n>] (check only each n weeks, when not given each day is checked)
   //         [--checkDay <DayName> (default Friday)]]
 
@@ -122,16 +122,16 @@ void Depots::simtrade(const QStringList& parm)
   checking << 1; // Check each day
 
   QStringList simParm;
-  if(FTool::getParameter(parm, "--simtrade", simParm) < 5)
+  if(FTool::getParameter(parm, "--simtrade", simParm) < 4)
   {
     error(FUNC, tr("To less arguments for '--simtrade'"));
-    errInfo(FUNC, tr("simtrade <Trader> <CurrencySymbol> <BrokerName> <fromDate> <toDate>"));
+    errInfo(FUNC, tr("simtrade <Trader> <BrokerName> <fromDate> <toDate>"));
   }
   else
   {
     depotName = simParm.at(0); // Start with trader file name
-    simParm.insert(3, "--fromDate");
-    simParm.insert(5, "--toDate");
+    simParm.insert(2, "--fromDate");
+    simParm.insert(4, "--toDate");
 
     fromDate = optionDate(simParm, "fromDate");
     toDate   = optionDate(simParm, "toDate");
@@ -177,7 +177,7 @@ void Depots::simtrade(const QStringList& parm)
   // FIXME Ask here Trader, check if Trading rule is ok. Ask for hash. Ask for indicator.
 
   // Create depot
-  int depotId = mFilu->addDepot(depotName, "Simulator", simParm.at(0), simParm.at(1), simParm.at(2));
+  int depotId = mFilu->addDepot(depotName, "Simulator", simParm.at(0), simParm.at(1));
   if(check4FiluError(FUNC, tr("Can't create depot."))) return;
 
   // Add initial cash to depot

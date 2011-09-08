@@ -784,7 +784,7 @@ void Importer::prepare()
     mToDo.insert("addGroup");
   }
 
-  if(mData.contains("BrokerName") and mData.contains("FeeFormula"))
+  if(mData.contains("BrokerName") and mData.contains("FeeFormula") and mData.contains("CurrencySymbol"))
   {
     importData << "Broker";
     mToDo.insert("addBroker");
@@ -792,7 +792,7 @@ void Importer::prepare()
 
   if(mData.contains("DepotName") or mData.contains("DepotId"))
   {
-    if(mData.contains("Trader"))
+    if(mData.contains("Trader") and mData.contains("BrokerName"))
     {
       importData << "Depot";
       mToDo.insert("addDepot");
@@ -1466,7 +1466,7 @@ void Importer::addSplit()
 
 void Importer::addBroker()
 {
-  mFilu->addBroker(mData.value("BrokerName"), mData.value("FeeFormula"), mId.value("Quality"));
+  mFilu->addBroker(mData.value("BrokerName"), mData.value("CurrencySymbol"), mData.value("FeeFormula"), mId.value("Quality"));
 
   if(notAdded(mData.value("BrokerName"))) return;
 
@@ -1594,13 +1594,13 @@ void Importer::addDepot()
   setDepotId();
 
   mFilu->addDepot(mData.value("DepotName"), mData.value("DepotOwner"), mData.value("Trader")
-                , mData.value("CurrencySymbol"), mData.value("BrokerName"), mId.value("Depot"));
+                , mData.value("BrokerName"), mId.value("Depot"));
 
   if(notAdded()) return;
 
   if(verboseLevel(eAmple))
   {
-    mHint << mData.value("DepotOwner") << mData.value("DepotName") << mData.value("CurrencySymbol");
+    mHint << mData.value("DepotOwner") << mData.value("DepotName");
     printStatus(eEffectOk, ", ");
   }
 }

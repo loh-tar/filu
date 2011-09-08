@@ -93,7 +93,7 @@ CREATE TABLE <schema>.market(
   closetime         time        NOT NULL DEFAULT '23:59:59',
   quality           int2        NOT NULL DEFAULT 2, -- bronze, as tempo classified data
 
-  FOREIGN KEY(currency_fi_id) REFERENCES <schema>.fi(fi_id)
+  FOREIGN KEY(currency_fi_id) REFERENCES <schema>.fi(fi_id) ON DELETE RESTRICT
 );
 
 CREATE UNIQUE INDEX market_unique_caption ON <schema>.market(
@@ -214,8 +214,11 @@ CREATE TABLE <schema>.dividend(
 CREATE TABLE <schema>.broker(
   broker_id       serial4       PRIMARY KEY,
   caption         varchar(50)   NOT NULL,
+  currency_fi_id  int4          NOT NULL,
   feeformula      varchar(100)  NOT NULL,
-  quality         int2          NOT NULL DEFAULT 2 -- bronze, as tempo classified data
+  quality         int2          NOT NULL DEFAULT 2, -- bronze, as tempo classified data
+
+  FOREIGN KEY(currency_fi_id) REFERENCES <schema>.fi(fi_id) ON DELETE RESTRICT
 );
 
 CREATE UNIQUE INDEX broker_unique_caption ON <schema>.broker(

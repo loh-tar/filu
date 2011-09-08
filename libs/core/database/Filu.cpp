@@ -1115,7 +1115,7 @@ int Filu::addBroker(BrokerTuple& bt)
 {
   if(bt.isInvalid()) return eError;
 
-  int retVal = addBroker(bt.name(), bt.feeFormula(), bt.quality(), bt.id());
+  int retVal = addBroker(bt.name(), "fixme", bt.feeFormula(), bt.quality(), bt.id());
 
   if(retVal >= eData) bt.setId(retVal);
 
@@ -1123,13 +1123,14 @@ int Filu::addBroker(BrokerTuple& bt)
 }
 
 int Filu::addBroker(const QString& name
+                  , const QString& currSymbol
                   , const QString& feeFormula
                   , const int quality
                   , const int id/* = 0*/)
 {
 
   const QString sql("SELECT * FROM :filu.broker_insert"
-                    "( :name, :feeFormula"
+                    "( :name, :currSymbol, :feeFormula"
                     ", cast(:quality as int2)"
                     ", cast(:brokerId as int4))");
 
@@ -1139,6 +1140,7 @@ int Filu::addBroker(const QString& name
 
   query->bindValue(":brokerId", id);
   query->bindValue(":name", name);
+  query->bindValue(":currSymbol", currSymbol);
   query->bindValue(":feeFormula", feeFormula);
   query->bindValue(":quality", quality);
 

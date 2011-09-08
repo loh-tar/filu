@@ -267,6 +267,7 @@ AAPL;NYSE;2010-01-19;Main;Line;ExtendLeft=true/nAnchorValue=199.011771653543/nWa
 Broker
 ========
 BrokerName
+CurrencySymbol
 FeeFormula
 
 
@@ -280,7 +281,6 @@ DepotOwner (either these two or DepotId)
 Trader
   The name of a trading rule file, by default located at ~/Filu/TradingRules.
 
-CurrencySymbol
 BrokerName
 
 

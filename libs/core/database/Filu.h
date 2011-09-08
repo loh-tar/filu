@@ -179,6 +179,7 @@ class Filu : public Newswire
 
     int          addBroker(BrokerTuple& broker);
     int          addBroker(const QString& name
+                         , const QString& currSymbol
                          , const QString& feeFormula
                          , const int quality
                          , const int id = 0);

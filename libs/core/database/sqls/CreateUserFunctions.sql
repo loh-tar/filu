@@ -352,6 +352,7 @@ LANGUAGE PLPGSQL;
 --
 --
 INSERT INTO :filu.error(caption, etext) VALUES('DepotIdNF', 'DepotId not found.');
+INSERT INTO :filu.error(caption, etext) VALUES('BrokerNF', 'Broker not found.');
 
 CREATE OR REPLACE FUNCTION :user.depot_insert
 (
@@ -359,7 +360,6 @@ CREATE OR REPLACE FUNCTION :user.depot_insert
   aCaption    :user.depot.caption%TYPE,
   aTrader     :user.depot.trader%TYPE,
   aOwner      :user.depot.owner%TYPE,
-  aCurrency   :filu.symbol.caption%TYPE,
   aBroker     :filu.broker.caption%TYPE
 )
 RETURNS :user.depot.depot_id%TYPE AS
@@ -367,16 +367,12 @@ $BODY$
 
 DECLARE
   mId         :user.depot.depot_id%TYPE; -- New ID
-  mCurrencyId :user.depot.currency%TYPE;
   mBrokerId   :user.depot.broker_id%TYPE;
 
 BEGIN
 
-  mCurrencyId := :filu.fiid_from_symbolcaption(aCurrency);
-  IF mCurrencyId < 1 THEN RETURN mCurrencyId; END IF;
-
   mBrokerId   := :filu.id_from_caption('broker', aBroker);
-  IF mBrokerId < 1 THEN RETURN mBrokerId; END IF;
+  IF mBrokerId < 1 THEN RETURN :filu.error_code('BrokerNF'); END IF;
 
   mId := COALESCE(aDepotId, 0);
 
@@ -391,8 +387,8 @@ BEGIN
   IF mId = 0 THEN
     BEGIN
       mId := nextval(':user.depot_depot_id_seq');
-      INSERT INTO :user.depot(depot_id, caption, trader, owner, currency, broker_id)
-             VALUES(mId, aCaption, aTrader, aOwner, mCurrencyId, mBrokerId);
+      INSERT INTO :user.depot(depot_id, caption, trader, owner, broker_id)
+             VALUES(mId, aCaption, aTrader, aOwner, mBrokerId);
 
       RETURN mId;
       EXCEPTION WHEN foreign_key_violation THEN RETURN :filu.error_code('ForeignKV');
@@ -403,7 +399,6 @@ BEGIN
       SET caption   = aCaption,
           trader    = aTrader,
           owner     = aOwner,
-          currency  = mCurrencyId,
           broker_id = mBrokerId
       WHERE depot_id = mId;
 
