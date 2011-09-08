@@ -259,8 +259,7 @@ void Newswire::addMessage(const Message& msg)
 {
   for(int i = 0; i < mMessages.size(); ++i)
   {
-    if(mMessages.at(i).text != msg.text) continue;
-    return;
+    if(mMessages.at(i).text == msg.text) return;
   }
 
   mMessages.append(msg);
@@ -276,6 +275,8 @@ void Newswire::logMessage(const Message& msg)
 {
   if(!mNoErrorLogging)
   {
+    if(msg.type == eErrInfo and !mHasError) return; // Don't log infos without an error
+
     *mErrConsole << formatMessage(msg, mFormat.value(eConsLog)) << endl;
   }
 
