@@ -176,17 +176,30 @@ void Depots::simtrade(const QStringList& parm)
 
   // FIXME Ask here Trader, check if Trading rule is ok. Ask for hash. Ask for indicator.
 
+  // Test if depotName is unique
+  QSqlQuery* depot = getDepots(QStringList() << "--owner Simulator");
+  QStringList names;
+  while(depot->next())
+  {
+    names << depot->value(1).toString();
+  }
+  QString tryName = depotName;
+  for(int i = 1;;++i)
+  {
+    qDebug() << "try: " << tryName;
+    if(!names.contains(tryName)) break;
+    tryName = QString("%1%2").arg(depotName).arg(i);
+  }
+
   // Create depot
-  int depotId = mFilu->addDepot(depotName, "Simulator", simParm.at(0), simParm.at(1));
+  int depotId = mFilu->addDepot(tryName, "Simulator", simParm.at(0), simParm.at(1));
   if(check4FiluError(FUNC, tr("Can't create depot."))) return;
 
   // Add initial cash to depot
   mFilu->addAccPosting(depotId, fromDate.addDays(-1), FiluU::ePostCashIn, "Your fake chance", 10000.00);
 
-
-  QSqlQuery* depot = getDepots(QStringList() << "--dpid" << QString::number(depotId));
-
   // Travel across the time
+  depot = getDepots(QStringList() << "--dpid" << QString::number(depotId));
   mLastCheck = fromDate.addDays(-1);
   mToday = mLastCheck;
   mToday = nextCheckday(checking);
@@ -197,8 +210,7 @@ void Depots::simtrade(const QStringList& parm)
     {
       // FIXME Do it much more nicer
       int done = 100 * fromDate.daysTo(mToday) / totalDays;
-      QString info = QString("Processing...%1%").arg(done);
-      qDebug() << info;
+      print(tr("Processing...%1%").arg(done));
     }
 
     // Check depot
