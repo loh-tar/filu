@@ -1245,7 +1245,10 @@ void Filu::openDB()
     QSqlQuery query(mFiluDB);
     query.prepare(sql);
     execute(&query);
-    if(query.size()) verbose(FUNC, "Successful connected to Filu :-)");
+    if(query.size())
+    {
+      verbose(FUNC, tr("Successful connected to %1 :-)").arg(mRcFile->getST("DatabaseName")));
+    }
     else
     {
       if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
