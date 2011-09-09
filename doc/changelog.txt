@@ -1,3 +1,44 @@
+2011-09-09
+============
+New Snapshot
+--------------
+Brings so much changes under the hood that an update from the last snapshot may
+fail, you are warned! The most important new stuff is depot management on the
+command line. For the more detailed list of changes go on reading here.
+
+To upgrade from the Santa Snapshot you have to ex/import your DB with your
+*old* progs as follows. Assuming you have a default installation you have to do:
+
+  [~/somewhere]$ agentf exp --toFile ExportedFiluData.imp --fiNames --symbols \
+  --splits --fiTypes --symbolTypes --markets --co --groups --eodRaw
+
+If you like omit the '--eodRaw' switch because that take a lot of time. Rename
+your ~/Filu directory and your ~/.config/Filu.conf file to something else. Then
+compile and install the new snapshot. To Create a new DB run:
+
+  [FiluSource-2011-09-09/database]$ ./configure -d filu20110909 -U
+  [FiluSource-2011-09-09/database]$ sudo make install
+
+There will a lot stuff printed, lines like "INFO:  New ErrorType:.." are Ok.
+After complie and install the new progs run:
+
+  [~/somewhere]$ agentf --config DatabaseName=filu20110909
+
+That create the new user schema and print a lot lines. Now import your data.
+Because the default dates was changed pipe the exported data thru sed.
+Furthermore it is recommend to change all NASDAQ to NYSE because the Yahoo
+scripts will only deliver NYSE. But that's your decision.
+
+  [~/somewhere]$ sed 's/3000-12-31/3000-01-01/g' ExportedFiluData.imp | \
+  agentf imp --config DatabaseName=filu20110909
+
+If all looks good add to your ~/.config/Filu.conf DatabaseName=filu20110909.
+Should you run in to big trouble could you re-install the progs from your Santa
+snapshot and use your existing Filu.
+
+Good luck!
+
+
 2011-09-08
 ============
 Sundries
@@ -29,7 +70,7 @@ To save most of the depot stuff you could run with your *old* progs:
   agentf depots lsd --lso m 2>backup.depot
 
 But that will lost the account data and all broker, sorry. Afterwards edit the
-backup file to became an import file.
+backup file to become an import file.
 
 Compile and install *now* the new code and run:
 
