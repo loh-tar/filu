@@ -42,7 +42,18 @@ void FiluU::openDB()
   QSqlQuery query(mFiluDB);
   query.prepare(sql);
   execute(&query);
-  if(query.size() == 0) createTables();
+  if(query.size() == 0)
+  {
+    createTables();
+
+    print("***");
+    print("*");
+    print(tr("%1Thanks for try out Filu.").arg("*  "));
+    print(tr("%1Please give some feedback at the forum: ").arg("*  "));
+    print("*    http://sourceforge.net/projects/filu/forums/forum/1154561");
+    print("*");
+    print("***");
+  }
 }
 
 void FiluU::createFunctions()
