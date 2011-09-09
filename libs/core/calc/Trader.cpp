@@ -323,6 +323,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
       mSettings.insert("VerboseText", verbText);
 
       QDate posDate  = pos.value("Date").toDate();
+      if(posDate < lastCheck) posDate = lastCheck; // Don't fetch more bars as needed
       BarTuple* bars = mFilu->getBars(pos.value("FiId").toInt(), pos.value("MarketId").toInt()
                                     , posDate.addDays(mBarsNeeded * -1.6).toString(Qt::ISODate)
                                     , today.toString(Qt::ISODate));
