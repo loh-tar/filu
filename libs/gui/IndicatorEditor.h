@@ -37,7 +37,6 @@ class IndicatorEditor : public FWidget
   public slots:
 
   protected:
-    QToolButton*  mButton;
     QComboBox*    mFileSelector;
     QTextEdit*    mEditor;
 
@@ -52,6 +51,7 @@ class IndicatorEditor : public FWidget
   protected slots:
     bool          loadFile(const QString& fileName);
     bool          saveFile();
+    bool          deleFile();
     void          editorLostFocus();
     void          fileNameChanged(const QString& newName);
 };

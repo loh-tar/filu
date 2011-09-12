@@ -23,12 +23,22 @@ IndicatorEditor::IndicatorEditor(FClass* parent)
                : FWidget(parent, FUNC)
                , mFileNameChanged(false)
 {
-  mButton = new QToolButton;
-  mButton->setToolTip(tr("Save File"));
-  mButton->setAutoRaise(true);
-  mButton->setIcon(QIcon::fromTheme("document-save"));
-  mButton->setShortcut(QKeySequence(QKeySequence::Save));
-  connect(mButton, SIGNAL(clicked()), this, SLOT(saveFile()));
+  QToolButton*  saveBtn;
+  saveBtn = new QToolButton;
+  saveBtn->setToolTip(tr("Save File"));
+  saveBtn->setAutoRaise(true);
+  saveBtn->setIcon(QIcon::fromTheme("document-save"));
+  saveBtn->setShortcut(QKeySequence(QKeySequence::Save));
+  connect(saveBtn, SIGNAL(clicked()), this, SLOT(saveFile()));
+
+  QToolButton*  delBtn;
+  delBtn = new QToolButton;
+  delBtn->setToolTip(tr("Delete File"));
+  delBtn->setAutoRaise(true);
+  delBtn->setIcon(QIcon::fromTheme("edit-delete"));
+  delBtn->setShortcut(QKeySequence("Ctrl+Del"));
+  connect(delBtn, SIGNAL(clicked()), this, SLOT(deleFile()));
+
 
   mFileSelector = new QComboBox;
   mFileSelector->setEditable(true);
@@ -36,8 +46,10 @@ IndicatorEditor::IndicatorEditor(FClass* parent)
   connect(mFileSelector, SIGNAL(editTextChanged(const QString&)), this, SLOT(fileNameChanged(const QString&)));
 
   QHBoxLayout* layout1 = new QHBoxLayout;
-  layout1->addWidget(mButton);
+  layout1->addWidget(saveBtn);
   layout1->addWidget(mFileSelector);
+  layout1->addWidget(delBtn);
+  layout1->addSpacing(20);
 
   mEditor = new QTextEdit;
   mEditor->setFontFamily("Monospace");
@@ -107,13 +119,13 @@ bool IndicatorEditor::loadFile(const QString& fileName)
     {
       mFileSelector->blockSignals(true);
       mFileSelector->setEditText(mCurrentFile);
-      question = QString(tr("Save new file '%1'?").arg(mCurrentFile));
+      question = QString(tr("\nSave new file '%1'?\t").arg(mCurrentFile));
     }
     else
     {
       // Don't confuse the user, show the still valid file name
       mFileSelector->setCurrentIndex(mFileSelector->findText(mCurrentFile));
-      question = QString(tr("\n'%1' was changed. Save file?\t").arg(mCurrentFile));
+      question = QString(tr("\nFile '%1' was changed.\t").arg(mCurrentFile));
     }
 
     int ret = QMessageBox::warning(this, tr("Indicator Editor"), question
@@ -135,10 +147,10 @@ bool IndicatorEditor::loadFile(const QString& fileName)
   mFileSelector->setCurrentIndex(mFileSelector->findText(fileName));
 
   QFile file(mIndicatorPath + fileName);
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
     QMessageBox::critical(this, tr("Indicator Editor")
-                   , tr("\nCan't load file '%1'\t").arg(file.fileName())
+                   , tr("\nCan't load file '%1'.\t").arg(file.fileName())
                    , QMessageBox::Close);
     return false;
   }
@@ -191,7 +203,7 @@ bool IndicatorEditor::saveFile()
   if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
     QMessageBox::critical(this, tr("Indicator Editor")
-                         , tr("\nCan't save file '%1'\t").arg(mCurrentFile)
+                         , tr("\nCan't save file '%1.'\t").arg(mCurrentFile)
                          , QMessageBox::Close);
     return false;
   }
@@ -209,6 +221,40 @@ bool IndicatorEditor::saveFile()
   }
 
   return true;
+}
+
+bool IndicatorEditor::deleFile()
+{
+  // FIXME Disable delButton if fileName is empty or edited
+  if(mCurrentFile.isEmpty()) return false;
+
+  QFile file(mIndicatorPath + mCurrentFile);
+
+  if(!file.exists())  return false;
+
+  int ret = QMessageBox::warning(this, tr("Indicator Editor")
+              , tr("\nDelete file '%1'?\t").arg(mCurrentFile)
+              , QMessageBox::Yes | QMessageBox::Cancel
+              , QMessageBox::Cancel);
+
+  if(ret != QMessageBox::Yes) return false;
+
+  if(file.remove())
+  {
+    int idx = mFileSelector->currentIndex();
+    readDir();
+    if(idx > mFileSelector->count() - 1 and idx > 0) --idx;
+    mFileSelector->setCurrentIndex(idx);
+    mEditor->document()->setModified(false);
+    loadFile(mFileSelector->currentText());
+
+    return true;
+  }
+
+  QMessageBox::critical(this, tr("Indicator Editor")
+                    , tr("\nCan't delete file '%1'.\t").arg(mCurrentFile)
+                    , QMessageBox::Close);
+  return false;
 }
 
 void IndicatorEditor::fileNameChanged(const QString& newName)

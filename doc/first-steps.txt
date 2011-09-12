@@ -308,12 +308,11 @@ NOTE: The 'underline-adding' works not perfect right now. Currently he may say
       'OK' but there wasn't, because the FI may fail to add. But that's more an
 issue of Importer than of ManagerF.
 
-
 Indicator Page
 ----------------
 The editor needs many improvements but is usable. To save a file click the icon
-left from the listbox or Ctrl-S. To create a new file just simple enter a new
-name in the listbox.
+left from the combobox or Ctrl-S. To delete the right button or Ctrl-Del. To
+create a new file just simple enter a new name in the combobox.
 
 On the right you have the TA-Lib picker. I can't remember what I want do with
 the Include button, ignore him :-)
