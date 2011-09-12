@@ -321,6 +321,9 @@ Select one of the TA-Lib functions and click below one of the lines begin with
 CallX: or IncludeX:. Hit then the Add button to copy that kind of use into
 the editor. See also doc/indicator-file-format.txt.
 
+The plot sheets watch the used indicator. So when you have saved an indicator
+file will it immediately updated on the plot sheet.
+
 Log Book
 ----------
 Here find you some messages which may produce the other pages. Currently write

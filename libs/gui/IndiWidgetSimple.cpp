@@ -66,6 +66,9 @@ void IndiWidgetSimple::init()
   mSheet = new PlotSheet(this);
   connect(mSheet, SIGNAL(mouse(MyMouseEvent*)), this, SIGNAL(mouse(MyMouseEvent*)));
 
+  mIndiWatcher = new QFileSystemWatcher(this);
+  connect(mIndiWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(indiFileChanged()));
+
   QHBoxLayout* lay = new QHBoxLayout;
   lay->addWidget(mSheet);
   lay->setMargin(0);
@@ -108,6 +111,14 @@ void IndiWidgetSimple::useIndicator(const QString& file)
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   settings.beginGroup(mName);
   settings.setValue("Indicator", file);
+
+  if(mUsedIndiFile != file)
+  {
+    QString path = mRcFile->getST("IndicatorPath");
+    mIndiWatcher->removePath(path + mUsedIndiFile);
+    mUsedIndiFile = file;
+    mIndiWatcher->addPath(path + mUsedIndiFile);
+  }
 }
 
 void IndiWidgetSimple::showBarData(BarTuple* bars)
@@ -136,7 +147,8 @@ void IndiWidgetSimple::readSettings()
   mSheet->showYScale(settings.value("ShowYScale", true).toBool());
 
   settings.beginGroup(mName);
-  mSheet->useIndicator(settings.value("Indicator", "Default").toString());
+  mUsedIndiFile = settings.value("Indicator", "Default").toString();
+  mSheet->useIndicator(mUsedIndiFile);
   mSheet->showGrid(settings.value("ShowGrid", true).toBool());
   mSheet->showXScale(settings.value("ShowXScale", true).toBool());
   mSheet->mPainter->mScaleToScreen = settings.value("ScaleToScreen", 10).toInt();
@@ -171,4 +183,9 @@ void IndiWidgetSimple::chartObjectChosen(const QString& type) // Slot
 void IndiWidgetSimple::contextMenuEvent(QContextMenuEvent* event)
 {
   QMenu::exec(actions(), event->globalPos());
+}
+
+void IndiWidgetSimple::indiFileChanged()
+{
+  mSheet->useIndicator(mUsedIndiFile);
 }

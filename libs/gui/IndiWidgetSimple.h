@@ -58,6 +58,9 @@ class IndiWidgetSimple : public FWidget
     virtual void  mouseSlot(MyMouseEvent*);
             void  chartObjectChosen(const QString& type);
 
+  protected slots:
+            void  indiFileChanged();
+
   protected:
     void          init();
     virtual void  readSettings();
@@ -68,6 +71,9 @@ class IndiWidgetSimple : public FWidget
     QString       mName;
     QString       mSetName;
     QString       mFullIndiSetsPath;
+    QString       mUsedIndiFile;
+
+    QFileSystemWatcher*   mIndiWatcher;
 };
 
 #endif
