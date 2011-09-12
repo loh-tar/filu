@@ -49,9 +49,9 @@ ManagerF::ManagerF(QApplication& app)
   QPushButton* closeButton = new QPushButton(tr("Close"));
   connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
-  QHBoxLayout* horizontalLayout = new QHBoxLayout;
+  QSplitter* horizontalLayout = new QSplitter;
   horizontalLayout->addWidget(mPageIcons);
-  horizontalLayout->addWidget(mPageStack, 1);
+  horizontalLayout->addWidget(mPageStack);
 
   mMsgLabel = new MsgLabel;
   mMsgLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
@@ -65,7 +65,7 @@ ManagerF::ManagerF(QApplication& app)
   buttonsLayout->setStretch(1, 1);
 
   QVBoxLayout* mainLayout = new QVBoxLayout;
-  mainLayout->addLayout(horizontalLayout);
+  mainLayout->addWidget(horizontalLayout);
   mainLayout->addLayout(buttonsLayout);
 
   QWidget* dummy = new QWidget;
