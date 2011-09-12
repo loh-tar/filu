@@ -311,8 +311,9 @@ issue of Importer than of ManagerF.
 
 Indicator Page
 ----------------
-The editor needs many improvements but is usable. To save a file click the down
-arrow left from the listbox.
+The editor needs many improvements but is usable. To save a file click the icon
+left from the listbox or Ctrl-S. To create a new file just simple enter a new
+name in the listbox.
 
 On the right you have the TA-Lib picker. I can't remember what I want do with
 the Include button, ignore him :-)

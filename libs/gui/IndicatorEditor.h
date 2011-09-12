@@ -42,16 +42,18 @@ class IndicatorEditor : public FWidget
     QTextEdit*    mEditor;
 
     QString       mIndicatorPath;
-    QStringList   mAllFiles;
+    QString       mCurrentFile;
+    bool          mFileNameChanged;  // Only true if edited, not when different chosen
 
     void          readDir();
     void          readSettings();
     bool          eventFilter(QObject* pFilterObj, QEvent* pEvent);
 
   protected slots:
-    void          loadFile();
-    void          saveFile();
+    bool          loadFile(const QString& fileName);
+    bool          saveFile();
     void          editorLostFocus();
+    void          fileNameChanged(const QString& newName);
 };
 
 #endif

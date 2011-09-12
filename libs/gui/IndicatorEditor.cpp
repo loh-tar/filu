@@ -21,16 +21,19 @@
 
 IndicatorEditor::IndicatorEditor(FClass* parent)
                : FWidget(parent, FUNC)
+               , mFileNameChanged(false)
 {
   mButton = new QToolButton;
   mButton->setToolTip(tr("Save File"));
   mButton->setAutoRaise(true);
-  mButton->setArrowType(Qt::DownArrow);
+  mButton->setIcon(QIcon::fromTheme("document-save"));
+  mButton->setShortcut(QKeySequence(QKeySequence::Save));
   connect(mButton, SIGNAL(clicked()), this, SLOT(saveFile()));
 
   mFileSelector = new QComboBox;
   mFileSelector->setEditable(true);
-  connect(mFileSelector, SIGNAL(activated(int)), this, SLOT(loadFile()));
+  connect(mFileSelector, SIGNAL(activated(const QString&)), this, SLOT(loadFile(const QString&)));
+  connect(mFileSelector, SIGNAL(editTextChanged(const QString&)), this, SLOT(fileNameChanged(const QString&)));
 
   QHBoxLayout* layout1 = new QHBoxLayout;
   layout1->addWidget(mButton);
@@ -60,14 +63,17 @@ IndicatorEditor::~IndicatorEditor()
 void IndicatorEditor::loadSettings()
 {
   mRcFile->beginGroup("IndicatorEditor");
-  mFileSelector->setCurrentIndex(mFileSelector->findText(mRcFile->getST("LastEditFile")));
-  loadFile();
-  QTextCursor cur = mEditor->textCursor();
-  cur.setPosition(mRcFile->getIT("CursorPos"));
-  mEditor->setTextCursor(cur);
-  mEditor->ensureCursorVisible();
-  mEditor->setFocus(); // FIXME:Does not work...
-  editorLostFocus();   // ...as workaround
+
+  if(loadFile(mRcFile->getST("LastEditFile")))
+  {
+    QTextCursor cur = mEditor->textCursor();
+    cur.setPosition(mRcFile->getIT("CursorPos"));
+    mEditor->setTextCursor(cur);
+    mEditor->ensureCursorVisible();
+    mEditor->setFocus(); // FIXME:Does not work...
+    editorLostFocus();   // ...as workaround
+  }
+
   mRcFile->endGroup();
 }
 
@@ -92,17 +98,49 @@ void IndicatorEditor::includeText(const QString& txt)
 *                           Private  Stuff
 *
 ************************************************************************/
-void IndicatorEditor::loadFile()
+bool IndicatorEditor::loadFile(const QString& fileName)
 {
-  QString fileName = mFileSelector->currentText();
+  if(mEditor->document()->isModified())
+  {
+    QString question;
+    if(mFileNameChanged)
+    {
+      mFileSelector->blockSignals(true);
+      mFileSelector->setEditText(mCurrentFile);
+      question = QString(tr("Save new file '%1'?").arg(mCurrentFile));
+    }
+    else
+    {
+      // Don't confuse the user, show the still valid file name
+      mFileSelector->setCurrentIndex(mFileSelector->findText(mCurrentFile));
+      question = QString(tr("\n'%1' was changed. Save file?\t").arg(mCurrentFile));
+    }
+
+    int ret = QMessageBox::warning(this, tr("Indicator Editor"), question
+                , QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel
+                , QMessageBox::Cancel);
+
+    mFileSelector->blockSignals(false);
+
+    if(ret == QMessageBox::Save)
+    {
+      if(!saveFile()) return false;
+    }
+    else if(ret == QMessageBox::Cancel)
+    {
+      return false;
+    }
+  }
+
+  mFileSelector->setCurrentIndex(mFileSelector->findText(fileName));
 
   QFile file(mIndicatorPath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    QMessageBox::critical(this, tr("Indicator Editor"),
-                         tr("\nCan't load file\t"),
-                         QMessageBox::Close);
-    return;
+    QMessageBox::critical(this, tr("Indicator Editor")
+                   , tr("\nCan't load file '%1'\t").arg(file.fileName())
+                   , QMessageBox::Close);
+    return false;
   }
 
   // Read the indicator
@@ -113,50 +151,81 @@ void IndicatorEditor::loadFile()
     QString line = in.readLine();
     indicator.append(line);
   }
-
   file.close();
 
-  mEditor->clear();
-  mEditor->insertPlainText(indicator.join("\n"));
+  mEditor->setPlainText(indicator.join("\n"));
+  mEditor->document()->setModified(false);
+  mCurrentFile = fileName;
+  mFileNameChanged = false;
+
+  return true;
 }
 
-void IndicatorEditor::saveFile()
+bool IndicatorEditor::saveFile()
 {
-  QString fileName = mFileSelector->currentText();
+  if(mCurrentFile.isEmpty()) return false;
 
-  if(mAllFiles.contains(fileName))
+  QFile file(mIndicatorPath + mCurrentFile);
+
+  bool newFile = false;
+
+  if(!file.exists()) newFile = true;
+
+  if(mFileNameChanged and !newFile)
   {
-     int ret = QMessageBox::question(this, tr("Indicator Editor"),
-                   tr("\nOverwrite existing file?\t"),
-                   QMessageBox::Save | QMessageBox::Cancel);
+     mFileSelector->blockSignals(true); // Don't try to load new file because was changed
+
+     int ret = QMessageBox::question(this, tr("Indicator Editor")
+                   , tr("\nOverwrite existing file '%1'?\t").arg(mCurrentFile)
+                   , QMessageBox::Save | QMessageBox::Cancel);
+
+    mFileSelector->blockSignals(false);
 
     if(ret != QMessageBox::Save)
     {
       mFileSelector->setFocus();
-      return;
+      return false;
     }
   }
 
-  QFile file(mIndicatorPath + fileName);
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+  if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    QMessageBox::critical(this, tr("Indicator Editor"),
-                         tr("\nCan't save file\t"),
-                         QMessageBox::Close);
-    return;
+    QMessageBox::critical(this, tr("Indicator Editor")
+                         , tr("\nCan't save file '%1'\t").arg(mCurrentFile)
+                         , QMessageBox::Close);
+    return false;
   }
 
-  file.write(mEditor->toPlainText().toAscii() + '\n');
-
+  file.write(mEditor->toPlainText().toUtf8() + '\n');
   file.close();
+
+  mEditor->document()->setModified(false);
+  mFileNameChanged = false;
+
+  if(newFile)
+  {
+    readDir();
+    mFileSelector->setCurrentIndex(mFileSelector->findText(mCurrentFile));
+  }
+
+  return true;
+}
+
+void IndicatorEditor::fileNameChanged(const QString& newName)
+{
+  // Set when name was edited but not when only a different was selected.
+  if(mFileSelector->lineEdit()->isModified())
+  {
+    mFileNameChanged = true;
+    mCurrentFile = newName;
+  }
 }
 
 void IndicatorEditor::readDir()
 {
   QDir dir(mIndicatorPath);
-  mAllFiles = dir.entryList(QDir::Files, QDir::Name);
-
-  mFileSelector->insertItems(0, mAllFiles);
+  mFileSelector->clear();
+  mFileSelector->insertItems(0, dir.entryList(QDir::Files, QDir::Name));
 }
 
 /***********************************************************************
