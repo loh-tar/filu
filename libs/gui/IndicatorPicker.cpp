@@ -32,6 +32,11 @@ IndicatorPicker::IndicatorPicker(FClass* parent)
   setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
   connect(this, SIGNAL(itemClicked (QTreeWidgetItem *, int))
         , this, SLOT(clicked(QTreeWidgetItem *, int)));
+
+  QFileSystemWatcher* watch = new QFileSystemWatcher(this);
+  watch->addPath(mIndicatorPath);
+  connect(watch, SIGNAL(directoryChanged(const QString&))
+        , this, SLOT(indicatorsChanged(const QString&)));
 }
 
 IndicatorPicker::~IndicatorPicker()
@@ -46,6 +51,22 @@ void IndicatorPicker::clicked(QTreeWidgetItem * item, int column)
 void IndicatorPicker::readSettings()
 {
   mIndicatorPath = mRcFile->getST("IndicatorPath");
+}
+
+void IndicatorPicker::indicatorsChanged(const QString& path)
+{
+  QString group;
+  QString indi;
+
+  if(currentItem())
+  {
+    if(currentItem()->parent()) group = currentItem()->parent()->text(0);
+    indi = currentItem()->text(0);
+  }
+
+  clear();
+  raiseTree();
+  climbOnTree(group, indi);
 }
 
 void IndicatorPicker::raiseTree()
@@ -90,5 +111,33 @@ void IndicatorPicker::raiseTree()
       }
     }
     file.close();
+  }
+}
+
+void IndicatorPicker::climbOnTree(const QString& group, const QString& indi)
+{
+  // Restore old selection
+  if(group.isEmpty()) return;
+
+  // Collapse all items
+  for(int i = 0; i < invisibleRootItem()->childCount(); ++i)
+  {
+    collapseItem(invisibleRootItem()->child(i));
+  }
+
+  QList<QTreeWidgetItem*> gLst = findItems(group, Qt::MatchExactly, 0);
+
+  if(!gLst.size()) return;
+
+  QTreeWidgetItem* item = gLst.at(0);
+  expandItem(item);
+
+  for(int i = 0; i < item->childCount(); ++i)
+  {
+    if(item->child(i)->text(0) != indi) continue;
+
+    setCurrentItem(item->child(i));
+    //scrollToItem(item->child(i)); FIXME Doesn't work
+    break;
   }
 }

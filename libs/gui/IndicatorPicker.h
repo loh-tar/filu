@@ -45,10 +45,12 @@ class IndicatorPicker : public QTreeWidget, public FClass
 
   protected slots:
     void          clicked(QTreeWidgetItem* item, int);
+    void          indicatorsChanged(const QString& path);
 
   protected:
     void          readSettings();
     void          raiseTree();
+    void          climbOnTree(const QString& group, const QString& indi);
 
     QString       mIndicatorPath;
 };
