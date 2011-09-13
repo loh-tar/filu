@@ -47,18 +47,15 @@ class FiGroupWidget : public FWidget
   protected slots:
     void groupClicked(int row, int);
     void groupRowChanged(int newRow);
-    void openGroup(int row, int);
+    void groupOpen(int row, int);
+    void groupUp();
     void memberClicked(int row, int);
     void memberRowChanged(int newRow);
-    void groupUp();
     void newGroup();
     void groupEdited(int row, int /*column*/);
-
     void setActiveGroup(const QString& group);
-
-    void getGroups(int groupId);
-    void getGMembers(int groupId);
-
+    void getGroups();
+    void getGMembers();
 
     void userDragInData(QTableView* tv);
     void removeFromGroup();
@@ -68,11 +65,9 @@ class FiGroupWidget : public FWidget
     MyTableWidget*  mGroupView;
     MyTableWidget*  mMemberView;
     QSplitter*      mSplitter;
-    QLabel*         mCurrendGroup;
-    int             mGroupViewedId;
+    QLabel*         mMotherName;
     int             mCurrendGroupId;
-    QStack<int>     mMotherIds;
-    QStack<QString> mMotherNames;
+    int             mMotherId;
     bool            mEditing;
 };
 

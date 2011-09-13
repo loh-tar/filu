@@ -34,13 +34,16 @@ FiGroupWidget::FiGroupWidget(FClass* parent)
   connect(mGroupView, SIGNAL(currentRowChanged(int))
           , this, SLOT(groupRowChanged(int)));
   connect(mGroupView, SIGNAL(cellDoubleClicked(int, int))
-          , this, SLOT(openGroup(int, int)));
+          , this, SLOT(groupOpen(int, int)));
   connect(mGroupView, SIGNAL(cellChanged(int, int))
           , this, SLOT(groupEdited(int, int)));
   connect(mGroupView, SIGNAL(dragToNirvana())
           , this, SLOT(removeGroup()));
 
-  mCurrendGroup = new QLabel(this);
+  mMotherName = new QLabel(this);
+  //mMotherName->setWordWrap(true);
+  mMotherName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+
   QToolButton* btn = new QToolButton(this);
   btn->setAutoRaise(true);
   btn->setArrowType(Qt::UpArrow);
@@ -54,11 +57,11 @@ FiGroupWidget::FiGroupWidget(FClass* parent)
   newGroupBtn->setToolTip("Add New Group");
   connect(newGroupBtn, SIGNAL(clicked(bool)), this, SLOT(newGroup()));
 
-  //mCurrendGroup->setAlignment(Qt::AlignVertical_Mask);
-  //mCurrendGroup->setOrientation(Qt::Vertical);
+  //mMotherName->setAlignment(Qt::AlignVertical_Mask);
+  //mMotherName->setOrientation(Qt::Vertical);
   QGridLayout* gbox = new QGridLayout;
   gbox->setMargin(0);
-  gbox->addWidget(mCurrendGroup, 0, 0);
+  gbox->addWidget(mMotherName, 0, 0);
   gbox->addWidget(newGroupBtn, 0, 1);
   gbox->addWidget(btn, 0, 2);
   gbox->addWidget(mGroupView, 1, 0, 1, 3);
@@ -87,8 +90,6 @@ FiGroupWidget::FiGroupWidget(FClass* parent)
   //layout->addWidget(, 0, 1);
 
   setLayout(layout);
-
-  getGroups(0);
 }
 
 FiGroupWidget::~FiGroupWidget()
@@ -97,38 +98,92 @@ FiGroupWidget::~FiGroupWidget()
 void FiGroupWidget::loadSettings()
 {
   mSplitter->restoreState(mRcFile->value("SplitterSizes").toByteArray());
+  mMotherName->setText(mRcFile->getST("MotherName"));
+  mMotherId = mRcFile->getIT("MotherGroupId");
+  mCurrendGroupId = mRcFile->getIT("CurrentGroupId");
+
+  getGroups();
+  // Activate group (highlight)
+  for(int i = 0; i < mGroupView->rowCount(); ++i)
+  {
+    if(mGroupView->item(i, 0)->text().toInt() != mCurrendGroupId) continue;
+    mGroupView->setCurrentCell(i, 1);
+    getGMembers();
+    break;
+  }
 }
 
 void FiGroupWidget::saveSettings()
 {
   mRcFile->setValue("SplitterSizes", mSplitter->saveState());
+  mRcFile->setValue("MotherName", mMotherName->text());
+  mRcFile->setValue("MotherGroupId", mMotherId);
+  mRcFile->setValue("CurrentGroupId", mCurrendGroupId);
 }
 
 void FiGroupWidget::groupClicked(int row, int)
 {
-  getGMembers(mGroupView->item(row, 0)->text().toInt());
+  mCurrendGroupId = mGroupView->item(row, 0)->text().toInt();
+  getGMembers();
 }
 
 void FiGroupWidget::groupRowChanged(int row)
 {
-  getGMembers(mGroupView->item(row, 0)->text().toInt());
+  mCurrendGroupId = mGroupView->item(row, 0)->text().toInt();
+  getGMembers();
 }
 
-void FiGroupWidget::openGroup(int row, int)
+void FiGroupWidget::groupOpen(int row, int)
 {
-  mMotherNames.push(mCurrendGroup->text());
-  mCurrendGroup->setText(mGroupView->item(row, 1)->text());
-  mMotherIds.push(mGroupView->item(row, 2)->text().toInt());
-  getGroups(mGroupView->item(row, 0)->text().toInt());
+  mMotherName->setText(mGroupView->item(row, 1)->text());
+  mMotherId = mGroupView->item(row, 0)->text().toInt();
+  getGroups();
+  setActiveGroup("");
 }
 
 void FiGroupWidget::groupUp()
 {
-  if(mMotherIds.isEmpty()) return;
+  QSqlQuery* query = mFilu->getGroups(-1); // Get all groups
+  if(!query)
+  {
+    // Absolutly no groups. Make a 'reset'.
+    mMotherId = 0;
+    mCurrendGroupId = 0;
+    mMotherName->setText("");
+    return;
+  }
 
-  getGroups(mMotherIds.pop());
-  setActiveGroup(mCurrendGroup->text());
-  mCurrendGroup->setText(mMotherNames.pop());
+  // query looks like
+  // group_id, name, mothergroup_id
+  while(query->next())
+  {
+    // Search mother
+    if(query->value(0).toInt() == mMotherId) break;
+  }
+
+  // Check if found. Could happens when group was deleted meanwhile.
+  mMotherId = 0;
+  mMotherName->setText("");
+  QString actGroup;
+  if(query->isValid())
+  {
+    actGroup  = query->value(1).toString();
+    mMotherId = query->value(2).toInt();
+  }
+
+  if(mMotherId)
+  {
+    query->seek(-1);
+    while(query->next())
+    {
+      // Search grandmother
+      if(query->value(0).toInt() == mMotherId) break;
+    }
+    mMotherName->setText(query->value(1).toString());
+  }
+
+  getGroups();
+  setActiveGroup(actGroup);
 }
 
 void FiGroupWidget::newGroup()
@@ -149,7 +204,7 @@ void FiGroupWidget::newGroup()
   mGroupView->setCurrentItem(item);
 
   item = new QTableWidgetItem;
-  item->setText(QString::number(mCurrendGroupId));
+  item->setText(QString::number(mMotherId));
   mGroupView->setItem(row, 2, item);
 
   mEditing = true;
@@ -161,23 +216,44 @@ void FiGroupWidget::groupEdited(int row, int /*column*/)
 
   mGroupView->resizeColumnsToContents();
 
-  int groupId = mGroupView->item(row, 0)->text().toInt();
+  int groupId  = mGroupView->item(row, 0)->text().toInt();
   QString name = mGroupView->item(row, 1)->text();
   int motherId = mGroupView->item(row, 2)->text().toInt();
 //qDebug() << groupId << name << motherId;
   mFilu->putGroup(groupId, name, motherId);
-  getGroups(mCurrendGroupId);
+  getGroups();
   setActiveGroup(name);
 }
 
 void FiGroupWidget::setActiveGroup(const QString& group)
 {
-  QList<QTableWidgetItem *> list = mGroupView->findItems(group, Qt::MatchExactly);
-  if(list.isEmpty())
-  {qDebug() << group << "nix gefunden!?"; return;}
-  mGroupView->setCurrentItem(list.at(0));
-  int row = mGroupView->currentRow();
-  getGMembers(mGroupView->item(row, 0)->text().toInt());
+  if(!mGroupView->rowCount())
+  {
+    mMemberView->erase();
+    return;
+  }
+  else if(group.isEmpty())
+  {
+    mGroupView->setCurrentCell(0, 0);
+    mCurrendGroupId = mGroupView->item(0, 0)->text().toInt();
+  }
+  else
+  {
+    QList<QTableWidgetItem *> list = mGroupView->findItems(group, Qt::MatchExactly);
+    if(!list.size()) // Be on the save side
+    {
+      mGroupView->setCurrentCell(0, 0);
+      mCurrendGroupId = mGroupView->item(0, 0)->text().toInt();
+    }
+    else
+    {
+      mGroupView->setCurrentItem(list.at(0));
+      int row = mGroupView->currentRow();
+      mCurrendGroupId = mGroupView->item(row, 0)->text().toInt();
+    }
+  }
+
+  getGMembers();
 }
 
 void FiGroupWidget::memberClicked(int row, int)
@@ -200,26 +276,21 @@ void FiGroupWidget::memberRowChanged(int row)
               , mMemberView->item(row, 4)->text().toInt()); // MarketId
 }
 
-void FiGroupWidget::getGroups(int groupId)
+void FiGroupWidget::getGroups()
 {
   mEditing = false;
-  mCurrendGroupId = groupId;
-
-  QSqlQuery* query = mFilu->getGroups(groupId);
 
   mGroupView->erase();
-
   while(mGroupView->columnCount() < 3) mGroupView->insertColumn(0);
 
-  if(!query)
-  {
-    getGMembers(groupId);
-    return;
-  }
+  QSqlQuery* query = mFilu->getGroups(mMotherId);
+  if(!query) return;
 
   QTableWidgetItem* item;
   while(query->next())
   {
+    // query looks like
+    // group_id, caption, mothergroup_id
     int row = mGroupView->rowCount();
     mGroupView->insertRow(row);
     item = new QTableWidgetItem;
@@ -235,8 +306,6 @@ void FiGroupWidget::getGroups(int groupId)
     mGroupView->setItem(row, 2, item);
   }
 
-  setActiveGroup(mGroupView->item(0, 1)->text());
-
   QSqlRecord rec = query->record();
   QStringList header;
   for(int i = 0; i < rec.count(); ++i) header << rec.fieldName(i);
@@ -245,22 +314,19 @@ void FiGroupWidget::getGroups(int groupId)
   mGroupView->hideColumn(0);
   mGroupView->hideColumn(2);
   mGroupView->resizeColumnsToContents();
+  mGroupView->resizeRowsToContents();
 
   mEditing = true;
 }
 
-void FiGroupWidget::getGMembers(int groupId)
+void FiGroupWidget::getGMembers()
 {
-  if(groupId == 0) return;
-
-  mGroupViewedId = groupId;
-
-  QSqlQuery* query = mFilu->getGMembers(groupId);
+  if(!mCurrendGroupId) return;
 
   mMemberView->erase();
-
   while(mMemberView->columnCount() < 5) mMemberView->insertColumn(0);
 
+  QSqlQuery* query = mFilu->getGMembers(mCurrendGroupId);
   if(!query) return;
 
   QTableWidgetItem* item;
@@ -299,6 +365,7 @@ void FiGroupWidget::getGMembers(int groupId)
   mMemberView->hideColumn(1);
   mMemberView->hideColumn(4);
   mMemberView->resizeColumnsToContents();
+  mMemberView->resizeRowsToContents();
 }
 
 void FiGroupWidget::userDragInData(QTableView* tv)
@@ -319,10 +386,10 @@ void FiGroupWidget::userDragInData(QTableView* tv)
   {
     if(mil.at(i).column() != fiIdColumn) continue;
     //qDebug() << "mil:" << mil.at(i).row() << mil.at(i).column() << mil.at(i).data().toString();
-    mFilu->addToGroup(mGroupViewedId, mil.at(i).data().toInt());
+    mFilu->addToGroup(mCurrendGroupId, mil.at(i).data().toInt());
   }
 
-  getGMembers(mGroupViewedId);
+  getGMembers();
 }
 
 void FiGroupWidget::removeFromGroup()
@@ -335,7 +402,7 @@ void FiGroupWidget::removeFromGroup()
     mFilu->deleteRecord(":user", "gmember", mil.at(i).data().toInt());
   }
 
-  getGMembers(mGroupViewedId);
+  getGMembers();
 }
 
 void FiGroupWidget::removeGroup()
@@ -357,21 +424,27 @@ void FiGroupWidget::removeGroup()
       mFilu->deleteRecord(":user", "group", mil.at(i).data().toInt());
   }
 
-  if(mMotherIds.isEmpty()) getGroups(0);
-  else getGroups(mMotherIds.top());
+  getGroups();
 }
 
+/***********************************************************************
+*
+*   MyTableWidget stuff
+*
+************************************************************************/
 MyTableWidget::MyTableWidget(QWidget* parent)
              : QTableWidget(parent)
 {
   setDragEnabled(true);
   setAcceptDrops(true);
   horizontalHeader()->hide();
+  horizontalHeader()->setStretchLastSection(true);
   verticalHeader()->hide();
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setHorizontalScrollMode(ScrollPerPixel);
   setVerticalScrollMode(ScrollPerPixel);
   setEditTriggers(QAbstractItemView::NoEditTriggers);
+  setGridStyle(Qt::NoPen);
 
   connect(this, SIGNAL(currentItemChanged(QTableWidgetItem *, QTableWidgetItem *))
   , this, SLOT(currentItemChangedSlot(QTableWidgetItem *, QTableWidgetItem *)));
