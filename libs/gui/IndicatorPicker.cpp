@@ -53,6 +53,30 @@ void IndicatorPicker::readSettings()
   mIndicatorPath = mRcFile->getST("IndicatorPath");
 }
 
+void IndicatorPicker::saveState(QSettings& setting)
+{
+  QString group;
+
+  if(currentItem())
+  {
+    if(currentItem()->parent()) group = currentItem()->parent()->text(0);
+  }
+
+  // Don't save the indicator, will saved by 'the beef' widget e.g. IndiWidgetSimple
+  setting.setValue("PickerGroup", group);
+}
+
+void IndicatorPicker::restoreState(QSettings& setting)
+{
+  QString group;
+  QString indi;
+
+  group = setting.value("PickerGroup").toString();
+  indi =  setting.value("Indicator").toString();
+
+  climbOnTree(group, indi);
+}
+
 void IndicatorPicker::indicatorsChanged(const QString& path)
 {
   QString group;

@@ -40,6 +40,9 @@ class IndicatorPicker : public QTreeWidget, public FClass
                   IndicatorPicker(FClass* parent);
     virtual      ~IndicatorPicker();
 
+    void          saveState(QSettings& setting);
+    void          restoreState(QSettings& setting);
+
     signals:
       void        changed(QString);
 

@@ -63,9 +63,7 @@ void IndicatorWidget::init()
   mSplitter->addWidget(mDataView);
   mSplitter->setSizes(sizes);
 
-  // Don't call readSettings(), that would cause to load the indicator twice
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  mSplitter->restoreState(settings.value("IndicatorSplitter").toByteArray());
+  readSettings();
 
   delete layout();
   QHBoxLayout* lay = new QHBoxLayout;
@@ -99,18 +97,18 @@ void IndicatorWidget::setSize(QList<int>& size)
 
 void IndicatorWidget::readSettings()
 {
-  IndiWidgetSimple::readSettings();
-
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   mSplitter->restoreState(settings.value("IndicatorSplitter").toByteArray());
+  settings.beginGroup(mName);
+  mPicker->restoreState(settings);
 }
 
 void IndicatorWidget::saveSettings()
 {
-  IndiWidgetSimple::saveSettings();
-
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   settings.setValue("IndicatorSplitter", mSplitter->saveState());
+  settings.beginGroup(mName);
+  mPicker->saveState(settings);
 }
 
 void IndicatorWidget::mouseSlot(MyMouseEvent* event)
