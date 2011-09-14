@@ -53,6 +53,7 @@ void SearchFiWidget::init()
   mView->horizontalHeader()->hide();
   mView->verticalHeader()->hide();
   //mView->setSelectionBehavior(QAbstractItemView::SelectRows);
+  mView->setGridStyle(Qt::NoPen);
   connect(mView, SIGNAL(newSelection(const QModelIndex &))
           , this, SLOT(clicked(const QModelIndex &)));
 
@@ -69,10 +70,11 @@ void SearchFiWidget::search()
 {
   QSqlQuery* query = mFilu->searchFi(mSearchField->text(),  mTypeSelBtn->selected());
 
-  if(!query) return;
+  if(!query) query = mFilu->lastQuery();
   mModel->setQuery(*query);
 
   mView->resizeColumnsToContents();
+  mView->resizeRowsToContents();
   mView->hideColumn(0);
   mView->hideColumn(1);
   //resize(mView->columnWidth(2) + mView->columnWidth(3) + mView->columnWidth(4) + mView->columnWidth(5) + 10, height());
