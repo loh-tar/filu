@@ -190,7 +190,11 @@ void IndicatorPainter::useData(BarTuple* bars)
 {
   mBars = bars;
 
-  if(!bars) return;
+  if(!bars)
+  {
+    mData = 0;
+    return;
+  }
 
   bool ok = calculate();
 
