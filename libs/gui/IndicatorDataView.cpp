@@ -37,13 +37,19 @@ IndicatorDataView::IndicatorDataView(PlotSheet* parent)
 
   mDataView.setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
   mDataView.setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+  mDataView.setSelectionBehavior(QAbstractItemView::SelectRows);
+  mDataView.setEditTriggers(QAbstractItemView::NoEditTriggers);
   mDataView.horizontalHeader()->hide();
   mDataView.verticalHeader()->hide();
+  mDataView.horizontalHeader()->setStretchLastSection(true);
+  mDataView.setGridStyle(Qt::NoPen);
 
   mFilterView.setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
   mFilterView.setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
   mFilterView.horizontalHeader()->hide();
   mFilterView.verticalHeader()->hide();
+  mFilterView.horizontalHeader()->setStretchLastSection(true);
+  mFilterView.setGridStyle(Qt::NoPen);
 
   addTab(&mDataView, tr("Data"));
   addTab(&mFilterView, tr("Filter"));
@@ -176,6 +182,8 @@ void IndicatorDataView::initView(const QString& indicator)
     mFilterView.setCellWidget(row++, 0, cb);
   }
 
+  mFilterView.resizeColumnsToContents();
+  mFilterView.resizeRowsToContents();
   mFilterChanged = true;
   tabChanged(0);
 }
@@ -227,6 +235,9 @@ void IndicatorDataView::tabChanged(int index)
       item = new QTableWidgetItem("");
       mDataView.setItem(mDataView.rowCount() - 1, 1, item);
     }
+
+    mDataView.resizeColumnsToContents();
+    mDataView.resizeRowsToContents();
   }
 }
 
