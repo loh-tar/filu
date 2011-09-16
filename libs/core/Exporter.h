@@ -54,7 +54,7 @@ class Exporter : public FClass
     };
 
     void          printStatus(Effect effect = eEffectPending, const QString& extraTxt = "");
-    bool          noData(const QString& what = "");
+    bool          noData(const QString& what = "", const VerboseLevel when = eInfo);
     void          writeToFile();
     bool          selectFis();
 
@@ -71,6 +71,10 @@ class Exporter : public FClass
     bool          expCOs();
     bool          expGroups();
     bool          expGroup(int gid, bool ignoreIfEmpty = true);
+    bool          expDepots();
+    void          expPositions(QSqlQuery* pos);
+    void          expAccount(QSqlQuery* acc);
+    void          expOrders(QSqlQuery* orders);
 
     QStringList   mCmdLine;         // The command line with all options
     QStringList   mParm;            // A helper to get parameter by FTool::getParameter()

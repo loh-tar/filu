@@ -103,8 +103,11 @@ Export Switches Of User Spezific Data
 co
   Export chart objects.
 
-depots FIXME: not implemented
-  Exports the ...
+depots [--owner <foo> | --dpid <id>] [--withSim]
+  Exports (almost) all historical data relating to depots. Which are positions,
+  orders and account postings. 'Almost' means that not truly important data are
+  omitted by default, which is stuff by 'Simulator' and not active orders. But
+  you can anyway export Simulator depots by give --owner, --dpid or --withSim.
 
 groups
   Exports the members of created groups at PerformerF. Empty groups will not

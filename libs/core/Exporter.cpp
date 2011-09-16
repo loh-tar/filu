@@ -41,7 +41,7 @@ Exporter::~Exporter()
   }
 }
 
-void Exporter::printStatus(Effect effectEnum, const QString& extraTxt)
+void Exporter::printStatus(Effect effectEnum/* = eEffectPending*/, const QString& extraTxt/* = ""*/)
 {
   static const QStringList effectList = QStringList() << "" << "Ok" << "Note"<< "FAULT";
   static const char c[] = {'-', '\\', '|', '/'};
@@ -143,7 +143,7 @@ void Exporter::printStatus(Effect effectEnum, const QString& extraTxt)
   mRolex.start();
 }
 
-bool Exporter::noData(const QString& what/* = ""*/)
+bool Exporter::noData(const QString& what/* = ""*/, const VerboseLevel when/* = eVerbose*/)
 {
   if(mFilu->lastResult() > Filu::eNoData)
   {
@@ -153,6 +153,7 @@ bool Exporter::noData(const QString& what/* = ""*/)
   }
 
   if(what.isEmpty()) return true;
+  if(!verboseLevel(when)) return true;
 
   if(mDataW) printStatus(eEffectOk);
 
@@ -324,7 +325,7 @@ bool Exporter::exxport(QStringList& command)
   if(mCmdLine.contains("--splits"))       if(!expSplits())  return false; // What if -eodAdjusted? after reimport we have a problem
   if(mCmdLine.contains("--co"))           if(!expCOs())     return false;
   if(mCmdLine.contains("--groups"))       if(!expGroups())  return false;
-//   if(mCmdLine.contains("--depots")) ;
+  if(mCmdLine.contains("--depots"))       if(!expDepots())  return false;
 //   if(mCmdLine.contains("--tstrategy")) ;
 //   if(mCmdLine.contains("")) ;
   if(mCmdLine.contains("--eodRaw"))       if(!expEODRaw())  return false; // Because it takes the most time, do it last
@@ -949,4 +950,348 @@ bool Exporter::expGroup(int gid, bool ignoreIfEmpty/* = true*/)
   if(verboseLevel(eAmple)) printStatus(eEffectOk, path);
 
   return true;
+}
+
+bool Exporter::expDepots()
+{
+  bool noSimulator = true;
+
+  if(mCmdLine.contains("--withSim")) noSimulator = false;
+
+  if(FTool::getParameter(mCmdLine, "--owner", mParm) > 0)
+  {
+    mFilu->setSqlParm(":owner",  mParm.at(0));
+    noSimulator = false;
+  }
+  else
+  {
+    mFilu->setSqlParm(":owner",  "");
+  }
+
+  if(FTool::getParameter(mCmdLine, "--dpid", mParm) > 0)
+  {
+    mFilu->setSqlParm(":depotId",  mParm.at(0));
+    noSimulator = false;
+  }
+  else
+  {
+    mFilu->setSqlParm(":depotId",  -1);
+  }
+
+  mDataText = "Depots";
+
+  QSqlQuery* query = mFilu->execSql("GetDepots");
+  if(!query)
+  {
+    printStatus(eEffectFault);
+    check4FiluError(FUNC);
+    return false;
+  }
+
+  if(noData("No depots found.")) return true;
+
+  // Filter out Simulator, or not
+  QList<QSqlRecord> depots;
+  while(query->next())
+  {
+    if(query->value(3).toString() == "Simulator" and noSimulator) continue;
+    depots << query->record();
+  }
+
+  mDataR = depots.size();
+
+  if(!depots.size())
+  {
+    printStatus(eEffectNote, "No depots found.");
+    return true;
+  }
+
+  if(verboseLevel() != eInfo) // Prefer the format
+  {
+    mBuffer << "***\n";
+    mBuffer << "*\n";
+    mBuffer << "*\n";
+    mBuffer << "* Depot data - All data belonging to a depot are grouped\n";
+    mBuffer << "*\n";
+
+    for(int i = 0; i < depots.size(); ++i)
+    {
+      mDataText    = "Depots";
+      mDataR       = 1;
+      QSqlRecord d = depots.at(i);
+      QString depotInfo = d.value("Owner").toString() + " - " + d.value("Name").toString();
+
+      mBuffer << "*\n";
+      mBuffer << "* Depot: " << depotInfo << endl;
+      mBuffer << "*\n";
+      mBuffer << "[DepotOwner]" << d.value("Owner").toString() << endl;
+      mBuffer << "[DepotName]"  << d.value("Name").toString()  << endl;
+      mBuffer << endl;
+      mBuffer << "[Header]Trader;BrokerName\n\n";
+
+      mBuffer << d.value("Trader").toString() << ";";
+      mBuffer << d.value("Broker").toString() << endl;
+      mBuffer << endl;
+
+      writeToFile();
+      printStatus(eEffectOk, d.value("Owner").toString() + " - " + d.value("Name").toString());
+
+      // positions
+      mBuffer << "*\n";
+      mBuffer << "* Position adds and outs for: "<< depotInfo << endl;
+      mBuffer << "*\n";
+      mBuffer << "[Header]PDate;RefSymbol;Market;Pieces;Price;Note\n\n";
+
+      mDataText = "  Positions";
+      mFilu->setSqlParm(":fiId", -1);
+      mFilu->setSqlParm(":depotId", d.value("DepotId").toInt());
+
+      query = mFilu->execSql("GetDepotPositions");
+      if(!noData("No positions found."))
+      {
+        expPositions(query);
+        printStatus(eEffectOk);
+      }
+
+      // account
+      mBuffer << "*\n";
+      mBuffer << "* Account postings for: " << depotInfo << endl;
+      mBuffer << "*\n";
+      mBuffer << "[Header]APDate;APType;Text;Value\n\n";
+
+      mDataText = "  Account";
+      mFilu->setSqlParm(":accountId", -1);
+      mFilu->setSqlParm(":depotId", d.value("DepotId").toInt());
+
+      query = mFilu->execSql("GetAccount");
+      if(!noData("No account postings found."))
+      {
+        expAccount(query);
+        printStatus(eEffectOk);
+      }
+
+      // orders
+      mBuffer << "*\n";
+      mBuffer << "* Orders for: " << depotInfo << endl;
+      mBuffer << "*\n";
+      mBuffer << "[Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note\n\n";
+
+      mDataText = "  Orders";
+      mFilu->setSqlParm(":orderId", -1);
+      mFilu->setSqlParm(":fiId", -1);
+      mFilu->setSqlParm(":status", FiluU::eOrderActive);
+      mFilu->setSqlParm(":depotId", d.value("DepotId").toInt());
+
+      query = mFilu->execSql("GetDepotOrders");
+      if(!noData("No orders found."))
+      {
+        expOrders(query);
+        printStatus(eEffectOk);
+      }
+    }
+  }
+  else
+  {
+    // depot
+    mBuffer << "***\n";
+    mBuffer << "*\n";
+    mBuffer << "* Depot - Depot\n";
+    mBuffer << "*\n";
+    mBuffer << "[Header]DepotOwner;DepotName;Trader;BrokerName\n\n";
+
+    for(int i = 0; i < depots.size(); ++i)
+    {
+      QSqlRecord d = depots.at(i);
+
+      mBuffer << d.value("Owner").toString() << ";";
+      mBuffer << d.value("Name").toString() << ";";
+      mBuffer << d.value("Trader").toString() << ";";
+      mBuffer << d.value("Broker").toString() << endl;
+
+      writeToFile();
+    }
+
+    mBuffer << endl;
+    printStatus(eEffectOk);
+
+    // positions
+    mBuffer << "***\n";
+    mBuffer << "*\n";
+    mBuffer << "* Depot - Position adds and outs\n";
+    mBuffer << "*\n";
+    mBuffer << "[Header]PDate;RefSymbol;Market;Pieces;Price;Note\n\n";
+
+    mDataText = "Positions";
+    mFilu->setSqlParm(":fiId", -1);
+    bool noDataFound = true;
+    for(int i = 0; i < depots.size(); ++i)
+    {
+      QSqlRecord d = depots.at(i);
+      mFilu->setSqlParm(":depotId", d.value("DepotId").toInt());
+
+      mBuffer << "[DepotOwner]" << d.value("Owner").toString() << endl;
+      mBuffer << "[DepotName]"  << d.value("Name").toString()  << endl;
+      mBuffer << endl;
+
+      query = mFilu->execSql("GetDepotPositions");
+      if(noData())
+      {
+        mBuffer << "* No positions found" << endl;
+        mBuffer << endl;
+        continue;
+      }
+
+      noDataFound = false;
+      expPositions(query);
+    }
+
+    if(noDataFound)
+    {
+      printStatus(eEffectNote, "No positions found.");
+    }
+    else
+    {
+      printStatus(eEffectOk);
+    }
+
+    // account
+    mBuffer << "***\n";
+    mBuffer << "*\n";
+    mBuffer << "* Depot - Account postings\n";
+    mBuffer << "*\n";
+    mBuffer << "[Header]APDate;APType;Text;Value\n\n";
+
+    mDataText = "Account";
+    mFilu->setSqlParm(":accountId", -1);
+    noDataFound = true;
+    for(int i = 0; i < depots.size(); ++i)
+    {
+      QSqlRecord d = depots.at(i);
+      mFilu->setSqlParm(":depotId", d.value("DepotId").toInt());
+
+      mBuffer << "[DepotOwner]" << d.value("Owner").toString() << endl;
+      mBuffer << "[DepotName]"  << d.value("Name").toString()  << endl;
+      mBuffer << endl;
+
+      query = mFilu->execSql("GetAccount");
+      if(noData())
+      {
+        mBuffer << "* No account positions found" << endl;
+        mBuffer << endl;
+        continue;
+      }
+
+      noDataFound = false;
+      expAccount(query);
+    }
+
+    if(noDataFound)
+    {
+      printStatus(eEffectNote, "No account postings found.");
+    }
+    else
+    {
+      printStatus(eEffectOk);
+    }
+
+    // orders
+    mBuffer << "***\n";
+    mBuffer << "*\n";
+    mBuffer << "* Depot - Orders\n";
+    mBuffer << "*\n";
+    mBuffer << "[Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note\n\n";
+
+    mDataText = "Orders";
+    mFilu->setSqlParm(":orderId", -1);
+    mFilu->setSqlParm(":fiId", -1);
+    mFilu->setSqlParm(":status", FiluU::eOrderActive);
+    noDataFound = true;
+    for(int i = 0; i < depots.size(); ++i)
+    {
+      QSqlRecord d = depots.at(i);
+      mFilu->setSqlParm(":depotId", d.value("DepotId").toInt());
+
+      mBuffer << "[DepotOwner]" << d.value("Owner").toString() << endl;
+      mBuffer << "[DepotName]"  << d.value("Name").toString()  << endl;
+      mBuffer << endl;
+
+      query = mFilu->execSql("GetDepotOrders");
+      if(noData())
+      {
+        mBuffer <<  "* No orders found" << endl;
+        mBuffer << endl;
+        continue;
+      }
+
+      noDataFound = false;
+      expOrders(query);
+    }
+
+    if(noDataFound)
+    {
+      printStatus(eEffectNote, "No orders found.");
+    }
+    else
+    {
+      printStatus(eEffectOk);
+    }
+  }
+}
+
+void Exporter::expPositions(QSqlQuery* pos)
+{
+  while(pos->next())
+  {
+    QSqlRecord p = pos->record();
+
+    mBuffer <<  p.value("Date").toDate().toString(Qt::ISODate) << ";";
+    mBuffer <<  p.value("Symbol").toString() << ";";
+    mBuffer <<  p.value("Market").toString() << ";";
+    mBuffer <<  p.value("Pieces").toString() << ";";
+    mBuffer <<  p.value("Price").toString() << ";";
+    mBuffer <<  p.value("Note").toString() << endl;
+
+    writeToFile();
+  }
+
+  mBuffer << endl;
+}
+
+void Exporter::expAccount(QSqlQuery* acc)
+{
+  while(acc->next())
+  {
+    QSqlRecord a = acc->record();
+
+    mBuffer <<  a.value("Date").toDate().toString(Qt::ISODate) << ";";
+    mBuffer <<  mFilu->accPostingType(a.value("Type").toInt()) << ";";
+    mBuffer <<  a.value("Text").toString() << ";";
+    mBuffer <<  a.value("Value").toDouble() << endl;
+
+    writeToFile();
+  }
+
+  mBuffer << endl;
+}
+
+void Exporter::expOrders(QSqlQuery* orders)
+{
+  while(orders->next())
+  {
+    QSqlRecord o = orders->record();
+
+    mBuffer <<  o.value("ODate").toDate().toString(Qt::ISODate) << ";";
+    mBuffer <<  o.value("VDate").toDate().toString(Qt::ISODate) << ";";
+    mBuffer <<  o.value("Symbol").toString() << ";";
+    mBuffer <<  o.value("Market").toString() << ";";
+    mBuffer <<  o.value("Pieces").toInt() << ";";
+    mBuffer <<  o.value("Limit").toDouble() << ";";
+    mBuffer << mFilu->orderType(o.value("Buy").toInt()) << ";";
+    mBuffer << mFilu->orderStatus(o.value("Status").toInt()) << ";";
+    mBuffer <<  o.value("Note").toString() << endl;
+
+    writeToFile();
+  }
+
+  mBuffer << endl;
 }
