@@ -66,6 +66,7 @@ class Exporter : public FClass
     bool          expSymbols();
     bool          expEODRaw();
     bool          expSplits();
+    bool          expBroker();
 
     // User data exports
     bool          expCOs();

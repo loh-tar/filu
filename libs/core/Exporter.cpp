@@ -258,7 +258,7 @@ bool Exporter::exxport(QStringList& command)
   {
     mCmdLine << "--fiTypes" << "--symbolTypes" << "--markets" << "--offdays"
              << "--marketSymbols" << "--fiNames" << "--symbols" << "--eodRaw"
-             << "--splits" << "--ulys"
+             << "--splits" << "--broker" << "--ulys"
              << "--co" << "--groups" << "--depots";
 
     extraInfo = true;
@@ -323,6 +323,7 @@ bool Exporter::exxport(QStringList& command)
   if(mCmdLine.contains("--symbols"))      if(!expSymbols()) return false;
 //   if(mCmdLine.contains("--eodAdjusted")) ;
   if(mCmdLine.contains("--splits"))       if(!expSplits())  return false; // What if -eodAdjusted? after reimport we have a problem
+  if(mCmdLine.contains("--broker"))       if(!expBroker())  return false;
   if(mCmdLine.contains("--co"))           if(!expCOs())     return false;
   if(mCmdLine.contains("--groups"))       if(!expGroups())  return false;
   if(mCmdLine.contains("--depots"))       if(!expDepots())  return false;
@@ -799,6 +800,48 @@ bool Exporter::expSplits()
     mBuffer << query->value(1).toDate().toString(Qt::ISODate) << ";";
     mBuffer << query->value(2).toString() << ";"; //
     mBuffer << query->value(3).toDouble() << "\n"; //
+    writeToFile();
+  }
+
+  mBuffer << endl;
+
+  printStatus(eEffectOk);
+
+  return true;
+}
+
+bool Exporter::expBroker()
+{
+  mDataText = "Broker";
+
+  mFilu->setSqlParm(":brokerId", 0);
+  QSqlQuery* query = mFilu->execSql("GetBroker");
+
+  if(!query)
+  {
+    printStatus(eEffectFault);
+    check4FiluError(FUNC);
+    return false;
+  }
+
+  if(noData("Info")) return true;
+
+  mBuffer << "***\n";
+  mBuffer << "*\n";
+  mBuffer << "* Broker\n";
+  mBuffer << "*\n";
+
+  mBuffer << "[Header]BrokerName;CurrencySymbol;FeeFormula\n\n";
+  writeToFile();
+
+  while(query->next())
+  {
+    QSqlRecord r = query->record();
+
+    mBuffer << r.value("Name").toString() << ";";
+    mBuffer << r.value("Currency").toString() << ";";
+    mBuffer << r.value("FeeFormula").toString() << endl;
+
     writeToFile();
   }
 

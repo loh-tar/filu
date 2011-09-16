@@ -415,8 +415,8 @@ BrokerTuple* Filu::getBroker(int brokerId/* = 0*/)
     int i = broker->mIndex;
     broker->mId[i]         = query->value(0).toInt();
     broker->mName[i]       = query->value(1).toString();
-    broker->mFeeFormula[i] = query->value(2).toString();
-    broker->mQuality[i]    = query->value(3).toInt();
+    broker->mFeeFormula[i] = query->value(4).toString();
+    broker->mQuality[i]    = query->value(5).toInt();
   }
 
   if(!brokerId) broker->rewind();

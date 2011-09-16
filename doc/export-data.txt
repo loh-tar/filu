@@ -60,6 +60,9 @@ Force the export of the given data type.
 all
   Export all kind of data.
 
+broker
+  Export the broker.
+
 eodAdjusted FIXME: not implemented
   These eodBar data are adjusted by splits and dividents if some.
 
