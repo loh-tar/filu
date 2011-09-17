@@ -30,8 +30,13 @@ L: create and use fancy Icons in the user interfaces. But do it conform with
 
 Filu/Database
 ===============
+H: Review currencys. They need a own market Curry, don't use NoMarket. See also
+   gfi_xcurrency_eodbar, it seems I have it not finished.
 H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
+M: Think about a function lovelysymbol to replace the view. The function can
+   take a prefered symbol type to return. When not found returns as usual the
+   symbol with the lowest seq(uence).
 M: Add a diary where you can record your thoughts and feelings. These entrys
    should then be viewable in the chart like chartobjects.
 M: write new GetSymbols.sql, now is too complicate an delivers not ever what
@@ -78,8 +83,10 @@ PerformerF
 ============
 H: add a shortcut to display/hide the toolbar, now you can disable the tb with
    right-click by the mouse, but how you can bring them back?
-H: Fix search FI widget to set cursor inside when aktivated and show all FI
 M: add an "about" button with copyright and other stuff
+L: Fix SearchFi widget to set cursor inside when aktivated and show all FI.
+   Hm, it seems that's an issue with the DockWidget, when shown got it not the
+   focus.
 L: add buttons to change the density quickly. Since the new IndiSetPad might
    this no longer needed.
 L: Add spin boxes to set the to be loaded date range
@@ -92,6 +99,12 @@ M: add a split browse table to FI page, editable of course.
 M: add the possibility to define action(scripts) which will executed after an
    event. e.g. a new FI was added: download quotes. Or search for more info
    about the FI on the inet like full name, more symbols etc...
+L: add left from the editor a IndicatorPicker and above of him a list of last
+   saved files. Both tilled by a horizontal splitter.
+L: Add a simple 'version control system' to the editor page. Means, copy each
+   file into a special subfolder and append a timestamp suffix. Add a button
+   to bring up a combobox (or use the existing) where you can scroll thru the
+   history of the current loaded file and restore the file if desired.
 L: add syntax highlightning to indicator editor
 L: add picker menu for available functions/commands like for TA-LIB. This means
    PLOTFOO, SETFOO, CROSS etc. and, more important, also FiluPower-Indicators
@@ -154,9 +167,6 @@ L: REF(...) fix to the possibility with forecasts.
 
 IndicatorPicker
 =================
-H: possibility to reload available indicator list, automatic would be the best
-M: auto-detect if an indicator was edited, reload then (emit signal to..)
-M: restore/mark the used indicator after program start
 L: change from treeview to "something better"
 
 
