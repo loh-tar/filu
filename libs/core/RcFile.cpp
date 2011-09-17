@@ -25,10 +25,11 @@ RcFile::RcFile(Newswire* parent)
       : QSettings("Filu")
       , mNewswire(parent)
 {
-  mDefault.reserve(33);
+  mDefault.reserve(34);
 
   // Global stuff
-  mDefault.insert("InstallPath",       "/usr/local/lib/Filu/");
+  mDefault.insert("InstallPath",       "/usr/local/lib/Filu/"); // FIXME Don't hard code, use a cmake target
+  mDefault.insert("PluginPath",        "");
   mDefault.insert("ProviderPath",      "provider/");
   mDefault.insert("FiluHome",          "Filu/");
   mDefault.insert("IndicatorPath",     "Indicators/");
@@ -239,6 +240,7 @@ void RcFile::checkFiluHome()
     // Write all relevant keys to the (still empty) config file
     setValue("InstallPath", getST("InstallPath"));
 
+    setFullPath("InstallPath", "PluginPath");
     setFullPath("InstallPath", "ProviderPath");
     setFullPath("FiluHome", "IndicatorPath");
     setFullPath("FiluHome", "IndiSetsPath");

@@ -1266,6 +1266,7 @@ void Filu::openDB()
     {
       fatal(FUNC, tr("The PSql Driver works not properly."));
       errInfo(FUNC, tr("Did you install the fixed version as noted in the readme?"));
+      errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getST("PluginPath")));
     }
   }
 }
@@ -1633,6 +1634,7 @@ int Filu::result(const QString& func, QSqlQuery* query)
 
 void Filu::readSettings()
 {
+  QCoreApplication::addLibraryPath(mRcFile->getST("PluginPath"));
   mSqlPath = mRcFile->getST("SqlPath");
   mFiluSchema = mRcFile->getST("FiluSchema");
   mCommitBlockSize = mRcFile->getIT("CommitBlockSize");

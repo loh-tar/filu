@@ -38,6 +38,9 @@ use a different OS you may need to do something deviating.
 
 1-2-1- Needed Dependencies
 ============================
+Minimum required Qt version is 4.6.
+
+
 Arch
 ------
 To compile the programs you need:
@@ -136,6 +139,8 @@ cd into each other of the above visited directories and do:
 
 5- Fix Qt Bug in PSql Driver
 ==============================
+Preamble
+----------
 In Qt later 4.3.5 (released May 2008) is an ugly bug in the PSql driver which is
 sadly still not fixed. Moreover it would seem that there is no plan fix it :-(
   http://bugreports.qt.nokia.com/browse/QTBUG-3267
@@ -148,14 +153,9 @@ Download and unzip qt-everywhere-opensource-src-4.7.0.tar.gz from
   ftp://ftp.qt.nokia.com/qt/source/
 
 NOTE: If your distribution uses a newer or older version of Qt, it might be wise
-      to download the suitable qt-source. They could named different, e.g.
-qt-x11-opensource-src-4.5.3.tar.gz. The source tree may also looks different, so
-you have to look for the appropriate files. In case of a newer version it is of
-cause possible that the bug is fixed and here is nothing to do.
-
-NOTE: When your distribution install an update of Qt may the here compiled
-      driver fix overwritten. In that case you have to redo the last step and
-replace the original with the self compiled driver.
+      to download the suitable qt-source. The source tree may also looks
+different, so you have to look for the appropriate files. In case of a newer
+version it is of cause possible that the bug is fixed and here is nothing to do.
 
 Edit the file
   qt-everywhere-opensource-src-4.7.0/src/sql/drivers/psql/qsql_psql.cpp
@@ -181,16 +181,11 @@ a terminal and cd into the extracted qt source tree.
 
   cd qt-everywhere-opensource-src-4.7.0/src/plugins/sqldrivers/psql
 
+
 Arch
 ------
   qmake -o Makefile "INCLUDEPATH+=/usr/include/libpq/" "LIBS+=-L/usr/lib -lpq" psql.pro
   make
-
-If you like make a backup of the original driver:
-  sudo cp /usr/lib/qt/plugins/sqldrivers/libqsqlpsql.so /your-choice-dir/orig-libqsqlpsql.so
-
-Now replace the original with the new compiled one:
-  sudo cp libqsqlpsql.so /usr/lib/qt/plugins/sqldrivers/
 
 
 Ubuntu
@@ -202,8 +197,11 @@ You need an additional .deb package:
   qmake -o Makefile "INCLUDEPATH+=/usr/include/postgresql" "LIBS+=-L/usr/lib -lpq" psql.pro
   make
 
-If you like make a backup of the original driver:
-  sudo cp /usr/lib/qt4/plugins/sqldrivers/libqsqlpsql.so /your-choice-dir/orig-libqsqlpsql.so
 
-Now replace the original with the new compiled one:
-  sudo cp libqsqlpsql.so /usr/lib/qt4/plugins/sqldrivers/
+Finish
+--------
+Copy the compiled driver into a directory 'sqldrivers' *below* to the Filu
+PluginPath, see doc/config-file.txt. I suggest:
+
+  sudo mkdir /usr/local/lib/Filu/sqldrivers
+  sudo cp libqsqlpsql.so /usr/local/lib/Filu/sqldrivers/

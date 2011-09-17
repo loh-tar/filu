@@ -32,6 +32,10 @@ InstallPath=/usr/local/lib/Filu/
   Changing these affect only where Filu searches for some data at first time
   start up.
 
+PluginPath=InstallPath
+  Where plugins will be searched. Currently only the fixed Postgres driver is
+  used and must be copied to PluginPath/sqldrivers.
+
 LogFile=FiluHome/filu.log
   Where error/info messages are logged.
 
