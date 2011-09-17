@@ -1,3 +1,27 @@
+2011-09-17
+============
+PerformerF
+------------
+- IndicatorPicker is now watching changes in the indicator directory and
+  rebuild his tree.
+- IndicatorPicker save/restore now the selection.
+- IndicatorWidget is now watching the used indicator and reload them if needed.
+- FiGroupWidget save/restore the selected group.
+- The grid in table views are gone and the row heights are adjusted.
+- Oops, fix possible segfault when got no data to load and resize window occur.
+
+ManagerF
+----------
+- Add a splitter to hide the page icons.
+- IndicatorPage reviewed
+  - No longer bother with ask truly to save, only if  it make sense.
+  - Add a delete button and keyboard shortcuts Ctrl-S, Ctrl-Del.
+
+Exporter
+----------
+- Add switches --broker and --depots
+
+
 2011-09-09
 ============
 New Snapshot
