@@ -7,19 +7,16 @@
  *     :ftype      // like "Stock"
  *     :group      // like "MyFavorites"
  *
- *  Outputs: (order is important)
- *     RefSymbol
- *     sdate
- *     scomment
- *     sratio
+ *  Outputs: (order and names are important)
+ *
  */
 
 -- GetAllSplits.sql
 SELECT
-  ls.symbol,
-  sp.sdate,
-  sp.scomment,
-  sp.sratio
+  ls.symbol   AS "Symbol",
+  sp.sdate    AS "Date",
+  sp.scomment AS "Comment",
+  sp.sratio   AS "Ratio"
 
 FROM
   :filu.split sp JOIN :filu.lovelysymbol ls USING(fi_id),

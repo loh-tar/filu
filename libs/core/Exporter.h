@@ -55,6 +55,7 @@ class Exporter : public FClass
 
     void          printStatus(Effect effect = eEffectPending, const QString& extraTxt = "");
     bool          noData(const QString& what = "", const VerboseLevel when = eInfo);
+    bool          badQuery(QSqlQuery* query);
     void          writeToFile();
     bool          selectFis();
 
@@ -79,8 +80,8 @@ class Exporter : public FClass
 
     QStringList   mCmdLine;         // The command line with all options
     QStringList   mParm;            // A helper to get parameter by FTool::getParameter()
-    QTextStream   mBuffer;
-    QString       mBufferStr;
+    QStringList   mOLine;           // Out Line, will join('\n')
+    QStringList   mDLine;           // Data Line, will join(';')
     QTextStream   mOutput;
     QTextStream   mConsole;
     QFile*        mOutFile;
