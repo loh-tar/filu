@@ -1,4 +1,4 @@
-This file is part of Filu (C) 2007, 2010, 2011 loh.tar@googlemail.com
+This file is part of Filu (C) 2007, 2010, 2011, 2012 loh.tar@googlemail.com
 
 
 NOTE: All relating to depot stuff is fresh under development, maybe buggy and
