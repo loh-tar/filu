@@ -737,7 +737,7 @@ void Importer::prepare()
         // we have to add them separately
         if(toBeInstalled > 1) mToDo.insert("addSymbol");
       }
-      else
+      else if(mTotalSymbolCount > 1)
       {
         mToDo.insert("addSymbol");
         importData << "Symbols";
@@ -1136,7 +1136,7 @@ void Importer::addSymbol()
 {
   if(mSymbol->count() == 1)
   {
-    mSymbol->rewind(1);
+    mSymbol->rewind(0);
     QString msg = tr("Can't install a single symbol: %1").arg(mSymbol->caption());
     printStatus(eEffectFault, msg);
     return;
