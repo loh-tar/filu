@@ -38,6 +38,7 @@ DECLARE
   mHigh         <schema>.eodbar.qhigh%TYPE;
   mLow          <schema>.eodbar.qlow%TYPE;
   mClose        <schema>.eodbar.qclose%TYPE;
+  mVol          <schema>.eodbar.qvol%TYPE;
   mOi           <schema>.eodbar.qoi%TYPE;
   mQuality      <schema>.eodbar.quality%TYPE;
 
@@ -46,14 +47,19 @@ DECLARE
 
 BEGIN
 
-  mOpen    := COALESCE(aOpen, aClose);
-  mHigh    := COALESCE(aHigh, aClose);
-  mLow     := COALESCE(aLow,  aClose);
-  mClose   := aClose;
+  mClose   := COALESCE(aClose, 0);
+  mOpen    := COALESCE(aOpen, mClose);
+  mHigh    := COALESCE(aHigh, mClose);
+  mLow     := COALESCE(aLow,  mClose);
+  mVol     := COALESCE(aVol, 0);
   mOi      := COALESCE(aOi, 0);
   mQuality := COALESCE(aQuality, 2);
 
   -- Check plausibility, especially yahoo tends to bugs in eod data
+  IF mClose = 0.0
+  THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, close is 0', aFiId, aDate, aOpen, aHigh, aLow, aClose;
+        END IF;
+
   IF mHigh < mClose
   THEN RAISE NOTICE 'fiId %, %: O:% H:% L:% C:%, close was > high', aFiId, aDate, aOpen, aHigh, aLow, aClose;
         mHigh := mClose;
@@ -97,7 +103,7 @@ BEGIN
         qhigh          = mHigh,
         qlow           = mLow,
         qclose         = mClose,
-        --qvol           = aVol,
+        --qvol           = mVol,
         qoi            = mOi,
         quality        = mQuality
       where eodbar_id = mExist;
@@ -108,7 +114,7 @@ BEGIN
         qhigh          = mHigh,
         qlow           = mLow,
         qclose         = mClose,
-        qvol           = aVol,
+        qvol           = mVol,
         qoi            = mOi,
         quality        = mQuality
       where eodbar_id = mExist;
@@ -118,7 +124,7 @@ BEGIN
   END IF;
 
   INSERT INTO <schema>.eodbar(fi_id, market_id, qdate, qopen, qhigh, qlow, qclose, qvol, qoi, quality)
-          VALUES(aFiId, aMarketId, aDate, mOpen, mHigh, mLow, mClose, aVol, mOi, mQuality);
+          VALUES(aFiId, aMarketId, aDate, mOpen, mHigh, mLow, mClose, mVol, mOi, mQuality);
 
 END
 $BODY$
