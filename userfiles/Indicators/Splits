@@ -1,0 +1,17 @@
+* AddToGroup: Examples
+* AddToGroup: Scanner
+* ScanFreq: Day
+
+* Which gap will we take as split
+ratio = MUP(1.3)
+
+* Yesterday's data
+lh = REF(HIGH, 1)
+ll = REF(LOW, 1)
+
+splitUp   = MUP(LOW  > lh * ratio)
+splitDown = MUP(HIGH < ll / ratio)
+
+SCAN4 = MUP(splitUp or splitDown)
+
+PLOT(HISTOGRAMBAR, SCAN4)
