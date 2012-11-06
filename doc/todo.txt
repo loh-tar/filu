@@ -115,7 +115,6 @@ L: add a help page to display all (or most) available docu, copyright and other
 
 Libf
 ======
-M: new class CmdOptions, see FTool.h
 
 
 GroupNavi

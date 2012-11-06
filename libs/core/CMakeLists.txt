@@ -17,6 +17,7 @@ include_directories(${MUPARSER_INCLUDE_DIR})
 set(LIBS ${LIBS} ${MUPARSER_LIBRARIES})
 
 set(FiluCore_SRC ${FiluCore_SRC}
+    CmdHelper.cpp
     DataTuple.cpp
     DataTupleSet.cpp
     Depots.cpp
