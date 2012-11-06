@@ -52,24 +52,24 @@ class AgentF : public FCoreApp
   protected:
     void startClones();
     void readSettings();
-    bool dateIsNotValid(QString& date);
 
     QStringList* fetchBarsFromProvider(const QString& provider,
                                        const QStringList& parameters);
 
-    void addEODBarData(const QStringList& parm);
+    void addEODBarData();
     void addEODBarDataFull(const QStringList& parm);
-    void updateAllBars(const QStringList& parm);
+    void updateAllBars();
     bool lineToCommand(const QString& line, QStringList& cmd);
-    void readCommandFile(const QStringList& parm);
-    void beEvil(const QStringList& parm);
-    void import(const QStringList& parm);
-    void exxport(const QStringList& parm);
-    void scan(const QStringList& parm);
-    void depots(const QStringList& parm);
-    void filu(const QStringList& parm);
-    void cmdAdd(const QStringList& parm);
-    void printUsage();
+    void readCommandFile();
+    void beEvil();
+    void import();
+    void exxport();
+    void scan();
+    void depots();
+    void filu();
+    void cmdAdd();
+    void deleteBars();
+    void splitBars();
     void printSettings();
     void printError(const QString message);
     void check4MasterCMD();

@@ -18,6 +18,7 @@
 //
 
 #include "AgentF.h"
+#include "CmdHelper.h"
 
 #include "Script.h"
 #include "Importer.h"
@@ -39,6 +40,12 @@ AgentF::AgentF(QCoreApplication& app)
   readSettings();
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
+
+  mCmd->regCmds("this full rcf imp exp scan add daemon "
+                "filu deleteBars splitBars info depots");
+
+  mCmd->regStdOpts("verbose");
+  mCmd->inGreeter("AgentF is part of Filu. Visit http://filu.sourceforge.net");
 
   execCmd(mCommandLine);
 
@@ -69,21 +76,13 @@ void AgentF::run()
 
 void AgentF::quit()
 {
+  addErrors(mCmd->errors());
   QCoreApplication::exit(hasError());
 }
 
 void AgentF::readSettings()
 {
   if(verboseLevel(eMax)) printSettings();
-}
-
-bool AgentF::dateIsNotValid(QString& date)
-{
-  if(date == "auto") return false;  // We accept "auto" as valid
-  if(QDate::fromString(date, Qt::ISODate).isValid()) return false;
-
-  error(FUNC, tr("Bad date: %1").arg(date));
-  return true;
 }
 
 QStringList* AgentF::fetchBarsFromProvider(const QString& provider,
@@ -101,48 +100,44 @@ QStringList* AgentF::fetchBarsFromProvider(const QString& provider,
   return data;
 }
 
-void AgentF::addEODBarData(const QStringList& parm)
+void AgentF::addEODBarData()
 {
-  //
-  // This function update the bars of one defined FI.
-  // parm list looks like:
-  // <caller> this <symbol> <market> <provider> [<fromDate> [<toDate>]]
+  // The 'this' command. Update the bars of one defined FI.
+  // Command list looks like:
+  // <caller> this <Symbol> <Market> <Provider> [<FromDate>] [<ToDate>]
 
-  if(parm.size() == 9)
+  if(mCmd->cmdLine().size() == 9)  // FIXME: What a terrible...
   {
-    addEODBarDataFull(parm);
+    addEODBarDataFull(mCmd->cmdLine());
     return;
   }
 
-  QStringList parameters = parm; // Parameter list for addEODBarDataFull(...)
+  if(mCmd->isMissingParms(3))
+  {
+    if(mCmd->printThisWay("<Symbol> <Market> <Provider> [<FromDate> [<ToDate>]]")) return;
 
-  QString fromDate = "auto";
-  QString toDate   = "auto";
+    mCmd->printComment(tr("Without a given date, or if dot-dot '..', AgentF take a look at the database "
+                          "which bars could be missing."));
 
-  if(parm.size() == 5)
-  {
-    parameters << fromDate << toDate;
-  }
-  else if(parm.size() == 6)
-  {
-    fromDate = parm[5];
-    parameters << toDate;
-  }
-  else
-  {
-    fromDate = parm[5];
-    toDate = parm[6];
+    mCmd->printForInst("AAPL NYSE Yahoo");
+    mCmd->printForInst("AAPL NYSE Yahoo 2007-04-01");
+    mCmd->aided();
+    return;
   }
 
-  if(dateIsNotValid(fromDate)) return;
-  if(dateIsNotValid(toDate)) return;
+  QStringList parameters; // Parameter list for addEODBarDataFull(...)
+  parameters << "foo" << "bar"
+             << mCmd->argStr(1) << mCmd->argStr(2) << mCmd->argStr(3)
+             << mCmd->argDate(4, QDate(1000, 1, 1)).toString(Qt::ISODate)
+             << mCmd->argDate(5, QDate::currentDate()).toString(Qt::ISODate);
+// qDebug() << parameters;
+  if(mCmd->hasError()) return;
 
   // We need fiId and marketId
-  // parm[2]=<symbol>, parm[3]=<market>, parm[4]=<provider>
-  SymbolTuple* st = mFilu->searchSymbol(parm[2], parm[3], parm[4]);
+  SymbolTuple* st = mFilu->searchSymbol(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3));
   if(!st)
   {
-    error(FUNC, tr("Symbol not found: %1, %2, %3").arg(parm[2], parm[3], parm[4]));
+    error(FUNC, tr("Symbol not found: %1, %2, %3").arg(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3)));
     return;
   }
 
@@ -160,13 +155,13 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 {
   //
   // This function update the bars of one defined FI.
-  // parm list looks like:
+  // Command list looks like:
   // <caller> this <symbol> <market> <provider> <fromDate> <toDate> <fiId> <marketId>
   //    0      1      2        3         4          5         6       7        8
 
   if(parm.size() < 9)
   {
-    error(FUNC, "addEODBarDataFull: To less arguments."); // No tr(), should never happens
+    fatal(FUNC, "To less arguments.");
     return;
   }
 
@@ -179,7 +174,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
   QStringList parameters;
 
   DateRange dateRange;
-  if(fromDate == "auto")
+  if(fromDate == "1000-01-01")
   {
     mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
     // FIXME: To find out if anything is todo we have to check more smarter.
@@ -206,7 +201,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
     parameters.append(date.toString(Qt::ISODate));
   }
 
-  if(toDate == "auto")
+  if(toDate == "3000-01-01")
   {
     parameters.append(QDate::currentDate().toString(Qt::ISODate));
   }
@@ -240,18 +235,24 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
   mScanner->scanThis(fiId, marketId);
 }
 
-void AgentF::updateAllBars(const QStringList& parm)
+void AgentF::updateAllBars()
 {
-  // parm list looks like
+  // Command list looks like
   // agentf full [<fromDate>] [<toDate>]
 
-  QString fromDate("auto");
-  if(parm.size() > 2) fromDate = parm[2];
-  if(dateIsNotValid(fromDate)) return;
+  if(mCmd->isMissingParms())
+  {
+    if(mCmd->printThisWay("[<FromDate> [<ToDate>]]")) return;
 
-  QString toDate(QDate::currentDate().toString(Qt::ISODate));
-  if(parm.size() > 3) toDate = parm[3];
-  if(dateIsNotValid(toDate)) return;
+    mCmd->printComment(tr("Without a given date the Agent take a look at the database "
+                          "which bars could be missing."));
+    mCmd->aided();
+    return;
+  }
+
+  QString fromDate = mCmd->argDate(1, QDate(1000, 1, 1)).toString(Qt::ISODate);
+  QString toDate   = mCmd->argDate(2, QDate::currentDate()).toString(Qt::ISODate);
+  if(mCmd->hasError()) return;
 
   SymbolTuple* symbols = mFilu->getAllProviderSymbols();
   if(!symbols)
@@ -325,22 +326,24 @@ bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
   return true;
 }
 
-void AgentF::readCommandFile(const QStringList& parm)
+void AgentF::readCommandFile()
 {
-
-  // parm list looks like
+  // Command looks like
   // agentf rcf mycommands.txt
 
-  if(parm.count() != 3)
+  if(mCmd->isMissingParms(1))
   {
-    error(FUNC, tr("rcf: Wrong parameter count."));
+    if(mCmd->printThisWay("<FileName>")) return;
+
+    mCmd->printComment(tr("Lines begin with an asterisk are ignored."));
+    mCmd->aided();
     return;
   }
 
-  QFile file(parm[2]);
+  QFile file(mCmd->argStr(1));
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FUNC, tr("rcf: Can't open file: %1").arg(parm[2]));
+    error(FUNC, tr("Can't open file: %1").arg(mCmd->argStr(1)));
     return;
   }
 
@@ -360,20 +363,29 @@ void AgentF::readCommandFile(const QStringList& parm)
   file.close();
 }
 
-void AgentF::beEvil(const QStringList &parm)
+void AgentF::beEvil()
 {
   if(mIamEvil) return; // Don't do stupid things
 
   mIamEvil = true;
 
-  // parm list looks like
-  // agentf daemon [<name>]
+  // Command looks like
+  // agentf daemon [<Name>]
 
-  if(parm.count() > 2)
+  if(mCmd->isMissingParms())
   {
-    setMsgTargetFormat(eVerbose, QString("%C %1: %x").arg(parm[2]));
-    setMsgTargetFormat(eConsLog, QString("%C %1: *** %t *** %x").arg(parm[2]));
-    setMsgTargetFormat(eFileLog, QString("%T %C %1 *** %t *** %F %x").arg(parm[2]));
+    if(mCmd->printThisWay("[<Name>]")) return;
+
+    mCmd->printComment(tr("The optional name is only used at message logging."));
+    mCmd->aided();
+    return;
+  }
+
+  if(!mCmd->argStr(1).isEmpty())
+  {
+    setMsgTargetFormat(eVerbose, QString("%C %1: %x").arg(mCmd->argStr(1)));
+    setMsgTargetFormat(eConsLog, QString("%C %1: *** %t *** %x").arg(mCmd->argStr(1)));
+    setMsgTargetFormat(eFileLog, QString("%T %C %1: *** %t *** %F %x").arg(mCmd->argStr(1)));
   }
 
   QTextStream console(stdout);
@@ -393,17 +405,29 @@ void AgentF::beEvil(const QStringList &parm)
   mQuit = true;
 }
 
-void AgentF::import(const QStringList& parm)
+void AgentF::import()
 {
+  // Command looks like
+  // agentf imp [<FileName>]
+
+  if(mCmd->isMissingParms())
+  {
+    if(mCmd->printThisWay("[<FileName>]")) return;
+
+    mCmd->printComment(tr("Without <FileName> will read from stdin (Ctrl-D to quit)."));
+    mCmd->aided();
+    return;
+  }
+
   QTextStream* in;
   QFile* file = 0;
 
-  if(parm.count() > 2)
+  if(!mCmd->argStr(1).isEmpty())
   {
-    file = new QFile(parm[2]);
+    file = new QFile(mCmd->argStr(1));
     if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      error(FUNC, tr("imp: Can't open file: %1").arg(parm[2]));
+      error(FUNC, tr("Can't open file: %1").arg(mCmd->argStr(1)));
       return;
     }
 
@@ -433,13 +457,13 @@ void AgentF::import(const QStringList& parm)
   delete in;
 }
 
-void AgentF::exxport(const QStringList& parm)
+void AgentF::exxport()
 {
-  // parm list looks like
+  // Command list looks like
   // agentf exp -useGroup favorites -fiNames -symbols -eodRaw -split
 
   // Remove "agentf" and "exp"
-  QStringList parm2(parm);
+  QStringList parm2(mCmd->cmdLine()); // FIXME
   parm2.removeAt(0);
   parm2.removeAt(0);
 
@@ -448,39 +472,71 @@ void AgentF::exxport(const QStringList& parm)
   mExporter->exxport(parm2);
 }
 
-void AgentF::scan(const QStringList& parm)
+void AgentF::scan()
 {
-  // parm list looks like
+  // Command list looks like
   // agentf scan --group all --indi Watchdog
 
   if(!mScanner) mScanner = new Scanner(this);
 
-  mScanner->exec(parm);
+  mScanner->exec(mCmd->cmdLine()); // FIXME
 
   if(mScanner->hasError()) addErrors(mScanner->errors());
 }
 
-void AgentF::depots(const QStringList& parm)
+void AgentF::depots()
 {
-  // parm list looks like
+  // Command list looks like
   // agentf depots --check
 
   Depots* depots = new Depots(this);
 
-  depots->exec(parm);
+  depots->exec(mCmd);
 
-  if(depots->hasError()) addErrors(depots->errors());
+  addErrors(depots->errors());
+
+  delete depots;
 }
 
-void AgentF::filu(const QStringList& parm)
+void AgentF::filu()
 {
-  // parm list looks like
-  // agentf filu --update
-  // agentf filu --create [--db <db-name>] [--schema <schema>]
+  // Command list looks like
+  // agentf filu update
+  // agentf filu create [--db <DBName>] [--schema <Schema>]
 
-  if(parm.contains("--update"))
+  mCmd->regSubCmds("update create drop vacuum");
+
+  if(mCmd->subCmdLooksBad()) return;
+
+  if(mCmd->wantHelp())
   {
+    mCmd->inSubBrief("update", tr("Update the database user functions"));
+    mCmd->inSubBrief("create", tr("Create a new Filu database"));
+    mCmd->inSubBrief("drop",   tr("Delete a Filu database"));
+    mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
+  }
+
+  if(mCmd->needHelp(2))
+  {
+    if(mCmd->printThisWay("<Command> [<ParmList>]")) return;
+
+    mCmd->aided();
+    return;
+  }
+
+  if(mCmd->hasSubCmd("update"))
+  {
+    if(mCmd->isMissingParms())
+    {
+      if(mCmd->printThisWay("")) return;
+
+      mCmd->printComment(tr("No parameters needed."));
+      mCmd->aided();
+      return;
+    }
+
     mFilu->createFunctions();
+
     if(!mFilu->hasError())
     {
       verbose(FUNC, tr("Database user functions successful updated."));
@@ -490,88 +546,212 @@ void AgentF::filu(const QStringList& parm)
       addErrors(mFilu->errors());
     }
   }
-  else if(parm.contains("--create"))
+  else if(mCmd->hasSubCmd("create"))
   {
-    verbose(FUNC, tr("Not yet implemented, feel free to FIXME."));
+    mCmd->regOpts("db schema");
+
+    if(mCmd->isMissingParms())
+    {
+      mCmd->inOptBrief("db", "<DBName:filu>", "Don't use upper case letters");
+      mCmd->inOptBrief("schema", "<Schema:filu>", "Don't use upper case letters");
+
+      if(mCmd->printThisWay("[~~db] [~~schema]")) return;
+
+      mCmd->printForInst("--db testdb");
+
+      mCmd->aided();
+      return;
+    }
+
+    verbose(FUNC, tr("Sorry, not yet implemented, feel free to FIXME."));
+    QString db = mCmd->optStr("db", "db"); // FIXME Replace 2nd db with filu
+    QString schema = mCmd->optStr("schema", "schema"); // FIXME Replace 2nd schema with filu
+    verbose(FUNC, tr("Call something like 'mFilu->createDB(%1, %2)'").arg(db, schema));
+  }
+  else if(mCmd->hasSubCmd("drop"))
+  {
+    verbose(FUNC, tr("Sorry, not yet implemented, feel free to FIXME."));
+  }
+  else if(mCmd->hasSubCmd("vacuum"))
+  {
+    verbose(FUNC, tr("Sorry, not yet implemented, feel free to FIXME."));
   }
   else
   {
-    verbose(FUNC, tr("What was that? :o)"));
+    fatal(FUNC,tr("Unsupported command: %1").arg(mCmd->subCmd()));
   }
 }
 
-void AgentF::cmdAdd(const QStringList& parm)
+void AgentF::cmdAdd()
 {
   CmdAdd* cmdAdd = new CmdAdd(this);
-  cmdAdd->exec(parm);
+  cmdAdd->exec(mCmd->cmdLine()); // FIXME
   delete cmdAdd;
   return;
+}
+
+void AgentF::deleteBars()
+{
+  // Command looks like
+  // agentf deleteBars <Symbol> <Market> <FromDate> [<ToDate>]
+
+  if(mCmd->isMissingParms(3))
+  {
+    if(mCmd->printThisWay("<Symbol> <Market> <FromDate> [<ToDate>]")) return;
+
+    mCmd->printComment(tr("Use dot-dot '..' for most old/new date. "
+                          "Without <ToDate> only one bar will delete."));
+
+    mCmd->printForInst("AAPL NYSE 2012-01-01 2012-06-01");
+    mCmd->printForInst("AAPL NYSE 2012-01-01 ..");
+    mCmd->aided();
+    return;
+  }
+
+  QDate fromDate = mCmd->argDate(3, QDate(1000, 1, 1));
+  QDate toDate   = mCmd->argDate(4, fromDate, QDate(3000, 1, 1));
+
+  if(mCmd->hasError()) return;
+
+  mFilu->setSqlParm(":symbol",   mCmd->argStr(1));
+  mFilu->setSqlParm(":market",   mCmd->argStr(2));
+  mFilu->setSqlParm(":fromDate", fromDate.toString(Qt::ISODate));
+  mFilu->setSqlParm(":toDate",   toDate.toString(Qt::ISODate));
+
+  QSqlQuery* query = mFilu->execSql("DeleteBars");
+  if(check4FiluError(FUNC)) return;
+
+  int nra = query->numRowsAffected();
+  if(!nra) warning(FUNC, tr("NO bars deleted!"));
+  else verbose(FUNC, tr("%1 bars deleted.").arg(nra));
+}
+
+void AgentF::splitBars()
+{
+  // Command looks like
+  // agentf splitBars <Symbol> <Market> <FromDate> <ToDate> <SplitPre:Post>
+
+  if(mCmd->isMissingParms(5))
+  {
+    if(mCmd->printThisWay("<Symbol> <Market> <FromDate> <ToDate> <SplitPre:Post>")) return;
+
+    mCmd->printNote(tr("To accomplish a split event use the 'add split' command."));
+    mCmd->printForInst("KO NYSE 2011-06-01 2012-08-13 1:2");
+    mCmd->aided();
+    return;
+  }
+
+  double  pre;
+  double  post;
+  double  ratio;
+  bool    ok;
+
+  QStringList sl = mCmd->argStr(5).split(":");
+  if(sl.size() < 2)
+  {
+    error(FUNC, "Ratio must be <SplitPre:Post>.");
+    return;
+  }
+
+  pre = sl[0].toDouble(&ok);
+  if(pre == 0.0)
+  {
+    error(FUNC, "<SplitPre:Post>, Pre must not 0.");
+    return;
+  };
+
+  post = sl[1].toDouble(&ok);
+  if(post == 0.0)
+  {
+    error(FUNC, "<SplitPre:Post>, Post must not 0.");
+    return;
+  };
+
+  ratio = pre / post;
+
+  mFilu->setSqlParm(":fromDate", mCmd->argDate(3).toString(Qt::ISODate));
+  mFilu->setSqlParm(":toDate",   mCmd->argDate(4).toString(Qt::ISODate));
+
+  if(mCmd->hasError()) return;
+
+  mFilu->setSqlParm(":symbol",   mCmd->argStr(1));
+  mFilu->setSqlParm(":market",   mCmd->argStr(2));
+  mFilu->setSqlParm(":ratio",    ratio);
+  mFilu->setSqlParm(":quality",  0);
+
+  QSqlQuery* query = mFilu->execSql("SplitBars");
+  if(check4FiluError(FUNC)) return;
+
+  int nra = query->numRowsAffected();
+  if(!nra) warning(FUNC, tr("NO bars adjusted!"));
+  else verbose(FUNC, tr("%1 bars adjusted.").arg(nra));
 }
 
 void AgentF::execCmd(const QStringList& parm)
 {
   if(mFilu->hasError()) return;
 
-  if(parm.size() == 1)
+  // mCmd->regCmds("this...") is done in ctor !
+  // mCmd->regOpts("verbose");
+
+  if(mCmd->cmdLineLooksBad(parm)) return;
+
+  if(mCmd->has("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
+
+  if(mCmd->wantHelp())
   {
-    printUsage();
+    mCmd->inCmdBrief("this", tr("Download eod bars of one defined FI"));
+    mCmd->inCmdBrief("full", tr("Download eod bars of all FIs"));
+    mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
+    mCmd->inCmdBrief("imp", tr("Imports an (surprise!) import file. See doc/import-file-format.txt"));
+    mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
+    mCmd->inCmdBrief("exp", tr("Export data from the database. See doc/export-data.txt"));
+    mCmd->inCmdBrief("scan", tr("Scans the entire database, one or more groups or only one FI"));
+    mCmd->inCmdBrief("add", tr("Lets you adding a single dataset to the database by using Importer"));
+    mCmd->inCmdBrief("filu", tr("Create or update the Filu database"));
+    mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
+    mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
+    mCmd->inCmdBrief("info", tr("Print some settings and more"));
+
+    Depots::briefIn(mCmd);
+
+    mCmd->inOptBrief("verbose", "<Level>"
+                              , tr("How talkative has it to be. Level can be 0-3 or "
+                                   "Quiet Info Ample Max"));
+  }
+
+  if(mCmd->needHelp(1))
+  {
+    if(mCmd->printThisWay("<Command> [<ParmList>] [<SubCommand> [<ParmList>]]..")) return;
+
+    mCmd->printComment(tr("Calling a command without any parameter may give a hint like --help."));
+    mCmd->printComment(tr("But of cause not if no parameter is needed e.g at 'full'."));
+    mCmd->aided();
     return;
   }
 
-  const QString cmd(parm.at(1));
-
   // Look for each known command and call the related function
-  if(cmd == "this")          addEODBarData(parm);
-  else if(cmd == "full")     updateAllBars(parm);
-  else if(cmd == "rcf")      readCommandFile(parm);
-  else if(cmd == "imp")      import(parm);
-  else if(cmd == "exp")      exxport(parm);
-  else if(cmd == "scan")     scan(parm);
-  else if(cmd == "depots")   depots(parm);
-  else if(cmd == "add")      cmdAdd(parm);
-  else if(cmd == "daemon")   beEvil(parm);
-  else if(cmd == "filu")     filu(parm);
-  else if(cmd == "info")
+  if(mCmd->hasCmd("this"))               addEODBarData();
+  else if(mCmd->hasCmd("full"))          updateAllBars();
+  else if(mCmd->hasCmd("rcf"))           readCommandFile();
+  else if(mCmd->hasCmd("imp"))           import();
+  else if(mCmd->hasCmd("exp"))           exxport();
+  else if(mCmd->hasCmd("scan"))          scan();
+  else if(mCmd->hasCmd("depots"))        depots();
+  else if(mCmd->hasCmd("add"))           cmdAdd();
+  else if(mCmd->hasCmd("daemon"))        beEvil();
+  else if(mCmd->hasCmd("filu"))          filu();
+  else if(mCmd->hasCmd("deleteBars"))    deleteBars();
+  else if(mCmd->hasCmd("splitBars"))     splitBars();
+  else if(mCmd->hasCmd("info"))
   {
     if(verboseLevel(eMax)) return; // Already printed, don't print twice
     else printSettings();
   }
   else
   {
-    error(FUNC, QString("Unknown command: %1").arg(cmd));
-    errInfo(FUNC, tr("Call me without any command for help."));
+    fatal(FUNC, QString("Unsupported command: %1").arg(mCmd->cmd()));
   }
-}
-
-void AgentF::printUsage()
-{
-  print(tr("Hello! I'm part of Filu. Please call me this way:"));
-  print("");
-  print("  agentf <command> [<parameterList>] (see doc/first-steps.txt)");
-  print("");
-  print("  agentf add <dataType> [<parameterList>]");
-  print("    agentf add (tells you more)");
-  print("");
-  print("  agentf daemon [<name>]");
-  print("  agentf depots <parameterList>");
-  print("    agentf depots --check");
-  print("");
-  print("  agentf exp <parameterList> (see doc/export-data.txt)");
-  print("  agentf filu <parameterList>");
-  print("  agentf full [<fromDate> [<toDate>]]");
-  print("    agentf full 2001-01-01");
-  print("");
-  print("  agentf imp [<fileName>] (if no fileName is given then will read from stdin)");
-  print("  agentf info");
-  print("  agentf rcf <fileName>");
-  print("  agentf scan <parameterList>");
-  print("    agentf scan --group all --indi MyNewIdea --verbose Info");
-  print("    agentf scan --group all --auto --force --timeFrame Quarter");
-  print("");
-  print("  agentf this <symbol> <market> <provider> [<fromDate> [<toDate>]]");
-  print("    agentf this AAPL NYSE Yahoo");
-  print("    agentf this AAPL NYSE Yahoo 2007-04-01");
-  print("");
 }
 
 void AgentF::printSettings()
@@ -654,7 +834,7 @@ void AgentF::cloneIsReady() // Slot
 
   if(!clone)
   {
-    error(FUNC, "Curious, no clone found."); // No tr(), should never happens
+    fatal(FUNC, "Curious, no clone found.");
     return; // No more todo
   }
 
@@ -701,7 +881,7 @@ void AgentF::check4MasterCMD()
   }
   else
   {
-    error(FUNC, "Unknown MasterCMD: " + mCommands.at(0).at(1)); // No tr(), should never happens
+    fatal(FUNC, QString("Unknown MasterCMD: %1").arg(mCommands.at(0).at(1)));
   }
 
   mCommands.removeAt(0);

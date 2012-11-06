@@ -99,7 +99,7 @@ or be known to be improved.
 
 All Progs
 ===========
-...take on the command line the parameter '--config key=value [key=value...]'.
+...take on the command line the parameter '--config key=value [key=value]..'.
 Where as 'key' a config file key is. That mean you could overwrite any config
 setting on the command line, see doc/config-file.txt. To be on the save side
 only append these as last parameter, e.g.
@@ -112,6 +112,19 @@ AgentF
 He is like the Swiss knife of Filu. He starts multiple instances to do a big job
 e.g. at 'full' to download quotes in parallel. The amount of instances is
 configurable in the settings file, ~/.config/Filu.conf by setting MaxClones=X.
+In general AgentF takes always only options with double hyphens '--' with the
+one and only exception of '-h'. The call looks like:
+
+  agentf <Command> [<ParmList>] [<SubCommand> [<ParmList>]]..
+         [OptList] [-h|--help]
+
+Most of the commands have build in help text. You can also give 'help' as
+command, like:
+
+    agentf help [<Command>]
+    agentf -h [<Command>]
+
+The command and subcommand can also given with double hyphens.
 
 add
 -----
@@ -123,7 +136,7 @@ help
 daemon
 --------
 Is not a daemon as typical known. It is very similar to rcf. He read from stdin
-and execute each command line he read until Carl+D is pressed or 'quit' is read.
+and execute each command line he read until Ctrl+D is pressed or 'quit' is read.
 The optional name parameter is only used at message logging.
 
 depots
@@ -145,7 +158,7 @@ check
  Yes, run a check over all your portfolios and save suggestions to order, based
  on the trading rule file noted in the depot. To list the suggestions use --lso.
 
-cho <OrderId> [<Field=Value>...]
+cho <OrderId> [<Field=Value>]..
   Change order, which was not executet and make them active.
   Possible Fields are Limit, Pieces, Date and Valid. When no Field=Value is
   given the order is still changed to Active. You could say it is the
@@ -190,11 +203,11 @@ filu
 ------
 Create or update the Filu database.
 
-create [--db <db-name>] [--schema <schema>]
-  Create a new Filu database. Defaults of <db-name> and <schema> are 'filu'.
+create [--db <DBName>] [--schema <Schema>]
+  Create a new Filu database. Defaults of <DBName> and <Schema> are 'filu'.
   FIXME: Not yet implemented.
 
-drop <db-name>
+drop <DBName>
   Delete an existing database.
   FIXME: Not yet implemented.
 
@@ -206,8 +219,8 @@ vacuum
   See http://www.postgresql.org/docs/8.4/interactive/app-vacuumdb.html
   FIXME: Not yet implemented.
 
-  agentf filu --create --db testdb
-  agentf filu --update
+  agentf filu create --db testdb
+  agentf filu update
 
 imp
 -----
@@ -228,13 +241,13 @@ group 'ScanResults/<today>/<indicatorName>'.
 
 The parameters are leaded by '--' and can given in any order, they are:
 
-group <path>[ <path>...]
+group <path> [<path>]..
   A list of group paths to scan. When 'all' is given all FIs are scanned.
 
 this <symbol> <market>
   Scan only this FI.
 
-indi <name>[ <name>...]
+indi <name> [<name>]..
   A list of indicators to use for scanning.
 
 auto
