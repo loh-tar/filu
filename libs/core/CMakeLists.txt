@@ -23,6 +23,7 @@ set(FiluCore_SRC ${FiluCore_SRC}
     Depots.cpp
     Exporter.cpp
     FClass.cpp
+    FCoreApp.cpp
     FObject.cpp
     FTool.cpp
     Importer.cpp
@@ -37,6 +38,7 @@ set(FiluCore_MOCH ${FiluCore_MOCH}
     #Depots.h
     #Exporter.h
     #FClass.h
+    #FCoreApp.h
     #FObject.h
     #FTool.h
     #Importer.h

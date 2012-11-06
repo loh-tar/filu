@@ -17,22 +17,29 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef FCOREAPP_HPP
+#define FCOREAPP_HPP
+
 #include "FObject.h"
 
-FObject::FObject(FClass* parent, const QString& className)
-       : FClass(parent, className)
+class CmdHelper;
 
-{}
+/***********************************************************************
+*
+*   The base of command line programs
+*
+************************************************************************/
 
-FObject::FObject(FObject* parent, const QString& className)
-       : FClass(parent, className)
+class FCoreApp : public FObject
+{
+  public:
+              FCoreApp(const QString& connectionName, QCoreApplication& app);
+    virtual  ~FCoreApp();
 
-{}
+  protected:
+    CmdHelper*  mCmd;
+    QStringList mCommandLine;
+    QStringList mConfigParms;
+};
 
-FObject::FObject(const QString& connectionName, QCoreApplication& app)
-       : FClass(connectionName)
-
-{}
-
-FObject::~FObject()
-{}
+#endif

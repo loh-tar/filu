@@ -17,22 +17,22 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "FObject.h"
+#include "FCoreApp.h"
+#include "CmdHelper.h"
 
-FObject::FObject(FClass* parent, const QString& className)
-       : FClass(parent, className)
+FCoreApp::FCoreApp(const QString& connectionName, QCoreApplication& app)
+        : FObject(connectionName, app)
+{
+  mCommandLine = app.arguments();
+  mConfigParms = mRcFile->takeConfigParms(mCommandLine);
+  mFilu->openDB();
+  addMessages(mFilu->messages());
 
-{}
+  // Must create after log file is set properly
+  mCmd = new CmdHelper(this);
+}
 
-FObject::FObject(FObject* parent, const QString& className)
-       : FClass(parent, className)
-
-{}
-
-FObject::FObject(const QString& connectionName, QCoreApplication& app)
-       : FClass(connectionName)
-
-{}
-
-FObject::~FObject()
-{}
+FCoreApp::~FCoreApp()
+{
+  delete mCmd;
+}

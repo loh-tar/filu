@@ -40,15 +40,4 @@ class FObject : public QObject, public FClass
   protected:
 };
 
-class FCoreApp : public FObject
-{
-  public:
-              FCoreApp(const QString& connectionName, QCoreApplication& app);
-    virtual  ~FCoreApp();
-
-  protected:
-    QStringList mCommandLine;
-    QStringList mConfigParms;
-};
-
 #endif

@@ -20,7 +20,7 @@
 #ifndef AGENTF_HPP
 #define AGENTF_HPP
 
-#include "FObject.h"
+#include "FCoreApp.h"
 
 class Script;
 class Importer;
