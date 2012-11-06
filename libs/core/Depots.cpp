@@ -22,10 +22,17 @@
 #include "Depots.h"
 
 #include "Trader.h"
-#include "FTool.h"
+#include "CmdHelper.h"
+
+const QString cCmd1 = "depots";
+const QString cYes  = QObject::tr("Yes");
+const QString cCmd1Brief = QObject::tr("Performs actions with your portfolios");
+const QString cUseLso4Id = QObject::tr("Use '%1' to obtain the OrderId.");
+
 
 Depots::Depots(FClass* parent)
        : FClass(parent, FUNC)
+       , mCmd(0)
 
 {
   setMsgTargetFormat(eVerbose, "%c: %x");
@@ -34,55 +41,83 @@ Depots::Depots(FClass* parent)
 Depots::~Depots()
 {}
 
-bool Depots::exec(const QStringList& command)
+void Depots::briefIn(CmdHelper* cmd)
 {
-  // command looks like
-  // "agentf", "depots", "foo", "--bar"
-  QStringList cmd = command;
-  if(cmd.size() < 3) return true;
-  if(!cmd.at(2).startsWith("--")) cmd[2].prepend("--"); // Now we can omit the -- at first command
+   if(!cmd) return;
 
-  mToday = QDate::currentDate();
-  mLastCheck = mRcFile->getDT("LastDepotCheck");
+   cmd->inCmdBrief(cCmd1, cCmd1Brief);
+}
+
+bool Depots::exec(CmdHelper* ch)
+{
+  if(!ch)
+  {
+    fatal(FUNC, "Called with NULL pointer.");
+    return false;
+  }
+
+  mCmd = ch;
+  mCmd->regSubCmds("delete simtrade cancel cho clo check lsd lso");
+  mCmd->regOpts("4day to from owner dpid");
+
+  if(mCmd->subCmdLooksBad()) return false;
+
+  if(mCmd->wantHelp())
+  {
+    mCmd->inSubBrief("delete", tr("Delete one or more depots"));
+    mCmd->inSubBrief("simtrade", tr("Run a full complex trading simulation"));
+    mCmd->inSubBrief("cancel", tr("To cancel an active order"));
+    mCmd->inSubBrief("cho", tr("Change an order"));
+    mCmd->inSubBrief("clo", tr("Clears all not active orders"));
+    mCmd->inSubBrief("check", tr("Check the depots if anything happens"));
+    mCmd->inSubBrief("lsd", tr("List depots"));
+    mCmd->inSubBrief("lso", tr("List orders"));
+
+    mCmd->inOptBrief("4day", "<Date>", tr("To specify which day you like to see. The same as '--to'"));
+    mCmd->inOptBrief("to", "<Date>", tr("To limit the most newest date"));
+    mCmd->inOptBrief("from", "<Date>", tr("To expand the investigated date range"));
+    mCmd->inOptBrief("owner", "<Name>", tr("Work on all depots of named owner"));
+    mCmd->inOptBrief("dpid", "<Id>", tr("Work only on exact this depot"));
+
+    mCmd->inOptGroup("DepotFilter", tr("depot filter"), "owner dpid");
+    mCmd->inOptGroup("TimeFilter", tr("time filter"), "4day to from");
+  }
+
+  if(mCmd->needHelp(2))
+  {
+    if(mCmd->printThisWay("<Command> [<ParmList>] [--<Command> [<ParmList>]]..")) return !hasError();
+
+    mCmd->printComment(tr("The order of given commands has no influence on the execution order."));
+    mCmd->printNote(tr("All relating to depot stuff is fresh under development, maybe buggy and "
+                       "not very comfortable to use. More to read at doc/depot-management.txt."));
+    mCmd->printForInst("check --owner Me --lso --clo");
+    mCmd->aided();
+    return !hasError();
+  }
 
   // Look for each command, and execute them if was given.
   // The order of look up is important.
-  if(cmd.contains("--verbose"))   setVerboseLevel(FUNC, cmd);
-  if(cmd.contains("--4day"))      mToday = optionDate(cmd, "4day");
-  if(cmd.contains("--to"))        mToday = optionDate(cmd, "to");
-  if(cmd.contains("--from"))      mLastCheck = optionDate(cmd, "from");
+  if(mCmd->has("verbose"))   setVerboseLevel(FUNC, mCmd->cmdLine());
 
-  if(cmd.contains("--delete"))    deleteDepots(cmd);
-  if(cmd.contains("--simtrade"))  simtrade(cmd);
+  mToday     = mCmd->optDate("4day", QDate::currentDate());
+  mToday     = mCmd->optDate("to", mToday);
+  mLastCheck = mCmd->optDate("from", mRcFile->getDT("LastDepotCheck"));
+
+  if(mCmd->hasError() and !mCmd->wantHelp()) return false; // FIXME
+
+  if(mCmd->hasSubCmd("delete"))    deleteDepots();
+  if(mCmd->hasSubCmd("simtrade"))  simtrade();
 
   if(hasError()) return false;
 
-  if(cmd.contains("--cancel"))    cancelOrder(cmd);
-  if(cmd.contains("--cho"))       changeOrder(cmd);
-  if(cmd.contains("--clo"))       clearOrders(cmd);
-  if(cmd.contains("--check"))     check(cmd);
-  if(cmd.contains("--lsd"))       listDepots(cmd);
-  if(cmd.contains("--lso"))       listOrders(cmd);
+  if(mCmd->hasSubCmd("cancel"))    cancelOrder();
+  if(mCmd->hasSubCmd("cho"))       changeOrder();
+  if(mCmd->hasSubCmd("clo"))       clearOrders();
+  if(mCmd->hasSubCmd("check"))     check();
+  if(mCmd->hasSubCmd("lsd"))       listDepots();
+  if(mCmd->hasSubCmd("lso"))       listOrders();
 
   return !hasError();
-}
-
-QDate Depots::optionDate(const QStringList& parm, const QString& optName)
-{
-  QDate date;
-  QStringList opt;
-
-  if(FTool::getParameter(parm, QString("--%1").arg(optName), opt) < 1)
-  {
-    error(FUNC, tr("No date at '--%1' given.").arg(optName));
-    return date;
-  }
-
-  date = QDate::fromString(opt.at(0), Qt::ISODate);
-
-  if(!date.isValid()) error(FUNC, tr("Given date '%1' at '--%2' is not valid.").arg(opt.at(0), optName));
-
-  return date;
 }
 
 QDate Depots::nextCheckday(const QList<int>& checking)
@@ -107,58 +142,49 @@ QDate Depots::nextCheckday(const QList<int>& checking)
   return mToday;
 }
 
-void Depots::simtrade(const QStringList& parm)
+void Depots::simtrade()
 {
-  // simtrade <Trader> <BrokerName> <fromDate> <toDate>
-  //         [--weekly [<n>] (check only each n weeks, when not given each day is checked)
-  //         [--checkDay <DayName> (default Friday)]]
+  mCmd->regOpts("weekly checkDay");
 
-  QString depotName;
-  QDate fromDate;
-  QDate toDate;
+  if(mCmd->isMissingParms(4))
+  {
+    mCmd->inOptBrief("weekly", "[<n:1>]", tr("Check only each n weeks. When not given each day is checked"));
+    mCmd->inOptBrief("checkDay", "<DayName:Fri>", tr("At the end of which day take a look on the market"));
+
+    if(mCmd->printThisWay("<Trader> <BrokerName> <FromDate> <ToDate> \\ "
+                          "[~~weekly [~~checkDay]]")) return;
+
+    mCmd->printComment(tr("Creates a new depot owned by 'Simulator' with a auto generated name "
+                          "and a fix start cash of 10,000.00"));
+
+    mCmd->printForInst("SimpleRule MyBanK 2009-01-01 2011-01-01 --checkDay Wed --weekly 4 --verbose 0");
+    mCmd->aided();
+    return;
+  }
+
+  QString depotName = mCmd->argStr(1);
+  QDate fromDate = mCmd->argDate(3);
+  QDate toDate = mCmd->argDate(4);
+
+  if(mCmd->hasError()) return;
+
   QList<int> checking; // Hold at pos 0 day interval, at pos 1 the day of week
                        // FIXME Use and name it something better :-/
 
   checking << 1; // Check each day
 
-  QStringList simParm;
-  if(FTool::getParameter(parm, "--simtrade", simParm) < 4)
-  {
-    error(FUNC, tr("To less arguments for '--simtrade'"));
-    errInfo(FUNC, tr("simtrade <Trader> <BrokerName> <fromDate> <toDate>"));
-  }
-  else
-  {
-    depotName = simParm.at(0); // Start with trader file name
-    simParm.insert(2, "--fromDate");
-    simParm.insert(4, "--toDate");
-
-    fromDate = optionDate(simParm, "fromDate");
-    toDate   = optionDate(simParm, "toDate");
-  }
-
-  QStringList opt;
-  if(FTool::getParameter(parm, "--weekly", opt) > -1)
+  if(mCmd->has("weekly"))
   {
     depotName.append("Weekly");
     checking << 5; // Add checkDay=Friday
 
-    if(opt.size())
-    {
-      bool ok;
-      checking[0] = 7 * opt.at(0).toInt(&ok);
-      if(!ok) error(FUNC, tr("Bad --weekly option."));
-    }
-    else
-    {
-      checking[0] = 7;
-    }
+    checking[0] = 7 * mCmd->optInt("weekly", 1);
 
-    if(FTool::getParameter(parm, "--checkDay", opt) > 0)
+    if(mCmd->has("checkDay"))
     {
       QStringList dayNames;
       dayNames << "Mon" << "Tue" << "Wed" << "Thu" << "Fri";
-      int idx = dayNames.indexOf(QRegExp(opt.at(0), Qt::CaseInsensitive, QRegExp::Wildcard));
+      int idx = dayNames.indexOf(QRegExp(mCmd->optStr("checkDay", "fault"), Qt::CaseInsensitive, QRegExp::Wildcard));
       if(idx < 0)
       {
         error(FUNC, tr("Given --checkDay is unknown."));
@@ -172,12 +198,13 @@ void Depots::simtrade(const QStringList& parm)
     }
   }
 
+  if(mCmd->hasError()) return;
   if(hasError()) return;
 
   // FIXME Ask here Trader, check if Trading rule is ok. Ask for hash. Ask for indicator.
 
   // Test if depotName is unique
-  QSqlQuery* depot = getDepots(QStringList() << "--owner Simulator");
+  QSqlQuery* depot = getDepots("Simulator");
   QStringList names;
   while(depot->next())
   {
@@ -186,20 +213,20 @@ void Depots::simtrade(const QStringList& parm)
   QString tryName = depotName;
   for(int i = 1;;++i)
   {
-    qDebug() << "try: " << tryName;
+//     qDebug() << "try name: " << tryName;
     if(!names.contains(tryName)) break;
     tryName = QString("%1%2").arg(depotName).arg(i);
   }
 
   // Create depot
-  int depotId = mFilu->addDepot(tryName, "Simulator", simParm.at(0), simParm.at(1));
+  int depotId = mFilu->addDepot(tryName, "Simulator", mCmd->argStr(1), mCmd->argStr(2));
   if(check4FiluError(FUNC, tr("Can't create depot."))) return;
 
   // Add initial cash to depot
   mFilu->addAccPosting(depotId, fromDate.addDays(-1), FiluU::ePostCashIn, "Your fake chance", 10000.00);
 
   // Travel across the time
-  depot = getDepots(QStringList() << "--dpid" << QString::number(depotId));
+  depot = getDepots(depotId);
   mLastCheck = fromDate.addDays(-1);
   mToday = mLastCheck;
   mToday = nextCheckday(checking);
@@ -255,13 +282,22 @@ void Depots::simtrade(const QStringList& parm)
   }
 }
 
-void Depots::check(const QStringList& parm)
+void Depots::check()
 {
   // Ignore filter settings --from --to
   //mToday = QDate::currentDate();
   //mLastCheck = mRcFile->getDT("LastDepotCheck");
 
-  checkDepots(getDepots(parm));
+  if(mCmd->isMissingParms())
+  {
+    if(mCmd->printThisWay("[<DepotFilter>]")) return;
+
+    mCmd->printForInst("--owner Me");
+    mCmd->aided();
+    return;
+  }
+
+  checkDepots(getDepots());
 
   if(hasError()) return;
 
@@ -365,22 +401,25 @@ void Depots::checkDepots(QSqlQuery* depots)
   foreach(Trader* trader, traders) delete trader;
 }
 
-void Depots::changeOrder(const QStringList& parm)
+void Depots::changeOrder()
 {
-  QStringList opt;
-  if(FTool::getParameter(parm, "--cho", opt) < 1)
+  if(mCmd->isMissingParms(1))
   {
-    error(FUNC, tr("No OrderId given."));
+    if(mCmd->printThisWay("<OrderId> [<Key=Value>]..")) return;
+
+    mCmd->printComment(tr("The order must not have status 'Executed'. After the change the order is 'Active'."));
+    mCmd->printComment(QString(cUseLso4Id).arg("lso"));
+    mCmd->printComment(tr("Possible Keys are: %1").arg("date valid limit pieces"));
+
+    mCmd->printForInst(QString("123 pieces=45 limit=67.89 valid=%1")
+                          .arg(QDate::currentDate().addDays(7).toString(Qt::ISODate)));
+    mCmd->aided();
     return;
   }
 
-  bool ok;
-  int id = opt.at(0).toInt(&ok);
-  if(!ok)
-  {
-    error(FUNC, tr("Given OrderId '%1' is not a number.").arg(opt.at(0)));
-    return;
-  }
+  int id = mCmd->argInt(1);
+
+  if(mCmd->hasError()) return;
 
   QSqlRecord order;
   if(!getOrder(id, order)) return;
@@ -395,14 +434,16 @@ void Depots::changeOrder(const QStringList& parm)
   // in case of a later detected bad parameter
   mFilu->transaction();
 
+  bool ok;
   QString pair;
-  opt.takeAt(0); // Remove OrderId
-  while(opt.size())
+  for(int i = 2;; ++i)
   {
-    pair.append(opt.takeAt(0));
+    if(mCmd->argStr(i, "STOP") == "STOP") break;
+
+    pair.append(mCmd->argStr(i));
 
     QStringList keyVal = pair.split("=", QString::SkipEmptyParts);
-    if(keyVal.size() < 2) continue;
+    if(keyVal.size() < 2) continue; // Collect more (accept also spaces)
     pair.clear();
 
     QString key = keyVal.at(0).toLower();
@@ -490,22 +531,21 @@ void Depots::changeOrder(const QStringList& parm)
   }
 }
 
-void Depots::cancelOrder(const QStringList& parm)
+void Depots::cancelOrder()
 {
-  QStringList opt;
-  if(FTool::getParameter(parm, "--cancel", opt) < 1)
+  if(mCmd->isMissingParms(1))
   {
-    error(FUNC, tr("No OrderId given."));
+    if(mCmd->printThisWay("<OrderId>")) return;
+
+    mCmd->printComment(QString(cUseLso4Id).arg("lso"));
+    mCmd->printForInst("123");
+    mCmd->aided();
     return;
   }
 
-  bool ok;
-  int id = opt.at(0).toInt(&ok);
-  if(!ok)
-  {
-    error(FUNC, tr("Given OrderId '%1' is not a number.").arg(opt.at(0)));
-    return;
-  }
+  int id = mCmd->argInt(1);
+
+  if(mCmd->hasError()) return;
 
   QSqlRecord order;
   if(!getOrder(id, order)) return;
@@ -527,9 +567,17 @@ void Depots::cancelOrder(const QStringList& parm)
   }
 }
 
-void Depots::clearOrders(const QStringList& parm)
+void Depots::clearOrders()
 {
-  QSqlQuery* depots = getDepots(parm);
+  if(mCmd->isMissingParms())
+  {
+    if(mCmd->printThisWay("[<DepotFilter>]")) return;
+
+    mCmd->aided();
+    return;
+  }
+
+  QSqlQuery* depots = getDepots();
   if(!depots) return;
 
   while(depots->next())
@@ -544,14 +592,28 @@ void Depots::clearOrders(const QStringList& parm)
   }
 }
 
-void Depots::deleteDepots(const QStringList& parm)
+void Depots::deleteDepots()
 {
-  QSqlQuery* depots = getDepots(parm);
+  mCmd->regOpts("I-am-sure");
+
+  if(mCmd->isMissingParms())
+  {
+    mCmd->inOptBrief("I-am-sure", "", "Don't ask if I'am sure");
+
+    if(mCmd->printThisWay("<DepotFilter> [~~I-am-sure]")) return;
+
+    mCmd->printComment(tr("Be very carefully with the use of --I-am-sure, "
+                          "especially if you don't give --dpid."));
+    mCmd->aided();
+    return;
+  }
+
+  QSqlQuery* depots = getDepots();
   if(!depots) return;
 
   while(depots->next())
   {
-    if(!parm.contains("--I-am-sure"))
+    if(!mCmd->has("I-am-sure"))
     {
       print("");
       print("!!!");
@@ -562,16 +624,22 @@ void Depots::deleteDepots(const QStringList& parm)
       print("");
 
       QTextStream out(stdout);
-      out << tr("Are you sure to delete this depot [Yes]? ") << flush;
+      out << tr("Are you sure to delete this depot [No]/%1/Cancel? ").arg(cYes) << flush;
 
       QTextStream in(stdin);
       QString line;
       line = in.readLine(10);
 
-      if(line.compare(tr("Yes"), Qt::CaseInsensitive))
+      if(line.compare(cYes, Qt::CaseInsensitive))
       {
+        if(line.startsWith("C", Qt::CaseInsensitive))
+        {
+          print(tr("Operation aborted."));
+          break;
+        }
+
         print(tr("Ok, nothing happens."));
-        return;
+        continue;
       }
     }
 
@@ -581,9 +649,20 @@ void Depots::deleteDepots(const QStringList& parm)
   }
 }
 
-void Depots::listDepots(const QStringList& parm)
+void Depots::listDepots()
 {
-  QSqlQuery* depots = getDepots(parm);
+  if(mCmd->isMissingParms())
+  {
+    if(mCmd->printThisWay("[<DepotFilter>] [~~4day]")) return;
+
+    mCmd->printForInst(QString("--owner Me --4day %1-12-31")
+                              .arg(QDate::currentDate().year() - 1));
+    mCmd->printComment(tr("The example shows your depot(s) at the end of last year."));
+    mCmd->aided();
+    return;
+  }
+
+  QSqlQuery* depots = getDepots();
   if(!depots) return;
 
   while(depots->next())
@@ -620,20 +699,25 @@ void Depots::listDepot(const QSqlRecord& depot)
   print("");
 }
 
-void Depots::listOrders(const QStringList& parm)
+void Depots::listOrders()
 {
-  QSqlQuery* depots = getDepots(parm);
+  if(mCmd->isMissingParms())
+  {
+    if(mCmd->printThisWay("[<Format>] [<DepotFilter>]")) return;
+
+    mCmd->printComment(tr("Format could be [m|t] (machine/ticket)."));
+    mCmd->printForInst("t --owner Me");
+    mCmd->aided();
+    return;
+  }
+
+  QSqlQuery* depots = getDepots();
   if(!depots) return;
 
-  mOptions.insert("PrintOrder", "Human");
-
-  QStringList opt;
-  if(FTool::getParameter(parm, "--lso", opt) > 0)
-  {
-    if(opt.at(0) == "m") mOptions.insert("PrintOrder", "Machine");
-    else if (opt.at(0) == "t") mOptions.insert("PrintOrder", "Ticket");
-    else warning(FUNC, tr("Unknown argument '%1' ignored.").arg(opt.at(0)));
-  }
+  if(mCmd->argStr(1).isEmpty()) mOptions.insert("PrintOrder", "Human");
+  else if(mCmd->argStr(1) == "m") mOptions.insert("PrintOrder", "Machine");
+  else if (mCmd->argStr(1) == "t") mOptions.insert("PrintOrder", "Ticket");
+  else warning(FUNC, tr("Unknown argument '%1' ignored.").arg(mCmd->argStr(1)));
 
   while(depots->next())
   {
@@ -910,15 +994,37 @@ bool Depots::getOrder(int id, QSqlRecord& order)
   return true;
 }
 
-QSqlQuery* Depots::getDepots(const QStringList& parm)
+QSqlQuery* Depots::getDepots(const QString& owner)
 {
-  QStringList opt;
-  if(FTool::getParameter(parm, "--owner", opt) > 0) mFilu->setSqlParm(":owner",  opt.at(0));
-  else mFilu->setSqlParm(":owner",  "");
+  mFilu->setSqlParm(":owner",  owner);
+  mFilu->setSqlParm(":depotId", -1);
 
-  if(FTool::getParameter(parm, "--dpid", opt) > 0) mFilu->setSqlParm(":depotId",  opt.at(0));
-  else mFilu->setSqlParm(":depotId",  -1);
+  if(mCmd->hasError()) return 0;
 
+  return getDepots2();
+}
+
+QSqlQuery* Depots::getDepots(int id)
+{
+  mFilu->setSqlParm(":depotId", id);
+
+  if(mCmd->hasError()) return 0;
+
+  return getDepots2();
+}
+
+QSqlQuery* Depots::getDepots()
+{
+  mFilu->setSqlParm(":owner",  mCmd->optStr("owner"));
+  mFilu->setSqlParm(":depotId", mCmd->optInt("dpid", -1));
+
+  if(mCmd->hasError()) return 0;
+
+  return getDepots2();
+}
+
+QSqlQuery* Depots::getDepots2()
+{
   QSqlQuery* depots = mFilu->execSql("GetDepots");
   if(!depots)
   {

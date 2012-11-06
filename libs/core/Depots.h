@@ -22,6 +22,8 @@
 
 #include "FClass.h"
 
+class CmdHelper;
+
 
 /***********************************************************************
 *
@@ -35,9 +37,12 @@ class Depots : public FClass
                   Depots(FClass* parent);
     virtual      ~Depots();
 
-    bool          exec(const QStringList& command);
+    bool          exec(CmdHelper* cmd);
+    static void   briefIn(CmdHelper* cmd);
 
   protected:
+    typedef QHash<QString, QString>   HashStrStr;
+
     struct DepotStatus
     {
       int    id;
@@ -48,35 +53,37 @@ class Depots : public FClass
       double balance;
     };
 
-    QDate         optionDate(const QStringList& parm, const QString& optName);
     QDate         nextCheckday(const QList<int>& checking);
 
-    void          simtrade(const QStringList& parm);
-    void          cancelOrder(const QStringList& parm);
-    void          changeOrder(const QStringList& parm);
-    void          check(const QStringList& parm);
+    void          simtrade();
+    void          cancelOrder();
+    void          changeOrder();
+    void          check();
     void          checkDepots(QSqlQuery* depots);
-    void          clearOrders(const QStringList& parm);
-    void          deleteDepots(const QStringList& parm);
-    void          listDepots(const QStringList& parm);
+    void          clearOrders();
+    void          deleteDepots();
+    void          listDepots();
     void          listDepot(const QSqlRecord& depot);
-    void          listOrders(const QStringList& parm);
+    void          listOrders();
     void          listOrders(const QSqlRecord& depot);
     void          listOrders(QSqlQuery* orders, int status);
     void          printPosition(const QSqlRecord& pos);
     void          printOrder(const QSqlRecord& order);
 
     bool          getOrder(int id, QSqlRecord& order);
-    QSqlQuery*    getDepots(const QStringList& parm);
+    QSqlQuery*    getDepots(const QString& owner);
+    QSqlQuery*    getDepots(int id);
+    QSqlQuery*    getDepots();
+    QSqlQuery*    getDepots2();
     void          printDepotHeader(const QSqlRecord& depot);
     QString       isin(int fiId);
 
+    CmdHelper*    mCmd;          // Never delete, not your own
     DepotStatus   mDP;
     int           mLineNo;
     QDate         mToday;
     QDate         mLastCheck;
-
-    QHash<QString, QString> mOptions;
+    HashStrStr    mOptions;
 
   private:
 };
