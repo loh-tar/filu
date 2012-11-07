@@ -81,29 +81,29 @@ class Newswire
     void            setVerboseLevel(const VerboseLevel level);
     void            setVerboseLevel(const QString& func, const QString& level);
     void            setVerboseLevel(const QString& func, const QStringList& parm);
-    VerboseLevel    verboseLevel() const { return mVerboseLevel; };
-    bool            verboseLevel(VerboseLevel vl) const { return (mVerboseLevel >= vl) ? true : false; };
+    VerboseLevel    verboseLevel() const { return mVerboseLevel; }
+    bool            verboseLevel(VerboseLevel vl) const { return (mVerboseLevel >= vl) ? true : false; }
 
     void            setNoErrorLogging(bool noErrorLogging);
     void            setLogFile(const QString& path);
     void            setMsgTargetFormat(MsgTarget target, const QString& format);
     QString         formatMessages(const QString& format = "");
-    bool            hasMessage() const { return mMessages.size() > 0; }; // True if any message
-    bool            hasError() const { return mHasError; };              // True if error or fatal
-    bool            hasFatal() const { return mHasFatal; };              // Only true if fatal
+    bool            hasMessage() const { return mMessages.size() > 0; } // True if any message
+    bool            hasError() const { return mHasError; }              // True if error or fatal
+    bool            hasFatal() const { return mHasFatal; }              // Only true if fatal
 
-    const MessageLst& errors() const { return mMessages; };
-    const MessageLst& messages() const { return mMessages; };
+    const MessageLst& errors() const { return mMessages; }
+    const MessageLst& messages() const { return mMessages; }
 
     friend class RcFile;
 
   protected:
-    void            print(const QString& txt) { *mErrConsole << txt << endl; };
+    void            print(const QString& txt);
     void            verbose(const QString& func, const QString& txt, const VerboseLevel type = eInfo)
-                           { if(mVerboseLevel >= type) verboseP(func, txt, type); };
+                           { if(mVerboseLevel >= type) verboseP(func, txt, type); }
 
     void            addMessages(const MessageLst& msgl);
-    void            addErrors(const MessageLst& errors) { addMessages(errors); };
+    void            addErrors(const MessageLst& errors) { addMessages(errors); }
     void            errInfo(const QString& func, const QString& txt);
     void            warning(const QString& func, const QString& txt);
     void            error(const QString& func, const QString& txt);
@@ -115,9 +115,9 @@ class Newswire
     QString         formatMessage(const Message& msg, const QString& format = "");
 
     void            removeMessage(const QString& txt);
-    bool            isRoot() { return mRoot; };
+    bool            isRoot() { return mRoot; }
     void            clearMessages();
-    void            clearErrors() { clearMessages(); };
+    void            clearErrors() { clearMessages(); }
 
   private:
                         // P for private

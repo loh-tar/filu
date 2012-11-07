@@ -285,3 +285,22 @@ void Newswire::logMessage(const Message& msg)
     if(mLogFile) *mLogFile << formatMessage(msg, mFormat.value(eFileLog)) << endl;
   }
 }
+
+void Newswire::print(const QString& txt)
+{
+  // Don't print two sequenced empty lines
+  static bool lastWasEmpty = false;
+
+  if(txt.isEmpty())
+  {
+    if(lastWasEmpty) return;
+
+    lastWasEmpty = true;;
+  }
+  else
+  {
+    lastWasEmpty = false;
+  }
+
+  *mErrConsole << txt << endl;
+}
