@@ -30,7 +30,7 @@ interested in.
 
 NOTE: About market names see hacking-provider-scripts.txt
 
-Furthermore read import-file-format.txt to became an overview of the
+Furthermore read import-file-format.txt to get an overview of the
 possibilities.
 
 So many words but no beef? OK, let us do some less commands to bring up the

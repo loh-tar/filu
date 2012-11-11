@@ -116,7 +116,7 @@ Depots
  - Add command '--cho' (change order).
  - Improve command parsing to omit -- at first cmd/switch.
 
-To became these working you have to fix your existing Filu-DB.
+To get these working you have to fix your existing Filu-DB.
 Save these lines as 'filu-dbfix-2011-09-04.sql'.
 
   -- Change 'RESTRICT' to 'CASCADE' at depot stuff

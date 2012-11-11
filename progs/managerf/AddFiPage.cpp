@@ -362,8 +362,8 @@ void AddFiPage::fillResultTable(QStringList* data)
     {
       // Prepare the Header line
       // data->at(r) looks like : "[Header]Reuters;Name;Yahoo;Market;Quality;Notice
-      // mPreparedHeader will became: "Symbol0", "Name", "Symbol1", "Market1", "Quality", "Notice", "Provider0", "Market0", "Provider1"
-      // mPreparedHeaderData will became: QHash(("Market0", "NoMarket")("Market1", "")("Provider0", "Reuters")("Symbol0", "")("Provider1", "Yahoo")("Symbol1", "")("Notice", "")("Quality", "")("Name", ""))
+      // mPreparedHeader will becomes: "Symbol0", "Name", "Symbol1", "Market1", "Quality", "Notice", "Provider0", "Market0", "Provider1"
+      // mPreparedHeaderData will becomes: QHash(("Market0", "NoMarket")("Market1", "")("Provider0", "Reuters")("Symbol0", "")("Provider1", "Yahoo")("Symbol1", "")("Notice", "")("Quality", "")("Name", ""))
       mImporter->reset();
       importFails(FUNC, data->at(r)); // Only to check for wrong MakeNameNice.conf.
                                              // But ignore the error if some

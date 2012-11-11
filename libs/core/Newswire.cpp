@@ -174,7 +174,7 @@ QString Newswire::messageTypeName(const MsgType type)
   switch(type)
   {
     case eInfoMsg: return tr("Info");    break;
-    case eErrInfo: return tr("Info ");   break;    // Um, yes one blank to became same lenght as "Error"
+    case eErrInfo: return tr("Info ");   break;    // Um, yes one blank to have same length as "Error"
     case eError:   return tr("Error");   break;
     case eWarning: return tr("Warning"); break;
     case eFatal:   return tr("Fatal");   break;

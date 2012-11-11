@@ -73,10 +73,10 @@ the boss I start from scratch with Qt4.
 
 Q: You break with Steve, you break with Christian. Are you not a team player?
 A: A team has one goal where each player is fighting for. Christian was not as
-   much interested to became a substitute for Qtstalker than to became an
-universal library preferably usable with Perl, which was not my primary goal and
-ask too much of my C++ skills. Furthermore he changed many times the database
-structure to became some of his ideas working, but that makes me unlucky. I hope
+   much interested to get a substitute for Qtstalker than to get an universal
+library preferably usable with Perl, which was not my primary goal and ask too
+much of my C++ skills. Furthermore he changed many times the database
+structure to get some of his ideas working, but that makes me unlucky. I hope
 these kind of truble can be avoid by using git at Gitorious.org where everybody
 is his own boss.
 
