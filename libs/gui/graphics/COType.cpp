@@ -275,7 +275,7 @@ void COType::showEditWindow()
 
     if(!widget)
     {
-      error(FUNC, QString("Oops!, Attribute '%1' has type '%2' but is not here supported.").arg(name, attribute.typeName()));
+      fatal(FUNC, QString("Oops!, Attribute '%1' has type '%2' but is not here supported.").arg(name, attribute.typeName()));
       continue;
     }
 

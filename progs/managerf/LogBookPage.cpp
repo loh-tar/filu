@@ -155,7 +155,7 @@ void LogBookPage::clearLogFile()
   }
   else
   {
-    fatal(FUNC, tr("Can't remove LogFile"));
+    fatal(FUNC, QString("Can't remove LogFile"));
     emitMessage(FUNC, tr("Can't remove LogFile."));
   }
 

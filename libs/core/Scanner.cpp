@@ -202,7 +202,7 @@ void Scanner::autoSetup()
     QFile file(indicatorPath + files.at(i));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      fatal(FUNC, tr("Can't open indicator file '%1'.").arg(files.at(i)));
+      fatal(FUNC, QString("Can't open indicator file '%1'.").arg(files.at(i)));
       continue;
     }
 

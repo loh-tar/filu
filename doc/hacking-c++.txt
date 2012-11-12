@@ -305,9 +305,10 @@ Error Messages
     ...
   }
 
-As you see the message text begin with an uppercase letter and is encapsulated in
-tr(""). Furthermore is the Newswire function error(FUNC, ...) used as preferred.
-For more available error and verbose functions see Newswire.cpp
+As you see the message text begin with an uppercase letter and is encapsulated
+in tr(""). Furthermore is the Newswire function error(FUNC, ...) used as
+preferred. But DON'T use tr("") with fatal(FUNC, ...) use QString if needed or
+keep it plain. For more available error and verbose functions see Newswire.h.
 
 
 Footnotes

@@ -58,7 +58,7 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      fatal(FUNC, tr("Script '%1' not started.").arg(script));
+      fatal(FUNC, QString("Script '%1' not started.").arg(script));
       mRunning = false;
       mProc->kill();
     }
@@ -73,13 +73,13 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
 
     if(!mProc->waitForStarted())
     {
-      fatal(FUNC, tr("Script '%1' not started.").arg(script));
+      fatal(FUNC, QString("Script '%1' not started.").arg(script));
       return 0;
     }
 
     if(!mProc->waitForFinished(90000))
     {
-      fatal(FUNC, tr("Script '%1' not finished.").arg(script));
+      fatal(FUNC, QString("Script '%1' not finished.").arg(script));
       mProc->kill();
       return 0;
     }

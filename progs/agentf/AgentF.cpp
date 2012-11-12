@@ -538,7 +538,7 @@ void AgentF::execCmd(const QStringList& parm)
   }
   else
   {
-    error(FUNC, tr("Unknown command: %1").arg(cmd));
+    error(FUNC, QString("Unknown command: %1").arg(cmd));
     errInfo(FUNC, tr("Call me without any command for help."));
   }
 }
@@ -620,7 +620,7 @@ void AgentF::startClones()
 
     if(!clone->waitForStarted())
     {
-      fatal(FUNC, tr("Clone not started."));
+      fatal(FUNC, QString("Clone not started."));
       clone->kill();
       delete clone;
       QCoreApplication::exit(1);

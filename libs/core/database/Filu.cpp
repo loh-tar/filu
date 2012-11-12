@@ -1264,7 +1264,7 @@ void Filu::openDB()
     query.next();
     if(!query.value(0).toBool())
     {
-      fatal(FUNC, tr("The PSql Driver works not properly."));
+      fatal(FUNC, QString("The PSql Driver works not properly."));
       errInfo(FUNC, tr("Did you install the fixed version as noted in the readme?"));
       errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getST("PluginPath")));
     }
@@ -1416,7 +1416,7 @@ bool Filu::initQuery(const QString& name, const QString& rawSql)
   bool ok = query->prepare(sql);
   if(!ok)
   {
-    fatal(FUNC, tr("Can't prepare sql '%1'.").arg(name));
+    fatal(FUNC, QString("Can't prepare sql '%1'.").arg(name));
     errInfo(FUNC, query->lastError().databaseText());
     return false;
   }

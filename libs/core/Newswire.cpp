@@ -80,7 +80,7 @@ void Newswire::setLogFile(const QString& path)
   {
     delete mLogFileFile;
     mLogFileFile = 0;
-    fatal(FUNC, tr("Can't open log file '%1'.").arg(path));
+    fatal(FUNC, QString("Can't open log file '%1'.").arg(path));
   }
   else
   {

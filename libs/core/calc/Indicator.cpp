@@ -508,7 +508,7 @@ bool Indicator::prepare(QStringList& indicator)
     CalcType* newCalcType = CalcType::createNew(this, "SIMTRADE");
     if(!newCalcType)
     {
-      fatal(FUNC, tr("Could not create calc type 'SIMTRADE'."));
+      fatal(FUNC, QString("Could not create calc type 'SIMTRADE'."));
       return false;
     }
 
