@@ -64,10 +64,12 @@ Newswire::~Newswire()
 
 void Newswire::init()
 {
-  mFormat.insert(eVerbose, "%F %x");
-  mFormat.insert(eConsLog, "%F *** %t *** %x");
-  mFormat.insert(eFileLog, "%T %C *** %t *** %F %x");
-  mFormat.insert(eErrFunc, "%f *** %t *** %x");
+//   mFormat.insert(eVerbose, "%F %x");
+  mFormat.insert(eVerbose, "%c: %x");
+//   mFormat.insert(eConsLog, "%F *** %t *** %x");
+  mFormat.insert(eConsLog, "%c: *** %t *** %x");
+  mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+  mFormat.insert(eErrFunc, "%f: *** %t *** %x");
 }
 
 void Newswire::setLogFile(const QString& path)
@@ -97,6 +99,35 @@ void Newswire::setMsgTargetFormat(MsgTarget target, const QString& format)
 void Newswire::setVerboseLevel(const VerboseLevel level)
 {
   mVerboseLevel = level;
+
+  switch(level)
+  {
+    case eNoVerbose:
+    case eInfo:
+    {
+      mFormat.insert(eVerbose, "%c: %x");
+      mFormat.insert(eConsLog, "%c: *** %t *** %x");
+      mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+      mFormat.insert(eErrFunc, "%f: *** %t *** %x");
+      break;
+    }
+    case eAmple:
+    {
+      mFormat.insert(eVerbose, "%c: %x");
+      mFormat.insert(eConsLog, "%c: *** %t *** %x");
+      mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+      mFormat.insert(eErrFunc, "%f: *** %t *** %x");
+      break;
+    }
+    case eMax:
+    {
+      mFormat.insert(eVerbose, "%F %x");
+      mFormat.insert(eConsLog, "%F *** %t *** %x");
+      mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+      mFormat.insert(eErrFunc, "%f: *** %t *** %x");
+      break;
+    }
+  }
 }
 
 void Newswire::setVerboseLevel(const QString& func, const QString& level)
@@ -107,10 +138,10 @@ void Newswire::setVerboseLevel(const QString& func, const QString& level)
   if(ok and (mVerboseLevel >= eNoVerbose) and (mVerboseLevel <= eMax)) return;
 
   QString levelName = level.toUpper();
-  if(levelName == "QUIET")      mVerboseLevel = eNoVerbose;
-  else if(levelName == "INFO")  mVerboseLevel = eInfo;
-  else if(levelName == "AMPLE") mVerboseLevel = eAmple;
-  else if(levelName == "MAX")   mVerboseLevel = eMax;
+  if(levelName == "QUIET")      setVerboseLevel(eNoVerbose);
+  else if(levelName == "INFO")  setVerboseLevel(eInfo);
+  else if(levelName == "AMPLE") setVerboseLevel(eAmple);
+  else if(levelName == "MAX")   setVerboseLevel(eMax);
   else
   {
     error(func, tr("Verbose level '%1' unknown.").arg(level));
