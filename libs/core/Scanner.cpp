@@ -22,10 +22,16 @@
 #include "Indicator.h"
 #include "DataTupleSet.h"
 #include "FTool.h"
+#include "CmdHelper.h"
+
+const QString cCmd1 = "scan";
+const QString cCmd1Brief = QObject::tr("Scans the database for events");
 
 Scanner::Scanner(FClass* parent)
        : FClass(parent, FUNC)
+       , mCmd(0)
        , mBarsToLoad(0)
+       , mAutoSetup(false)
        , mForce(false)
        , mForcedFrame(0)
 {
@@ -37,19 +43,82 @@ Scanner::~Scanner()
   foreach(Indicator* indi, mIndicators) delete indi;
 }
 
-bool Scanner::exec(const QStringList& command)
+void Scanner::briefIn(CmdHelper* cmd)
 {
+  if(!cmd) return;
+
+  cmd->inCmdBrief(cCmd1, cCmd1Brief);
+}
+
+bool Scanner::exec(CmdHelper* ch)
+{
+  if(!ch)
+  {
+    fatal(FUNC, "Called with NULL pointer.");
+    return false;
+  }
+
+  mCmd = ch;
+  mCmd->regStdOpts("indi auto group this force timeFrame mark"/*"reset "*/);
+  mCmd->makeOneOfOptsMandatory("FiSet", "indi auto");
+  mCmd->makeOneOfOptsMandatory("Scanner", "group this");
+
+  if(mCmd->isMissingParms())
+  {
+//     mCmd->inOptBrief("reset", "", "Only used by ");
+    mCmd->inOptBrief("force", "", tr("Forces '--auto' to scan anyway if needed or not"));
+
+    mCmd->inOptBrief("timeFrame", "<Name>|<Number>"
+                    , tr("The time frame to be scanned. Overwrite the ScanFreq Key "
+                         "of the indicator when '--auto' is used. But still respect "
+                         "if there is a need to be scanned. Use '--force' to ignore that too"));
+
+    mCmd->inOptBrief("indi", "<Name>..", tr("A list of indicators to use for scanning"));
+
+    mCmd->inOptBrief("auto", ""
+                    , tr("Uses all indicators with a ScanFreq Key. And take care of its value, to "
+                         "avoid unwanted scans. When you also use '--indi' will these indicator also "
+                         "used"));
+
+    mCmd->inOptBrief("group", "<Path>.."
+                    , tr("A list of groups to scan. When 'all' is given all FIs are scanned and "
+                         "any existing <Path> will ignored. Without '--group' is nothing scanned"));
+
+    mCmd->inOptBrief("this", "<Symbol> <Market>", tr("Scan only this FI"));
+    mCmd->inOptBrief("mark", "", tr("Save the scan date in the settings file ~/.config/Filu.conf"));
+
+    mCmd->inOptGroup("FiSet", "FI sets", "group this");
+    mCmd->inOptGroup("Scanner", "scanners", "auto indi");
+
+    if(mCmd->printThisWay("<FiSet> <Scanner>")) return true;
+
+    mCmd->prin4Comment(tr("The scan run over the entire database, one or more groups or "
+                          "only one FI with one or more scanners. These scanners are indicators "
+                          "with a SCAN4 variable, see doc/indicator-file-format.txt. "
+                          "When the scan has found a FI "
+                          "will it added to the PerformerF group 'ScanResults/<today>/<indicatorName>'."));
+
+    mCmd->prin4Note(tr("Each time the bars of an FI are be updated a scan will automatic performed "
+                       "with the '--auto' switch. So you normally not have to scan directly except "
+                       "for testing purposes or multiuser mode."));
+
+    mCmd->printForInst("--group all --indi MyNewIdea --timeFrame Quarter");
+    mCmd->printForInst("--group all --auto --force --verbose 2");
+    mCmd->aided();
+    return true;
+  }
+
   // Look for each command, and execute them if was given.
   // The order of look up is important.
-  if(command.contains("--reset"))     reset();
-  if(command.contains("--verbose"))   setVerboseLevel(FUNC, command);
-  if(command.contains("--force"))     mForce = true;
-  if(command.contains("--timeFrame")) setTimeFrame(command);
-  if(command.contains("--indi"))      loadIndicator(command);
-  if(command.contains("--auto"))      autoSetup();
-  if(command.contains("--group"))     scanGroup(command);
-  if(command.contains("--this"))      scanThis(command);
-  if(command.contains("--mark"))      mark();
+//   if(mCmd->has("reset"))     reset();
+  if(mCmd->has("verbose"))   setVerboseLevel(FUNC, mCmd->parmStr(1));
+  if(mCmd->has("force"))     mForce = true;
+  if(mCmd->has("timeFrame")) setTimeFrame(mCmd->parmStr(1));
+  if(mCmd->has("indi"))      loadIndicator(mCmd->parmList());
+  if(mCmd->has("auto"))      autoSetup();
+  if(mCmd->has("group"))     scanGroup();
+  if(mCmd->has("this"))      scanThis();
+  if(mCmd->has("mark"))      mark();
 
   return hasError();
 }
@@ -65,27 +134,21 @@ void Scanner::reset()
   mToday = QDate::currentDate();
   mGroupPath = QString("ScanResults/%1/").arg(mToday.toString(Qt::ISODate));
   mBarsToLoad = 0;
+  mAutoSetup = false;
   mForce = false;
   mForcedFrame = 0;
-  Newswire::setVerboseLevel(eNoVerbose);
 
   clearErrors();
 }
 
-void Scanner::loadIndicator(const QStringList& parm)
+void Scanner::loadIndicator(const QStringList& indiList)
 {
   if(hasError()) return;
-
-  QStringList indiNames;
-  FTool::getParameter(parm, "--indi", indiNames);
-
-  bool autoSetup = false;
-  if(parm.contains("--auto")) autoSetup = true;
 
   mRcFile->beginGroup("LastTimeScanned");
 
   Indicator* indicator = 0;
-  foreach(QString indi, indiNames)
+  foreach(QString indi, indiList)
   {
     if(mLoadedIndicators.contains(indi)) continue;
 
@@ -118,14 +181,14 @@ void Scanner::loadIndicator(const QStringList& parm)
 
     QDate lastScanned = mRcFile->getDT(indi);
 
-    if(autoSetup and !mForce and lastScanned.isValid())
+    if(mAutoSetup and !mForce and lastScanned.isValid())
     {
       int days = lastScanned.daysTo(mToday);
       frame    = indicator->scanFreq(true); // In true days
 
       if(days < frame)
       {
-        verbose(FUNC, tr("Today is no need to scan '%1'").arg(indi), eMax);
+        verbose(FUNC, tr("Today is no need to scan with '%1', ").arg(indi), eAmple);
         continue;
       }
 
@@ -153,33 +216,26 @@ void Scanner::loadIndicator(const QStringList& parm)
 
   mRcFile->endGroup();
 
-  if(verboseLevel(eMax))
+  if(verboseLevel(eInfo))
   {
-    QString txt = tr("Loaded Indi: %1 Frame: %2");
+    QString txt = tr("Use Indicator: %1 Frame: %2");
     for(int i = 0; i < mIndicators.size(); ++i)
     {
-      verbose(FUNC, txt.arg(mIndicators.at(i)->fileName()).arg(mTimeFrames.at(i)), eMax);
+      verbose(FUNC, txt.arg(mIndicators.at(i)->fileName(), -20).arg(mTimeFrames.at(i)));
     }
 
-    if(mIndicators.size() > 0) verbose(FUNC, tr("BarsToLoad: %1").arg(mBarsToLoad), eMax);
-    else verbose(FUNC, tr("No indicators loaded!"), eMax);
+    if(mIndicators.size() > 0) verbose(FUNC, tr("%1 Bars to load.").arg(mBarsToLoad));
+    else verbose(FUNC, tr("No need to scan today."));
   }
 }
 
-void Scanner::setTimeFrame(const QStringList& parm)
+void Scanner::setTimeFrame(const QString& frame)
 {
-  QStringList frame;
-  if(FTool::getParameter(parm, "--timeFrame", frame) < 1)
-  {
-    error(FUNC, tr("No frame given."));
-    return;
-  }
-
-  mForcedFrame = FTool::timeFrame(frame.at(0));
+  mForcedFrame = FTool::timeFrame(frame);
 
   if(mForcedFrame == -1)
   {
-    error(FUNC, tr("Frame '%1' unknown.").arg(frame.at(0)));
+    error(FUNC, tr("Frame '%1' unknown.").arg(frame));
   }
 }
 
@@ -193,8 +249,6 @@ void Scanner::autoSetup()
   QStringList files = dir.entryList(QDir::Files, QDir::Name);
 
   QStringList indiList;
-  indiList << "--auto" << "--indi";
-
   for(int i = 0; i < files.size(); ++i)
   {
     if(files.at(i).endsWith("~")) continue;
@@ -215,56 +269,51 @@ void Scanner::autoSetup()
       if(line.startsWith("*ScanFreq"))
       {
         indiList.append(files.at(i));
+        verbose(FUNC, tr("Auto select indicator '%1'.").arg(files.at(i)), eAmple);
         break;
       }
     }
     file.close();
   }
 
-  if(verboseLevel(eMax))
-  {
-    for(int i = 2; i < indiList.size(); ++i)
-    {
-      verbose(FUNC, tr("Select indicator '%1'.").arg(indiList.at(i)), eMax);
-    }
+  if(!indiList.size()) warning(FUNC, tr("None indicator auto selected!")/*, eAmple*/);
 
-    if(indiList.size() == 2) verbose(FUNC, tr("None selected!"), eMax);
-  }
-
+  mAutoSetup = true;
   loadIndicator(indiList);
 }
 
-void Scanner::scanGroup(const QStringList& parm)
+void Scanner::scanGroup()
 {
   if(hasError() or !mBarsToLoad) return;
 
-  // parm looks like "--group foo bar..."
-  QStringList arg;
-  if(FTool::getParameter(parm, "--group", arg) < 1)
+  QStringList arg = mCmd->parmList();
+
+  if(arg.contains("all"))
   {
-    error(FUNC, tr("No group given."));
+    scanAll();
     return;
   }
 
   foreach(QString group, arg)
   {
-    if("all" == group)
+    int groupId = mFilu->getGroupId(group);
+    if(groupId < 1)
     {
-      scanAll();
+      warning(FUNC, tr("Group not found: %1").arg(group));
       continue;
     }
 
-    QSqlQuery* query = mFilu->getGMembers(mFilu->getGroupId(group));
+    QSqlQuery* query = mFilu->getGMembers(groupId);
     if(!query)
     {
-      verbose(FUNC, tr("No FIs in group '%1'.").arg(group), eMax);
+      warning(FUNC, tr("No FIs in group: %1").arg(group));
       continue;
     }
 
-    if(verboseLevel(eMax))
+    if(verboseLevel(eAmple))
     {
       QString txt = tr("%1 FIs to scan in group %2");
-      verbose(FUNC, txt.arg(query->size()).arg(group), eMax);
+      verbose(FUNC, txt.arg(query->size()).arg(group));
     }
 
     while(query->next())
@@ -285,10 +334,10 @@ void Scanner::scanAll()
     return;
   }
 
-  if(verboseLevel(eMax))
+  if(verboseLevel(eInfo))
   {
     QString txt = tr("%1 FIs to scan.");
-    verbose(FUNC, txt.arg(symbols->count()), eMax);
+    verbose(FUNC, txt.arg(symbols->count()));
   }
 
   while(symbols->next())
@@ -298,19 +347,15 @@ void Scanner::scanAll()
   }
 }
 
-void Scanner::scanThis(const QStringList& parm)
+void Scanner::scanThis()
 {
   if(hasError() or !mBarsToLoad) return;
 
-  // parm looks like "--this symbol market"
-  QStringList arg;
-  if(FTool::getParameter(parm, "--this", arg) < 2)
-  {
-    error(FUNC, tr("Too less arguments."));
-    return;
-  }
+  QString symbol = mCmd->parmStr(1);
+  QString market = mCmd->parmStr(2);
+  if(mCmd->hasError()) return;
 
-  scan(mFilu->getBars(arg.at(0), arg.at(1), mBarsToLoad));
+  scan(mFilu->getBars(symbol, market, mBarsToLoad));
 }
 
 void Scanner::scanThis(int fiId, int marketId)
@@ -344,13 +389,18 @@ void Scanner::scan(BarTuple* bars)
         mGroupIDs[i] = mFilu->addGroup(mGroupPath + mIndicators.at(i)->fileName());
       }
 
-      if(verboseLevel())
+      if(verboseLevel(eAmple))
       {
-        QString info = tr("'%1' found FiId: %2, %3");
+        QString info = tr("%1 found FiId: %2, %3");
         FiTuple* fi = mFilu->getFi(bars->fiId());
 
-        verbose(FUNC, info.arg(mIndicators.at(i)->fileName()).arg(bars->fiId(), 4).arg(fi->name()), Newswire::eNoVerbose);
+        verbose(FUNC, info.arg(mIndicators.at(i)->fileName()).arg(bars->fiId(), 4).arg(fi->name()));
         delete fi;
+      }
+      else
+      {
+        //FIXME Do it nicer
+        verbose(FUNC, tr("Found FiId: %1").arg(bars->fiId(), 4));
       }
 
       mFilu->addToGroup(mGroupIDs.at(i), bars->fiId());

@@ -20,8 +20,13 @@
 #ifndef SCANNER_HPP
 #define SCANNER_HPP
 
+#include <QDate>
+#include <QString>
+#include <QStringList>
+
 #include "FClass.h"
 
+class CmdHelper;
 class Indicator;
 
 /***********************************************************************
@@ -34,23 +39,26 @@ class Indicator;
 class Scanner : public FClass
 {
   public:
-                Scanner(FClass* parent);
-    virtual    ~Scanner();
+                  Scanner(FClass* parent);
+    virtual      ~Scanner();
 
-    bool        exec(const QStringList& command);
-    void        reset();
-    void        autoSetup();
-    void        scanThis(const QStringList& parm);
-    void        scanThis(int fiId, int marketId);
-    void        mark();
+    static void   briefIn(CmdHelper* cmd);
+    bool          exec(CmdHelper* cmd);
+
+    void          reset();
+    void          autoSetup();
+    void          scanThis(int fiId, int marketId);
+    void          mark();
 
   protected:
-    void        loadIndicator(const QStringList& parm);
-    void        setTimeFrame(const QStringList& parm);
-    void        scanGroup(const QStringList& parm);
-    void        scanAll();
-    void        scan(BarTuple* bars);
+    void          loadIndicator(const QStringList& indiList);
+    void          setTimeFrame(const QString& frame);
+    void          scanGroup();
+    void          scanThis();
+    void          scanAll();
+    void          scan(BarTuple* bars);
 
+    CmdHelper*        mCmd;
     QList<Indicator*> mIndicators;
     QStringList       mLoadedIndicators;
     QList<int>        mGroupIDs;
@@ -58,6 +66,7 @@ class Scanner : public FClass
     QDate             mToday;
     QString           mGroupPath;
     int               mBarsToLoad;
+    bool              mAutoSetup;
     bool              mForce;
     int               mForcedFrame;
 

@@ -479,9 +479,8 @@ void AgentF::scan()
 
   if(!mScanner) mScanner = new Scanner(this);
 
-  mScanner->exec(mCmd->cmdLine()); // FIXME
-
-  if(mScanner->hasError()) addErrors(mScanner->errors());
+  mScanner->exec(mCmd);
+  addErrors(mScanner->errors());
 }
 
 void AgentF::depots()
@@ -706,7 +705,6 @@ void AgentF::execCmd(const QStringList& parm)
     mCmd->inCmdBrief("imp", tr("Imports an (surprise!) import file. See doc/import-file-format.txt"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
     mCmd->inCmdBrief("exp", tr("Export data from the database. See doc/export-data.txt"));
-    mCmd->inCmdBrief("scan", tr("Scans the entire database, one or more groups or only one FI"));
     mCmd->inCmdBrief("add", tr("Lets you adding a single dataset to the database by using Importer"));
     mCmd->inCmdBrief("filu", tr("Create or update the Filu database"));
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
@@ -714,6 +712,7 @@ void AgentF::execCmd(const QStringList& parm)
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
 
     Depots::briefIn(mCmd);
+    Scanner::briefIn(mCmd);
 
     mCmd->inOptBrief("verbose", "<Level>"
                               , tr("How talkative has it to be. Level can be 0-3 or "
@@ -876,8 +875,6 @@ void AgentF::check4MasterCMD()
     if(!mScanner) mScanner = new Scanner(this);
     mScanner->autoSetup();
     mScanner->mark();
-    delete mScanner;
-    mScanner = 0;
   }
   else
   {
