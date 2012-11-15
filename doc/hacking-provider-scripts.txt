@@ -8,7 +8,7 @@ different kind of data. The provider scripts described here deliver these data.
 
 Each provider which is usable in Filu must have a folder located below
 progs/agentf/provider. The folder name *must* *exactly* fit with the name of the
-provider used in the database, <filu-schema>.stype.caption.
+provider used in the database, <FiluSchema>.stype.caption.
 
 After ./configure && sudo make install the provider will copied to the Filu
 ProviderPath, which is as default /usr/local/lib/Filu/provider. If you use a

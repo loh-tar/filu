@@ -104,7 +104,7 @@ void AgentF::addEODBarData()
 {
   // The 'this' command. Update the bars of one defined FI.
   // Command list looks like:
-  // <caller> this <Symbol> <Market> <Provider> [<FromDate>] [<ToDate>]
+  // <Caller> this <Symbol> <Market> <Provider> [<FromDate>] [<ToDate>]
 
   if(mCmd->cmdLine().size() == 9)  // FIXME: What a terrible...
   {
@@ -156,7 +156,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
   //
   // This function update the bars of one defined FI.
   // Command list looks like:
-  // <caller> this <symbol> <market> <provider> <fromDate> <toDate> <fiId> <marketId>
+  // <Caller> this <Symbol> <Market> <Provider> <FromDate> <ToDate> <FiId> <MarketId>
   //    0      1      2        3         4          5         6       7        8
 
   if(parm.size() < 9)
@@ -213,13 +213,13 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
     parameters.append(date.toString(Qt::ISODate));
   }
 
-  parameters.append(parm[2]);// parm[2]=<symbol>
-  parameters.append(parm[3]);// parm[3]=<market>
+  parameters.append(parm[2]);// parm[2]=<Symbol>
+  parameters.append(parm[3]);// parm[3]=<Market>
 
   //qDebug() << parameters;
-  // parameters should now looks like "<fromDate> <toDate> <symbol> <market>"
+  // parameters should now looks like "<FromDate> <ToDate> <Symbol> <Market>"
   // Puh...we can call the script
-  QStringList* data = fetchBarsFromProvider(parm[4], parameters); // parm[4]=<provider>
+  QStringList* data = fetchBarsFromProvider(parm[4], parameters); // parm[4]=<Provider>
 
   // Here is the beef...
   mFilu->addEODBarData(fiId, marketId, data);
@@ -238,7 +238,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 void AgentF::updateAllBars()
 {
   // Command list looks like
-  // agentf full [<fromDate>] [<toDate>]
+  // agentf full [<FromDate>] [<ToDate>]
 
   if(mCmd->isMissingParms())
   {
@@ -263,9 +263,9 @@ void AgentF::updateAllBars()
   }
 
   // Build the parameter list needed by addEODBarData()
-  // <caller> -this <symbol> <market> <provider> [<fromDate> [<toDate>]]
+  // <Caller> -this <Symbol> <Market> <Provider> [<FromDate> [<ToDate>]]
   QStringList parameters;
-  // No parameters.append("<caller>"); done later by beEvil()
+  // No parameters.append("<Caller>"); done later by beEvil()
   parameters.append("this");
   parameters.append(""); // Placeholders, will fill below
   parameters.append("");

@@ -22,7 +22,7 @@ The goal is that you could use ManagerF to import all stuff easily live from
 somewhere of the Internet. But that need more work, especially at the provider
 scripts.
 
-Till ManagerF works as desired, we have to import data with 'agentf imp <file>'
+Till ManagerF works as desired, we have to import data with 'agentf imp <File>'
 command. What we need is a *.imp file with the data we are interested in. Take a
 look into Master-of-imp-files.ods and you see a way how to create that. Adding
 new FIs with ManagerF works well but you have to install the markets you are
@@ -144,10 +144,10 @@ depots
 Performs actions with your portfolios. See also doc/depot-management.txt.
 Most depots commands respekt the optional filter settings:
   --owner <Owner> (only depots by...)
-  --dpid <DepotId>
-  --from <FromDate>
-  --to <ToDate>
-  --4date <ForDate> (the same as --to)
+  --dpid <Id>
+  --from <Date>
+  --to <Date>
+  --4date <Date> (the same as --to)
 
 At the first command/switch after 'depots' can the double hyphens be omitted.
 
@@ -170,7 +170,7 @@ clo
 delete
   Delete depots with all relating data, (positions, account, orders). There will
   a confirmation prompted for each depot unless '--I-am-sure' was given. It is
-  highly recommended to use '--dpid <n>' for filtering.
+  highly recommended to use '--dpid <Id>' for filtering.
 
 lsd
   List depots.
@@ -237,17 +237,17 @@ Yes, it starts a scan. Over the entire database, one or more groups or only one
 FI with one or more scanners. These scanners are indicators with a SCAN4
 variable, see doc/indicator-file-format.txt. There are also more info about some
 things noted below. When the scan has found a FI will it added to the PerformerF
-group 'ScanResults/<today>/<indicatorName>'.
+group 'ScanResults/<Today>/<IndicatorName>'.
 
 The parameters are leaded by '--' and can given in any order, they are:
 
-group <path> [<path>]..
+group <Path> [<Path>]..
   A list of group paths to scan. When 'all' is given all FIs are scanned.
 
-this <symbol> <market>
+this <Symbol> <Market>
   Scan only this FI.
 
-indi <name> [<name>]..
+indi <Name> [<Name>]..
   A list of indicators to use for scanning.
 
 auto
@@ -258,7 +258,7 @@ auto
 force
   Forces '--auto' to scan anyway if needed or not.
 
-timeFrame <name>|<number>
+timeFrame <Name>|<Number>
   The time frame to be scanned. Overwrite the ScanFreq Key of the indicator when
   '--auto' is used but still respect if there is a need to be scanned. Use also
   '--force' to ignore that too.
@@ -266,7 +266,7 @@ timeFrame <name>|<number>
 mark
   Save the scan date in the settings file ~/.config/Filu.conf.
 
-verbose <levelName>|number
+verbose <LevelName>|number
   Set the verbosity, values are the same as for global 'Verbose', see
   doc/config-file.txt.
 

@@ -69,7 +69,7 @@ class Indicator : public FClass
 
     TALib*               mTALib;
     DataTupleSet*        mData;              // Holds the beef, all calculated values
-    QHash<QString, int>  mFiIds;             // <fi-alias>,<fiId>
+    QHash<QString, int>  mFiIds;             // <FiAlias>,<FiId>
     QStringList          mIndicator;         // Holds the whole (rehashed) indicator file
     QStringList          mOrigIndicator;     // Holds the file as it is
     QList<CalcType*>     mCalcCommands;      // Rehashed plot statements, now objects

@@ -96,7 +96,7 @@ bool Scanner::exec(CmdHelper* ch)
                           "only one FI with one or more scanners. These scanners are indicators "
                           "with a SCAN4 variable, see doc/indicator-file-format.txt. "
                           "When the scan has found a FI "
-                          "will it added to the PerformerF group 'ScanResults/<today>/<indicatorName>'."));
+                          "will it added to the PerformerF group 'ScanResults/<Today>/<IndicatorName>'."));
 
     mCmd->prin4Note(tr("Each time the bars of an FI are be updated a scan will automatic performed "
                        "with the '--auto' switch. So you normally not have to scan directly except "

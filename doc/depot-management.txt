@@ -94,9 +94,9 @@ trading setup, which takes much more time.
 
 In fact is it not many more than to create a depot and runs repetitive...
 
-  agentf depots lso --check --dpid <foo> --from <lastCheck> --to <today>
+  agentf depots lso --check --dpid <Id> --from <LastCheck> --to <Today>
 
-...where you adjust <lastCheck> and <today> from run to run. And of course you
+...where you adjust <LastCheck> and <Today> from run to run. And of course you
 have to add the advises as active order. When you like to simulate only one year
 with daily checks you have a lot...fun.
 

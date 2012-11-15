@@ -85,7 +85,7 @@ bool CmdAdd::exec(const QStringList& cmdLine)
   if(needHelp)
   {
     print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("<dataType> <parameterList> [--help] [--verbose <level>]"));
+    print(mInfoTxt.value("CmdPrefix").arg("<DataType> <ParameterList> [--help] [--verbose <Level>]"));
     printDataTypes();
     print(tr("Calling a data type without any parameter tells you more (the same as give --help)."));
     print(mInfoTxt.value("ForInst"));

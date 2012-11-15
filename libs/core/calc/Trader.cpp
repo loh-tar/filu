@@ -465,7 +465,7 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
   {
     QStringList o = mOrders.at(0);
     // Order looks like
-    // <date>, BUY, <type>, <piece>, <limit value>, <rest validity>, <condition>
+    // <Date>, BUY, <Type>, <Piece>, <LimitValue>, <RestValidity>, <Condition>
     QDate  oDate  = QDate::fromString(o.at(0), Qt::ISODate);
     QDate  vDate  = oDate.addDays(o.at(5).toInt() * 1.6);
     bool   buy    = o.at(1).startsWith("BUY")  ? true : false;
@@ -721,7 +721,7 @@ void Trader::readRules()
     knownActions << "BUY" << "SELL";
     for(int i = 0; i < actionList.size(); ++i)
     {
-      // Full format is BUY(<type>, <size>, <limit>, <validity>)
+      // Full format is BUY(<Type>, <Size>, <Limit>, <Validity>)
       QStringList action = actionList.at(i).split(",");
 
       if(!knownActions.contains(action.at(0)))
@@ -1311,7 +1311,7 @@ void Trader::takeActions(const QList<QStringList>& actions)
 void Trader::actionBuy(const QStringList& action)
 {
   // action looks like
-  // <BUY>, <Long/Short>, <size in %>, <limit>, <validity>, <condition>
+  // <BUY>, <Long/Short>, <size in %>, <Limit>, <Validity>, <Condition>
   // BUY, Long, 20, OPEN, 5, SCAN4
 
   // Today we have a signal, the order could only be placed tomorrow
@@ -1403,7 +1403,7 @@ void Trader::actionBuy(const QStringList& action)
 void Trader::actionSell(const QStringList& action)
 {
   // action looks like
-  // <SELL>, <Long/Short>, <size in %>, <limit>, <validity>, <condition>
+  // <SELL>, <Long/Short>, <size in %>, <Limit>, <Validity>, <Condition>
   // SELL, Long, 100, OPEN, 5, Gain > 50
 
   // Today we have a signal, the order could only be placed tomorrow
@@ -1491,7 +1491,7 @@ void Trader::actionSell(const QStringList& action)
 void Trader::checkOpenOrders()
 {
   // mOpenOrders is a QList<QStringList>. One order entry looks like
-  // <BUY/SELL>, <Long/Short>, <size in piece>, <limit>, <validity>, <condition>
+  // <BUY/SELL>, <Long/Short>, <SizeInPiece>, <Limit>, <Validity>, <Condition>
   // BUY, Long, 97, OPEN, 5, SCAN4
   // See also doc/trading-rule-file-format.txt
 
@@ -1515,7 +1515,7 @@ void Trader::checkOpenOrders()
 void Trader::checkOpenBuyOrder(QStringList& order)
 {
   // order looks like
-  // BUY, <type>, <piece>, <limit value>, <rest validity>, <condition>
+  // BUY, <Type>, <Piece>, <LimitValue>, <RestValidity>, <Condition>
   // BUY, Long, 97, 123.45, 5, SCAN4
 
   QDate date;
@@ -1600,7 +1600,7 @@ void Trader::checkOpenBuyOrder(QStringList& order)
 void Trader::checkOpenSellOrder(QStringList& order)
 {
   // order looks like
-  // SELL, <type>, <piece>, <limit value>, <rest validity>, <condition>
+  // SELL, <Type>, <Piece>, <LimitValue>, <RestValidity>, <Condition>
   // SELL, Long, 97, 123.45, 5, Gain > 50
 
   QDate date;

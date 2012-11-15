@@ -35,7 +35,7 @@ bool CalcSetColor::prepare(CalcParms& parms)
 
   if(1 == mIns.size())
   {
-    // Check format "<foo> = SETCOLOR(<color>)"
+    // Check format "<Foo> = SETCOLOR(<Color>)"
     // mIns look like: "red"
     QColor c;
     c.setNamedColor(mIns.at(0));
@@ -46,7 +46,7 @@ bool CalcSetColor::prepare(CalcParms& parms)
   }
   else if(3 == mIns.size())
   {
-    // Check format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
+    // Check format "<Foo> = SETCOLOR(<Variable>, <TrueColor>, <FalseColor>)"
     // mIns look like: "winday", "green", "red"
 
     checkInputVariable(0);
@@ -83,7 +83,7 @@ bool CalcSetColor::calc()
   mData->rewind();
   if(1 == mIns.size())
   {
-    // Format "<foo> = SETCOLOR(<color>)"
+    // Format "<Foo> = SETCOLOR(<Color>)"
     while(mData->next())
     {
       mData->setColor(mOuts.at(0), mIns.at(0));
@@ -91,7 +91,7 @@ bool CalcSetColor::calc()
   }
   else
   {
-    // Format "<foo> = SETCOLOR(<variable>, <true-color>, <false-color>)"
+    // Format "<Foo> = SETCOLOR(<Variable>, <TrueColor>, <FalseColor>)"
     double var;
     while(mData->next())
     {

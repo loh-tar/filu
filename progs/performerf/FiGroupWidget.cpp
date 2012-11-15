@@ -413,8 +413,8 @@ void FiGroupWidget::removeGroup()
   for(int i = 0; i< mil.size(); ++i)
   {
     if(mil.at(i).column() != 0) continue;
-    QString message = tr("\nAre you sure to delete '<group>' and all its contents?.\n");
-    message.replace("<group>", mGroupView->item(mil.at(i).row(), 1)->text());
+    QString message = tr("\nAre you sure to delete '<Group>' and all its contents?.\n");
+    message.replace("<Group>", mGroupView->item(mil.at(i).row(), 1)->text());
 
     int ret = QMessageBox::question(this, tr("performerf - question box"),
                    message,

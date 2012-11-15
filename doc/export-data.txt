@@ -13,8 +13,8 @@ export call may look like these:
 
 Common Switches
 =================
-toFile <fileName> [append]
-  Write the exported data into <fileName>. If 'append' is given the data will
+toFile <FileName> [append]
+  Write the exported data into <FileName>. If 'append' is given the data will
   appended to the existing file. If no '--toFile' is given, the data will be
   written to stdout. The verbose level is in that case set to 'Quiet' unless
   --verbose is given.
@@ -27,16 +27,16 @@ Filter Settings
 =================
 Controls the qualities of exportet data.
 
-fiType <fiType>
+fiType <FiType>
   e.g. 'Stock'.
 
-from <date>
+from <Date>
   Should be given as YYYY-MM-DD.
 
-group <groupPath>
+group <GroupPath>
   Is one of PerformerF groups createt by the user.
 
-market <market>
+market <Market>
   e.g. 'NYSE'.
 
 noBars
@@ -45,10 +45,10 @@ noBars
 noUser
   Don't export user data, useful with '--all'.
 
-to <date>
+to <Date>
  Should be given as YYYY-MM-DD.
 
-user <userName> FIXME: not implemented
+user <UserName> FIXME: not implemented
   Used e.g. by --co, --groups or --portfolio to spezify whoes data to export.
   If no '--user' is given the calling user is used.
 
@@ -88,9 +88,9 @@ offdays FIXME: not implemented
 splits
   Export split data.
 
-symbols [<type> ...]
-  When no <type> is given will all kind of symbols exportet. But note that
-  <type> can not be your lovely symbol, these is always used as RefSymbol.
+symbols [<Type> ...]
+  When no <Type> is given will all kind of symbols exportet. But note that
+  <Type> can not be your lovely symbol, these is always used as RefSymbol.
 
   --symbols ISIN Yahoo
 
@@ -106,7 +106,7 @@ Export Switches Of User Spezific Data
 co
   Export chart objects.
 
-depots [--owner <foo> | --dpid <id>] [--withSim]
+depots [--owner <Name> | --dpid <Id>] [--withSim]
   Exports (almost) all historical data relating to depots. Which are positions,
   orders and account postings. 'Almost' means that not truly important data are
   omitted by default, which is stuff by 'Simulator' and not active orders. But

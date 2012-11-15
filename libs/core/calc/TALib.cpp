@@ -90,38 +90,38 @@ void TALib::getFunctionInfo(const QString& function, FunctionInfo& info)
         int j = -1;
         if(paramInfo->flags & TA_IN_PRICE_OPEN)
         {
-          inputParms.append("<open>");
+          inputParms.append("<Open>");
           info.insert(key + QString::number(++j), "OPEN");
         }
         if(paramInfo->flags & TA_IN_PRICE_HIGH)
         {
-          inputParms.append("<high>");
+          inputParms.append("<High>");
           info.insert(key + QString::number(++j), "HIGH");
         }
         if(paramInfo->flags & TA_IN_PRICE_LOW)
         {
-          inputParms.append("<low>");
+          inputParms.append("<Low>");
           info.insert(key + QString::number(++j), "LOW");
         }
         if(paramInfo->flags & TA_IN_PRICE_CLOSE)
         {
-          inputParms.append("<close>");
+          inputParms.append("<Close>");
           info.insert(key + QString::number(++j), "CLOSE");
         }
         if(paramInfo->flags & TA_IN_PRICE_VOLUME)
         {
-          inputParms.append("<volume>");
+          inputParms.append("<Volume>");
           info.insert(key + QString::number(++j), "VOLUME");
         }
         if(paramInfo->flags & TA_IN_PRICE_OPENINTEREST)
         {
-          inputParms.append("<opInt>");
+          inputParms.append("<OpInt>");
           info.insert(key + QString::number(++j), "OPINT");
         }
         if(paramInfo->flags & TA_IN_PRICE_TIMESTAMP)
         {
           inputParms.append("TIMESTAMP");
-          info.insert(key + QString::number(++j), "<timestamp>");
+          info.insert(key + QString::number(++j), "<Timestamp>");
         }
         break;
     }
@@ -215,7 +215,7 @@ void TALib::getFunctionInfo(const QString& function, FunctionInfo& info)
 
 bool TALib::getIndicator(const QString& inclCmd, QStringList& indicator)
 {
-  // inclCmd looks like "INCLTALIB(<func>, <parm1>[,...<parmN>])"
+  // inclCmd looks like "INCLTALIB(<Func>, <Parm1>[,...<ParmN>])"
   QStringList parms = inclCmd.split(",");
   parms[0] = parms[0].remove("INCLTALIB(");
   parms[parms.size() - 1].chop(1); // Remove last brace
@@ -305,7 +305,7 @@ void TALib::getFunctionUsage(FunctionInfo& info)
     }
   }
 
-  // Build all <foo> = TALIB(...) possibilities
+  // Build all <Foo> = TALIB(...) possibilities
   QStringList list;
   for(int i = 0; i < info.value("nbOutput").toInt(); ++i)
   {

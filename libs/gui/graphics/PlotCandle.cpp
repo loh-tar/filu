@@ -37,8 +37,8 @@ bool PlotCandle::prepare(QStringList& command, QStringList& plotDataKeys)
 
   mCommand = command;
   // mCommand looks...
-  // like: "CANDLE", "FI([<foo>])"
-  //   or: "CANDLE", "<open>", "<high>", "<low>", "<close>", "<vol>"
+  // like: "CANDLE", "FI([<Foo>])"
+  //   or: "CANDLE", "<Open>", "<High>", "<Low>", "<Close>", "<Vol>"
   QString help = mCommand.at(1);
   help.remove(QRegExp("^FI\\(.*"));
   if(help.isEmpty()) replaceFI();
@@ -155,7 +155,7 @@ bool PlotCandle::paint(QPaintDevice* sheet, QRect& chartArea,
 
 void PlotCandle::replaceFI()
 {
-  // We replace FI(<foo>) with foo.OPEN, foo.HIGH...
+  // We replace FI(<Foo>) with foo.OPEN, foo.HIGH...
   QString fi = mCommand.at(1);
   fi.remove("FI(");
   fi.remove(")");

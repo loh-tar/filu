@@ -27,7 +27,7 @@ Controlling Tags
   End Of File. It's not intend to use it in a file, but you could. Informs the
   Importer that no more data follow.
 
-[Header]<foo>;<bar>...
+[Header]<Foo>;<Bar>...
   Comma separated files have typicaly a header, here we have headers too. It
   declare a list of variables, the Header Keys, separated by a semicolon. The
   following data are ordered in the same wise as the here listed Keys. Depend on

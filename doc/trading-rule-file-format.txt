@@ -16,14 +16,14 @@ NOTE: Short trades are not implemented. All hints about short selling should
 
 Blocks
 ========
-[<block type>]
-  <block type> are Settings and Rules
+[<BlockType>]
+  <BlockType> are Settings and Rules
 
 Lines in the [Settings] block have the format
-  <variable> = <value>
+  <Variable> = <Value>
 
 Lines in the [Rules] block have the format
-  <condition> : <action>[;<action>...]
+  <Condition> : <Action>[;<Action>...]
 
 
 Remarks
@@ -34,33 +34,33 @@ Remarks
 
 Settings Needed To Do A Real Job
 ==================================
-UseIndicator = <my indicator>
+UseIndicator = <MyIndicator>
   The filename, no surprise
 
-GainRefLong = <indicator variable>
+GainRefLong = <IndicatorVariable>
   Default is CLOSE
 
-GainRefShort = <indicator variable>
+GainRefShort = <IndicatorVariable>
   Default is CLOSE
 
-PeakRefLong = <indicator variable>
+PeakRefLong = <IndicatorVariable>
   Default is HIGH
 
-MinPositionSize = <fix value> FIXME: or <variable> ?
+MinPositionSize = <FixValue> FIXME: or <Variable> ?
   In money, default is set to 20% of InitialCash
 
-WorkOnFiGroup = <group>[, <group>...]
+WorkOnFiGroup = <Group>[, <Group>...]
   Whereas group is the path of one of PerformerF groups.
 
 
 Settings Needed To Simulate
 =============================
-FeeFormula = <expression>
+FeeFormula = <Expression>
   The expression can contain the variable 'OV' (Order Volume) to calculate the
   commisson. Default is '10 + OV * 0.001'. For details of supported operators
   and functions see: http://muparser.sourceforge.net/mup_features.html#idDef2
 
-InitialCash = <fix value>
+InitialCash = <FixValue>
   Default is 5000
 
 
@@ -113,7 +113,7 @@ Gain
   Actual total gain of open positions in percent
 
 PeakGainLong
-  = 100 * (<peak of>PeakRefLong - AvgLong) / AvgLong
+  = 100 * (<PeakOf>PeakRefLong - AvgLong) / AvgLong
   Maximum gain of open long position in percent since buy
 
 WonL, LostL, WonS, LostS
@@ -154,16 +154,16 @@ function appendMData()
 
 Actions
 =========
-BUY(<type>, <size>[, <limit>, <validity>])
-  <type>        Long or Short
-  <size>        In percent from TotalBalance. If not enough cash left, size
+BUY(<Type>, <Size>[, <Limit>, <Validity>])
+  <Type>        Long or Short
+  <Size>        In percent from TotalBalance. If not enough cash left, size
                 will reduced down to MinPositionSize or droped
-  <limit>       Any indicator variable, default is 'Best' aka next open
-  <condition>   FIXME: not implemented, so forget it ;-)
+  <Limit>       Any indicator variable, default is 'Best' aka next open
+  <Condition>   FIXME: not implemented, so forget it ;-)
                 Because my bank don't support those things I will ignore
                 these nice features
                 http://en.wikipedia.org/wiki/Order_(exchange)#Time_in_force
-  <validity>    In days, default is 20 (FIXME: well, if we use intraday quotes...)
+  <Validity>    In days, default is 20 (FIXME: well, if we use intraday quotes...)
 
   BUY(Long, 100)
     Buy on next open for all money left the actual FI
@@ -171,12 +171,12 @@ BUY(<type>, <size>[, <limit>, <validity>])
   BUY(Short, 5%, myLimit, 10)
 
 
-SELL(<type>, <size>[, <limit>, <validity>])
-  <type>        Long or Short
-  <size>        In percent from holded Long/Short position. If the rest
+SELL(<Type>, <Size>[, <Limit>, <Validity>])
+  <Type>        Long or Short
+  <Size>        In percent from holded Long/Short position. If the rest
                 position is smaler than MinPositionSize, size will set to 100
-  <limit>       Any indicator variable, default is 'Best' aka next open
-  <validity>    In days, default is 20
+  <Limit>       Any indicator variable, default is 'Best' aka next open
+  <Validity>    In days, default is 20
 
 
 Examples
