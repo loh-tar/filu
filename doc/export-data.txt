@@ -13,9 +13,9 @@ export call may look like these:
 
 Common Switches
 =================
-toFile <FileName> [append]
+into <FileName> [append]
   Write the exported data into <FileName>. If 'append' is given the data will
-  appended to the existing file. If no '--toFile' is given, the data will be
+  appended to the existing file. If no '--into' is given, the data will be
   written to stdout. The verbose level is in that case set to 'Quiet' unless
   --verbose is given.
 
@@ -33,7 +33,7 @@ fiType <FiType>
 from <Date>
   Should be given as YYYY-MM-DD.
 
-group <GroupPath>
+listed <GroupPath>
   Is one of PerformerF groups createt by the user.
 
 market <Market>
@@ -44,6 +44,13 @@ noBars
 
 noUser
   Don't export user data, useful with '--all'.
+
+symbols <Type>..
+  Only export this kind of symbols. But note that <Type> can not be your lovely
+  symbol, these is always used as RefSymbol. When given is no need to note also
+  'symbol' explicit to export as data type.
+
+  --symbols ISIN Yahoo
 
 to <Date>
  Should be given as YYYY-MM-DD.
@@ -88,11 +95,8 @@ offdays FIXME: not implemented
 splits
   Export split data.
 
-symbols [<Type> ...]
-  When no <Type> is given will all kind of symbols exportet. But note that
-  <Type> can not be your lovely symbol, these is always used as RefSymbol.
-
-  --symbols ISIN Yahoo
+symbols
+  Export all symbols. Note also the option with the same name.
 
 symbolTypes
   Export the SymbolTypes aka Provider.

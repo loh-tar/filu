@@ -19,6 +19,14 @@
 
 #include "Exporter.h"
 #include "FTool.h"
+#include "CmdHelper.h"
+
+const QString cCmd1 = "exp";
+const QString cCmd1Brief = QObject::tr("Export data from the database");
+
+const QString cOptFilter = "fiType listed market from to noBars noUser symbols "
+                           "owner dpid withSim";
+const QString cOptHeader = QObject::tr("Possible filter options (hyphens are omitted) are:");
 
 using namespace std;
 
@@ -40,6 +48,13 @@ Exporter::~Exporter()
     mOutFile->close();
     delete mOutFile;
   }
+}
+
+void Exporter::briefIn(CmdHelper* cmd)
+{
+  if(!cmd) return;
+
+  cmd->inCmdBrief(cCmd1, cCmd1Brief);
 }
 
 void Exporter::printStatus(Effect effectEnum/* = eEffectPending*/, const QString& extraTxt/* = ""*/)
@@ -221,20 +236,203 @@ bool Exporter::selectFis()
   return true;
 }
 
-bool Exporter::exxport(QStringList& command)
+bool Exporter::exec(CmdHelper* ch)
 {
-  mCmdLine = command;
+   if(!ch)
+  {
+    fatal(FUNC, "Called with NULL pointer.");
+    return false;
+  }
 
-  if(FTool::getParameter(mCmdLine, "--verbose", mParm) > 0) setVerboseLevel(FUNC, mParm.at(0));
+  mCmd = ch;
+  mCmd->regSubCmds("all core user data");
+  mCmd->regStdOpts("into");
+  mCmd->regOpts("fiType from listed market noBars noUser to "/*"reset "*/
+                "symbols owner dpid withSim");
+
+  if(mCmd->subCmdLooksBad()) return false;
+
+  if(mCmd->wantHelp())
+  {
+    mCmd->inSubBrief("all", tr("To export all kind of data"));
+    mCmd->inSubBrief("core", tr("To export all but no user data"));
+    mCmd->inSubBrief("user", tr("To export only user data"));
+    mCmd->inSubBrief("data", tr("To export explicit noted data"));
+    //mCmd->inSubBrief("", tr(""));
+
+    mCmd->inOptBrief("into", "<FileName> [+]"
+                    , tr("Write the exported data into <FileName>. If '+' is given the data will "
+                          "appended to the existing file. If no '--into' is given, the data will be "
+                          "written to stdout. The verbose level is in that case set to 'Quiet' unless "
+                          "verbose is given"));
+
+    mCmd->inOptBrief("fiType", "<FiType>", tr("Only this type, e.g. 'Stock'"));
+    mCmd->inOptBrief("from", "<Date>", tr("Should be given as YYYY-MM-DD"));
+    mCmd->inOptBrief("listed", "<GroupPath>", tr("Only FIs in this PerformerF group createt by the user"));
+    mCmd->inOptBrief("market", "<Market>", tr("Only this market, e.g. 'NYSE'"));
+    mCmd->inOptBrief("noBars", "", tr("Don't export eodBar data"));
+    mCmd->inOptBrief("noUser", "", tr("Don't export user data"));
+    mCmd->inOptBrief("to", "<Date>", tr("Should be given as YYYY-MM-DD"));
+
+    mCmd->inOptBrief("symbols", "<Type>.."
+                    , tr("Only these kind of symbols. But note that <Type> can not be your "
+                        "lovely symbol, this is always used as RefSymbol. When given is no need "
+                        "to note also 'symbol' explicit to export as data type"));
+
+    mCmd->inOptBrief("owner", "<Name>", tr("Only depots by named owner"));
+    mCmd->inOptBrief("dpid", "<Id>", tr("Only this depot"));
+    mCmd->inOptBrief("withSim", "", tr("Don't suppress Simulator depots"));
+    //mCmd->inOptBrief("reset", "", "Only used by ");
+    //mCmd->inOptBrief("", "", "");
+
+    mCmd->inLabel("DataSet", tr("data sets"));
+    mCmd->inOptGroup("Filter", tr("filter options")
+                    , "from to owner dpid withSim symbols market fiType listed");
+  }
+
+  if(mCmd->needHelp(2))
+  {
+    if(mCmd->printThisWay("<DataSet> [<Filter>]")) return true;
+
+    mCmd->aided();
+    return true;
+  }
+
+  // Look for each command, and execute them if was given.
+  // The order of look up is important.
+  if(mCmd->has("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
+
+  if(mCmd->hasSubCmd("all")) cmdAll();
+  else if(mCmd->hasSubCmd("core")) cmdCore();
+  else if(mCmd->hasSubCmd("user")) cmdUser();
+  else if(mCmd->hasSubCmd("data")) cmdData();
+  else
+  {
+    fatal(FUNC, QString("Unsupported command: %1").arg(mCmd->cmd()));
+    return false;
+  }
+
+  return exxport();
+}
+
+void Exporter::cmdAll()
+{
+  QStringList data;
+  data << "fiTypes" << "symbolTypes" << "markets" << "offdays"
+       /*<< "marketSymbols" */<< "fiNames" << "symbols" << "eodRaw"
+       << "splits" << "broker" << "ulys"
+       << "co" << "groups" << "depots";
+
+  if(mCmd->isMissingParms())
+  {
+    mCmd->groupOpts("Filter", "from to noBars noUser fiType listed market symbols");
+
+    if(mCmd->printThisWay("[<Filter>]")) return;
+
+    data.sort();
+    mCmd->printComment(tr("Exported dates are: %1").arg(data.join(" ")));
+    mCmd->printNote(tr("There will only user data of the current user exported."));
+    mCmd->printForInst("--noBars --noUser");
+    mCmd->aided();
+    return;
+  }
+
+  mExport << data;
+}
+
+void Exporter::cmdCore()
+{
+  QStringList data;
+  data << "fiTypes" << "symbolTypes" << "markets" << "offdays"
+       /*<< "marketSymbols" */<< "fiNames" << "symbols" << "eodRaw"
+       << "splits" << "broker" << "ulys";
+
+  if(mCmd->isMissingParms())
+  {
+    mCmd->groupOpts("Filter", "from to noBars fiType listed market symbols");
+
+    if(mCmd->printThisWay("[<Filter>]")) return;
+
+    data.sort();
+    mCmd->printComment(tr("Exported dates are: %1").arg(data.join(" ")));
+    mCmd->printForInst("--fiType Currency");
+    mCmd->aided();
+    return;
+  }
+
+  mExport << data;
+}
+
+void Exporter::cmdUser()
+{
+  QStringList data;
+  data << "co" << "groups" << "depots";
+
+  if(mCmd->isMissingParms())
+  {
+    mCmd->groupOpts("Filter", "from to owner dpid withSim");
+
+    if(mCmd->printThisWay("[<Filter>]")) return;
+
+    mCmd->printComment(tr("There will only data of the current user exported. "
+                          "The date filter affect the chart objects but not "
+                          "the depot data."));
+    data.sort();
+    mCmd->printComment(tr("Exported dates are: %1").arg(data.join(" ")));
+    mCmd->aided();
+    return;
+  }
+
+  mExport << data;
+}
+
+void Exporter::cmdData()
+{
+  QStringList data;
+  data << "fiTypes" << "symbolTypes" << "markets" << "offdays"
+       /*<< "marketSymbols" */<< "fiNames" << "symbols" << "eodRaw"
+       << "splits" << "broker" << "ulys"
+       << "co" << "groups" << "depots";
+
+  if(mCmd->isMissingParms())
+  {
+    mCmd->groupOpts("Filter", "from to owner dpid withSim symbols market fiType listed");
+
+    if(mCmd->printThisWay("<Data>.. [<Filter>]")) return;
+
+    data.sort();
+    mCmd->printComment(tr("Possible dates are: %1").arg(data.join(" ")));
+    mCmd->printNote(tr("There will only user data of the current user exported, if some given."));
+
+    mCmd->printForInst(QString("fiNames eodRaw splits --from %1").arg(QDate::currentDate().addDays(-20).toString(Qt::ISODate)));
+    mCmd->printForInst("fiNames --fiType Index");
+    mCmd->printForInst("depots --owner Me");
+    mCmd->aided();
+    return;
+  }
+
+  mExport << mCmd->parmList("data");
+}
+
+bool Exporter::exxport()
+{
+  if(hasError()) return false;
 
   // Open output file, if needed
-  if(FTool::getParameter(mCmdLine, "--toFile", mParm) > 0)
+  if(mCmd->has("into"))
   {
-    mOutFile = new QFile(mParm.at(0));
+    QString fileName = mCmd->optStr("into");
+    if(fileName.isEmpty())
+    {
+      error(FUNC, tr("Missing file name at '--to'."));
+      return false;
+    }
+
+    mOutFile = new QFile(fileName);
 
     QFlags<QIODevice::OpenModeFlag> mode = QIODevice::Text | QIODevice::WriteOnly;
 
-    if(mParm.contains("append"))
+    if(mCmd->optStr("into", "", 2) == "+")
     {
       mode = QIODevice::Text | QIODevice::WriteOnly | QIODevice::Append;
     }
@@ -245,7 +443,7 @@ bool Exporter::exxport(QStringList& command)
 
     if(!mOutFile->open(mode))
     {
-      error(FUNC, tr("Can't open file '%1'.").arg(mParm.at(0)));
+      error(FUNC, tr("Can't open file '%1'.").arg(fileName));
       return false;
     }
   }
@@ -259,7 +457,7 @@ bool Exporter::exxport(QStringList& command)
       return false;
     }
 
-    if(!mCmdLine.contains("--verbose")) setVerboseLevel(eNoVerbose);
+    if(!mCmd->has("verbose")) setVerboseLevel(eNoVerbose);
   }
 
   mOutput.setDevice(mOutFile);
@@ -268,83 +466,65 @@ bool Exporter::exxport(QStringList& command)
   mDataR = 0;
   mDataW = 0;
 
-  bool extraInfo = false;
-  if(mCmdLine.contains("--all"))
+  if(mCmd->has("noBars"))
   {
-    mCmdLine << "--fiTypes" << "--symbolTypes" << "--markets" << "--offdays"
-             << "--marketSymbols" << "--fiNames" << "--symbols" << "--eodRaw"
-             << "--splits" << "--broker" << "--ulys"
-             << "--co" << "--groups" << "--depots";
-
-    extraInfo = true;
+    mExport.removeAll("eodRaw");
+//     mExport.removeAll();
   }
 
-  if(mCmdLine.contains("--noBars"))
+  if(mCmd->has("noUser"))
   {
-    mCmdLine.removeAll("--eodRaw");
-//     mCmdLine.removeAll();
-
-    extraInfo = true;
+    mExport.removeAll("co");
+    mExport.removeAll("groups");
+    mExport.removeAll("depots");
+//     mExport.removeAll();
   }
 
-  if(mCmdLine.contains("--noUser"))
+  if(mCmd->has("symbols"))
   {
-    mCmdLine.removeAll("--co");
-    mCmdLine.removeAll("--groups");
-    mCmdLine.removeAll("--depots");
-//     mCmdLine.removeAll();
-
-    extraInfo = true;
+    mExport << "symbols";
   }
 
   // Look for filter settings
-  if(FTool::getParameter(mCmdLine, "--fiType", mParm) > 0) mFilu->setSqlParm(":ftype", mParm.at(0));
-  else mFilu->setSqlParm(":ftype", "");
+  mFilu->setSqlParm(":ftype", mCmd->optStr("fiType"));
+  mFilu->setSqlParm(":group", mCmd->optStr("listed"));
+  mFilu->setSqlParm(":market", mCmd->optStr("market"));
+  mFilu->setSqlParm(":fromDate", mCmd->optDate("from", QDate(1000, 1, 1)));
+  mFilu->setSqlParm(":toDate", mCmd->optDate("to", QDate(3000, 1, 1)));
 
-  if(FTool::getParameter(mCmdLine, "--group", mParm) > 0) mFilu->setSqlParm(":group", mParm.at(0));
-  else mFilu->setSqlParm(":group", "");
-
-  if(FTool::getParameter(mCmdLine, "--market", mParm) > 0) mFilu->setSqlParm(":market", mParm.at(0));
-  else mFilu->setSqlParm(":market", "");
-
-  if(FTool::getParameter(mCmdLine, "--from", mParm) > 0) mFilu->setSqlParm(":fromDate", mParm.at(0));
-  else mFilu->setSqlParm(":fromDate", "1000-01-01");
-
-  if(FTool::getParameter(mCmdLine, "--to", mParm) > 0) mFilu->setSqlParm(":toDate", mParm.at(0));
-  else mFilu->setSqlParm(":toDate", "3000-01-01");
+  if(mCmd->hasError()) return false; // Perhaps bad date
 
   // Let us print some info at the beginning
   mOLine << "***";
   mOLine << "*";
   mOLine << "* This file was generated by Filu at " + QDate::currentDate().toString(Qt::ISODate);
-  mOLine << "* Given export paramaters were: " + command.join(" ");
-  if(extraInfo)
-  {
-    mOLine << "* Results in full parm list: " + mCmdLine.join(" ");
-  }
+  mOLine << "* Command was:";
+  mOLine << "*     " + mCmd->cmdLine().join(" ");
+  mOLine << "* Results in data list:";
+  mOLine << "*     " + mExport.join(" ");
   mOLine << "*";
   mOLine << "* Data are filtered and grouped to given FI type and/or symbol type";
-  mOLine << "* and/or market and/or group membership.";
+  mOLine << "* and/or market and/or group membership";
   mOLine << "*";
 
   // Look for export commands, and execute them if found
-  if(mCmdLine.contains("--fiTypes"))      if(!expFiTypes()) return false;
-  if(mCmdLine.contains("--symbolTypes"))  if(!expSymbolTypes()) return false; // Aka provider
-  if(mCmdLine.contains("--markets"))      if(!expMarkets()) return false;
-//   if(mCmdLine.contains("--offdays")) ; // Should always done when -markets given
-//   if(mCmdLine.contains("--marketSymbols")) ;
-  if(mCmdLine.contains("--fiNames"))      if(!expFiNames()) return false;
-  if(mCmdLine.contains("--ulys"))         if(!expUnderlyings()) return false;
-  if(mCmdLine.contains("--symbols"))      if(!expSymbols()) return false;
-//   if(mCmdLine.contains("--eodAdjusted")) ;
-  if(mCmdLine.contains("--splits"))       if(!expSplits())  return false; // What if -eodAdjusted? after reimport we have a problem
-  if(mCmdLine.contains("--broker"))       if(!expBroker())  return false;
-  if(mCmdLine.contains("--co"))           if(!expCOs())     return false;
-  if(mCmdLine.contains("--groups"))       if(!expGroups())  return false;
-  if(mCmdLine.contains("--depots"))       if(!expDepots())  return false;
-//   if(mCmdLine.contains("--tstrategy")) ;
-//   if(mCmdLine.contains("")) ;
-  if(mCmdLine.contains("--eodRaw"))       if(!expEODRaw())  return false; // Because it takes the most time, do it last
+  if(mExport.contains("fiTypes"))      if(!expFiTypes()) return false;
+  if(mExport.contains("symbolTypes"))  if(!expSymbolTypes()) return false; // Aka provider
+  if(mExport.contains("markets"))      if(!expMarkets()) return false;
+//   if(mExport.contains("offdays")) ; // Should always done when -markets given
+//   if(mExport.contains("marketSymbols")) ;
+  if(mExport.contains("fiNames"))      if(!expFiNames()) return false;
+  if(mExport.contains("ulys"))         if(!expUnderlyings()) return false;
+  if(mExport.contains("symbols"))      if(!expSymbols()) return false;
+//   if(mExport.contains("eodAdjusted")) ;
+  if(mExport.contains("splits"))       if(!expSplits())  return false; // What if -eodAdjusted? after reimport we have a problem
+  if(mExport.contains("broker"))       if(!expBroker())  return false;
+  if(mExport.contains("co"))           if(!expCOs())     return false;
+  if(mExport.contains("groups"))       if(!expGroups())  return false;
+  if(mExport.contains("depots"))       if(!expDepots())  return false;
+//   if(mExport.contains("tstrategy")) ;
+//   if(mExport.contains("")) ;
+  if(mExport.contains("eodRaw"))       if(!expEODRaw())  return false; // Because it takes the most time, do it last
 
   return true;
 }
@@ -360,7 +540,7 @@ bool Exporter::expFiTypes()
 
   mOLine << "***";
   mOLine << "*";
-  mOLine << "* All FI types.";
+  mOLine << "* All FI types";
   mOLine << "*";
   mOLine << "[Header]FiType";
   mOLine << NewLine;
@@ -391,7 +571,7 @@ bool Exporter::expSymbolTypes()
 
   mOLine << "***";
   mOLine << "*";
-  mOLine << "* All symbol types.";
+  mOLine << "* All symbol types";
   mOLine << "*";
   mOLine << "[Header]SymbolType;SEQ;IsProvider";
   mOLine << NewLine;
@@ -424,7 +604,7 @@ bool Exporter::expMarkets()
 
   mOLine << "***";
   mOLine << "*";
-  mOLine << "* All markets with currency and currency symbol.";
+  mOLine << "* All markets with currency and currency symbol";
   mOLine << "*";
   mOLine << "[Header]Market;OpenTime;CloseTime;CurrencySymbol;Currency";
   mOLine << NewLine;
@@ -455,7 +635,7 @@ bool Exporter::expFiNames()
 
   mOLine << "***";
   mOLine << "*";
-  mOLine << "* FI names with full lovely symbol set as reference.";
+  mOLine << "* FI names with full lovely symbol set as reference";
   mOLine << "*";
   mOLine << "[Header]Name;DDate;Symbol;Provider;Market;IDate;MDate";
   writeToFile();
@@ -520,7 +700,7 @@ bool Exporter::expUnderlyings()
     {
       mOLine << "***";
       mOLine << "*";
-      mOLine << "* Underlyings with full lovely symbol set as reference.";
+      mOLine << "* Underlyings with full lovely symbol set as reference";
       mOLine << "*";
       intro = false;
     }
@@ -589,24 +769,21 @@ bool Exporter::expSymbols()
 
   mOLine << "***";
   mOLine << "*";
-  mOLine << "* All symbols with leading lovely symbol as reference.";
+  mOLine << "* All symbols with leading lovely symbol as reference";
   mOLine << "*";
   mOLine << "[Header]RefSymbol;Symbol;IDate;MDate";
   // One NewLine less...
   writeToFile();
 
-  FTool::getParameter(mCmdLine, "--symbols", mParm);
-
   QString refSymbol, type, symbol, provider, market, idate, mdate;
 
   bool separator = false;
 
+  QStringList onlySymbols = mCmd->parmList("symbols");
+
   while(query->next())
   {
-    if(mParm.size())
-    {
-      if(!mParm.contains(query->value(3).toString())) continue;
-    }
+    if(onlySymbols.size() and !onlySymbols.contains(query->value(3).toString())) continue;
 
     if(type != query->value(1).toString()) separator = true;
     else if(provider != query->value(3).toString()) separator = true;
@@ -844,12 +1021,12 @@ bool Exporter::expGroups()
   buffer << "*";
   buffer << "[Header]RefSymbol\n";
 
-  if(FTool::getParameter(mCmdLine, "--group", mParm) > 0)
+  if(mCmd->has("listed"))
   {
     mDataText = "Group";
     mOLine << buffer.join("\n");
     writeToFile();
-    if(!expGroup(mFilu->getGroupId(mParm.at(0)), false)) return false;
+    if(!expGroup(mFilu->getGroupId(mCmd->optStr("listed")), false)) return false;
   }
   else
   {
@@ -923,27 +1100,12 @@ bool Exporter::expDepots()
 {
   bool noSimulator = true;
 
-  if(mCmdLine.contains("--withSim")) noSimulator = false;
+  if(  mCmd->has("withSim")
+    or mCmd->has("owner")
+    or mCmd->has("dpid")   ) noSimulator = false;
 
-  if(FTool::getParameter(mCmdLine, "--owner", mParm) > 0)
-  {
-    mFilu->setSqlParm(":owner",  mParm.at(0));
-    noSimulator = false;
-  }
-  else
-  {
-    mFilu->setSqlParm(":owner",  "");
-  }
-
-  if(FTool::getParameter(mCmdLine, "--dpid", mParm) > 0)
-  {
-    mFilu->setSqlParm(":depotId",  mParm.at(0));
-    noSimulator = false;
-  }
-  else
-  {
-    mFilu->setSqlParm(":depotId",  -1);
-  }
+  mFilu->setSqlParm(":owner", mCmd->optStr("owner"));
+  mFilu->setSqlParm(":depotId", mCmd->optInt("dpid", -1));
 
   mDataText = "Depots";
 
@@ -1166,6 +1328,7 @@ bool Exporter::expDepots()
     mOLine << "***";
     mOLine << "*";
     mOLine << "* Depot - Orders";
+    mOLine << "* (.)+";
     mOLine << "*";
     mOLine << "[Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note";
     mOLine << NewLine;

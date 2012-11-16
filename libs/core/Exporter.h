@@ -20,11 +20,10 @@
 #ifndef EXPORTER_HPP
 #define EXPORTER_HPP
 
-#include <QtCore>
-
 #include "FClass.h"
 
-class FiluU;
+class Indicator;
+class CmdHelper;
 
 /***********************************************************************
 *
@@ -41,8 +40,11 @@ class Exporter : public FClass
                   Exporter(FClass* parent);
     virtual      ~Exporter();
 
+    static void   briefIn(CmdHelper* cmd);
+    bool          exec(CmdHelper* cmd);
+
     void          reset();
-    bool          exxport(QStringList& command);
+    bool          exxport();
 
   protected:
     enum Effect
@@ -52,6 +54,11 @@ class Exporter : public FClass
       eEffectNote,
       eEffectFault
     };
+
+    void          cmdAll();
+    void          cmdCore();
+    void          cmdUser();
+    void          cmdData();
 
     void          printStatus(Effect effect = eEffectPending, const QString& extraTxt = "");
     bool          noData(const QString& what = "", const VerboseLevel when = eInfo);
@@ -78,8 +85,8 @@ class Exporter : public FClass
     void          expAccount(QSqlQuery* acc);
     void          expOrders(QSqlQuery* orders);
 
-    QStringList   mCmdLine;         // The command line with all options
-    QStringList   mParm;            // A helper to get parameter by FTool::getParameter()
+    CmdHelper*    mCmd;
+    QStringList   mExport;          // Which data has to be exported
     QStringList   mOLine;           // Out Line, will join('\n')
     QStringList   mDLine;           // Data Line, will join(';')
     QTextStream   mOutput;

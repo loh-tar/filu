@@ -459,17 +459,10 @@ void AgentF::import()
 
 void AgentF::exxport()
 {
-  // Command list looks like
-  // agentf exp -useGroup favorites -fiNames -symbols -eodRaw -split
-
-  // Remove "agentf" and "exp"
-  QStringList parm2(mCmd->cmdLine()); // FIXME
-  parm2.removeAt(0);
-  parm2.removeAt(0);
-
   if(!mExporter) mExporter = new Exporter(this);
 
-  mExporter->exxport(parm2);
+  mExporter->exec(mCmd);
+  addErrors(mExporter->errors());
 }
 
 void AgentF::scan()
@@ -704,7 +697,6 @@ void AgentF::execCmd(const QStringList& parm)
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
     mCmd->inCmdBrief("imp", tr("Imports an (surprise!) import file. See doc/import-file-format.txt"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
-    mCmd->inCmdBrief("exp", tr("Export data from the database. See doc/export-data.txt"));
     mCmd->inCmdBrief("add", tr("Lets you adding a single dataset to the database by using Importer"));
     mCmd->inCmdBrief("filu", tr("Create or update the Filu database"));
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
@@ -713,6 +705,7 @@ void AgentF::execCmd(const QStringList& parm)
 
     Depots::briefIn(mCmd);
     Scanner::briefIn(mCmd);
+    Exporter::briefIn(mCmd);
 
     mCmd->inOptBrief("verbose", "<Level>"
                               , tr("How talkative has it to be. Level can be 0-3 or "
