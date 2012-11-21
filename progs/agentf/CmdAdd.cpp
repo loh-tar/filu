@@ -21,82 +21,87 @@
 
 #include "Importer.h"
 #include "FTool.h"
+#include "CmdHelper.h"
 
 CmdAdd::CmdAdd(FClass* parent)
       : FClass(parent, FUNC)
       , mImporter(new Importer(this))
-      , mWantHelp(false)
-{
-  mInfoTxt.insert("WrongParmCount", tr("Wrong parameter count."));
-  mInfoTxt.insert("TooLessArg", tr("Too less arguments."));
-  mInfoTxt.insert("ThisWay", tr("Please call me this way:\n"));
-  mInfoTxt.insert("ForInst", tr("\nFor instance:\n"));
-}
+{}
 
 CmdAdd::~CmdAdd()
 {
   delete mImporter;
 }
 
-bool CmdAdd::exec(const QStringList& cmdLine)
+void CmdAdd::briefIn(CmdHelper* cmd)
 {
-  QStringList parm = cmdLine;
-  if(parm.size() == 2) parm.append("help");     // Was only 'agentf add'
-  if(parm.at(2) != "--help")
+  if(!cmd) return;
+
+  static const QString cCmd1 = "add";
+  static const QString cCmd1Brief = tr("Allows you add a single dataset to the database by using Importer");
+
+  cmd->inCmdBrief(cCmd1, cCmd1Brief);
+}
+
+bool CmdAdd::exec(CmdHelper* ch)
+{
+  if(!ch)
   {
-    parm[2] = "--" + parm.at(2);                // Now we can use FTool::getParameter(...)
-    if(parm.size() == 3) parm.append("--help"); // Was only 'agentf add foo' but no arguments
-  }
-
-  setVerboseLevel(FUNC, parm);
-  //if(verboseLevel(eAmple)) mImporter->setVerboseLevel(eInfo);
-  mImporter->setVerboseLevel(verboseLevel());
-
-  mInfoTxt.insert("CmdPrefix", QString("  %1 add %2").arg(parm.at(0), "%1"));
-  QString cmdPref2(mInfoTxt.value("CmdPrefix").size() - 2, ' ');
-  cmdPref2.append("%1");
-  mInfoTxt.insert("CmdPref++", cmdPref2);
-
-  mWantHelp = parm.contains("--help") ? true : false;
-  bool  needHelp = false;
-  const QString cmd = parm.at(2);
-
-  // Look for each known command and call the related function
-  if(cmd == "--broker")            addBroker(parm);
-  else if(cmd == "--eodBar")       addEodBar(parm);
-  else if(cmd == "--fi")           addFi(parm);
-  else if(cmd == "--market")       addMarket(parm);
-  else if(cmd == "--split")        addSplit(parm);
-  else if(cmd == "--symbol")       addSymbol(parm);
-  else if(cmd == "--symbolType")   addSymbolType(parm);
-  else if(cmd == "--depot")        addDepot(parm);
-  else if(cmd == "--depotPos")     addDepotPos(parm);
-  else if(cmd == "--post")         addAccPosting(parm);
-  else if(cmd == "--order")        addOrder(parm);
-  else if(cmd == "--underlying")   addUnderlyg(parm);
-  else if(cmd == "--help")         needHelp = true;
-  else
-  {
-    error(FUNC, tr("Unknown data type: %1").arg(cmd.right(cmd.size() - 2)));
-    printDataTypes();
+    fatal(FUNC, "Called with NULL pointer.");
     return false;
   }
 
-  if(needHelp)
+  mCmd = ch;
+  mCmd->setUp("PrintCmdBriefCompact");
+  mCmd->regSubCmds("broker eodBar fi market split symbol symbolType depot depotPos post order underlying");
+  mCmd->regOpts("dp dpid");
+
+  if(mCmd->subCmdLooksBad()) return false;
+
+  if(mCmd->wantHelp())
   {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("<DataType> <ParameterList> [--help] [--verbose <Level>]"));
-    printDataTypes();
-    print(tr("Calling a data type without any parameter tells you more (the same as give --help)."));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("fi"));
-    print(tr("\nThe 'add' command uses Importer to add a single dataset to the database,"
-             "\nso take a look at doc/importer-file-format.txt for background info."));
+    mCmd->inOptBrief("dpid", "<DepotId>"
+                   , tr("The serial number of the depot is shown by 'depots lsd' command"));
+    mCmd->inOptBrief("dp", "<DepotName> <DepotOwner>"
+                   , tr("Pretty human friedly to read"));
+
+    mCmd->inLabel("DataType", tr("data types"));
+  }
+
+  if(mCmd->needHelp(2))
+  {
+    if(mCmd->printThisWay("<DataType> <ParmList>")) return !hasError();
+
+    mCmd->printComment(tr("See also doc/importer-file-format.txt for background info."));
+    mCmd->printNote(tr("The quality of added data is always considered as Platinum."));
+    mCmd->printForInst("fi \"Apple Inc.\" Stock AAPL NYSE Yahoo US0378331005 NoMarket ISIN");
+    mCmd->aided();
+    return !hasError();
+  }
+
+  mImporter->setVerboseLevel(verboseLevel());
+
+  // Look for each known command and call the related function
+  if(mCmd->hasSubCmd("broker"))            addBroker();
+  else if(mCmd->hasSubCmd("eodBar"))       addEodBar();
+  else if(mCmd->hasSubCmd("fi"))           addFi();
+  else if(mCmd->hasSubCmd("market"))       addMarket();
+  else if(mCmd->hasSubCmd("split"))        addSplit();
+  else if(mCmd->hasSubCmd("symbol"))       addSymbol();
+  else if(mCmd->hasSubCmd("symbolType"))   addSymbolType();
+  else if(mCmd->hasSubCmd("depot"))        addDepot();
+  else if(mCmd->hasSubCmd("depotPos"))     addDepotPos();
+  else if(mCmd->hasSubCmd("post"))         addAccPosting();
+  else if(mCmd->hasSubCmd("order"))        addOrder();
+  else if(mCmd->hasSubCmd("underlying"))   addUnderlyg();
+  else
+  {
+    fatal(FUNC, QString("Unsupported command: %1").arg(mCmd->cmd()));
   }
 
   return !hasError();
 }
-
+/*
 void CmdAdd::printDataTypes()
 {
   QStringList cmds;
@@ -117,418 +122,335 @@ void CmdAdd::printDataTypes()
   }
 
   print("");
-}
+}*/
 
-void CmdAdd::import(const QString& header, const QString& data)
+void CmdAdd::import()
 {
-  verbose(FUNC, header, eAmple);
-  if(!mImporter->import(header))
+  addErrors(mCmd->errors());
+
+  mHeader << "Quality";
+  mData   << "Platinum";
+
+  if(!hasError())
   {
+    const QString header = mHeader.join(";");
+    const QString data   = mData.join(";");
+
+    verbose(FUNC, header, eAmple);
+    if(mImporter->import(header))
+    {
+      verbose(FUNC, data, eAmple);
+      mImporter->import(data);
+    }
+
     addErrors(mImporter->errors());
-    return;
   }
 
-  verbose(FUNC, data, eAmple);
-  if(!mImporter->import(data))
-  {
-    addErrors(mImporter->errors());
-    return;
-  }
+  mHeader.clear();
+  mData.clear();
 }
 
-void CmdAdd::addEodBar(const QStringList& parm)
+void CmdAdd::addEodBar()
 {
-  if(!mWantHelp)
-  {
-    if(FTool::getParameter(parm, "--eodBar", mCmdArg) < 2)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+  mCmd->regOpts("vol oi");
+  mCmd->regOptsOneOfIsMandatory("BarData", "close ohlc");
 
-  if(mWantHelp)
+  if(mCmd->isMissingParms(3))
   {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("eodBar <Date> <RefSymbol> <Market> [<Quality>]"));
-    print(mInfoTxt.value("CmdPref++").arg("       --close <Close> | --ohlc <Open> <High> <Low> <Close>"));
-    print(mInfoTxt.value("CmdPref++").arg("       [--vol <Volume>] [--oi <OpenInterest>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("eodBar 2010-04-01 AAPL NYSE --close 237.41 --vol 21540900"));
-    print(mInfoTxt.value("CmdPrefix").arg("eodBar 2010-04-01 AAPL NYSE --ohlc 237.41 238.73 232.75 235.97"));
+    mCmd->inOptBrief("close", "<Close>", tr("To use where only a close price is available"));
+    mCmd->inOptBrief("ohlc", "<Open> <High> <Low> <Close>", tr("The prefered full eodBar set"));
+    mCmd->inOptBrief("vol", "<Volume>", tr("Should always given when available"));
+    mCmd->inOptBrief("oi", "<OpenInterest>", tr("Currently useless because bad supported by Filu"));
+
+    if(mCmd->printThisWay("<Date> <RefSymbol> <Market> <BarData>"
+                          "[~~vol] [~~oi]")) return;
+
+    mCmd->printForInst("2010-04-01 AAPL NYSE --close 237.41 --vol 21540900");
+    mCmd->printForInst("2010-04-01 AAPL NYSE --ohlc 237.41 238.73 232.75 235.97");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]Date;RefSymbol;Market";
+  mHeader << "[Header]Date" << "RefSymbol" << "Market";
+  mData   << mCmd->strParmDate(1) << mCmd->strParm(2) << mCmd->strParm(3);
 
-  if(mCmdArg.size() > 3) header.append(";Quality");
+  mHeader << "Open;High;Low;Close";
 
-  QString data = mCmdArg.join(";");
-
-  if(FTool::getParameter(parm, "--close", mCmdArg) > 0)
+  if(mCmd->has("close"))
   {
-    header.append(";Close");
-    data.append(";" + mCmdArg.at(0));
+    // We have to use 4 times the close price
+    // otherwise the database will set the quality to Tin
+    mData   << mCmd->strParmDouble(1) << mCmd->strParmDouble(1)
+            << mCmd->strParmDouble(1) << mCmd->strParmDouble(1);
+  }
+  else //if(mCmd->has("ohlc"))
+  {
+    mData   << mCmd->strParmDouble(1) << mCmd->strParmDouble(2)
+            << mCmd->strParmDouble(3) << mCmd->strParmDouble(4);
   }
 
-  if(FTool::getParameter(parm, "--ohlc", mCmdArg) > 0)
+  if(mCmd->has("vol"))
   {
-    header.append(";Open;High;Low;Close");
-    data.append(";" + mCmdArg.join(";"));
+    mHeader << "Volume";
+    mData   << mCmd->strParmDouble(1);
   }
 
-  if(FTool::getParameter(parm, "--vol", mCmdArg) > 0)
+  if(mCmd->has("oi"))
   {
-    header.append(";Volume");
-    data.append(";" + mCmdArg.at(0));
+    mHeader << "OpenInterest";
+    mData   << mCmd->strParmInt(1);
   }
 
-  if(FTool::getParameter(parm, "--oi", mCmdArg) > 0)
-  {
-    header.append(";OpenInterest");
-    data.append(";" + mCmdArg.at(0));
-  }
-
-  import(header, data);
+  import();
 }
 
-void CmdAdd::addBroker(const QStringList& parm)
+void CmdAdd::addBroker()
 {
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(3))
   {
-    if(FTool::getParameter(parm, "--broker", mCmdArg) < 3)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<BrokerName> <CurrencySymbol> <FeeFormula>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("broker <BrokerName> <CurrencySymbol> <FeeFormula> [<Quality>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("broker MyBank USD \"5.95 + OV * 0.001\""));
+    mCmd->printNote("Please encapsulate the fee formula in double quotes."); // FIXME Should be done better
+    mCmd->printForInst("MyBank USD \"5.95 + OV * 0.001\"");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]BrokerName;CurrencySymbol;FeeFormula";
+  mHeader << "[Header]BrokerName" << "CurrencySymbol" << "FeeFormula";
+  mData   << mCmd->strParm(1) << mCmd->strParm(2) << mCmd->strParm(3);
 
-  if(mCmdArg.size() > 3) header.append(";Quality");
-
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addFi(const QStringList& parm)
+void CmdAdd::addFi()
 {
-  if(!mWantHelp)
+  if(!mCmd->wantHelp() and (mCmd->parmCount() - 2) % 3)
   {
-    if(((FTool::getParameter(parm, "--fi", mCmdArg) - 2) % 3 > 0) or parm.count() < 7)
-    {
-      error(FUNC, mInfoTxt.value("WrongParmCount"));
-      mWantHelp = true;
-    }
+    error(FUNC, tr("Wrong count of <Symbol> <Market> <Provider>."));
   }
 
-  if(mWantHelp)
+  if(mCmd->isMissingParms(5) or hasError())
   {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("fi <Name> <Type> <Symbol> <Market> <Provider> [<Symbol> <Market> <Provider> ...]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("fi \"Apple Inc.\" Stock AAPL NYSE Yahoo US0378331005 NoMarket ISIN"));
+    if(mCmd->printThisWay("<Name> <Type> <Symbol> <Market> <Provider> \\ "
+                          "[<Symbol> <Market> <Provider>]..")) return;
+
+    mCmd->printForInst("\"Apple Inc.\" Stock AAPL NYSE Yahoo US0378331005 NoMarket ISIN");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]Name;Type";
-  int symbolCount = (mCmdArg.count() - 2) / 3;
-  for(int i = 0; i < symbolCount; ++i) header.append(";Symbol;Market;Provider");
+  mHeader << "[Header]Name" << "Type";
+  mData   << mCmd->parmList();
 
-  import(header, mCmdArg.join(";"));
+  int symbolCount = (mCmd->parmCount() - 2) / 3;
+  for(int i = 0; i < symbolCount; ++i) mHeader << "Symbol" << "Market" << "Provider";
+
+  import();
 }
 
-void CmdAdd::addMarket(const QStringList& parm)
+void CmdAdd::addMarket()
 {
-  if(!mWantHelp)
-  {
-    if(FTool::getParameter(parm, "--market", mCmdArg) < 2)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+  mCmd->regOpts("curr");
 
-  if(mWantHelp)
+  if(mCmd->isMissingParms(2))
   {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("market <Market> <CurrencySymbol> [<Quality>] [--curr <CurrencyName>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("market NYSE USD --curr \"US Dollar\""));
+    mCmd->inOptBrief("curr", "<CurrencyName>"
+                   , tr("The currency name is *not* updated in case that she is already known"));
+
+    if(mCmd->printThisWay("<Market> <CurrencySymbol> [~~curr]")) return;
+
+    mCmd->printForInst("NYSE USD --curr \"US Dollar\"");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]Market;CurrencySymbol";
+  mHeader << "[Header]Market" << "CurrencySymbol";
+  mData   << mCmd->strParm(1) << mCmd->strParm(2);
 
-  if(mCmdArg.size() > 2) header.append(";Quality");
-
-  QString data = mCmdArg.join(";");
-
-  if(FTool::getParameter(parm, "--curr", mCmdArg) > 0)
+  if(mCmd->has("curr"))
   {
-    header.append(";Currency");
-    data.append(";" + mCmdArg.at(0));
+    mHeader << "Currency";
+    mData   << mCmd->strParm(1);
   }
 
-  import(header, data);
+  import();
 }
 
-void CmdAdd::addSplit(const QStringList& parm)
+void CmdAdd::addSplit()
 {
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(3))
   {
-    if(FTool::getParameter(parm, "--split", mCmdArg) < 3)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<RefSymbol> <SplitDate> <SplitPre:Post>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("split <RefSymbol> <SplitDate> <SplitPre:Post> [<Quality>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("split AAPL 2005-02-28 1:2"));
+    mCmd->printForInst("AAPL 2005-02-28 1:2");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]RefSymbol;SplitDate;SplitPre:Post";
+  mHeader << "[Header]RefSymbol;SplitDate;SplitPre:Post";
+  mData   << mCmd->parmList(); // FIXME check split
 
-  if(mCmdArg.size() > 3) header.append(";Quality");
-
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addSymbol(const QStringList& parm)
+void CmdAdd::addSymbol()
 {
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(4))
   {
-    if(FTool::getParameter(parm, "--symbol", mCmdArg) < 4)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<RefSymbol> <Symbol> <Market> <Provider>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("symbol <RefSymbol> <Symbol> <Market> <Provider> [<Quality>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("symbol AAPL US0378331005 NoMarket ISIN"));
+    mCmd->printForInst("AAPL US0378331005 NoMarket ISIN");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]RefSymbol;Symbol;Market;Provider";
+  mHeader << "[Header]RefSymbol" << "Symbol" << "Market" << "Provider";
+  mData   << mCmd->parmList();
 
-  if(mCmdArg.size() > 4) header.append(";Quality");
-
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addSymbolType(const QStringList& parm)
+void CmdAdd::addSymbolType()
 {
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(3))
   {
-    if(FTool::getParameter(parm, "--symbolType", mCmdArg) < 3)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<SymbolType> <IsProvider> <SEQ>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("symbolType <SymbolType> <IsProvider> <SEQ> [<Quality>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("symbolType ISIN false 1100"));
+    mCmd->printForInst("ISIN false 1100");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]SymbolType;IsProvider;SEQ";
+  mHeader << "[Header]SymbolType" << "IsProvider" << "SEQ";
+  mData   << mCmd->strParm(1) << mCmd->strParmBool(2) << mCmd->strParmInt(3);
 
-  if(mCmdArg.size() > 3) header.append(";Quality");
-
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addOrder(const QStringList& parm)
+void CmdAdd::addOrder()
 {
-  QStringList dp;
+  mCmd->makeOneOfOptsMandatory("Depot", "dpid dp");
 
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(9))
   {
-    if(FTool::getParameter(parm, "--order", mCmdArg) < 9)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-    else if(FTool::getParameter(parm, "--dp", dp) < 1)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<ODate> <VDate> <RefSymbol> <Market> <Pieces> <Limit> <Type> "
+                          "<Status> <Note> \\ <Depot>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("order <ODate> <VDate> <RefSymbol> <Market> <Pieces> <Limit> <Type> <Status> <Note> [<Quality>]"));
-    print(mInfoTxt.value("CmdPref++").arg("     --dp <DepotId> | <DepotName> <DepotOwner>"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("order 2010-09-01 2010-09-01 AAPL NYSE 10 Best Buy Active \"It looks so good\" --dp SlowHand Me"));
+    mCmd->printForInst("2010-09-01 2010-09-01 AAPL NYSE 10 Best Buy "
+                       "Active \"It looks so good\" --dp SlowHand Me");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note";
+  mHeader << "[Header]ODate" << "VDate" << "RefSymbol" << "Market";
+  mData   << mCmd->strParmDate(1) << mCmd->strParmDate(2) << mCmd->strParm(3) << mCmd->strParm(4);
 
-  if(mCmdArg.size() > 9) header.append(";Quality");
+  mHeader << "Pieces" << "Limit" << "Type" << "Status" << "Note";
+  mData   << mCmd->strParmInt(5) << mCmd->strParmDouble(6) << mCmd->strParm(7)
+          << mCmd->strParm(8) << mCmd->strParm(9);
 
-  if(dp.size() > 1) header.append(";DepotName;DepotOwner");
-  else header.append(";DepotId");
+  takeDepotOptions();
 
-  mCmdArg << dp;
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addDepot(const QStringList& parm)
+void CmdAdd::addDepot()
 {
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(4))
   {
-    if(FTool::getParameter(parm, "--depot", mCmdArg) < 4)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<DepotName> <DepotOwner> <Trader> <BrokerName>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("depot <DepotName> <DepotOwner> <Trader> <BrokerName> [<Quality>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("depot SlowHand Me Watchdog MyBank"));
+    mCmd->printForInst("SlowHand Me Watchdog MyBank");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]DepotName;DepotOwner;Trader;BrokerName";
+  mHeader << "[Header]DepotName" << "DepotOwner" << "Trader" << "BrokerName";
+  mData   << mCmd->parmList();
 
-  if(mCmdArg.size() > 4) header.append(";Quality");
-
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addDepotPos(const QStringList& parm)
+void CmdAdd::addDepotPos()
 {
-  QStringList dp;
+  mCmd->makeOneOfOptsMandatory("Depot", "dpid dp");
 
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(6))
   {
-    if(FTool::getParameter(parm, "--depotPos", mCmdArg) < 6)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-    else if(FTool::getParameter(parm, "--dp", dp) < 1)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<PDate> <RefSymbol> <Market> <Pieces> <Price> <Note> \\ "
+                          "<Depot>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("depotPos <PDate> <RefSymbol> <Market> <Pieces> <Price> <Note> [<Quality>]"));
-    print(mInfoTxt.value("CmdPref++").arg("         --dp <DepotId> | <DepotName> <DepotOwner>"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("depotPos 2010-09-01 AAPL NYSE 10 247.47 \"It looked so good\" --dp SlowHand Me"));
+    mCmd->printForInst("2010-09-01 AAPL NYSE 10 247.47 \"It looked so good\" --dp SlowHand Me");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]PDate;RefSymbol;Market;Pieces;Price;Note";
+  mHeader << "[Header]PDate" << "RefSymbol" << "Market";
+  mData   << mCmd->strParmDate(1) << mCmd->strParm(2) << mCmd->strParm(3);
 
-  if(mCmdArg.size() > 6) header.append(";Quality");
+  mHeader << "Pieces" << "Price" << "Note";
+  mData   << mCmd->strParmInt(4) << mCmd->strParmDouble(5) << mCmd->strParm(6);
 
-  if(dp.size() > 1) header.append(";DepotName;DepotOwner");
-  else header.append(";DepotId");
+  takeDepotOptions();
 
-  mCmdArg << dp;
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addAccPosting(const QStringList& parm)
+void CmdAdd::addAccPosting()
 {
-  QStringList dp;
+  mCmd->makeOneOfOptsMandatory("Depot", "dpid dp");
 
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(4))
   {
-    if(FTool::getParameter(parm, "--post", mCmdArg) < 4)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-    else if(FTool::getParameter(parm, "--dp", dp) < 1)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<APDate> <APType> <Text> <Value> \\ <Depot>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("post <APDate> <APType> <Text> <Value> [<Quality>]"));
-    print(mInfoTxt.value("CmdPref++").arg("     --dp <DepotId> | <DepotName> <DepotOwner>"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("post 2010-09-01 FiBuy \"10x Apple at 247.47\" 2474.70 --dp SlowHand Me"));
+    mCmd->printForInst("2010-09-01 FiBuy \"10x Apple at 247.47\" 2474.70 --dp SlowHand Me");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]APDate;APType;Text;Value";
+  mHeader << "[Header]APDate" << "APType" << "Text" << "Value";
+  mData   << mCmd->strParmDate(1) << mCmd->strParm(2) << mCmd->strParm(3) << mCmd->strParmDouble(4);
 
-  if(mCmdArg.size() > 4) header.append(";Quality");
+  takeDepotOptions();
 
-  if(dp.size() > 1) header.append(";DepotName;DepotOwner");
-  else header.append(";DepotId");
-
-  mCmdArg << dp;
-  import(header, mCmdArg.join(";"));
+  import();
 }
 
-void CmdAdd::addUnderlyg(const QStringList& parm)
+void CmdAdd::addUnderlyg()
 {
-  if(!mWantHelp)
+  if(mCmd->isMissingParms(3))
   {
-    if(FTool::getParameter(parm, "--underlying", mCmdArg) < 3)
-    {
-      error(FUNC, mInfoTxt.value("TooLessArg"));
-      mWantHelp = true;
-    }
-  }
+    if(mCmd->printThisWay("<Mother> <RefSymbol> <Weight>")) return;
 
-  if(mWantHelp)
-  {
-    print(mInfoTxt.value("ThisWay"));
-    print(mInfoTxt.value("CmdPrefix").arg("underlying <Mother> <RefSymbol> <Weight> [<Quality>]"));
-    print(mInfoTxt.value("ForInst"));
-    print(mInfoTxt.value("CmdPrefix").arg("underlying ^NDX AAPL 1"));
+    mCmd->printForInst("^NDX AAPL 1");
+    mCmd->aided();
     return;
   }
 
-  QString header = "[Header]Mother;RefSymbol;Weight";
+  mHeader << "[Header]Mother" << "RefSymbol" << "Weight";
+  mData   << mCmd->strParm(1) << mCmd->strParm(2) << mCmd->strParmDouble(3);
 
-  if(mCmdArg.size() > 3) header.append(";Quality");
+  import();
+}
 
-  import(header, mCmdArg.join(";"));
+void CmdAdd::takeDepotOptions()
+{
+  if(mCmd->has("dpid"))
+  {
+    mHeader << "DepotId";
+    mData   << mCmd->strParmInt(1);
+  }
+  else //if(mCmd->has("dp"))
+  {
+    if(mCmd->parmCount() > 1)
+    {
+      mHeader << "DepotName" << "DepotOwner";
+      mData   << mCmd->strParm(1) << mCmd->strParm(2);
+    }
+    else
+    {
+      error(FUNC, tr("Option --dp need 2 parameter but has %1").arg(mCmd->parmCount()));
+    }
+  }
 }

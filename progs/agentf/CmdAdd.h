@@ -23,6 +23,7 @@
 #include "FClass.h"
 
 class Importer;
+class CmdHelper;
 
 /***********************************************************************
 *
@@ -36,33 +37,34 @@ class Importer;
 class CmdAdd : public FClass
 {
   public:
-                CmdAdd(FClass* parent);
-    virtual    ~CmdAdd();
+                  CmdAdd(FClass* parent);
+    virtual      ~CmdAdd();
 
-    bool        exec(const QStringList& cmdLine);
+    static void   briefIn(CmdHelper* cmd);
+    bool          exec(CmdHelper* ch);
 
   protected:
-    void        printDataTypes();
-    void        import(const QString& header, const QString& data);
+    void          import();
 
-    void        addBroker(const QStringList& parm);
-    void        addEodBar(const QStringList& parm);
-    void        addFi(const QStringList& parm);
-    void        addMarket(const QStringList& parm);
-    void        addSplit(const QStringList& parm);
-    void        addSymbol(const QStringList& parm);
-    void        addSymbolType(const QStringList& parm);
-    void        addOrder(const QStringList& parm);
-    void        addDepot(const QStringList& parm);
-    void        addDepotPos(const QStringList& parm);
-    void        addAccPosting(const QStringList& parm);
-    void        addUnderlyg(const QStringList& parm);
+    void          addBroker();
+    void          addEodBar();
+    void          addFi();
+    void          addMarket();
+    void          addSplit();
+    void          addSymbol();
+    void          addSymbolType();
+    void          addOrder();
+    void          addDepot();
+    void          addDepotPos();
+    void          addAccPosting();
+    void          addUnderlyg();
 
-    Importer*       mImporter;
-    bool            mWantHelp;  // Flag to print help info
-    QStringList     mCmdArg;    // Like a helper, used to fetch arguments
+    void          takeDepotOptions();
 
-    QHash<QString, QString>   mInfoTxt; // Hold some often used error messages
+    CmdHelper*        mCmd;
+    Importer*         mImporter;
+    QStringList       mHeader;
+    QStringList       mData;
 
   private:
 

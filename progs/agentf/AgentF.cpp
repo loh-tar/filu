@@ -577,7 +577,10 @@ void AgentF::filu()
 void AgentF::cmdAdd()
 {
   CmdAdd* cmdAdd = new CmdAdd(this);
-  cmdAdd->exec(mCmd->cmdLine()); // FIXME
+
+  cmdAdd->exec(mCmd);
+  addErrors(cmdAdd->errors());
+
   delete cmdAdd;
   return;
 }
@@ -697,7 +700,6 @@ void AgentF::execCmd(const QStringList& parm)
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
     mCmd->inCmdBrief("imp", tr("Imports an (surprise!) import file. See doc/import-file-format.txt"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
-    mCmd->inCmdBrief("add", tr("Lets you adding a single dataset to the database by using Importer"));
     mCmd->inCmdBrief("filu", tr("Create or update the Filu database"));
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
@@ -706,6 +708,7 @@ void AgentF::execCmd(const QStringList& parm)
     Depots::briefIn(mCmd);
     Scanner::briefIn(mCmd);
     Exporter::briefIn(mCmd);
+    CmdAdd::briefIn(mCmd);
 
     mCmd->inOptBrief("verbose", "<Level>"
                               , tr("How talkative has it to be. Level can be 0-3 or "
