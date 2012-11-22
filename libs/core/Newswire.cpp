@@ -17,6 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QFile>
+#include <QTextStream>
+
 #include "Newswire.h"
 
 #include "RcFile.h"
@@ -293,27 +296,34 @@ void Newswire::addMessage(const Message& msg)
     if(mMessages.at(i).text == msg.text) return;
   }
 
-  mMessages.append(msg);
-
   if(eError == msg.type) mHasError = true;
   if(eFatal == msg.type) mHasFatal = true;
   if(mHasFatal)          mHasError = true;
 
-  logMessage(msg);
+  Message newMsg = msg;
+  logMessage(newMsg);
+  mMessages.append(newMsg);
 }
 
-void Newswire::logMessage(const Message& msg)
+void Newswire::logMessage(Message& msg)
 {
   if(!mNoErrorLogging)
   {
     if(msg.type == eErrInfo and !mHasError) return; // Don't log infos without an error
 
-    *mErrConsole << formatMessage(msg, mFormat.value(eConsLog)) << endl;
+    if(!msg.consLogged)
+    {
+      *mErrConsole << formatMessage(msg, mFormat.value(eConsLog)) << endl;
+      msg.consLogged = true;
+    }
   }
+
+  if(msg.fileLogged) return;
 
   if(!mNoErrorLogging or (msg.type == eFatal))
   {
     if(mLogFile) *mLogFile << formatMessage(msg, mFormat.value(eFileLog)) << endl;
+    msg.fileLogged = true;
   }
 }
 

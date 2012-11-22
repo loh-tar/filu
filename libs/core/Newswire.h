@@ -20,7 +20,12 @@
 #ifndef NEWSWIRE_HPP
 #define NEWSWIRE_HPP
 
-#include <QtCore>
+#include <QCoreApplication>  // Needed for Q_DECLARE_TR_FUNCTIONS
+#include <QHash>
+#include <QString>
+#include <QStringList>
+class QFile;
+class QTextStream;
 
 class RcFile;
 
@@ -74,6 +79,8 @@ class Newswire
       QString   func;
       QString   text;
       MsgType   type;
+      bool      consLogged;
+      bool      fileLogged;
     };
 
     typedef QList<Message> MessageLst;
@@ -125,7 +132,7 @@ class Newswire
 
     void            init();
     void            addMessage(const Message& msg);
-    void            logMessage(const Message& msg);
+    void            logMessage(Message& msg);
 
     bool           mRoot;
     QString        mConnName;       // ConnectionName/ProgramName for logfile entries
