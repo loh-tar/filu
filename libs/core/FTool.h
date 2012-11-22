@@ -20,41 +20,53 @@
 #ifndef FTOOL_HPP
 #define FTOOL_HPP
 
-#include <QtCore>
+#include <QHash>
+#include <QString>
+#include <QStringList>
+
+/***********************************************************************
+*
+*   Here is a collection of more or less simple functions
+*   which are to small to create an own class FIXME:or should?
+*
+************************************************************************/
 
 namespace FTool
 {
-
-//
-// Here is a collection of more or less simple functions
-// which are to small to create an own class FIXME:or should?
-//
-
 // A un/packer like pair of functions.
 // Replace/Restore newline and ';' char in a string
 // Used by Importer/Exporter
-QString       lineToTxt(const QString& line);
-QString       txtToLine(const QString& txt);
+QString
+lineToTxt(const QString& line);
+
+QString
+txtToLine(const QString& txt);
 
 // Was native part of COType.
 // Its moved in here because we need it also at CalcWatchDogs which
 // is not part of Gui ==> remove the dependency between Core/Gui.
-void strToAttributes(const QString& str, QHash<QString, QString>& attr);
+void
+strToAttributes(const QString& str, QHash<QString, QString>& attr);
 
 // A simple command line options handler.
 // Places the parameter to switch cmd into parm.
 // Retruns -1 if cmd not found or the number of cmd arguments
 // FIXME: Create an own class with more features
-int           getParameter( const QStringList& cmdLine
-                          , const QString& cmd
-                          , QStringList& parm );
+int
+getParameter(const QStringList&  cmdLine, const QString&  cmd, QStringList&  parm);
 
 // Convert a named time frame to a number or -1 if unknown.
 // When trueDays = true is calculated with week=7 days, if false week=5 days
-int timeFrame(const QString& frame, bool trueDays = false);
+int
+timeFrame(const QString& frame, bool trueDays = false);
 
 // Yes, it copy a whole dir tree
-void          copyDir(const QString& src, const QString& dest);
+void
+copyDir(const QString& src, const QString& dest);
+
+// Wrap a txt to given width
+QStringList
+wrapText(const QString txt, int width);
 
 }
 #endif

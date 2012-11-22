@@ -19,12 +19,13 @@
 
 #include "FTool.h"
 
-//
-// Here is a collection of more or less stupid functions
-// which are to simple to create an own class FIXME:or should?
-//
+#include <QRegExp>
+#include <QDir>
+#include <QFile>
+#include <QDirIterator>
 
-QString FTool::lineToTxt(const QString& line)
+QString
+FTool::lineToTxt(const QString& line)
 {
   QString txt = line;
 
@@ -42,7 +43,8 @@ QString FTool::lineToTxt(const QString& line)
   return txt;
 }
 
-QString FTool::txtToLine(const QString& txt)
+QString
+FTool::txtToLine(const QString& txt)
 {
   QString line = txt;
 
@@ -63,7 +65,8 @@ QString FTool::txtToLine(const QString& txt)
   return line;
 }
 
-void FTool::strToAttributes(const QString& str, QHash<QString, QString>& attr)
+void
+FTool::strToAttributes(const QString& str, QHash<QString, QString>& attr)
 {
   QStringList keyValueList = str.split('\n');
 
@@ -81,34 +84,32 @@ void FTool::strToAttributes(const QString& str, QHash<QString, QString>& attr)
   }
 }
 
-int FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringList& parm)
+int
+FTool::getParameter(const QStringList& cmdLine, const QString& cmd, QStringList& parm)
 {
   // Place the parameter to the command switch "--foo" into parm
-
   int pos = cmdLine.indexOf(cmd);
 
   if(-1 == pos) return -1; // Command not found. was not given on command line
+  parm.clear();            // Be on the save side
 
-    parm.clear();          // Be on the save side
+  for(int i = pos + 1; i <= cmdLine.size() - 1; ++i)
+  {
+    if(cmdLine.at(i).startsWith("--")) break;
+    parm.append(cmdLine.at(i));
+  }
 
-    for(int i = pos + 1; i <= cmdLine.size() - 1; ++i)
-    {
-      if(cmdLine.at(i).startsWith("--")) break;
-
-      parm.append(cmdLine.at(i));
-    }
-
-    return parm.size();
+  return parm.size();
 }
 
-int FTool::timeFrame(const QString& frame, bool trueDays/* = false*/)
+int
+FTool::timeFrame(const QString& frame, bool trueDays/* = false*/)
 {
   bool ok;
   int timeFrame = frame.toInt(&ok);
   if(ok)
   {
     if(timeFrame > 0) return timeFrame;
-
     return -1;
   }
 
@@ -126,39 +127,66 @@ int FTool::timeFrame(const QString& frame, bool trueDays/* = false*/)
   return timeFrame;
 }
 
-void FTool::copyDir(const QString& src, const QString& dest)
+void
+FTool::copyDir(const QString& src, const QString& dest)
 {
   // Found at http://agnit.blogspot.com/2009/03/directory-copy-code.html
   // Thanks to Agnit Sarkar
 
   //Check whether the dir directory exists
-  if(QDir(src).exists())
+  if(!QDir(src).exists()) return;
+
+  if(!QDir(dest).exists())
   {
-    if(!QDir(dest).exists())
+    QDir().mkpath(dest);
+  }
+
+  //Construct an iterator to get the entries in the directory
+  QDirIterator dirIterator(src);
+
+  while (dirIterator.hasNext())
+  {
+    QString       item = dirIterator.next();
+    QString   fileName = dirIterator.fileName();
+    QFileInfo fileInfo = dirIterator.fileInfo();
+
+    if(fileName != "." && fileName != "..")
     {
-      QDir().mkpath(dest);
-    }
-
-    //Construct an iterator to get the entries in the directory
-    QDirIterator dirIterator(src);
-
-    while (dirIterator.hasNext())
-    {
-      QString   item = dirIterator.next();
-      QString   fileName = dirIterator.fileName();
-      QFileInfo fileInfo = dirIterator.fileInfo();
-
-      if(fileName != "." && fileName != "..")
-      {
-        //If entry is a file copy it
-        if(fileInfo.isFile())
-        {
-          QFile::copy(item, dest + "/" + fileName);
-        }
-        //If entry is a directory, call the deltree function over it again to traverse it
-        else  copyDir(item, dest+ "/"+ fileName);
+      if(fileInfo.isFile())
+      { //If entry is a file copy it
+        QFile::copy(item, dest + "/" + fileName);
+      }
+      else
+      { //If entry is a directory, call the deltree function over it again to traverse it
+        copyDir(item, dest+ "/"+ fileName);
       }
     }
   }
-  else return;
+}
+
+QStringList
+FTool::wrapText(const QString txt, int width)
+{
+  QStringList words = txt.split(" ");
+
+  QString line;
+  QStringList wraped;
+  foreach(QString s, words)
+  {
+    s.append(" ");
+    if(line.size() + s.size() > width)
+    {
+      line.chop(1); // Remove above added space
+      wraped << line;
+      line = s;
+    }
+    else
+    {
+      line.append(s);
+    }
+  }
+
+  wraped << line;
+
+  return wraped;
 }
