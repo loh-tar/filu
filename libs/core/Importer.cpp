@@ -76,7 +76,7 @@ Importer::~Importer()
   verbose(FUNC, "I'm dead.", eMax);
 }
 
-void Importer::printStatus(Effect effectEnum, const QString& extraTxt)
+void Importer::printStatus(Effect effectEnum/* = eEffectPending*/, const QString& extraTxt/* = ""*/)
 {
   static const QStringList effectList = QStringList() << "" << "Ok" << "FAULT";
   static const char c[] = {'-', '\\', '|', '/'};
@@ -246,7 +246,7 @@ void Importer::reset()
   mToDo.clear();
   mTotalSymbolCount = 0;
 
-  mLineNo = 0;
+  mLineNo    = 0;
   mByteCount = 0;
   mDataR     = 0;
   mDataW     = 0;
@@ -364,8 +364,8 @@ bool Importer::import(const QString& line)
   if(row.indexOf(QRegExp(".+")) == -1) return true; // No content in data, only ";"
 
   mOrigData = data;
-  //qDebug() << "Importer::import: " << data;
-  //qDebug() << "Importer::import: " << row;
+  //qDebug() << "Importer::import: " << mLineNo << mDataR << data;
+  //qDebug() << "Importer::import: " << mLineNo << mDataR << row;
 
   // Check if line is a tag line
   if(row.at(0).startsWith("[")) return handleTag(row);
@@ -375,6 +375,25 @@ bool Importer::import(const QString& line)
   if(mDataLineNo.size() > 2) mDataLineNo.dequeue(); // Store max two line numbers
 
   ++mDataR;
+
+  if(!mHeader.size())
+  {
+    static const QString dataBefore = tr("Data before header");
+
+    if(verboseLevel(eAmple))
+    {
+      mImportData = dataBefore;
+      printStatus(eEffectFault, data.left(30) + "...");
+    }
+    else
+    {
+      mImportData = tr("*** Warning ***");
+      ++mDataW;
+      printStatus(eEffectPending, dataBefore);
+    }
+
+    return true;
+  }
 
   // Last check if all looks good
   if(mHeader.size() > row.size())
