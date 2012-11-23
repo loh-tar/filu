@@ -1343,21 +1343,24 @@ void Importer::addEODBar()
     QString header = "Date;Open;High;Low;Close;Volume;OpenInterest;Quality";
     QStringList barData;
     barData << header;
+    // We like to add the data in chunks of 100 bars
     for(int i = 0; i < mPendingData.size(); ++i)
     {
+      // Collect data...
       barData << mPendingData.at(i).join(";");
-      if((i % 100) and (i != mPendingData.size() - 1) or !i) continue;
+                                            // Continue ...
+      if(     (i+1) % 100                   // ...if we have not 100 collected
+          and i != mPendingData.size() - 1  // .. as long we have rest data
+        ) continue;
 
+      mDataW = i;
       mFilu->addEODBarData(mId.value("Fi"), mId.value("Market"), &barData);
       if(notAdded()) return;
 
-      mDataW = i + 1;
       printStatus();
       barData.clear();
       barData << header;
     }
-
-    if(notAdded()) return;
 
     int rate = dataPerSecond(mDataW, time.elapsed());
     txt = QString("%1 at %2, %3Bars/s").arg(symbol, market).arg(rate);
