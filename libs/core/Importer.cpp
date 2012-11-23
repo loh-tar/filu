@@ -25,6 +25,15 @@
 
 using namespace std;
 
+int dataPerSecond(int data, int time)
+{
+  // time comes in milliseconds
+
+  if(!time) return 99 * data; // Don't div by zero, and report not too much ;-)
+
+  return (1000 * data) / time;
+}
+
 Importer::Importer(FClass* parent)
         : FClass(parent, FUNC)
         , mSymbol(0)
@@ -1258,13 +1267,16 @@ void Importer::addCompList()
         mFilu->deleteRecord(":filu", "underlying", id);
         if(check4FiluError(FUNC)) return;
       }
+
+      int rate = dataPerSecond(mDataW, time.elapsed());
       txt = QString("%1, Components:%2, Changed:%3, %4FIs/s")
-                   .arg(mother).arg(mDataW).arg(toBeDeleted.size()).arg((1000 * (mDataW)) / time.elapsed());
+                   .arg(mother).arg(mDataW).arg(toBeDeleted.size()).arg(rate);
     }
     else
     {
+      int rate = dataPerSecond(mDataW, time.elapsed());
       txt = QString("%1, %2 checked, No changes, %3FIs/s")
-                   .arg(mother).arg(mDataW).arg((1000 * (mDataW)) / time.elapsed());
+                   .arg(mother).arg(mDataW).arg(rate);
     }
 
     printStatus(eEffectOk, txt);
@@ -1347,8 +1359,9 @@ void Importer::addEODBar()
 
     if(notAdded()) return;
 
-    txt = QString("%1 at %2, %3Bars/s").arg(symbol, market)
-                                          .arg((1000 * mDataW) / time.elapsed());
+    int rate = dataPerSecond(mDataW, time.elapsed());
+    txt = QString("%1 at %2, %3Bars/s").arg(symbol, market).arg(rate);
+
     printStatus(eEffectOk, txt);
 
     return;
@@ -1554,13 +1567,14 @@ void Importer::addGroup()
 
     if(nf)
     {
+      int rate = dataPerSecond(mDataW + nf, time.elapsed());
       txt = QString("%1, Added: %2, Faults: %3, %4FIs/s")
-                   .arg(path).arg(mDataW).arg(nf).arg((1000 * (mDataW + nf)) / time.elapsed());
+                   .arg(path).arg(mDataW).arg(nf).arg(rate);
     }
     else
     {
-      txt = QString("%1, %3FIs/s")
-                   .arg(path).arg((1000 * (mDataW)) / time.elapsed());
+      int rate = dataPerSecond(mDataW, time.elapsed());
+      txt = QString("%1, %3FIs/s").arg(path).arg(rate);
     }
 
     printStatus(eEffectOk, txt);
