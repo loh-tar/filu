@@ -17,12 +17,13 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "FTool.h"
-
 #include <QRegExp>
 #include <QDir>
 #include <QFile>
 #include <QDirIterator>
+// #include <QDebug>
+
+#include "FTool.h"
 
 QString
 FTool::lineToTxt(const QString& line)
@@ -189,4 +190,38 @@ FTool::wrapText(const QString txt, int width)
   wraped << line;
 
   return wraped;
+}
+
+QStringList
+FTool::breakUpText(const QString txt, bool ignoreQuotes/* = true*/)
+{
+  QRegExp openBrace("[\\(\\[\\{]");
+  QRegExp closeBrace("[\\}\\]\\)]");
+  int openBraceCount  = 0;
+  int closeBraceCount = 0;
+
+  QStringList rawWords = txt.split(" ", QString::SkipEmptyParts);
+  QStringList fractions;
+  QStringList parts;
+  foreach(QString s,rawWords)
+  {
+    parts.append(s);
+
+    // Sadly does QRegExp::captureCount() not work as I expect.
+    // That's why we have to count braces manually
+    int pos = 0;
+    while((pos = openBrace.indexIn(s, pos)) != -1) { ++openBraceCount; ++pos; }
+    pos = 0;
+    while((pos = closeBrace.indexIn(s, pos)) != -1) { ++closeBraceCount; ++pos; }
+
+    if(openBraceCount == closeBraceCount)
+    {
+      fractions.append(parts.join(" "));
+      parts.clear();
+      openBraceCount  = 0;
+      closeBraceCount = 0;
+    }
+  }
+
+  return fractions;
 }

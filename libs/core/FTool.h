@@ -68,5 +68,10 @@ copyDir(const QString& src, const QString& dest);
 QStringList
 wrapText(const QString txt, int width);
 
+// Break the text in connected parts. Mostly single words but respect any kind
+// of braces and quotes
+QStringList
+breakUpText(const QString txt, bool ignoreQuotes = true);
+
 }
 #endif
