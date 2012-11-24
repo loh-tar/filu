@@ -64,7 +64,7 @@ timeFrame(const QString& frame, bool trueDays = false);
 void
 copyDir(const QString& src, const QString& dest);
 
-// Wrap a txt to given width
+// Wrap a text to given width
 QStringList
 wrapText(const QString txt, int width);
 
