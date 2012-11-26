@@ -70,6 +70,7 @@ class Newswire
       eVerbose, // Verbose messages on the console
       eConsLog, // Error logging on the console
       eFileLog, // Error logging in file
+      eRecord,  // File logging of info messages
       eErrFunc  // The default formatMessages(...) format
     };
 
@@ -107,6 +108,7 @@ class Newswire
 
   protected:
     void            print(const QString& txt);
+    void            record(const QString& func, const QString& txt);
     void            verbose(const QString& func, const QString& txt, const VerboseLevel type = eInfo)
                            { if(mVerboseLevel >= type) verboseP(func, txt, type); }
 
