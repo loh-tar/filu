@@ -756,7 +756,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
 
   if(!data)
   {
-    error(FUNC, tr("Got no 'data'."));
+    fatal(FUNC, tr("Got no 'data'."));
     return eError;
   }
 
