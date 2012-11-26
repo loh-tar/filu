@@ -27,7 +27,7 @@ Filu::Filu(const QString& cn, RcFile* rcFile)
     , mConnectionName(cn)
 {
   mToDate = QDate::currentDate().toString(Qt::ISODate); // In case someone forget to set it...
-  setNoErrorLogging(true);
+//   setNoErrorLogging();
 }
 
 Filu::~Filu()
@@ -1247,7 +1247,7 @@ void Filu::openDB()
     execute(&query);
     if(query.size())
     {
-      verbose(FUNC, tr("Successful connected to %1 :-)").arg(mRcFile->getST("DatabaseName")));
+      verbose(FUNC, tr("Successful connected to %1 :-)").arg(mRcFile->getST("DatabaseName")), eAmple);
     }
     else
     {
