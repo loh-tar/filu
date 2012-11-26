@@ -104,13 +104,7 @@ void AgentF::addEODBarData()
 {
   // The 'this' command. Update the bars of one defined FI.
   // Command list looks like:
-  // <Caller> this <Symbol> <Market> <Provider> [<FromDate>] [<ToDate>]
-
-  if(mCmd->cmdLine().size() == 9)  // FIXME: What a terrible...
-  {
-    addEODBarDataFull(mCmd->cmdLine());
-    return;
-  }
+  // <Caller> this <Symbol> <Market> <Provider> [<FromDate>] [<ToDate>] [<FiId>] [<MarketId>]
 
   if(mCmd->isMissingParms(3))
   {
@@ -125,101 +119,66 @@ void AgentF::addEODBarData()
     return;
   }
 
-  QStringList parameters; // Parameter list for addEODBarDataFull(...)
-  parameters << "foo" << "bar"
-             << mCmd->argStr(1) << mCmd->argStr(2) << mCmd->argStr(3)
-             << mCmd->argDate(4, QDate(1000, 1, 1)).toString(Qt::ISODate)
-             << mCmd->argDate(5, QDate::currentDate()).toString(Qt::ISODate);
-// qDebug() << parameters;
+  QDate fromDate   = mCmd->argDate(4, QDate(1000, 1, 1));
+  QDate toDate     = mCmd->argDate(5, QDate::currentDate());
+  int fiId         = mCmd->argInt(6);
+  int marketId     = mCmd->argInt(7);
+
   if(mCmd->hasError()) return;
 
-  // We need fiId and marketId
-  SymbolTuple* st = mFilu->searchSymbol(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3));
-  if(!st)
+  if(!fiId or !marketId)
   {
-    error(FUNC, tr("Symbol not found: %1, %2, %3").arg(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3)));
-    return;
-  }
-
-  st->next();
-
-  parameters.append(QString::number(st->fiId()));
-  parameters.append(QString::number(st->marketId()));
-
-  delete st;
-
-  addEODBarDataFull(parameters);
-}
-
-void AgentF::addEODBarDataFull(const QStringList& parm)
-{
-  //
-  // This function update the bars of one defined FI.
-  // Command list looks like:
-  // <Caller> this <Symbol> <Market> <Provider> <FromDate> <ToDate> <FiId> <MarketId>
-  //    0      1      2        3         4          5         6       7        8
-
-  if(parm.size() < 9)
-  {
-    fatal(FUNC, "To less arguments.");
-    return;
-  }
-
-  QString fromDate = parm.at(5);
-  QString toDate   = parm.at(6);
-  int fiId         = parm.at(7).toInt();
-  int marketId     = parm.at(8).toInt();
-
-  // Build the parameter list needed by the script
-  QStringList parameters;
-
-  DateRange dateRange;
-  if(fromDate == "1000-01-01")
-  {
-    mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
-    // FIXME: To find out if anything is todo we have to check more smarter.
-    //        We have to use the 'offday' table, but its not implemented yet.
-    QDate date = dateRange.value("last").addDays(1);
-    if(date.dayOfWeek() == Qt::Saturday) date.addDays(2);
-    if(date.dayOfWeek() == Qt::Sunday) date.addDays(1);
-
-    if(date > QDate::currentDate())
+    SymbolTuple* st = mFilu->searchSymbol(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3));
+    if(!st)
     {
-      verbose(FUNC, tr("Nothing todo, last bar is up to date: %1").arg(date.toString(Qt::ISODate)), eInfo);
+      error(FUNC, tr("Symbol not found: %1, %2, %3").arg(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3)));
       return;
     }
 
-    parameters.append(date.toString(Qt::ISODate));
-  }
-  else
-  {
-    // 26.2.'10 mFilu->getEODBarDateRange(dateRange, Filu::Approved);
-    mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
-    // Avoid 'holes' in the data table
-    QDate date = QDate::fromString(fromDate, Qt::ISODate);
-    if(date > dateRange.value("last")) date = dateRange.value("last").addDays(1);
-    parameters.append(date.toString(Qt::ISODate));
+    st->next();
+
+    fiId     = st->fiId();
+    marketId = st->marketId();
+
+    delete st;
   }
 
-  if(toDate == "3000-01-01")
+  DateRange dateRange;
+  mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
+  // FIXME: To find out if anything is todo we have to check more smarter.
+  //        We have to use the 'offday' table, but its not implemented yet.
+
+  // Avoid 'holes' in the data table
+  if(fromDate > dateRange.value("last")) fromDate = dateRange.value("last").addDays(1);
+  else if(fromDate == QDate(1000, 1, 1)) fromDate = dateRange.value("last").addDays(1);
+
+  if(fromDate.dayOfWeek() == Qt::Saturday) fromDate = fromDate.addDays(2);
+  else if(fromDate.dayOfWeek() == Qt::Sunday) fromDate = fromDate.addDays(1);
+
+  if(fromDate > QDate::currentDate())
   {
-    parameters.append(QDate::currentDate().toString(Qt::ISODate));
-  }
-  else
-  {
-    // Once more, avoid 'holes' in the data table
-    QDate date = QDate::fromString(toDate, Qt::ISODate);
-    if(date < dateRange.value("first")) date = dateRange.value("first").addDays(-1);
-    parameters.append(date.toString(Qt::ISODate));
+    verbose(FUNC, tr("Nothing todo, last bar is up to date: %1 %2")
+                    .arg(mCmd->argStr(1), mCmd->argStr(2)), eAmple);
+    return;
   }
 
-  parameters.append(parm[2]);// parm[2]=<Symbol>
-  parameters.append(parm[3]);// parm[3]=<Market>
+  // Once more, avoid 'holes' in the data table
+  if(toDate < dateRange.value("first")) toDate = dateRange.value("first").addDays(-1);
+  else if(toDate == QDate(3000, 1, 1)) toDate = QDate::currentDate();
 
-  //qDebug() << parameters;
-  // parameters should now looks like "<FromDate> <ToDate> <Symbol> <Market>"
+  // Could happens if you update bars on weekend but there is nothing todo
+  if(fromDate > toDate) return;
+
+  // Build the parameter list needed by the script
+  QStringList scriptParms;
+  scriptParms.append(fromDate.toString(Qt::ISODate));
+  scriptParms.append(toDate.toString(Qt::ISODate));
+  scriptParms.append(mCmd->argStr(1));
+  scriptParms.append(mCmd->argStr(2));
+
+  // scriptParms should now looks like "<FromDate> <ToDate> <Symbol> <Market>"
   // Puh...we can call the script
-  QStringList* data = fetchBarsFromProvider(parm[4], parameters); // parm[4]=<Provider>
+  QStringList* data = fetchBarsFromProvider(mCmd->argStr(3), scriptParms);
 
   if(!data)
   {
@@ -229,7 +188,7 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
   if(data->size() < 2)
   {
-    warning(FUNC, tr("No data from script: %1 - %2").arg(parm[4], parameters.join(" ")));
+    warning(FUNC, tr("No data from script: %1 - %2").arg(mCmd->argStr(3), scriptParms.join(" ")));
     return;
   }
 
@@ -249,9 +208,6 @@ void AgentF::addEODBarDataFull(const QStringList& parm)
 
 void AgentF::updateAllBars()
 {
-  // Command list looks like
-  // agentf full [<FromDate>] [<ToDate>]
-
   if(mCmd->isMissingParms())
   {
     if(mCmd->printThisWay("[<FromDate> [<ToDate>]]")) return;
@@ -264,6 +220,7 @@ void AgentF::updateAllBars()
 
   QString fromDate = mCmd->argDate(1, QDate(1000, 1, 1)).toString(Qt::ISODate);
   QString toDate   = mCmd->argDate(2, QDate::currentDate()).toString(Qt::ISODate);
+
   if(mCmd->hasError()) return;
 
   SymbolTuple* symbols = mFilu->getAllProviderSymbols();
@@ -287,6 +244,7 @@ void AgentF::updateAllBars()
   parameters.append("");
   parameters.append("");
 
+  verbose(FUNC, tr("Update all %1 bar data.").arg(symbols->count()));
   verbose(FUNC, tr("Processing..."), eInfo);
 
   while (symbols->next())
@@ -393,12 +351,19 @@ void AgentF::beEvil()
     return;
   }
 
-  if(!mCmd->argStr(1).isEmpty())
+  if(verboseLevel(eMax))
   {
-    setMsgTargetFormat(eVerbose, QString("%C %1: %x").arg(mCmd->argStr(1)));
-    setMsgTargetFormat(eConsLog, QString("%C %1: *** %t *** %x").arg(mCmd->argStr(1)));
-    setMsgTargetFormat(eFileLog, QString("%T %C %1: *** %t *** %F %x").arg(mCmd->argStr(1)));
+    setMsgTargetFormat(eVerbose, QString("%D %T %C %1: %F %x").arg(mCmd->argStr(1)));
+    setMsgTargetFormat(eConsLog, QString("%D %T %C %1: *** %t *** %F %x").arg(mCmd->argStr(1)));
   }
+  else
+  {
+    setMsgTargetFormat(eVerbose, QString("%D %T %C %1: %x").arg(mCmd->argStr(1)));
+    setMsgTargetFormat(eConsLog, QString("%D %T %C %1: *** %t *** %x").arg(mCmd->argStr(1)));
+  }
+
+  setNoFileLogging();
+  mFilu->setNoErrorLogging();
 
   QTextStream console(stdout);
   QTextStream in(stdin);
