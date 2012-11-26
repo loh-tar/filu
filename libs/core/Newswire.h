@@ -91,7 +91,8 @@ class Newswire
     VerboseLevel    verboseLevel() const { return mVerboseLevel; }
     bool            verboseLevel(VerboseLevel vl) const { return (mVerboseLevel >= vl) ? true : false; }
 
-    void            setNoErrorLogging(bool noErrorLogging);
+    void            setNoErrorLogging(bool noErrorLogging = true) { mNoErrorLogging = noErrorLogging; }
+    void            setNoFileLogging(bool noFileLogging = true) { mNoFileLogging = noFileLogging; }
     void            setLogFile(const QString& path);
     void            setMsgTargetFormat(MsgTarget target, const QString& format);
     QString         formatMessages(const QString& format = "");
@@ -145,6 +146,7 @@ class Newswire
     QFile*         mLogFileFile;
     QTextStream*   mLogFile;
     bool           mNoErrorLogging;
+    bool           mNoFileLogging;
 
     QHash<MsgTarget, QString> mFormat;
 };

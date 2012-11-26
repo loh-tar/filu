@@ -52,7 +52,7 @@ bool CalcWatchDogs::prepare(CalcParms& parms)
 
   if(hasError()) return false;
 
-  setNoErrorLogging(true);  // Suppress "No watchdog on patrol."
+  setNoErrorLogging();  // Suppress "No watchdog on patrol."
 
   return true;
 }

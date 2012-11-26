@@ -36,6 +36,7 @@ Newswire::Newswire(const QString& connectionName)
         , mLogFileFile(0)
         , mLogFile(0)
         , mNoErrorLogging(false)
+        , mNoFileLogging(false)
 {
   init();
 }
@@ -51,6 +52,7 @@ Newswire::Newswire(Newswire* parent, const QString& className)
         , mLogFileFile(0)
         , mLogFile(0)
         , mNoErrorLogging(false)
+        , mNoFileLogging(false)
 {
   init();
 }
@@ -157,11 +159,6 @@ void Newswire::setVerboseLevel(const QString& func, const QStringList& parm)
   if(FTool::getParameter(parm, "--verbose", level) < 1) return; // We ignore that fault
 
   setVerboseLevel(func, level.at(0));
-}
-
-void Newswire::setNoErrorLogging(bool noErrorLogging)
-{
-  mNoErrorLogging = noErrorLogging;
 }
 
 QString Newswire::formatMessages(const QString& format/* = ""*/)
@@ -307,24 +304,21 @@ void Newswire::addMessage(const Message& msg)
 
 void Newswire::logMessage(Message& msg)
 {
-  if(!mNoErrorLogging)
-  {
-    if(msg.type == eErrInfo and !mHasError) return; // Don't log infos without an error
+  if(mNoErrorLogging) return;
 
-    if(!msg.consLogged)
-    {
-      *mErrConsole << formatMessage(msg, mFormat.value(eConsLog)) << endl;
-      msg.consLogged = true;
-    }
+  if(msg.type == eErrInfo and !mHasError) return; // Don't log infos without an error
+
+  if(!msg.consLogged)
+  {
+    *mErrConsole << formatMessage(msg, mFormat.value(eConsLog)) << endl;
+    msg.consLogged = true;
   }
 
   if(msg.fileLogged) return;
+  if(mNoFileLogging) return;
 
-  if(!mNoErrorLogging or (msg.type == eFatal))
-  {
-    if(mLogFile) *mLogFile << formatMessage(msg, mFormat.value(eFileLog)) << endl;
-    msg.fileLogged = true;
-  }
+  if(mLogFile) *mLogFile << formatMessage(msg, mFormat.value(eFileLog)) << endl;
+  msg.fileLogged = true;
 }
 
 void Newswire::print(const QString& txt)
