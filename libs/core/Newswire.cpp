@@ -71,7 +71,7 @@ void Newswire::init()
   mFormat.insert(eVerbose, "%c: %x");
 //   mFormat.insert(eConsLog, "%F *** %t *** %x");
   mFormat.insert(eConsLog, "%c: *** %t *** %x");
-  mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+  mFormat.insert(eFileLog, "%D %T %C: *** %t *** %x");
   mFormat.insert(eErrFunc, "%f: *** %t *** %x");
 }
 
@@ -110,7 +110,7 @@ void Newswire::setVerboseLevel(const VerboseLevel level)
     {
       mFormat.insert(eVerbose, "%c: %x");
       mFormat.insert(eConsLog, "%c: *** %t *** %x");
-      mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+      mFormat.insert(eFileLog, "%D %T %C: *** %t *** %x");
       mFormat.insert(eErrFunc, "%f: *** %t *** %x");
       break;
     }
@@ -118,7 +118,7 @@ void Newswire::setVerboseLevel(const VerboseLevel level)
     {
       mFormat.insert(eVerbose, "%c: %x");
       mFormat.insert(eConsLog, "%c: *** %t *** %x");
-      mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+      mFormat.insert(eFileLog, "%D %T %C: *** %t *** %x");
       mFormat.insert(eErrFunc, "%f: *** %t *** %x");
       break;
     }
@@ -126,7 +126,7 @@ void Newswire::setVerboseLevel(const VerboseLevel level)
     {
       mFormat.insert(eVerbose, "%F %x");
       mFormat.insert(eConsLog, "%F *** %t *** %x");
-      mFormat.insert(eFileLog, "%T %C: *** %t *** %F %x");
+      mFormat.insert(eFileLog, "%D %T %C: *** %t *** %F %x");
       mFormat.insert(eErrFunc, "%f: *** %t *** %x");
       break;
     }
