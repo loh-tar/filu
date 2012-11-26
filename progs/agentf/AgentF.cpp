@@ -801,7 +801,9 @@ void AgentF::startClones()
     connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
 
-    QString cmd = QString("%1 %2 %3").arg(QCoreApplication::applicationFilePath(), "daemon").arg(i);
+    mCloneNames.append(QString::number(i + 1));
+    QString cmd = QString("%1 %2 %3").arg(QCoreApplication::applicationFilePath(), "daemon").arg(mCloneNames.at(i));
+    if(mCmd->has("verbose")) cmd.append(" --verbose " + mCmd->optStr("verbose"));
     if(mConfigParms.size()) cmd.append(" --config " + mConfigParms.join(" "));
     clone->start(cmd);
 
@@ -815,7 +817,6 @@ void AgentF::startClones()
     }
 
     mClones.append(clone);
-    mCloneNames.append(QString::number(i + 1));
     verbose(FUNC, tr("Clone %1 started.").arg(mCloneNames.at(i)), eInfo);
     //qDebug() << QCoreApplication::hasPendingEvents (); always true, I give up :-(
     //QCoreApplication::flush();// Do not take effect
