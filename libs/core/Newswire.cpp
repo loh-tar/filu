@@ -69,12 +69,7 @@ Newswire::~Newswire()
 
 void Newswire::init()
 {
-//   mFormat.insert(eVerbose, "%F %x");
-  mFormat.insert(eVerbose, "%c: %x");
-//   mFormat.insert(eConsLog, "%F *** %t *** %x");
-  mFormat.insert(eConsLog, "%c: *** %t *** %x");
-  mFormat.insert(eFileLog, "%D %T %C: *** %t *** %x");
-  mFormat.insert(eErrFunc, "%f: *** %t *** %x");
+  setVerboseLevel(mVerboseLevel);
 }
 
 void Newswire::setLogFile(const QString& path)
@@ -113,6 +108,7 @@ void Newswire::setVerboseLevel(const VerboseLevel level)
       mFormat.insert(eVerbose, "%c: %x");
       mFormat.insert(eConsLog, "%c: *** %t *** %x");
       mFormat.insert(eFileLog, "%D %T %C: *** %t *** %x");
+      mFormat.insert(eRecord,  "%D %T %C: %x");
       mFormat.insert(eErrFunc, "%f: *** %t *** %x");
       break;
     }
@@ -121,6 +117,7 @@ void Newswire::setVerboseLevel(const VerboseLevel level)
       mFormat.insert(eVerbose, "%c: %x");
       mFormat.insert(eConsLog, "%c: *** %t *** %x");
       mFormat.insert(eFileLog, "%D %T %C: *** %t *** %x");
+      mFormat.insert(eRecord,  "%D %T %C: %x");
       mFormat.insert(eErrFunc, "%f: *** %t *** %x");
       break;
     }
@@ -129,6 +126,7 @@ void Newswire::setVerboseLevel(const VerboseLevel level)
       mFormat.insert(eVerbose, "%F %x");
       mFormat.insert(eConsLog, "%F *** %t *** %x");
       mFormat.insert(eFileLog, "%D %T %C: *** %t *** %F %x");
+      mFormat.insert(eRecord,  "%D %T %C: %F %x");
       mFormat.insert(eErrFunc, "%f: *** %t *** %x");
       break;
     }
@@ -338,4 +336,9 @@ void Newswire::print(const QString& txt)
   }
 
   *mErrConsole << txt << endl;
+}
+
+void Newswire::record(const QString& func, const QString& txt)
+{
+  if(mLogFile) *mLogFile << formatMessage(makeMessage(func, txt, eInfoMsg), mFormat.value(eRecord)) << endl;
 }
