@@ -57,7 +57,6 @@ class AgentF : public FCoreApp
                                        const QStringList& parameters);
 
     void addEODBarData();
-    void addEODBarDataFull(const QStringList& parm);
     void updateAllBars();
     bool lineToCommand(const QString& line, QStringList& cmd);
     void readCommandFile();
