@@ -188,17 +188,15 @@ QStringList RcFile::takeConfigParms(QStringList& cmdLine)
     parm.clear();
   }
 
+  mNewswire->setVerboseLevel(FUNC, getST("Verbose"));
+  mNewswire->setLogFile(getST("LogFile"));
+
   if(mForced.size())
   {
-    if(mForced.contains("LogFile"))
-      mNewswire->setLogFile(getST("LogFile"));
-
-    if(mForced.contains("Verbose"))
-      mNewswire->setVerboseLevel(FUNC, mForced.value("Verbose").toString());
-
     QStringList keys = mForced.keys();
     foreach(QString key, keys)
-      mNewswire->verbose(FUNC, tr("Taken config parm: Set  '%1' to '%2'").arg(key).arg(mForced.value(key).toString()), Newswire::eInfo);
+      mNewswire->verbose(FUNC, tr("Taken config parm: Set  '%1' to '%2'")
+                                 .arg(key).arg(mForced.value(key).toString()), Newswire::eAmple);
   }
 
   return filuParms;
