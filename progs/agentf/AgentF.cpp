@@ -223,6 +223,8 @@ void AgentF::updateAllBars()
 
   if(mCmd->hasError()) return;
 
+  verbose(FUNC, tr("Processing..."), eInfo);
+
   SymbolTuple* symbols = mFilu->getAllProviderSymbols();
   if(!symbols)
   {
@@ -230,6 +232,8 @@ void AgentF::updateAllBars()
     QCoreApplication::exit(1);
     return;
   }
+
+  record(FUNC, tr("\n*\n* Update bar data of all %1 FIs.\n*").arg(symbols->count()));
 
   // Build the parameter list needed by addEODBarData()
   // <Caller> -this <Symbol> <Market> <Provider> [<FromDate> [<ToDate>]]
@@ -243,9 +247,6 @@ void AgentF::updateAllBars()
   parameters.append(toDate);
   parameters.append("");
   parameters.append("");
-
-  verbose(FUNC, tr("Update all %1 bar data.").arg(symbols->count()));
-  verbose(FUNC, tr("Processing..."), eInfo);
 
   while (symbols->next())
   {
@@ -355,11 +356,13 @@ void AgentF::beEvil()
   {
     setMsgTargetFormat(eVerbose, QString("%D %T %C %1: %F %x").arg(mCmd->argStr(1)));
     setMsgTargetFormat(eConsLog, QString("%D %T %C %1: *** %t *** %F %x").arg(mCmd->argStr(1)));
+    setMsgTargetFormat(eRecord,  QString("%D %T %C %1: %F %x").arg(mCmd->argStr(1)));
   }
   else
   {
     setMsgTargetFormat(eVerbose, QString("%D %T %C %1: %x").arg(mCmd->argStr(1)));
     setMsgTargetFormat(eConsLog, QString("%D %T %C %1: *** %t *** %x").arg(mCmd->argStr(1)));
+    setMsgTargetFormat(eRecord,  QString("%D %T %C %1: %x").arg(mCmd->argStr(1)));
   }
 
   setNoFileLogging();
@@ -691,6 +694,12 @@ void AgentF::execCmd(const QStringList& parm)
                               , tr("How talkative has it to be. Level can be 0-3 or "
                                    "Quiet Info Ample Max"));
   }
+  else
+  {
+    QStringList cmd = parm;
+    cmd.removeAt(0);
+    record(FUNC, tr("Exec: %1").arg(cmd.join(" ")));
+  }
 
   if(mCmd->needHelp(1))
   {
@@ -847,6 +856,7 @@ void AgentF::check4MasterCMD()
   if(mCommands.at(0).at(1) == "MarkScanned")
   {
     if(!mScanner) mScanner = new Scanner(this);
+    mScanner->setVerboseLevel(eNoVerbose);
     mScanner->autoSetup();
     mScanner->mark();
   }
