@@ -38,7 +38,7 @@ Newswire::Newswire(const QString& connectionName)
         , mNoErrorLogging(false)
         , mNoFileLogging(false)
 {
-  init();
+  setVerboseLevel(mVerboseLevel); // Is called to set mFormat
 }
 
 Newswire::Newswire(Newswire* parent, const QString& className)
@@ -49,13 +49,12 @@ Newswire::Newswire(Newswire* parent, const QString& className)
         , mHasError(false)
         , mHasFatal(false)
         , mErrConsole(parent->mErrConsole)
-        , mLogFileFile(0)
-        , mLogFile(0)
-        , mNoErrorLogging(false)
-        , mNoFileLogging(false)
-{
-  init();
-}
+        , mLogFileFile(parent->mLogFileFile)
+        , mLogFile(parent->mLogFile)
+        , mNoErrorLogging(parent->mNoErrorLogging)
+        , mNoFileLogging(parent->mNoFileLogging)
+        , mFormat(parent->mFormat)
+{}
 
 Newswire::~Newswire()
 {
@@ -65,11 +64,6 @@ Newswire::~Newswire()
     if(mLogFileFile) delete mLogFileFile;
     if(mLogFile) delete mLogFile;
   }
-}
-
-void Newswire::init()
-{
-  setVerboseLevel(mVerboseLevel);
 }
 
 void Newswire::setLogFile(const QString& path)
