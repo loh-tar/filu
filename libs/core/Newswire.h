@@ -132,23 +132,21 @@ class Newswire
   private:
                         // P for private
     void            verboseP(const QString& func, const QString& txt, const VerboseLevel type = eInfo);
-
-    void            init();
     void            addMessage(const Message& msg);
     void            logMessage(Message& msg);
 
-    bool           mRoot;
-    QString        mConnName;       // ConnectionName/ProgramName for logfile entries
-    QString        mClass;
-    VerboseLevel   mVerboseLevel;
-    MessageLst     mMessages;
-    bool           mHasError;
-    bool           mHasFatal;
-    QTextStream*   mErrConsole;
-    QFile*         mLogFileFile;
-    QTextStream*   mLogFile;
-    bool           mNoErrorLogging;
-    bool           mNoFileLogging;
+    bool            mRoot;
+    QString         mConnName;          // ConnectionName/ProgramName for logfile entries
+    QString         mClass;
+    VerboseLevel    mVerboseLevel;
+    MessageLst      mMessages;
+    bool            mHasError;
+    bool            mHasFatal;
+    QTextStream*    mErrConsole;
+    QFile*          mLogFileFile;
+    QTextStream*    mLogFile;
+    bool            mNoErrorLogging;
+    bool            mNoFileLogging;
 
     QHash<MsgTarget, QString> mFormat;
 };
