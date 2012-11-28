@@ -225,3 +225,84 @@ FTool::breakUpText(const QString txt, bool ignoreQuotes/* = true*/)
 
   return fractions;
 }
+
+QStringList
+FTool::formatToTable(const QStringList& data, int width
+                   , const QHash<QString, int>& options/* = QHash<QString, int>()*/)
+{
+  if(!data.size()) return data;
+
+  // Calc some facts, not all are currently used
+  int minColWidth  = FTool::maxSizeOfStrings(data) + 1;
+  int optiColWidth = minColWidth * 1.5;
+  int maxColCount  = static_cast<double>(width) / static_cast<double>(minColWidth) + 1.0;
+  int minRowCount  = static_cast<double>(data.size()) / static_cast<double>(maxColCount) + 1.0;
+  int maxRowCount  = data.size();
+  int optiColCount = static_cast<double>(width) / static_cast<double>(optiColWidth) + 1.0;
+
+  int columns;
+  int rows;
+  if(options.contains("Columns"))
+  {
+    columns = qBound(1, options.value("Columns"), maxColCount); // Not qMin() to catch given zero
+    rows    = static_cast<double>(data.size()) / static_cast<double>(columns) + 1.0;
+  }
+  else
+  {
+    // Reduce column count until we have not so much
+    // more columns than rows
+    columns = optiColCount;
+    forever
+    {
+      rows = static_cast<double>(data.size()) / static_cast<double>(columns) + 1.0;
+      if(columns <= 2 * rows + 1) break;
+      --columns;
+    }
+  }
+
+  int maxColWidth  = width / columns;
+  int colWidth     = qBound(minColWidth, options.value("ColWidth", optiColWidth), maxColWidth);
+
+  QStringList table;
+
+  if(options.contains("LeftRight"))
+  {
+    // Sort data left->right and up->down
+    for(int i = 0; i < data.size(); i += columns)
+    {
+      QString line;
+      for(int j = 0; j < columns; ++j)
+      {
+        if(data.size() < i + j + 1) { break; }
+        line.append(QString("%1").arg(data.at(i + j), -colWidth));
+      }
+
+      table.append(line);
+    }
+  }
+  else
+  {
+    // Sort data up->down and left->right
+    for(int i = 0; i < rows; ++i)
+    {
+      QString line;
+      for(int j = 0; j < data.size(); j += rows)
+      {
+        if(data.size() < i + j + 1) { break; }
+        line.append(QString("%1").arg(data.at(i + j), -colWidth));
+      }
+
+      table.append(line);
+    }
+  }
+
+  return table;
+}
+
+int
+FTool::maxSizeOfStrings(const QStringList& sl)
+{
+  int max = 0;
+  foreach(QString s, sl) max = qMax(max, s.size());
+  return max;
+}

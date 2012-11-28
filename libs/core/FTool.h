@@ -51,7 +51,6 @@ strToAttributes(const QString& str, QHash<QString, QString>& attr);
 // A simple command line options handler.
 // Places the parameter to switch cmd into parm.
 // Retruns -1 if cmd not found or the number of cmd arguments
-// FIXME: Create an own class with more features
 int
 getParameter(const QStringList&  cmdLine, const QString&  cmd, QStringList&  parm);
 
@@ -72,6 +71,15 @@ wrapText(const QString txt, int width);
 // of braces and quotes
 QStringList
 breakUpText(const QString txt, bool ignoreQuotes = true);
+
+// Format data into lines to build a table with max width
+QStringList
+formatToTable(const QStringList& data, int width
+            , const QHash<QString, int>& options = QHash<QString, int>());
+
+// Retruns the size of the longest string in given stringlist
+int
+maxSizeOfStrings(const QStringList& sl);
 
 }
 #endif
