@@ -1,3 +1,22 @@
+2012-11-29
+============
+Sundries
+----------
+ - New class CmdHelper to simplify command line parsing and print help text
+ - DB: Don't insert eodBar with NULL volume
+ - Importer: Don't try to add a single symbol
+ - Importer: Oops, fix addEodbar() to add only one bar too
+ - Importer: Oops, don't divide by zero at verbose data throughput gadget
+ - Newswire: Logged no longer messages twice
+
+AgentF
+--------
+ - Thanks CmdHelper he reports now for every command a help text with -h/--help
+ - Takes now --verbose <Level> at each command, but may have no effect
+ - Writes more nicely into logfile
+ - Two new commands, splitBars and deleteBars
+
+
 2011-09-17
 ============
 PerformerF
