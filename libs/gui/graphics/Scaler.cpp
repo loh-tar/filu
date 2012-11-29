@@ -19,8 +19,11 @@
 
 #include <math.h>
 
-#include "Scaler.h"
+#include <QLocale>
+
+#include "BarTuple.h"
 #include "IndicatorPainter.h"
+#include "Scaler.h"
 
 Scaler::Scaler(IndicatorPainter* painter)
       : mP(painter)

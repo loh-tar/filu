@@ -20,11 +20,16 @@
 #ifndef INSPECTORF_HPP
 #define INSPECTORF_HPP
 
+#include <QComboBox>
+#include <QDateEdit>
+#include <QSqlQueryModel>
+class QProgressBar;
+class QPushButton;
+
 #include "FWidget.h"
 
 #include "SqlTableView.h"
 #include "StrategyEditor.h"
-
 class Trader;
 class BackTester;
 

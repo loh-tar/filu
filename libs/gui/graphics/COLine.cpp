@@ -17,6 +17,11 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QCheckBox>
+#include <QDialog>
+#include <QPainter>
+#include <QTextEdit>
+
 #include "COLine.h"
 
 COLine::COLine(IndicatorPainter* painter)

@@ -17,13 +17,21 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QPushButton>
+#include <QSplitter>
+#include <QStackedWidget>
+
 #include "ManagerF.h"
 
-//#include "ConfigPage.h"
+#include "AddFiPage.h"
 #include "FiPage.h"
 #include "IndicatorPage.h"
-#include "AddFiPage.h"
 #include "LogBookPage.h"
+#include "RcFile.h"
 
 ManagerF::ManagerF(QApplication& app)
         : FMainApp("ManagerF", app)

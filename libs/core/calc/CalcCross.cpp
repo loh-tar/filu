@@ -19,6 +19,8 @@
 
 #include "CalcCross.h"
 
+#include "DataTupleSet.h"
+
 CalcCross::CalcCross(Indicator* parent)
          : CalcType(parent, FUNC)
 {

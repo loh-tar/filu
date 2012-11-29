@@ -17,7 +17,15 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDir>
+#include <QFile>
+#include <QFileSystemWatcher>
+#include <QHeaderView>
+#include <QTextStream>
+
 #include "IndicatorPicker.h"
+
+#include "RcFile.h"
 #include "FWidget.h"
 
 IndicatorPicker::IndicatorPicker(FClass* parent)

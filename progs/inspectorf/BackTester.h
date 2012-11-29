@@ -20,6 +20,11 @@
 #ifndef BACKTESTER_HPP
 #define BACKTESTER_HPP
 
+#include <QDate>
+#include <QMutex>
+#include <QThread>
+#include <QWaitCondition>
+
 #include "FClass.h"
 
 class Indicator;

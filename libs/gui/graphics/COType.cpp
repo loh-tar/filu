@@ -19,12 +19,26 @@
 
 #include <math.h>
 
+#include <QCheckBox>
+#include <QDateEdit>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QDoubleSpinBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QTextEdit>
+
 #include "COType.h"
 
+#include "BarTuple.h"
 #include "COTuple.h"
+#include "FTool.h"
+#include "FiluU.h"
 #include "IndicatorPainter.h"
 #include "Scaler.h"
-#include "FTool.h"
 
 // All available types
 #include "COLine.h"
@@ -116,9 +130,9 @@ COType::Status COType::status()
 
 bool COType::isInvolved(const QPoint& pos)
 {
-   qDebug() << "odden" << pos << mPaintedObject.containsPoint(pos, Qt::OddEvenFill);
-   qDebug() << "windi" << pos << mPaintedObject.containsPoint(pos, Qt::WindingFill);
-   qDebug() << "conti" << pos << mPaintedObject.contains(pos);
+//    qDebug() << "odden" << pos << mPaintedObject.containsPoint(pos, Qt::OddEvenFill);
+//    qDebug() << "windi" << pos << mPaintedObject.containsPoint(pos, Qt::WindingFill);
+//    qDebug() << "conti" << pos << mPaintedObject.contains(pos);
 
   bool involved = mPaintedObject.containsPoint(pos, Qt::OddEvenFill);
 

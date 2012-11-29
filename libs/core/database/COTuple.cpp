@@ -17,6 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDate>
+#include <QString>
+
 #include "COTuple.h"
 
 COTuple::COTuple(int size) : Tuple(size)

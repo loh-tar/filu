@@ -19,6 +19,7 @@
 
 #include "XScaleTicker.h"
 
+#include "BarTuple.h"
 #include "IndicatorPainter.h"
 #include "Scaler.h"
 

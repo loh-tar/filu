@@ -17,8 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QListWidgetItem>
+
 #include "ManagerPage.h"
-#include "ManagerF.h"
 
 ManagerPage::ManagerPage(FClass* parent, const QString& className)
            : FWidget(parent, className)

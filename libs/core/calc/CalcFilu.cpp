@@ -17,7 +17,13 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QSqlQuery>
+#include <QVariant>
+
 #include "CalcFilu.h"
+
+#include "DataTupleSet.h"
+#include "FiluU.h"
 
 CalcFilu::CalcFilu(Indicator* parent)
         : CalcType(parent, FUNC)

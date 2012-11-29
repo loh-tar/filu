@@ -17,7 +17,16 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QAction>
+#include <QFile>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QTextStream>
+
 #include "LogBookPage.h"
+
+#include "RcFile.h"
 
 LogBookPage::LogBookPage(FClass* parent)
            : ManagerPage(parent, FUNC)

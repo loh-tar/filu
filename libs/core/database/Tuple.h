@@ -20,8 +20,6 @@
 #ifndef TUPLE_HPP
 #define TUPLE_HPP
 
-#include <QtCore>  // Not needed here but by the derived classes
-
 /***********************************************************************
 *
 *   This is the base class of each xxxTuple class.

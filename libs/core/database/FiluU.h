@@ -21,11 +21,7 @@
 #define FIMIU_HPP
 
 #include "Filu.h"
-
-// #include here and not class all stuff interested by FiluU.
-// So all classes which use FiluU will knows the data types
-#include "COTuple.h"
-
+class COTuple;
 class RcFile;
 
 class FiluU : public Filu

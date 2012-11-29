@@ -19,11 +19,22 @@
 
 #include <float.h>
 
+#include <QFile>
+#include <QSqlRecord>
+#include <QSqlQuery>
+#include <QTextStream>
+
 #include "Trader.h"
 
-#include "Indicator.h"
+#include "BarTuple.h"
 #include "DataTupleSet.h"
+#include "FiTuple.h"
+#include "FiluU.h"
+#include "Indicator.h"
+#include "MarketTuple.h"
 #include "MyParser.h"
+#include "RcFile.h"
+#include "SymbolTuple.h"
 
 // FIXME: Short trades are not implemented. Partial code about short selling
 //        should accept as it is with caution

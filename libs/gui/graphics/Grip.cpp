@@ -17,11 +17,15 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QPainter>
+#include <QPen>
+
 #include "Grip.h"
 
-#include "Tuple.h"
+#include "BarTuple.h"
 #include "IndicatorPainter.h"
 #include "Scaler.h"
+#include "Tuple.h"
 
 /***********************************************************************
 *

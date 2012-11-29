@@ -17,12 +17,21 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDir>
+#include <QSqlQuery>
+#include <QTextStream>
+
 #include "Scanner.h"
 
-#include "Indicator.h"
+#include "BarTuple.h"
+#include "CmdHelper.h"
 #include "DataTupleSet.h"
 #include "FTool.h"
-#include "CmdHelper.h"
+#include "FiTuple.h"
+#include "FiluU.h"
+#include "Indicator.h"
+#include "RcFile.h"
+#include "SymbolTuple.h"
 
 const QString cCmd1 = "scan";
 const QString cCmd1Brief = QObject::tr("Scans the database for events");

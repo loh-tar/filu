@@ -17,10 +17,16 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QMenu>
+#include <QSplitter>
+#include <QVBoxLayout>
+
 #include "IndiWidgetGroup.h"
 
+#include "BarTuple.h"
 #include "IndicatorWidget.h"
 #include "PlotSheet.h"
+#include "RcFile.h"
 
 IndiWidgetGroup::IndiWidgetGroup(FClass* parent)
                : FWidget(parent, FUNC)

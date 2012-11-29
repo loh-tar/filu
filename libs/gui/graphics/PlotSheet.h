@@ -20,6 +20,8 @@
 #ifndef PLOTSHEET_HPP
 #define PLOTSHEET_HPP
 
+#include <QDate>
+
 #include "FWidget.h"
 
 class IndicatorPainter;

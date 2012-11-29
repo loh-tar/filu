@@ -20,10 +20,14 @@
 #ifndef EXPORTER_HPP
 #define EXPORTER_HPP
 
-#include "FClass.h"
+#include <QQueue>
+#include <QTextStream>
+#include <QTime>
+class QFile;
 
-class Indicator;
+#include "FClass.h"
 class CmdHelper;
+class Indicator;
 
 /***********************************************************************
 *

@@ -20,17 +20,17 @@
 #ifndef CALCTYPE_HPP
 #define CALCTYPE_HPP
 
+#include <QSet>
+
 #include "FClass.h"
-#include "DataTupleSet.h"
-#include "Indicator.h"
+class DataTupleSet;
+class Indicator;
 
 /***********************************************************************
 *
 *   This is the base class of all kind of calc objects
 *
 ************************************************************************/
-
-class Indicator;
 
 // Not as lucky that name, looks like a CalcType too but is only
 // the parameter container a CalcType will get

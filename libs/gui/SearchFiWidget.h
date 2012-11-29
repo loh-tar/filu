@@ -20,6 +20,10 @@
 #ifndef SEARCHFIWIDGET_HPP
 #define SEARCHFIWIDGET_HPP
 
+#include <QPoint>
+#include <QSqlQueryModel>
+#include <QToolButton>
+
 #include "FWidget.h"
 
 class SearchField;

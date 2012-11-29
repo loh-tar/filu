@@ -20,6 +20,8 @@
 #ifndef LOGBOOKPAGE_H
 #define LOGBOOKPAGE_H
 
+#include <QTextEdit>
+
 #include "ManagerPage.h"
 
 class LogBookPage : public ManagerPage

@@ -18,7 +18,10 @@
 //
 
 #include "FCoreApp.h"
+
 #include "CmdHelper.h"
+#include "FiluU.h"
+#include "RcFile.h"
 
 FCoreApp::FCoreApp(const QString& connectionName, QCoreApplication& app)
         : FObject(connectionName, app)

@@ -20,6 +20,8 @@
 #ifndef INDICATORPAGE_H
 #define INDICATORPAGE_H
 
+class QSplitter;
+
 #include "ManagerPage.h"
 
 class IndicatorEditor;

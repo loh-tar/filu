@@ -20,15 +20,21 @@
 #include <float.h>
 #include <math.h>
 
+#include <QPainter>
+#include <QPen>
+
 #include "IndicatorPainter.h"
 
+#include "BarTuple.h"
+#include "COTuple.h"
+#include "COType.h"
+#include "DataTupleSet.h"
+#include "FiluU.h"
 #include "Indicator.h"
 #include "PlotSheet.h"
 #include "PlotType.h"
 #include "Scaler.h"
 #include "XScaleTicker.h"
-#include "DataTupleSet.h"
-#include "COType.h"
 
 IndicatorPainter::IndicatorPainter(PlotSheet* parent)
                 : FWidget(parent, FUNC)
@@ -751,7 +757,7 @@ void IndicatorPainter::paintCrosshair()
 bool IndicatorPainter::parse(const QStringList& indiFile)
 {
   // Unused (!?)
-  qDebug() << indiFile;
+//   qDebug() << indiFile;
   return true;
 }
 

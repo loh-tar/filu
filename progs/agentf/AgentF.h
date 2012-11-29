@@ -20,8 +20,10 @@
 #ifndef AGENTF_HPP
 #define AGENTF_HPP
 
-#include "FCoreApp.h"
+#include <QTextStream>
+class QProcess;
 
+#include "FCoreApp.h"
 class Script;
 class Importer;
 class Exporter;

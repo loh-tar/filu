@@ -20,7 +20,8 @@
 #ifndef FWIDGET_HPP
 #define FWIDGET_HPP
 
-#include <QtGui>
+#include <QMainWindow>
+#include <QWidget>
 
 #include "FClass.h"
 

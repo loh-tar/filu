@@ -20,6 +20,9 @@
 #ifndef INDICATORPAINTER_HPP
 #define INDICATORPAINTER_HPP
 
+#include <QDate>
+#include <QSet>
+
 #include "FWidget.h"
 
 class Indicator;

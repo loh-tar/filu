@@ -17,9 +17,23 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QFile>
+#include <QSet>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QTextStream>
+
 #include "Filu.h"
 
+#include "BarTuple.h"
+#include "BrokerTuple.h"
+#include "FiTuple.h"
+#include "MarketTuple.h"
 #include "RcFile.h"
+#include "SymbolTuple.h"
+#include "SymbolTypeTuple.h"
+
+
 
 Filu::Filu(const QString& cn, RcFile* rcFile)
     : Newswire(FUNC)

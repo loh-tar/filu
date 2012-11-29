@@ -17,6 +17,8 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QString>
+
 #include "SymbolTuple.h"
 
 SymbolTuple::SymbolTuple(int size) : Tuple(size)

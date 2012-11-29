@@ -20,6 +20,9 @@
 #ifndef INDICATOREDITOR_HPP
 #define INDICATOREDITOR_HPP
 
+class QComboBox;
+class QTextEdit;
+
 #include "FWidget.h"
 
 class IndicatorEditor : public FWidget

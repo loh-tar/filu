@@ -17,10 +17,16 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QContextMenuEvent>
+#include <QFileSystemWatcher>
+#include <QHBoxLayout>
+#include <QMenu>
+
 #include "IndiWidgetSimple.h"
 
-#include "PlotSheet.h"
 #include "IndicatorPainter.h"
+#include "PlotSheet.h"
+#include "RcFile.h"
 
 IndiWidgetSimple::IndiWidgetSimple(const QString& name, FClass* parent)
                 : FWidget(parent, FUNC)

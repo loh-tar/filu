@@ -19,9 +19,13 @@
 
 #include "CalcWatchDogs.h"
 
-#include "../../gui/graphics/COType.h"
+#include "BarTuple.h"
+#include "../../gui/graphics/COType.h" // FIXME !!!!
+#include "COTuple.h"
 #include "CalcCross.h"
+#include "DataTupleSet.h"
 #include "FTool.h"
+#include "FiluU.h"
 
 CalcWatchDogs::CalcWatchDogs(Indicator* parent)
              : CalcType(parent, FUNC)

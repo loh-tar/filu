@@ -20,6 +20,8 @@
 #ifndef INDISETPAD_HPP
 #define INDISETPAD_HPP
 
+class QComboBox;
+
 #include "ButtonPad.h"
 
 /***********************************************************************

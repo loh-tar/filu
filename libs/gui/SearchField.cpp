@@ -17,6 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QListWidget>
+#include <QToolButton>
+
 #include "SearchField.h"
 
 SearchField::SearchField(QWidget* parent) : LineEdit(parent)

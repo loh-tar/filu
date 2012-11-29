@@ -17,7 +17,12 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDir>
+#include <QProcess>
+
 #include "Script.h"
+
+#include "RcFile.h"
 
 Script::Script(FClass* parent)
       : FObject(parent, FUNC)

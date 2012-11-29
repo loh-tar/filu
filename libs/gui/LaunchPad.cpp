@@ -17,8 +17,21 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QCheckBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QProcess>
+#include <QSettings>
+#include <QToolButton>
+
 #include "LaunchPad.h"
+
 #include "DialogButton.h"
+#include "FiluU.h"
+#include "SymbolTuple.h"
 
 LaunchPad::LaunchPad(const QString& name, FClass* parent)
          : ButtonPad(name, parent, FUNC)
@@ -135,11 +148,11 @@ void LaunchPad::buttonClicked(int id)
     }
   }
 
-  if(!found)
-  {
-    qDebug() << "LaunchPad::buttonClicked: No symbol type"
-             << mSymbolTypes.at(id) << "found to FiId" << mFiId;
-  }
+//   if(!found)
+//   {
+//     qDebug() << "LaunchPad::buttonClicked: No symbol type"
+//              << mSymbolTypes.at(id) << "found to FiId" << mFiId;
+//   }
 
   delete st;
 }

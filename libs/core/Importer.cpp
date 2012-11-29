@@ -17,11 +17,17 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QFile>
+#include <QSqlQuery>
+
 #include "Importer.h"
 
-#include "FiTuple.h"
-#include "SymbolTuple.h"
 #include "FTool.h"
+#include "FiTuple.h"
+#include "FiluU.h"
+#include "RcFile.h"
+#include "SymbolTuple.h"
+#include "SymbolTypeTuple.h"
 
 using namespace std;
 

@@ -17,10 +17,21 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDir>
+#include <QFile>
+#include <QGridLayout>
+#include <QLabel>
+#include <QMessageBox>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QSpacerItem>
+
 #include "InspectorF.h"
 
-#include "Trader.h"
 #include "BackTester.h"
+#include "FiluU.h"
+#include "RcFile.h"
+#include "Trader.h"
 
 InspectorF::InspectorF(QApplication& app)
           : FMainApp("InspectorF", app)

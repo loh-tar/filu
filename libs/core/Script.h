@@ -20,6 +20,8 @@
 #ifndef SCRIPT_HPP
 #define SCRIPT_HPP
 
+class QProcess;
+
 #include "FObject.h"
 
 class Script : public FObject

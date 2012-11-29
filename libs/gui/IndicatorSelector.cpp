@@ -17,8 +17,15 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QHBoxLayout>
+#include <QListWidget>
+#include <QPushButton>
+#include <QSplitter>
+#include <QVBoxLayout>
+
 #include "IndicatorSelector.h"
 
+#include "RcFile.h"
 #include "SearchField.h"
 
 IndicatorSelector::IndicatorSelector(FClass* parent)

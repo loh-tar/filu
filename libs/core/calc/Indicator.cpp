@@ -17,12 +17,18 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDate>
+#include <QFile>
+#include <QTextStream>
+
 #include "Indicator.h"
 
-#include "DataTupleSet.h"
-#include "TALib.h"
 #include "CalcType.h"
+#include "BarTuple.h"
+#include "DataTupleSet.h"
 #include "FTool.h"
+#include "RcFile.h"
+#include "TALib.h"
 
 Indicator::Indicator(FClass* parent)
          : FClass(parent, FUNC)
@@ -530,7 +536,7 @@ bool Indicator::prepare(QStringList& indicator)
     // Extract parameter list
     QString parameters = indicator.at(i);
     parameters.remove(QRegExp(".*\\(|\\).*"));
-qDebug() << "Indicator::prepare:load extra FIs" << parameters;
+// qDebug() << "Indicator::prepare:load extra FIs" << parameters;
     // Load the bars to the FI
     //FIXME: has to be implemented
     error(FUNC, tr("Not yet supported: %1").arg(indicator.at(i)));

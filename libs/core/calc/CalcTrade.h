@@ -21,7 +21,7 @@
 #define CALCTRADE_HPP
 
 #include "CalcType.h"
-#include "Trader.h"
+class Trader;
 
 /***********************************************************************
 *

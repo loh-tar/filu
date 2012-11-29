@@ -20,25 +20,23 @@
 #ifndef FIMI_HPP
 #define FIMI_HPP
 
-#include <QtCore>
-#include <QtSql>
+#include <QDate>
+#include <QSqlDatabase>
+class QSqlQuery;
+class QSqlRecord;
 
 #include "Newswire.h"
-
-// Here "#include" and not "class" all stuff interested by Filu.
-// So all classes which use Filu will knows the data types.
-#include "BarTuple.h"
-#include "SymbolTuple.h"
-#include "MarketTuple.h"
-#include "FiTuple.h"
-#include "SymbolTypeTuple.h"
-#include "BrokerTuple.h"
-
+class BarTuple;
+class BrokerTuple;
+class FiTuple;
+class MarketTuple;
 class RcFile;
+class SymbolTuple;
+class SymbolTypeTuple;
 
-typedef QHash<QString, QDate> DateRange;
-typedef QSet<QString> StringSet;
-typedef QHash<QString, QString> KeyVal;
+typedef QHash<QString, QDate>     DateRange;
+typedef QSet<QString>             StringSet;
+typedef QHash<QString, QString>   KeyVal;
 
 class Filu : public Newswire
 {

@@ -21,7 +21,6 @@
 #define FCOREAPP_HPP
 
 #include "FObject.h"
-
 class CmdHelper;
 
 /***********************************************************************

@@ -20,7 +20,7 @@
 #ifndef TALIB_HPP
 #define TALIB_HPP
 
-#include <QtCore>
+#include <QVariant>
 
 #include "Newswire.h"
 

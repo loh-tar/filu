@@ -19,6 +19,8 @@
 
 #include "CalcTALib.h"
 
+#include "DataTupleSet.h"
+
 CalcTALib::CalcTALib(Indicator* parent)
          : CalcType(parent, FUNC)
 {

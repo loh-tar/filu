@@ -17,10 +17,17 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QAction>
+#include <QActionGroup>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QMenu>
+
 #include "SearchFiWidget.h"
 
 #include "SearchField.h"
 #include "SqlTableView.h"
+#include "FiluU.h"
 
 /***********************************************************************
 *

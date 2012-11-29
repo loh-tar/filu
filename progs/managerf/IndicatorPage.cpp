@@ -17,9 +17,15 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QSplitter>
+
 #include "IndicatorPage.h"
+
 #include "IndicatorEditor.h"
 #include "IndicatorSelector.h"
+#include "RcFile.h"
 
 IndicatorPage::IndicatorPage(FClass* parent)
              : ManagerPage(parent, FUNC)

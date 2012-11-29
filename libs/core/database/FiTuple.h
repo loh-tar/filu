@@ -20,6 +20,8 @@
 #ifndef FITUPLE_HPP
 #define FITUPLE_HPP
 
+class QString;
+
 #include "Tuple.h"
 
 class SymbolTuple;

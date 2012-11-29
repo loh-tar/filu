@@ -20,6 +20,8 @@
 #ifndef INDIWIDGETGROUP_HPP
 #define INDIWIDGETGROUP_HPP
 
+class QSplitter;
+
 #include "FWidget.h"
 
 class MyMouseEvent;

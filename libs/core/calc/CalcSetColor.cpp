@@ -17,7 +17,11 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QColor>
+
 #include "CalcSetColor.h"
+
+#include "DataTupleSet.h"
 
 CalcSetColor::CalcSetColor(Indicator* parent)
             : CalcType(parent, FUNC)

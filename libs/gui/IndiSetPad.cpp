@@ -17,8 +17,21 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QAction>
+#include <QBoxLayout>
+#include <QComboBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QDir>
+#include <QLabel>
+#include <QLineEdit>
+#include <QToolBar>
+#include <QToolButton>
+
 #include "IndiSetPad.h"
+
 #include "DialogButton.h"
+#include "RcFile.h"
 
 IndiSetPad::IndiSetPad(const QString& name, FClass* parent)
           : ButtonPad(name, parent, FUNC)

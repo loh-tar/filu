@@ -20,6 +20,11 @@
 #ifndef BUTTONPAD_HPP
 #define BUTTONPAD_HPP
 
+#include <QButtonGroup>
+class QBoxLayout;
+class QSettings;
+class QToolButton;
+
 #include "FWidget.h"
 
 /***********************************************************************

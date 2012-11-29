@@ -17,7 +17,20 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QComboBox>
+#include <QDir>
+#include <QFile>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QTextEdit>
+#include <QTextStream>
+#include <QToolButton>
+#include <QVBoxLayout>
+
 #include "IndicatorEditor.h"
+
+#include "RcFile.h"
 
 IndicatorEditor::IndicatorEditor(FClass* parent)
                : FWidget(parent, FUNC)

@@ -17,12 +17,22 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QSplitter>
+#include <QVBoxLayout>
+
 #include "FiPage.h"
 
+#include "FiTableView.h"
+#include "FiTuple.h"
+#include "FiluU.h"
 #include "IndicatorWidget.h"
 #include "SearchField.h"
 #include "SymbolTableView.h"
-#include "FiTableView.h"
+#include "SymbolTuple.h"
 
 FiPage::FiPage(FClass* parent)
       : ManagerPage(parent, FUNC)

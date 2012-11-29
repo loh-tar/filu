@@ -17,12 +17,31 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QButtonGroup>
+#include <QComboBox>
+#include <QDir>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QTableWidget>
+#include <QToolButton>
+#include <QVBoxLayout>
+
 #include "AddFiPage.h"
 
-#include "LineEdit.h"
-#include "SearchField.h"
-#include "Script.h"
+#include "FiTuple.h"
+#include "FiluU.h"
 #include "Importer.h"
+#include "LineEdit.h"
+#include "MarketTuple.h"
+#include "RcFile.h"
+#include "Script.h"
+#include "SearchField.h"
+#include "SymbolTuple.h"
+#include "SymbolTypeTuple.h"
 
 AddFiPage::AddFiPage(FClass* parent)
          : ManagerPage(parent, FUNC)
@@ -665,7 +684,7 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
 
   if(mDisplayType == "Stock")
   {
-    qDebug() << "add to db";
+//     qDebug() << "add to db";
 
     FiTuple fi(1);
 
@@ -727,8 +746,8 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
     if(mFilu->hasError())
     {
       //printError("-addfi");
-      qDebug() << "agentf -addFi: Oops! new FI not added to DB";
-      qDebug() << "\tare you sure that FI type, market and symbol type exist?";
+//       qDebug() << "agentf -addFi: Oops! new FI not added to DB";
+//       qDebug() << "\tare you sure that FI type, market and symbol type exist?";
     }
   }
 }

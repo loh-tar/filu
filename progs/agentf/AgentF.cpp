@@ -17,15 +17,24 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "AgentF.h"
-#include "CmdHelper.h"
+#include <QFile>
+#include <QProcess>
+#include <QSqlQuery>
+#include <QTextStream>
+#include <QTimer>
 
-#include "Script.h"
-#include "Importer.h"
-#include "Exporter.h"
-#include "Scanner.h"
-#include "Depots.h"
+#include "AgentF.h"
+
 #include "CmdAdd.h"
+#include "CmdHelper.h"
+#include "Depots.h"
+#include "Exporter.h"
+#include "FiluU.h"
+#include "Importer.h"
+#include "RcFile.h"
+#include "Scanner.h"
+#include "Script.h"
+#include "SymbolTuple.h"
 #include "muParser.h"
 
 AgentF::AgentF(QCoreApplication& app)

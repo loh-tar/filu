@@ -17,9 +17,13 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "DataTupleSet.h"
-#include <QDebug>
+#include <QDate>
+#include <QTime>
 
+#include "DataTupleSet.h"
+
+#include "BarTuple.h"
+#include "DataTuple.h"
 
 DataTupleSet::DataTupleSet()
 {
@@ -152,7 +156,7 @@ bool DataTupleSet::getValue(const QString& name, double& value)
 {
   if(!DataSet.contains(name))
   {
-    qDebug() << "DataTupleSet::getValue: Key name not found:" << name;
+//     qDebug() << "DataTupleSet::getValue: Key name not found:" << name;
     return false;
   }
   return DataSet.value(name)->getValue(value);

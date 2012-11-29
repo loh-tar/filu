@@ -17,6 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDate>
+#include <QTime>
+
 #include "BarTuple.h"
 
 BarTuple::BarTuple(int size) : Tuple(size)
@@ -41,6 +44,16 @@ BarTuple::~BarTuple()
   delete []mClose;
   delete []mVolume;
   delete []mOpenInterest;
+}
+
+const QDate& BarTuple::date() const
+{
+  return mDate[mIndex];
+}
+
+const QTime& BarTuple::time() const
+{
+  return mTime[mIndex];
 }
 
 int BarTuple::findDate(const QDate& date) const

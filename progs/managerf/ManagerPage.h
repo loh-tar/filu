@@ -20,6 +20,8 @@
 #ifndef MANAGERPAGE_H
 #define MANAGERPAGE_H
 
+class QListWidgetItem;
+
 #include "FWidget.h"
 
 class ManagerPage : public FWidget

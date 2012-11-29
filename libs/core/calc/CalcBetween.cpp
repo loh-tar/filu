@@ -19,6 +19,8 @@
 
 #include "CalcBetween.h"
 
+#include "DataTupleSet.h"
+
 CalcBetween::CalcBetween(Indicator* parent)
            : CalcType(parent, FUNC)
 {

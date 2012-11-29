@@ -20,12 +20,14 @@
 #ifndef FIPAGE_H
 #define FIPAGE_H
 
+class QModelIndex;
+
 #include "ManagerPage.h"
 
+class FiTableView;
 class IndicatorWidget;
 class SearchField;
 class SymbolTableView;
-class FiTableView;
 
 class FiPage : public ManagerPage
 {

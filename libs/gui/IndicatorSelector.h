@@ -20,10 +20,13 @@
 #ifndef INDICATORSELECTOR_HPP
 #define INDICATORSELECTOR_HPP
 
+class QListWidget;
+class QListWidgetItem;
+class QPushButton;
+class QSplitter;
+
 #include "FWidget.h"
-
 #include "TALib.h"
-
 class SearchField;
 
 class IndicatorSelector : public FWidget

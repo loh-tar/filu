@@ -20,12 +20,14 @@
 #ifndef DATATUPLESET_HPP
 #define DATATUPLESET_HPP
 
-#include <QString>
 #include <QColor>
 #include <QHash>
-#include "BarTuple.h"
-#include "DataTuple.h"
+#include <QString>
+class QDate;
+class QTime;
 
+class BarTuple;
+class DataTuple;
 
 /***********************************************************************
 *
@@ -34,8 +36,6 @@
 *   by IndicatorPainter to paint something
 *
 ************************************************************************/
-
-class DataTuple;
 
 class DataTupleSet
 {

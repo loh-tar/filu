@@ -17,10 +17,15 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QDebug>
 #include <float.h>
 
+#include <QColor>
+#include <QDate>
+#include <QString>
+
 #include "DataTuple.h"
+
+#include "DataTupleSet.h"
 
 DataTuple::DataTuple(int size, const QString& name)
 {

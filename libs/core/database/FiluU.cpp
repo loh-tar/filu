@@ -17,8 +17,12 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QSqlError>
+#include <QSqlQuery>
+
 #include "FiluU.h"
 
+#include "COTuple.h"
 #include "RcFile.h"
 
 FiluU::FiluU(const QString& connectionName, RcFile* rcFile)
@@ -228,7 +232,7 @@ bool FiluU::putCOs(COTuple& co)
     query->bindValue(":parameters", co.attributes());
     if(execute(query) <= eError)
     {
-      qDebug() << "FiluU::putCO: fail";
+//       qDebug() << "FiluU::putCO: fail";
       mFiluDB.rollback();
       return false;
     }

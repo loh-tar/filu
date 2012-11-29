@@ -20,6 +20,8 @@
 #ifndef FTOOLBAR_HPP
 #define FTOOLBAR_HPP
 
+#include <QToolBar>
+
 #include "FWidget.h"
 
 /***********************************************************************

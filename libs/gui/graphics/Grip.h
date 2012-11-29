@@ -20,7 +20,10 @@
 #ifndef GRIP_HPP
 #define GRIP_HPP
 
-#include <QtGui>
+#include <QRectF>
+#include <QPointF>
+#include <QDate>
+class QPaintDevice;
 
 class Tuple;
 class IndicatorPainter;

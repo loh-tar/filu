@@ -21,6 +21,9 @@
 
 #include "CalcTrade.h"
 
+#include "DataTupleSet.h"
+#include "Trader.h"
+
 CalcTrade::CalcTrade(Indicator* parent)
          : CalcType(parent, FUNC)
 {

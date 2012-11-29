@@ -17,9 +17,12 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "RcFile.h"
-#include "Newswire.h"
+#include <QDate>
+#include <QDir>
+
 #include "FTool.h"
+#include "Newswire.h"
+#include "RcFile.h"
 
 RcFile::RcFile(Newswire* parent)
       : QSettings("Filu")

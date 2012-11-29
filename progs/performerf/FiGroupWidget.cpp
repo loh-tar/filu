@@ -17,7 +17,21 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QApplication>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMessageBox>
+#include <QMouseEvent>
+#include <QSplitter>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QToolButton>
+
 #include "FiGroupWidget.h"
+
+#include "FiluU.h"
+#include "RcFile.h"
 
 FiGroupWidget::FiGroupWidget(FClass* parent)
              : FWidget(parent, FUNC)

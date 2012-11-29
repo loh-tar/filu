@@ -19,6 +19,8 @@
 
 #include "CalcRef.h"
 
+#include "DataTupleSet.h"
+
 CalcRef::CalcRef(Indicator* parent)
        : CalcType(parent, FUNC)
 {

@@ -20,6 +20,9 @@
 #ifndef BARTUPLE_HPP
 #define BARTUPLE_HPP
 
+class QDate;
+class QTime;
+
 #include "Tuple.h"
 
 class BarTuple : public Tuple
@@ -57,16 +60,6 @@ class BarTuple : public Tuple
     int         mFiId;
     int         mMarketId;
 };
-
-inline const QDate& BarTuple::date() const
-{
-  return mDate[mIndex];
-}
-
-inline const QTime& BarTuple::time() const
-{
-  return mTime[mIndex];
-}
 
 inline double BarTuple::open() const
 {

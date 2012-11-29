@@ -17,12 +17,16 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QCheckBox>
+#include <QHeaderView>
+
 #include "IndicatorDataView.h"
 
-#include "PlotSheet.h"
+#include "DataTupleSet.h"
 #include "Indicator.h"
 #include "IndicatorPainter.h"
-#include "DataTupleSet.h"
+#include "PlotSheet.h"
+#include "RcFile.h"
 
 IndicatorDataView::IndicatorDataView(PlotSheet* parent)
                  : QTabWidget(parent)

@@ -19,10 +19,18 @@
 
 #include <float.h>
 
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QTextStream>
+
 #include "Depots.h"
 
-#include "Trader.h"
+#include "BarTuple.h"
 #include "CmdHelper.h"
+#include "FiluU.h"
+#include "RcFile.h"
+#include "SymbolTuple.h"
+#include "Trader.h"
 
 const QString cCmd1 = "depots";
 const QString cYes  = QObject::tr("Yes");

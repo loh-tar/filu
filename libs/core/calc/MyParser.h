@@ -20,10 +20,10 @@
 #ifndef MYPARSER_HPP
 #define MYPARSER_HPP
 
-#include <QtCore>
+#include <QSet>
+
 #include "muParser.h"
 #include "Newswire.h"
-
 #include "DataTupleSet.h"
 
 /***********************************************************************

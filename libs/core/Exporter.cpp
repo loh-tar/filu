@@ -17,9 +17,16 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QFile>
+#include <QFile>
+#include <QSqlQuery>
+#include <QSqlRecord>
+
+#include "FiluU.h"
+
+#include "CmdHelper.h"
 #include "Exporter.h"
 #include "FTool.h"
-#include "CmdHelper.h"
 
 const QString cCmd1 = "exp";
 const QString cCmd1Brief = QObject::tr("Export data from the database");

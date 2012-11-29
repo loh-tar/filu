@@ -20,7 +20,10 @@
 #ifndef SCALER_HPP
 #define SCALER_HPP
 
-#include <QtCore>
+#include <QDate>
+#include <QPoint>
+#include <QString>
+#include <QStringList>
 
 /***********************************************************************
 *

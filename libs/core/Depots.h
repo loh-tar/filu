@@ -20,8 +20,11 @@
 #ifndef DEPOTS_HPP
 #define DEPOTS_HPP
 
-#include "FClass.h"
+#include <QDate>
+#include <QHash>
+#include <QString>
 
+#include "FClass.h"
 class CmdHelper;
 
 

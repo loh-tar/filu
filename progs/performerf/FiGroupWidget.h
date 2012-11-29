@@ -20,6 +20,13 @@
 #ifndef FIGROUPWIDGET_HPP
 #define FIGROUPWIDGET_HPP
 
+#include <QTableWidget>
+
+class QLabel;
+class QSplitter;
+class QTableView;
+class QTableWidgetItem;
+
 #include "FWidget.h"
 
 class MyTableWidget;

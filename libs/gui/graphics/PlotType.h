@@ -20,14 +20,16 @@
 #ifndef PLOTTYPE_HPP
 #define PLOTTYPE_HPP
 
-#include <QtGui>
+// #include not class, each derived need these
+#include <QPainter>
+#include <QRect>
+#include <QColor>
 
 #include "Newswire.h"
 
 // #include not class, each derived need these
 #include "DataTupleSet.h"
 #include "Scaler.h"
-
 class IndicatorPainter;
 
 /***********************************************************************

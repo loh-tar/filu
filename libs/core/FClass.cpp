@@ -17,7 +17,12 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QString>
+
 #include "FClass.h"
+
+#include "FiluU.h"
+#include "RcFile.h"
 
 FClass::FClass(FClass* parent, const QString& className)
       : Newswire(parent, className)

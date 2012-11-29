@@ -20,7 +20,8 @@
 #ifndef STRATEGYEDITOR_HPP
 #define STRATEGYEDITOR_HPP
 
-#include <QtGui>
+#include <QSplitter>
+#include <QTextEdit>
 
 /***********************************************************************
 *

@@ -18,6 +18,7 @@
 //
 
 #include "CalcType.h"
+
 #include "CalcSetColor.h"
 #include "CalcTALib.h"
 #include "CalcCross.h"
@@ -27,6 +28,8 @@
 #include "CalcTrade.h"
 #include "CalcMuParser.h"
 #include "CalcWatchDogs.h"
+#include "DataTupleSet.h"
+#include "Indicator.h"
 
 CalcType::CalcType(Indicator* parent, const QString& className)
         : FClass(parent, className)

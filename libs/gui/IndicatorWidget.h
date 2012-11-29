@@ -20,6 +20,8 @@
 #ifndef INDICATORWIDGET_HPP
 #define INDICATORWIDGET_HPP
 
+class QSplitter;
+
 #include "IndiWidgetSimple.h"
 
 class IndicatorPicker;

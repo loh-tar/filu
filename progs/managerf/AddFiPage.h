@@ -20,14 +20,18 @@
 #ifndef ADDFIPAGE_HPP
 #define ADDFIPAGE_HPP
 
+#include <QButtonGroup>
+#include <QLabel>
+class QComboBox;
+class QPushButton;
+class QTableWidget;
+class QToolButton;
+
 #include "ManagerPage.h"
-
-class LineEdit;
-class SearchField;
-class Script;
 class Importer;
-
-class PSMGrp;
+class LineEdit;
+class Script;
+class SearchField;
 
 class PSMGrp : public QObject // Provider-Symbol-Market-Group
 {

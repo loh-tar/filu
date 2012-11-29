@@ -17,10 +17,16 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "PlotSheet.h"
-#include "IndicatorPainter.h"
-#include "Indicator.h"
+#include <QAction>
+#include <QMouseEvent>
+#include <QPainter>
+
+#include "BarTuple.h"
 #include "COType.h"
+#include "FiluU.h"
+#include "Indicator.h"
+#include "IndicatorPainter.h"
+#include "PlotSheet.h"
 
 PlotSheet::PlotSheet(FClass* parent)
          : FWidget(parent, FUNC)

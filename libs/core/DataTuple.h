@@ -20,11 +20,9 @@
 #ifndef DATATUPLE_HPP
 #define DATATUPLE_HPP
 
-#include "BarTuple.h"
-#include "DataTupleSet.h"
-
-#include <QString>
-#include <QColor>
+class QColor;
+class QDate;
+class DataTupleSet;
 
 /***********************************************************************
 *
@@ -35,8 +33,6 @@
 *   Take a look at http://ta-lib.org/d_api/d_api.html for some info
 *
 ************************************************************************/
-
-class DataTupleSet;
 
 class DataTuple
 {
@@ -67,23 +63,23 @@ class DataTuple
 
     double* Value;
     QColor* Color;
-    
+
     int mNeedsBars;   // The amound of bars needed to calc the result
     int firstValid;   // ta-libs "outBeg"
     int countValid;   // ta-libs "outNbElement"
 
   protected:
     int MaxIndex;
-    
+
     double mMaxHigh;  // Holds the min/max values
     double mMinLow;   // of the RangeFrom/RangeTo
-    
+
     int* Index;
     int* RangeFrom;  // Used for the section shown on the chart
     int* RangeTo;    // Used for the section shown on the chart
     int  mOldRangeFrom;  // Used for check if MaxHigh/Low are still valid
     int  mOldRangeTo;
-    
+
     bool mIsAutonom;
     bool mMyOwnData;
 };

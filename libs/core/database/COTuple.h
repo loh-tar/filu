@@ -20,6 +20,9 @@
 #ifndef COTUPLE_HPP
 #define COTUPLE_HPP
 
+class QDate;
+class QString;
+
 #include "Tuple.h"
 
 class COTuple : public Tuple

@@ -20,10 +20,12 @@
 #ifndef TRADER_HPP
 #define TRADER_HPP
 
-#include "FClass.h"
+#include <QSet>
+#include <QDate>
 
-class Indicator;
+#include "FClass.h"
 class DataTupleSet;
+class Indicator;
 class MyParser;
 
 /***********************************************************************

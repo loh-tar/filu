@@ -17,6 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QApplication>
+#include <QMouseEvent>
+
 #include "SqlTableView.h"
 
 SqlTableView::SqlTableView(QWidget* parent) : QTableView(parent)
@@ -84,14 +87,14 @@ void SqlTableView::dragEnterEvent(QDragEnterEvent* event)
 {
   event->setDropAction(Qt::CopyAction);
   event->accept();
-  qDebug() << "dragEnterEvent";
+//   qDebug() << "dragEnterEvent";
 }
 
 void SqlTableView::dragMoveEvent(QDragMoveEvent* event)
 {
   event->setDropAction(Qt::CopyAction);
   event->accept();
-  qDebug() << "dragMoveEvent";
+//   qDebug() << "dragMoveEvent";
 }
 
 void SqlTableView::currentChanged(const QModelIndex& current,

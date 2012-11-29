@@ -20,13 +20,13 @@
 #ifndef INDICATORDATAVIEW_HPP
 #define INDICATORDATAVIEW_HPP
 
-#include <QtGui>  // Needed, FClass.h only include QtCore
+#include <QTabWidget>
+#include <QTableWidget>
 
 #include "FClass.h"
 #include "IndicatorPainter.h"
 class PlotSheet;
 class MyMouseEvent;
-//class IndicatorPainter;
 
 /***********************************************************************
 *

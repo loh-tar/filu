@@ -20,7 +20,7 @@
 #ifndef XSCALETICKER_HPP
 #define XSCALETICKER_HPP
 
-#include <QtCore>
+#include <QString>
 
 class IndicatorPainter;
 

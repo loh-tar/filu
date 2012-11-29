@@ -20,6 +20,8 @@
 #ifndef INDIWIDGETSIMPLE_HPP
 #define INDIWIDGETSIMPLE_HPP
 
+class QFileSystemWatcher;
+
 #include "FWidget.h"
 
 class PlotSheet;

@@ -20,9 +20,14 @@
 #ifndef COTYPE_HPP
 #define COTYPE_HPP
 
+#include <QPaintDevice>
+#include <QPainterPath>
+#include <QPolygonF>
+#include <QVariant>
+class QDialog;
+
 #include "FObject.h"
 #include "Grip.h"
-
 class COTuple;
 class IndicatorPainter;
 class Scaler;

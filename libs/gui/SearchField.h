@@ -20,7 +20,8 @@
 #ifndef SEARCHFIELD_HPP
 #define SEARCHFIELD_HPP
 
-#include <QtGui>
+class QListWidget;
+class QListWidgetItem;
 
 #include "LineEdit.h"
 

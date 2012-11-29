@@ -17,16 +17,22 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QAction>
+#include <QDockWidget>
+
 #include "PerformerF.h"
 
-#include "SearchFiWidget.h"
 #include "COType.h"
-#include "IndiWidgetGroup.h"
-#include "FiGroupWidget.h"
-#include "LaunchPad.h"
 #include "FToolBar.h"
-#include "IndiWidgetSimple.h"
+#include "FiGroupWidget.h"
+#include "FiTuple.h"
+#include "FiluU.h"
 #include "IndiSetPad.h"
+#include "IndiWidgetGroup.h"
+#include "IndiWidgetSimple.h"
+#include "LaunchPad.h"
+#include "RcFile.h"
+#include "SearchFiWidget.h"
 
 PerformerF::PerformerF(QApplication& app)
           : FMainApp("PerformerF", app)

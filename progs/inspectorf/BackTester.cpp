@@ -17,9 +17,13 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QCryptographicHash>
+
 #include "BackTester.h"
 
+#include "FiluU.h"
 #include "Indicator.h"
+#include "RcFile.h"
 #include "Trader.h"
 
 BackTester::BackTester()
@@ -47,7 +51,7 @@ BackTester::~BackTester()
   mMutex.unlock();
 //    qDebug() << "~BackTester() wait for termination";
   wait();
-  qDebug() << "I'm dead";
+//   qDebug() << "I'm dead";
   delete mTrader;
 }
 

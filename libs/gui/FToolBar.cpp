@@ -17,7 +17,13 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QAction>
+#include <QApplication>
+#include <QMouseEvent>
+
 #include "FToolBar.h"
+
+#include "RcFile.h"
 
 FToolBar::FToolBar(const QString& title, FClass* parent)
            : QToolBar(title)

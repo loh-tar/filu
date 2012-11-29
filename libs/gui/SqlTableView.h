@@ -20,7 +20,7 @@
 #ifndef SQLTABLEVIEW_HPP
 #define SQLTABLEVIEW_HPP
 
-#include <QtGui>
+#include <QTableView>
 
 /***********************************************************************
 *

@@ -20,7 +20,9 @@
 #ifndef RCFILE_HPP
 #define RCFILE_HPP
 
-#include <QtCore>
+#include <QSettings>
+#include <QPoint>
+#include <QSize>
 
 class Newswire;
 

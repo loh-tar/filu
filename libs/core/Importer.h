@@ -20,8 +20,12 @@
 #ifndef IMPORTER_HPP
 #define IMPORTER_HPP
 
-#include "FClass.h"
+#include <QQueue>
+#include <QSet>
+#include <QTextStream>
+#include <QTime>
 
+#include "FClass.h"
 class FiTuple;
 class SymbolTuple;
 

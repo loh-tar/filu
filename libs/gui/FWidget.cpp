@@ -17,7 +17,12 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QApplication>
+
 #include "FWidget.h"
+
+#include "FiluU.h"
+#include "RcFile.h"
 
 FWidget::FWidget(FClass* parent, const QString& className)
        : QWidget(0)

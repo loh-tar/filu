@@ -20,8 +20,13 @@
 #ifndef MANAGERF_H
 #define MANAGERF_H
 
-#include "FWidget.h"
+#include <QLabel>
+#include <QTimer>
+class QListWidget;
+class QListWidgetItem;
+class QStackedWidget;
 
+#include "FWidget.h"
 class LogBookPage;
 class MsgLabel;
 

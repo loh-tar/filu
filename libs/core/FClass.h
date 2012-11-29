@@ -20,11 +20,21 @@
 #ifndef FCLASS_HPP
 #define FCLASS_HPP
 
-#include <QtCore>
+class QSqlQuery;
+class QSqlRecord;
 
 #include "Newswire.h"
-#include "FiluU.h"
-#include "RcFile.h"
+class FiluU;
+class RcFile;
+
+// Declare all stuff interested by Filu.
+// So all classes which use Filu will knows the data types.
+class BarTuple;
+class BrokerTuple;
+class FiTuple;
+class MarketTuple;
+class SymbolTuple;
+class SymbolTypeTuple;
 
 /***********************************************************************
 *

@@ -17,10 +17,11 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QSettings>
+#include <QTreeWidget>
+
 #ifndef INDICATORPICKER_HPP
 #define INDICATORPICKER_HPP
-
-#include <QtGui>
 
 #include "FClass.h"
 

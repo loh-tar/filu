@@ -20,13 +20,13 @@
 #ifndef CALCFIMI_HPP
 #define CALCFIMI_HPP
 
-#include <QtSql>
-
 #include "CalcType.h"
 
-//
-//  Yes, calculate the Filu Power Indicators
-//
+/***********************************************************************
+*
+*   Yes, calculate the Filu Power Indicators
+*
+************************************************************************/
 
 class CalcFilu : public CalcType
 {

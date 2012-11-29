@@ -17,8 +17,19 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QAction>
+#include <QBoxLayout>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSettings>
+#include <QToolBar>
+#include <QToolButton>
+
 #include "ButtonPad.h"
 #include "DialogButton.h"
+#include "RcFile.h"
 
 ButtonPad::ButtonPad(const QString& name, FClass* parent)
          : FWidget(parent, FUNC)
