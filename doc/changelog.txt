@@ -1,3 +1,13 @@
+2012-11-30
+============
+Sundries
+----------
+ - Qt SQL Driver Bug: Add a precompiled driver to the source tree
+   but it's *not* well tested
+ - Removed several bugged included <QtGui> and <QtCore>. Compiles now in half
+   of the time, puh!
+
+
 2012-11-29
 ============
 Sundries
