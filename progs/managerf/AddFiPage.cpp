@@ -106,6 +106,7 @@ void AddFiPage::createPage()
   mResultList = new QTableWidget;
   mResultList->verticalHeader()->hide();
   mResultList->setShowGrid(false);
+  mResultList->setSelectionBehavior(QAbstractItemView::SelectRows);
   connect(mResultList, SIGNAL(cellClicked(int, int)), this, SLOT(selectResultRow(int, int)));
 
   //
@@ -453,6 +454,7 @@ void AddFiPage::fillResultTable(QStringList* data)
 
   mResultList->horizontalHeader()->hide();
   mResultList->resizeColumnsToContents();
+  mResultList->resizeRowsToContents();
   mResultList->horizontalHeader()->show();
 
   delete data; // No longer needed
