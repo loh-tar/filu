@@ -20,6 +20,7 @@ set(ICON_INSTALL_DIR /usr/share/pixmaps CACHE FILEPATH "Global icon install path
 
 add_subdirectory(libs)
 add_subdirectory(progs)
+add_subdirectory(database)
 
 # Install user default files
 set(USERFILES_FILES ${FiluRoot_SOURCE_DIR}/userfiles/)

@@ -11,7 +11,7 @@ install(FILES ${LDCONFIG_FILES}
 # Install fixed SQL driver
 # The permissions seems not be needed. It has also worked without
 # these special settings. But any other lib has these permissions.
-install(FILES ./sqldriver/libqsqlpsql.so
+install(FILES ./libqsqlpsql.so
         DESTINATION /usr/local/lib/Filu/sqldrivers/
         PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE
                     GROUP_EXECUTE GROUP_READ

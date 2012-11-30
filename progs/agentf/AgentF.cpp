@@ -492,8 +492,8 @@ void AgentF::filu()
   if(mCmd->wantHelp())
   {
     mCmd->inSubBrief("update", tr("Update the database user functions"));
-    mCmd->inSubBrief("create", tr("Create a new Filu database"));
-    mCmd->inSubBrief("drop",   tr("Delete a Filu database"));
+    mCmd->inSubBrief("create", tr("Create a new Filu database schema"));
+    mCmd->inSubBrief("drop",   tr("Delete a Filu database schema"));
     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
   }
 
@@ -516,11 +516,12 @@ void AgentF::filu()
       return;
     }
 
-    mFilu->createFunctions();
+//     mFilu->createUserFunctions();
 
     if(!mFilu->hasError())
     {
-      verbose(FUNC, tr("Database user functions successful updated."));
+      verbose(FUNC, tr("Sorry, currently disabled."));
+//       verbose(FUNC, tr("Database user functions successful updated."));
     }
     else
     {
@@ -529,25 +530,17 @@ void AgentF::filu()
   }
   else if(mCmd->hasSubCmd("create"))
   {
-    mCmd->regOpts("db schema");
-
     if(mCmd->isMissingParms())
     {
-      mCmd->inOptBrief("db", "<DBName:filu>", "Don't use upper case letters");
-      mCmd->inOptBrief("schema", "<Schema:filu>", "Don't use upper case letters");
+      if(mCmd->printThisWay("[<Schema>]")) return;
 
-      if(mCmd->printThisWay("[~~db] [~~schema]")) return;
-
-      mCmd->printForInst("--db testdb");
+      mCmd->printForInst("testschema");
 
       mCmd->aided();
       return;
     }
-
-    verbose(FUNC, tr("Sorry, not yet implemented, feel free to FIXME."));
-    QString db = mCmd->optStr("db", "db"); // FIXME Replace 2nd db with filu
-    QString schema = mCmd->optStr("schema", "schema"); // FIXME Replace 2nd schema with filu
-    verbose(FUNC, tr("Call something like 'mFilu->createDB(%1, %2)'").arg(db, schema));
+    verbose(FUNC, tr("Sorry, currently disabled."));
+//     mFilu->createSchema(mCmd->argStr(1, "filu"));
   }
   else if(mCmd->hasSubCmd("drop"))
   {

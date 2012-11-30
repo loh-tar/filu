@@ -73,7 +73,7 @@ class Filu : public Newswire
     };
 
     virtual void openDB();
-            void closeDB();
+    void         closeDB();
 
     bool transaction() { return mFiluDB.transaction(); };
     bool commit()      { return mFiluDB.commit(); };
@@ -210,10 +210,18 @@ class Filu : public Newswire
     QString     dbFuncErrText(int errorCode);
 
   protected:
+    bool        executeSqls(const QString& path);
+    void        createSchema();
+    void        createTables();
+    void        createFunctions();
+    void        createViews();
+
     int         getNextId(const QString& schema, const QString& table);
     bool        initQuery(const QString& name);
     bool        initQuery(const QString& name, const QString& rawSql);
+    QString     parseSql(const QString& name, const QString& rawSql);
     bool        loadQuery(const QString& name, QString& sql);
+    int         execute(const QString& name, const QString& rawSql);
     int         execute(QSqlQuery* query);
 
     RcFile*     mRcFile;

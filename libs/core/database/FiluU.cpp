@@ -40,15 +40,13 @@ void FiluU::openDB()
 
   mUserSchema = "user_" + qgetenv("USER");
 
-  QString sql("SELECT nspname FROM pg_namespace WHERE nspname = ':user'");
-  sql.replace(":user", mUserSchema);
+  execute("_UserExist", "SELECT nspname FROM pg_namespace WHERE nspname = ':user'");
 
-  QSqlQuery query(mFiluDB);
-  query.prepare(sql);
-  execute(&query);
-  if(query.size() == 0)
+  if(mLastResult == eNoData)
   {
-    createTables();
+    createUserTables();
+
+    if(hasError()) return;
 
     print("***");
     print("*");
@@ -58,22 +56,6 @@ void FiluU::openDB()
     print("*");
     print("***");
   }
-}
-
-void FiluU::createFunctions()
-{
-  if(!initQuery("CreateUserFunctions")) return;
-  QSqlQuery* query = mSQLs.value("CreateUserFunctions");
-  int result = execute(query);
-  if(result <= eError)
-  {
-    error(FUNC, tr("Can't create user functions."));
-    return;
-  }
-  delete query;
-  mSQLs.remove("CreateUserFunctions");
-
-  verbose(FUNC, tr("User functions successful created."));
 }
 
 QSqlQuery* FiluU::searchFi(const QString& name, const QString& type)
@@ -120,22 +102,17 @@ QSqlQuery* FiluU::getGMembers(int groupId)
 
 int FiluU::getGroupId(const QString& path)
 {
-  if(!mSQLs.contains("_GetGroupId"))
-  {
-    QString sql("SELECT * FROM :user.group_id_from_path(:path)");
-    sql.replace(":user", mUserSchema);
+  const QString sql("SELECT * FROM :user.group_id_from_path(:path)");
 
-    QSqlQuery* query = new QSqlQuery(mFiluDB);
-    query->prepare(sql);
-    mSQLs.insert("_GetGroupId", query);
-  }
+  if(!initQuery("_GetGroupId", sql)) return eInitError;
 
   QSqlQuery* query = mSQLs.value("_GetGroupId");
-  query->bindValue(":path", path);
-  execute(query);
-  query->next();
 
-  return query->value(0).toInt();
+  query->bindValue(":path", path);
+
+  if(execute(query) <= eError) return eExecError;
+
+  return result(FUNC, query);
 }
 
 void FiluU::addToGroup(int groupId, int fiId)
@@ -214,7 +191,7 @@ bool FiluU::putCOs(COTuple& co)
 
   QSqlQuery* query = mSQLs.value("PutCOs");
 
-  mFiluDB.transaction();
+  transaction();
   co.rewind();
   while(co.next())
   {
@@ -233,12 +210,12 @@ bool FiluU::putCOs(COTuple& co)
     if(execute(query) <= eError)
     {
 //       qDebug() << "FiluU::putCO: fail";
-      mFiluDB.rollback();
+      rollback();
       return false;
     }
   }
 
-  mFiluDB.commit();
+  commit();
   return true;
 }
 
@@ -659,20 +636,18 @@ QString FiluU::accPostingType(int type)
   return "Unknown"; // No tr()
 }
 
-void FiluU::createTables()
+void FiluU::createUserTables()
 {
-  if(!initQuery("CreateUserTables")) return;
-  QSqlQuery* query = mSQLs.value("CreateUserTables");
-  int result = execute(query);
-  if(result <= eError)
-  {
-    error(FUNC, tr("Can't create user tables."));
-    return;
-  }
-  delete query;
-  mSQLs.remove("CreateUserTables");
+  if(!executeSqls("user/tables/")) return;
 
   verbose(FUNC, tr("User tables successful created."));
 
-  createFunctions();
+  createUserFunctions();
+}
+
+void FiluU::createUserFunctions()
+{
+  if(!executeSqls("user/functions/")) return;
+
+  verbose(FUNC, tr("User functions successful created."));
 }

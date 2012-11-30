@@ -19,26 +19,16 @@ a good idea to uninstall your old installation which means *only* to uninstall
 the Filu progs. cd into your old FiluSource-YYYY-MM-DD/build directory and do:
   sudo xargs rm < install_manifest.txt
 
-After that you have only to compile the new progs as described in chapter 1-2-2
-without to follow chapter 5, that's all. And *don't* touch your database except
-the changelog says something else.
+After that you have only to compile the new progs as described in chapter 1-2,
+that's all. And *don't* touch your database except the changelog says
+something else.
 
-
-1-1- Install The Database
-===========================
-Follow the readme in database/
-
-
-1-2- Install The Filu Program Collection
-==========================================
 The following infos apply to Ubuntu, a Debian like Linux and Arch Linux. If you
 use a different OS you may need to do something deviating.
 
 
-1-2-1- Needed Dependencies
-============================
-Minimum required Qt version is 4.6.
-
+1-1- Needed Dependencies
+==========================
 
 Arch
 ------
@@ -59,6 +49,12 @@ packages from AUR:
   muparser
   ta-lib
 
+The database:
+  postgresql
+
+After install of the server ensure that the server is running, now
+and in the future.
+
 
 Ubuntu
 --------
@@ -68,6 +64,7 @@ To compile the programs you need the .deb packages:
   libqt4-sql
   libqt4-sql-psql
   libqt4-dev
+Minimum required Qt version is 4.6.
 
 The perl scripts needs the .dep packages:
   libwww-perl
@@ -92,10 +89,24 @@ Last tested version is v132
   make
   sudo make install
 
+The database package is:
+  postgresql-8.4   At least 8.4. Version 9.x is NOT tested.
+  pgadmin3         Not required but useful if you like to edit some data where
+                   is not yet a tool at Filu to do the job. Use it with care.
 
-1-2-2- Compilation
+After the install view your /etc/postgresql/.../pg_hba.conf file
+and search for:
+  # "local" is for Unix domain socket connections only
+  local   all         all                               trust
+
+Make sure there is "trust" and not "ident sameuser" or something else. Otherwise
+edit the file to be right and reload postgres:
+  sudo /etc/init.d/postgresql-8.4 reload
+
+
+1-2- Compilation
 ====================
-After all steps above you have to do:
+After install of all dependencies above you have to do:
   cd into the FiluSource directory
   mkdir build
   cd build
@@ -104,10 +115,14 @@ After all steps above you have to do:
   sudo make install
   sudo ldconfig
 
+The only thing what now is missing is the database and a database user.
+The default for both is 'filu'. To create them simple run:
+  make init-filu
+
 After successful install you can check the working with:
   agentf
 
-There should not print any error message but a lot of other stuff. Furthermore
+There should not print any error message but some other stuff. Furthermore
 you have the programs:
   performerf
   managerf
@@ -116,7 +131,15 @@ you have the programs:
 
 2- Customizing
 ================
-See doc/config-file.txt.
+If you prefer different names for the database and/or database user you can at
+the cmake config step above the switch -D use and run:
+  cmake -D DBUSER=anyUserName -D DBNAME=anyDBName .. // Still two dots!
+  make init-filu
+
+Note: There are only the two commands createuser and createdb invoked with some
+      options. So you can these also run direct.
+
+For more tunings see doc/config-file.txt.
 
 
 3- Further Readings

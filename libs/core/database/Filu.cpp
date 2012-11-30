@@ -17,6 +17,7 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDir>
 #include <QFile>
 #include <QSet>
 #include <QSqlError>
@@ -799,7 +800,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
   int iOI = header.indexOf("OpenInterest");
   int iQ  = header.indexOf("Quality");
 
-  mFiluDB.transaction();
+  transaction();
   // Add a list of bars to the DB
   if(!initQuery("AddBars")) return eInitError;
 
@@ -855,7 +856,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
 
     if(execute(query) <= eError)
     {
-      mFiluDB.rollback();
+      rollback();
       error(FUNC, tr("Error while add EODBar with date '%1'.").arg(values[0]));
       if(barCount) errInfo(FUNC, tr("%1 bars previus added without trouble.").arg(barCount));
       return eExecError;
@@ -863,8 +864,8 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
 
     if(sqlExecCounter == mCommitBlockSize)
     {
-      mFiluDB.commit();
-      mFiluDB.transaction();
+      commit();
+      transaction();
 
 //       console << ".";
 
@@ -874,7 +875,7 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
     j += increment;
   }
  // if(sqlExecCounter > 0)
-      mFiluDB.commit();
+      commit();
 
 //    console /*<< "Filu::addEODBarData: " */<< barCount << " bars added in "
 //            << time.elapsed() << " ms\n" << flush;
@@ -1165,40 +1166,22 @@ int Filu::addBroker(const QString& name
 
 void Filu::deleteRecord(const QString& schema, const QString& table, int id /*= -1*/)
 {
-  QString sql;
-
   if(id == -1)
   {
-    sql = QString("DELETE FROM %1.%2 ").arg(schema).arg(table);
+    execute("_DelRec", QString("DELETE FROM %1.%2 ").arg(schema).arg(table));
   }
   else
   {
-    sql = QString("DELETE FROM %1.%2 WHERE %2_id = %3").arg(schema).arg(table).arg(id);
+    execute("_DelOneRec", QString("DELETE FROM %1.%2 WHERE %2_id = %3").arg(schema).arg(table).arg(id));
   }
-
-  sql.replace(":filu", mFiluSchema);
-  sql.replace(":user", mUserSchema);
-  verbose(FUNC, sql, eAmple);
-
-  QSqlQuery query(mFiluDB);
-  query.prepare(sql);
-  execute(&query);
 }
 
 int Filu::updateField(const QString& field, const QVariant& newValue
                     , const QString& schema, const QString& table, int id)
 {
-  QString sql;
-  sql = QString("UPDATE %1.%2  SET %3 = '%4'  WHERE %2_id = %5")
-               .arg(schema, table, field, newValue.toString()).arg(id);
+  execute("_DelOneRec", QString("UPDATE %1.%2  SET %3 = '%4'  WHERE %2_id = %5")
+                           .arg(schema, table, field, newValue.toString()).arg(id));
 
-  sql.replace(":filu", mFiluSchema);
-  sql.replace(":user", mUserSchema);
-  verbose(FUNC, sql, eAmple);
-
-  QSqlQuery query(mFiluDB);
-  query.prepare(sql);
-  execute(&query);
 }
 
 QString Filu::dbFuncErrText(int errorCode)
@@ -1218,19 +1201,11 @@ QString Filu::dbFuncErrText(int errorCode)
 
 int Filu::getNextId(const QString& schema, const QString& table)
 {
-  QString sql;
+  const QString sql = QString("SELECT nextval('%1.%2_%2_id_seq')").arg(schema).arg(table);
 
-  sql = QString("SELECT nextval('%1.%2_%2_id_seq')").arg(schema).arg(table);
-  sql.replace(":filu", mFiluSchema);
-  sql.replace(":user", mUserSchema);
-  verbose(FUNC, sql, eAmple);
+  if(execute("_NextVal", sql) <= eError) return eExecError;
 
-  QSqlQuery query(mFiluDB);
-  query.prepare(sql);
-
-  if(execute(&query) <= eError) return eExecError;
-
-  return result(FUNC, &query);
+  return result(FUNC, mLastQuery);
 }
 
 void Filu::openDB()
@@ -1250,38 +1225,30 @@ void Filu::openDB()
     error(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
     if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
+    return;
+  }
+
+  // Test if the driver works properly
+  setSqlParm(":foo", 123);
+  execute("_TestDriver", "SELECT :foo = :foo");
+  mLastQuery->next();
+  if(!mLastQuery->value(0).toBool())
+  {
+    fatal(FUNC, tr("The PSql Driver works not properly."));
+    errInfo(FUNC, tr("Please take a look at doc/qt-postgres-driver-bug.txt"));
+    errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getST("PluginPath")));
+    return;
+  }
+
+  execute("_FiluExist", "SELECT nspname FROM pg_namespace WHERE nspname = ':filu'");
+
+  if(mLastResult == eSuccess)
+  {
+    verbose(FUNC, tr("Successful connected to %1 :-)").arg(mRcFile->getST("DatabaseName")), eAmple);
   }
   else
   {
-    QString sql("SELECT nspname FROM pg_namespace WHERE nspname = ':filu'");
-    sql.replace(":filu", mFiluSchema);
-
-    QSqlQuery query(mFiluDB);
-    query.prepare(sql);
-    execute(&query);
-    if(query.size())
-    {
-      verbose(FUNC, tr("Successful connected to %1 :-)").arg(mRcFile->getST("DatabaseName")), eAmple);
-    }
-    else
-    {
-      if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
-      error(FUNC, tr("FiluSchema '%1' does not exist.").arg(mFiluSchema));
-      errInfo(FUNC, tr("Are you sure that you have already created the db?"));
-    }
-
-    // Test if the driver works properly
-    sql = "SELECT :foo = :foo";
-    query.prepare(sql);
-    query.bindValue(":foo", 123);
-    execute(&query);
-    query.next();
-    if(!query.value(0).toBool())
-    {
-      fatal(FUNC, QString("The PSql Driver works not properly."));
-      errInfo(FUNC, tr("Please take a look at <your-Filu-source/libs/sqldriver/readme.txt>"));
-      errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getST("PluginPath")));
-    }
+    createSchema();
   }
 }
 
@@ -1293,6 +1260,72 @@ void Filu::closeDB()
   mFiluDB.close();
   mFiluDB = QSqlDatabase(); // http://lists.trolltech.com/qt-interest/2005-11/thread00735-0.html
   QSqlDatabase::removeDatabase(mConnectionName);
+}
+
+void Filu::createSchema()
+{
+  execute("_Psst!", "SET client_min_messages TO WARNING");
+
+  execSql("filu/misc/schemata");
+  if(hasError()) return;
+  verbose(FUNC, tr("New filu schema '%1' successful created.").arg(mFiluSchema));
+
+  execSql("filu/misc/languages");
+  if(hasError()) return;
+  verbose(FUNC, tr("Languags successful created."));
+
+  execSql("filu/misc/data_types");
+  if(hasError()) return;
+  verbose(FUNC, tr("Data types successful created."));
+
+
+  createTables();
+  createFunctions();
+  createViews();
+
+  if(hasError()) return;
+
+  execSql("filu/misc/table_entries");
+  if(hasError()) return;
+  verbose(FUNC, tr("Default table entries successful insert."));
+}
+
+void Filu::createTables()
+{
+  if(!executeSqls("filu/tables/")) return;
+
+  verbose(FUNC, tr("Filu tables successful created."));
+}
+
+void Filu::createFunctions()
+{
+  if(!executeSqls("filu/functions/")) return;
+
+  verbose(FUNC, tr("Filu functions successful created."));
+}
+
+void Filu::createViews()
+{
+  if(!executeSqls("filu/views/")) return;
+
+  verbose(FUNC, tr("Filu views successful created."));
+}
+
+bool Filu::executeSqls(const QString& path)
+{
+  if(hasError()) return false;
+
+  execute("_Psst!", "SET client_min_messages TO WARNING");
+  QStringList sqls = QDir(mSqlPath + path).entryList(QDir::Files, QDir::Name);
+
+  foreach(QString sql, sqls)
+  {
+    sql.chop(4); // Remove .sql suffix which will again added by execSql()
+    execSql(path + sql);
+    if(hasError()) return false;
+  }
+
+  return true;
 }
 
 BarTuple* Filu::fillQuoteTuple(QSqlQuery* tuple)
@@ -1420,11 +1453,7 @@ bool Filu::initQuery(const QString& name, const QString& rawSql)
 
   mLastResult = eInitError; // The glass is always half-empty
 
-  QString sql = rawSql;
-
-  // Fix the schema and client place holder
-  sql.replace(":filu", mFiluSchema);
-  sql.replace(":user", mUserSchema);
+  const QString sql = parseSql(name, rawSql);
 
   QSqlQuery* query = new QSqlQuery(mFiluDB);
   bool ok = query->prepare(sql);
@@ -1438,6 +1467,38 @@ bool Filu::initQuery(const QString& name, const QString& rawSql)
   mSQLs.insert(name, query);
 
   return true;
+}
+
+QString Filu::parseSql(const QString& name, const QString& rawSql)
+{
+  QString sql = rawSql;
+
+  // Fix the schema and client place holder
+  sql.replace(":schema", mFiluSchema);
+  sql.replace(":dbuser", mRcFile->getST("PgUserRole"));
+  sql.replace(":filu", mFiluSchema);
+  sql.replace(":user", mUserSchema);
+
+  // Extract all parameter ":foo" of the SQL
+  StringSet parms;
+  QRegExp rx("(:\\w+)");
+  int pos = 0;
+  while ((pos = rx.indexIn(rawSql, pos)) != -1)
+  {
+    parms.insert(rx.cap(1));
+    pos += rx.matchedLength();
+  }
+
+  mSqlParmNames.insert(name, parms);
+
+  if(verboseLevel(eAmple))
+  {
+    QStringList parmLst = parms.toList();
+    verbose(FUNC, QString("SQL '%1' has parameters: %2").arg(name, parmLst.join(" ")));
+    verbose(FUNC, sql);
+  }
+
+  return sql;
 }
 
 bool Filu::loadQuery(const QString& name, QString& sql)
@@ -1460,7 +1521,6 @@ bool Filu::loadQuery(const QString& name, QString& sql)
 
   // Read/fill the statement
   QTextStream in(&file);
-  StringSet parameters; // Collect the parameter of the SQL
   while(!in.atEnd())
   {
     QString line = in.readLine();
@@ -1492,35 +1552,39 @@ bool Filu::loadQuery(const QString& name, QString& sql)
     //        and the from  /* comment */ is detected too
     if(helpLine.startsWith("--")) line.replace(":", " "); // Oh dear, could make nice trouble
 
-    // Fix the schema and client place holder
-    line.replace(":filu", mFiluSchema);
-    line.replace(":user", mUserSchema);
-
-    // Extract all parameter ":foo" of the SQL
-    QRegExp rx("(:\\w+)");
-    int pos = 0;
-    while ((pos = rx.indexIn(line, pos)) != -1)
-    {
-      parameters.insert(rx.cap(1));
-      pos += rx.matchedLength();
-    }
-
     sql.append(line);
   }
-
-  if(verboseLevel(eAmple))
-  {
-    QString parms;
-    foreach(QString parm, parameters.toList()) parms.append(parm + " ");
-    verbose(FUNC, QString("SQL '%1' has parameters: %2").arg(name, parms));
-    verbose(FUNC, sql);
-  }
-
-  mSqlParmNames.insert(name, parameters);
 
   file.close();
 
   return true;
+}
+
+int Filu::execute(const QString& name, const QString& rawSql)
+{
+  // All needed parameter has to set previously by setSqlParm()
+
+  QString sql = parseSql(name, rawSql);
+
+  QSqlQuery* query = new QSqlQuery(mFiluDB);
+  bool ok = query->prepare(sql);
+  if(!ok)
+  {
+    fatal(FUNC, QString("Can't prepare sql '%1'.").arg(name));
+    errInfo(FUNC, query->lastError().databaseText());
+    return false;
+  }
+
+  // Set the parameter for the SQL, if some
+  QSetIterator<QString> i(mSqlParmNames.value(name));
+  while (i.hasNext())
+  {
+    QString parm = i.next();
+    query->bindValue(parm, mSqlParm.value(parm));
+    //qDebug() << "Filu::execSql:" << parm << mSqlParm.value(parm);
+  }
+
+  return execute(query);
 }
 
 int Filu::execute(QSqlQuery* query)
@@ -1665,13 +1729,11 @@ void Filu::printSettings()
   QString dbVersion = "Not connected";
   if(mFiluDB.isOpen())
   {
-    QSqlQuery query(mFiluDB);
-    query.prepare("SELECT version()");
-    query.exec();
-    if(query.isActive())
+    execute("_DBVersion", "SELECT version()");
+    if(mLastQuery->isActive())
     {
-      query.next();
-      dbVersion = query.value(0).toString();
+      mLastQuery->next();
+      dbVersion = mLastQuery->value(0).toString();
     }
   }
 

@@ -120,10 +120,3 @@ target_link_libraries(FiluCore ${LIBS} ${QT_LIBRARIES})
 install(TARGETS FiluCore
         LIBRARY DESTINATION lib/Filu
 )
-
-# Install SQLs
-set(SQL_FILES ./database/sqls/)
-set(SQL_PATH /usr/local/lib/Filu/sqls)
-install(DIRECTORY ${SQL_FILES}
-        DESTINATION ${SQL_PATH}
-)
