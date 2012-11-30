@@ -1279,7 +1279,7 @@ void Filu::openDB()
     if(!query.value(0).toBool())
     {
       fatal(FUNC, QString("The PSql Driver works not properly."));
-      errInfo(FUNC, tr("Did you install the fixed version as noted in the readme?"));
+      errInfo(FUNC, tr("Please take a look at <your-Filu-source/libs/sqldriver/readme.txt>"));
       errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getST("PluginPath")));
     }
   }

@@ -7,7 +7,6 @@ Index
 2- Customizing
 3- Further Readings
 4- Uninstall
-5- Fix Qt Bug in PSql Driver
 
 
 1- Installation
@@ -105,8 +104,6 @@ After all steps above you have to do:
   sudo make install
   sudo ldconfig
 
-NOTICE: Before you continue you have to do the instructions at chapter 5 below.
-
 After successful install you can check the working with:
   agentf
 
@@ -135,73 +132,3 @@ To remove the Filu program collection cd into FiluSource/build and do:
 
 cd into each other of the above visited directories and do:
   sudo make uninstall
-
-
-5- Fix Qt Bug in PSql Driver
-==============================
-Preamble
-----------
-In Qt later 4.3.5 (released May 2008) is an ugly bug in the PSql driver which is
-sadly still not fixed. Moreover it would seem that there is no plan fix it :-(
-  http://bugreports.qt.nokia.com/browse/QTBUG-3267
-  http://bugreports.qt.nokia.com/browse/QTBUG-7218
-  http://qt.gitorious.org/+qt-developers/qt/staging/commit/6c44ab0f6edebce1e7190b94ac5b74c81812f482
-
-As dirty workaround we have to do these steps:
-
-Download and unzip qt-everywhere-opensource-src-4.7.0.tar.gz from
-  ftp://ftp.qt.nokia.com/qt/source/
-
-NOTE: If your distribution uses a newer or older version of Qt, it might be wise
-      to download the suitable qt-source. The source tree may also looks
-different, so you have to look for the appropriate files. In case of a newer
-version it is of cause possible that the bug is fixed and here is nothing to do.
-
-Edit the file
-  qt-everywhere-opensource-src-4.7.0/src/sql/drivers/psql/qsql_psql.cpp
-
-Search for this code block and comment out line 721 with "case PreparedQueries"
-that it looks as below:
-  bool QPSQLDriver::hasFeature(DriverFeature f) const
-  {
-      switch (f) {
-      case Transactions:
-      case QuerySize:
-      case LastInsertId:
-      case LowPrecisionNumbers:
-      case EventNotifications:
-          return true;
-  //    case PreparedQueries:
-      case PositionalPlaceholders:
-          return d->pro >= QPSQLDriver::Version82;
-      case BatchOperations:
-
-That will cause a warning when compiling in the next step which is OK. Now open
-a terminal and cd into the extracted qt source tree.
-
-  cd qt-everywhere-opensource-src-4.7.0/src/plugins/sqldrivers/psql
-
-
-Arch
-------
-  qmake -o Makefile "INCLUDEPATH+=/usr/include/libpq/" "LIBS+=-L/usr/lib -lpq" psql.pro
-  make
-
-
-Ubuntu
---------
-Thanks to Thomas for reporting, tested with Kubuntu 10.04.
-You need an additional .deb package:
-  libpq-dev
-
-  qmake -o Makefile "INCLUDEPATH+=/usr/include/postgresql" "LIBS+=-L/usr/lib -lpq" psql.pro
-  make
-
-
-Finish
---------
-Copy the compiled driver into a directory 'sqldrivers' *below* to the Filu
-PluginPath, see doc/config-file.txt. I suggest:
-
-  sudo mkdir /usr/local/lib/Filu/sqldrivers
-  sudo cp libqsqlpsql.so /usr/local/lib/Filu/sqldrivers/
