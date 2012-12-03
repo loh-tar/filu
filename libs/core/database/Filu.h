@@ -208,6 +208,7 @@ class Filu : public Newswire
     int         result(const QString& func, QSqlQuery* query);
     int         lastResult() { return mLastResult; };
     QString     dbFuncErrText(int errorCode);
+    QString     serverVersion();
 
   protected:
     bool        executeSqls(const QString& path);

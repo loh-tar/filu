@@ -1199,6 +1199,16 @@ QString Filu::dbFuncErrText(int errorCode)
   return query->value(0).toString();
 }
 
+QString Filu::serverVersion()
+{
+  if(!mFiluDB.isOpen()) return "Not connected";
+
+  execute("_DBVersion", "SELECT version()");
+  mLastQuery->next();
+
+  return mLastQuery->value(0).toString();
+}
+
 int Filu::getNextId(const QString& schema, const QString& table)
 {
   const QString sql = QString("SELECT nextval('%1.%2_%2_id_seq')").arg(schema).arg(table);
@@ -1225,6 +1235,20 @@ void Filu::openDB()
     error(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
     if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
+    return;
+  }
+
+  // Test for min PostgreSQL version
+  QString dbVersion = serverVersion();
+  // QRegExp rx("PostgreSQL 9.[1-9]");  // FIXME Could be improved to match also version 10.0
+                                        //       but not 9.0
+  QRegExp rx("PostgreSQL 8.4");
+  if(rx.indexIn(dbVersion, 0) < 0)
+  {
+    error(FUNC, tr("PostgreSQL version is to old. Min required is 8.4, sorry."));
+    rx.setPattern("PostgreSQL \\d+\\.\\d+");
+    rx.indexIn(dbVersion, 0);
+    errInfo(FUNC, tr("Running server is: %1").arg(rx.cap(0)));
     return;
   }
 
@@ -1726,22 +1750,11 @@ void Filu::readSettings()
 
 void Filu::printSettings()
 {
-  QString dbVersion = "Not connected";
-  if(mFiluDB.isOpen())
-  {
-    execute("_DBVersion", "SELECT version()");
-    if(mLastQuery->isActive())
-    {
-      mLastQuery->next();
-      dbVersion = mLastQuery->value(0).toString();
-    }
-  }
-
   QString txt = "%1 = %2";
   int width = -20; // Negative value = left-aligned
   print("Filu settings are:");
   print(txt.arg("Using QtVersion", width).arg(qVersion()));
-  print(txt.arg("Postgres version", width).arg(dbVersion));
+  print(txt.arg("Postgres version", width).arg(serverVersion()));
   print(txt.arg("HostName", width).arg(mRcFile->getST("HostName")));
   print(txt.arg("HostPort", width).arg(mRcFile->getIT("HostPort")));
   print(txt.arg("PgUserRole", width).arg(mRcFile->getST("PgUserRole")));
