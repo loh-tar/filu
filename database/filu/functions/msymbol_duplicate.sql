@@ -17,7 +17,7 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.msymbol_duplicate()
+CREATE OR REPLACE FUNCTION :filu.msymbol_duplicate()
 RETURNS TRIGGER AS
 $BODY$
 DECLARE
@@ -26,7 +26,7 @@ DECLARE
 BEGIN
 
   SELECT INTO mExist msymbol_id
-      FROM :schema.msymbol
+      FROM :filu.msymbol
       WHERE ( lower(caption) = lower(new.caption)
         and market_id = new.market_id
         and stype_id = new.stype_id ) or msymbol_id = new.msymbol_id;
@@ -42,10 +42,10 @@ END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
-DROP TRIGGER IF EXISTS :schema_msymbol_duplicates ON :schema.msymbol;
+DROP TRIGGER IF EXISTS :filu_msymbol_duplicates ON :filu.msymbol;
 
-CREATE TRIGGER :schema_msymbol_duplicates
+CREATE TRIGGER :filu_msymbol_duplicates
   BEFORE INSERT
-  ON :schema.msymbol
+  ON :filu.msymbol
   FOR EACH ROW
-  EXECUTE PROCEDURE :schema.msymbol_duplicate();
+  EXECUTE PROCEDURE :filu.msymbol_duplicate();

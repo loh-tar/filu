@@ -17,22 +17,22 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.gfi_stock_eodbar
+CREATE OR REPLACE FUNCTION :filu.gfi_stock_eodbar
 (
-  aFiId        :schema.fi.fi_id%TYPE,
-  aMarketId    :schema.market.market_id%TYPE,
-  aFDate       :schema.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
-  aTDate       :schema.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
+  aFiId        :filu.fi.fi_id%TYPE,
+  aMarketId    :filu.market.market_id%TYPE,
+  aFDate       :filu.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
+  aTDate       :filu.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
   aLimit       int4                             DEFAULT 0 -- max number of rows
 )
-RETURNS SETOF :schema.fbar AS
+RETURNS SETOF :filu.fbar AS
 $BODY$
 DECLARE
   mQuery       varchar;
   mRecord      record;
   mFDate       date;
   mTDate       date;
-  mResult      :schema.fbar;
+  mResult      :filu.fbar;
 
 BEGIN
 
@@ -41,7 +41,7 @@ BEGIN
 
   -- fetch last date if limited rowcount needed
   IF aLimit > 0 THEN
-      SELECT qdate INTO mFDate FROM :schema.eodbar
+      SELECT qdate INTO mFDate FROM :filu.eodbar
        WHERE fi_id = aFiId
          and market_id = aMarketId
          and qdate <= mTDate
@@ -53,11 +53,11 @@ BEGIN
 
   mQuery := 'SELECT *,
                 COALESCE((select exp(sum(ln(sratio)))
-                            from :schema.split s
+                            from :filu.split s
                             where s.sdate > e.qdate and s.fi_id = e.fi_id), 1)
                             as sratio
 
-              FROM :schema.eodbar e
+              FROM :filu.eodbar e
               WHERE
                 e.fi_id = $1
                 and qdate BETWEEN $2 and $3
@@ -87,5 +87,5 @@ $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
 --
--- END OF FUNCTION :schema.gfi_stock_eodbar(...)
+-- END OF FUNCTION :filu.gfi_stock_eodbar(...)
 --

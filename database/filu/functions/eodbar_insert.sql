@@ -18,32 +18,32 @@
  */
 
 -- insert / update function
-CREATE OR REPLACE FUNCTION :schema.eodbar_insert
-(   aFiId       :schema.fi.fi_id%TYPE
-  , aMarketId   :schema.market.market_id%TYPE
-  , aDate       :schema.eodbar.qdate%TYPE
-  , aOpen       :schema.eodbar.qopen%TYPE
-  , aHigh       :schema.eodbar.qhigh%TYPE
-  , aLow        :schema.eodbar.qlow%TYPE
-  , aClose      :schema.eodbar.qclose%TYPE
-  , aVol        :schema.eodbar.qvol%TYPE
-  , aOi         :schema.eodbar.qoi%TYPE        DEFAULT 0
-  , aQuality    :schema.eodbar.quality%TYPE    DEFAULT 2 -- bronze, as tempo classified data
+CREATE OR REPLACE FUNCTION :filu.eodbar_insert
+(   aFiId       :filu.fi.fi_id%TYPE
+  , aMarketId   :filu.market.market_id%TYPE
+  , aDate       :filu.eodbar.qdate%TYPE
+  , aOpen       :filu.eodbar.qopen%TYPE
+  , aHigh       :filu.eodbar.qhigh%TYPE
+  , aLow        :filu.eodbar.qlow%TYPE
+  , aClose      :filu.eodbar.qclose%TYPE
+  , aVol        :filu.eodbar.qvol%TYPE
+  , aOi         :filu.eodbar.qoi%TYPE        DEFAULT 0
+  , aQuality    :filu.eodbar.quality%TYPE    DEFAULT 2 -- bronze, as tempo classified data
 )
 RETURNS void AS
 $BODY$
 
 DECLARE
-  mOpen         :schema.eodbar.qopen%TYPE;
-  mHigh         :schema.eodbar.qhigh%TYPE;
-  mLow          :schema.eodbar.qlow%TYPE;
-  mClose        :schema.eodbar.qclose%TYPE;
-  mVol          :schema.eodbar.qvol%TYPE;
-  mOi           :schema.eodbar.qoi%TYPE;
-  mQuality      :schema.eodbar.quality%TYPE;
+  mOpen         :filu.eodbar.qopen%TYPE;
+  mHigh         :filu.eodbar.qhigh%TYPE;
+  mLow          :filu.eodbar.qlow%TYPE;
+  mClose        :filu.eodbar.qclose%TYPE;
+  mVol          :filu.eodbar.qvol%TYPE;
+  mOi           :filu.eodbar.qoi%TYPE;
+  mQuality      :filu.eodbar.quality%TYPE;
 
-  mExist        :schema.eodbar.eodbar_id%TYPE;
-  mQualyExist   :schema.eodbar.quality%TYPE;
+  mExist        :filu.eodbar.eodbar_id%TYPE;
+  mQualyExist   :filu.eodbar.quality%TYPE;
 
 BEGIN
 
@@ -85,7 +85,7 @@ BEGIN
         END IF;
 
   SELECT eodbar_id, quality INTO mExist, mQualyExist
-      FROM :schema.eodbar
+      FROM :filu.eodbar
       WHERE fi_id = aFiId and market_id = aMarketId and qdate = aDate;
 
   IF FOUND THEN -- make an update
@@ -97,7 +97,7 @@ BEGIN
 
     if aVol = -1 -- in case of an update with bar data where no volume exist, like from onvista
     then
-      update :schema.eodbar
+      update :filu.eodbar
       set
         qopen          = mOpen,
         qhigh          = mHigh,
@@ -108,7 +108,7 @@ BEGIN
         quality        = mQuality
       where eodbar_id = mExist;
     else
-      update :schema.eodbar
+      update :filu.eodbar
       set
         qopen          = mOpen,
         qhigh          = mHigh,
@@ -123,7 +123,7 @@ BEGIN
     RETURN;
   END IF;
 
-  INSERT INTO :schema.eodbar(fi_id, market_id, qdate, qopen, qhigh, qlow, qclose, qvol, qoi, quality)
+  INSERT INTO :filu.eodbar(fi_id, market_id, qdate, qopen, qhigh, qlow, qclose, qvol, qoi, quality)
           VALUES(aFiId, aMarketId, aDate, mOpen, mHigh, mLow, mClose, mVol, mOi, mQuality);
 
 END
@@ -131,5 +131,5 @@ $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
 --
--- END OF FUNCTION :schema.eodbar_insert
+-- END OF FUNCTION :filu.eodbar_insert
 --

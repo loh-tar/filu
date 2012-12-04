@@ -17,54 +17,54 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
---INSERT INTO :schema.error(caption, etext) VALUES('', '.');
+--INSERT INTO :filu.error(caption, etext) VALUES('', '.');
 
-CREATE OR REPLACE FUNCTION :schema.split_insert
+CREATE OR REPLACE FUNCTION :filu.split_insert
 (
-  aSymbol    :schema.symbol.caption%TYPE,
-  aDate      :schema.split.sdate%TYPE,
-  aRatio     :schema.split.sratio%Type,
-  aComment   :schema.split.scomment%TYPE,
-  aQuality   :schema.split.quality%TYPE,
-  aFiId      :schema.fi.fi_id%TYPE DEFAULT 0
+  aSymbol    :filu.symbol.caption%TYPE,
+  aDate      :filu.split.sdate%TYPE,
+  aRatio     :filu.split.sratio%Type,
+  aComment   :filu.split.scomment%TYPE,
+  aQuality   :filu.split.quality%TYPE,
+  aFiId      :filu.fi.fi_id%TYPE DEFAULT 0
 )
 RETURNS int2 AS
 $BODY$
 
 DECLARE
-  mFiId       :schema.fi.fi_id%TYPE;
-  mSplitId    :schema.split.split_id%TYPE;
-  mQuality    :schema.split.quality%TYPE;
+  mFiId       :filu.fi.fi_id%TYPE;
+  mSplitId    :filu.split.split_id%TYPE;
+  mQuality    :filu.split.quality%TYPE;
 
 BEGIN
 
   mFiId := aFiId;
 
   IF mFiId < 1 THEN
-    mFiId := :schema.fiid_from_symbolcaption(aSymbol);
+    mFiId := :filu.fiid_from_symbolcaption(aSymbol);
     IF mFiId < 1 THEN RETURN mFiId; END IF; -- The error code
   END IF;
 
   -- check if data exist
   SELECT INTO mSplitId, mQuality
               split_id, quality
-    FROM :schema.split
+    FROM :filu.split
     WHERE
       fi_id   = mFiId and
       sdate   = aDate;
 
   IF NOT FOUND THEN -- make the insert
-    mSplitId := nextval(':schema.split_split_id_seq');
-    INSERT INTO :schema.split(split_id, fi_id, sdate, sratio, scomment, quality)
+    mSplitId := nextval(':filu.split_split_id_seq');
+    INSERT INTO :filu.split(split_id, fi_id, sdate, sratio, scomment, quality)
            VALUES(mSplitId, mFiId, aDate, aRatio, aComment, aQuality);
 
     RETURN mSplitId;
   END IF;
 
-  IF mQuality < aQuality THEN RETURN :schema.error_code('QualityToBad'); END IF;
+  IF mQuality < aQuality THEN RETURN :filu.error_code('QualityToBad'); END IF;
 
   -- make an update
-  UPDATE :schema.split
+  UPDATE :filu.split
     SET sdate     = aDate,
         sratio    = aRatio,
         scomment  = aComment,
@@ -77,5 +77,5 @@ END
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.split_insert
+-- END OF FUNCTION :filu.split_insert
 --

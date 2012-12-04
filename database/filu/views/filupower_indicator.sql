@@ -40,23 +40,23 @@
 --
 -- The ultimate power and reason to start the FiMi project by Christian Kindler
 --
-CREATE OR REPLACE VIEW :schema.filupower_indicator
+CREATE OR REPLACE VIEW :filu.filupower_indicator
 AS
   SELECT
       proc.oid as indicator_id
     , proc.proname as caption
     , proc.proargnames as arguments
     , rt.typname as rettype
-    , 'SELECT * FROM :schema.' || proc.proname || '(:' ||array_to_string(proc.proargnames, ', :') || ')' as call
+    , 'SELECT * FROM :filu.' || proc.proname || '(:' ||array_to_string(proc.proargnames, ', :') || ')' as call
     , proc.prosrc as source
 
   FROM
     pg_namespace ns, pg_proc proc, pg_type rt
   WHERE ns.oid = proc.pronamespace
     and proc.prorettype = rt.oid
-    and ns.nspname = ':schema'
+    and ns.nspname = ':filu'
     and proc.proname like 'fpi_%';
 
 --
--- END OF VIEW :schema.filupower_indicator
+-- END OF VIEW :filu.filupower_indicator
 --

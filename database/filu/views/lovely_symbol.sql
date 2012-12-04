@@ -17,17 +17,17 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE VIEW :schema.lovelysymbol AS
+CREATE OR REPLACE VIEW :filu.lovelysymbol AS
 
   SELECT DISTINCT ON (s.fi_id)
     s.caption AS symbol,
     s.fi_id,
     s.symbol_id
 
-    FROM :schema.symbol s
-    JOIN :schema.stype st USING (stype_id)
+    FROM :filu.symbol s
+    JOIN :filu.stype st USING (stype_id)
   ORDER BY s.fi_id, st.seq;
 
 --
--- END OF VIEW :schema.lovelysymbol
+-- END OF VIEW :filu.lovelysymbol
 --

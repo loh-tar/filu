@@ -17,46 +17,46 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO :schema.error(caption, etext) VALUES('FTypeNF', 'FiType not found.');
-INSERT INTO :schema.error(caption, etext) VALUES('FTypeNUQ', 'FiType already exist, give me the ID for an update.');
+INSERT INTO :filu.error(caption, etext) VALUES('FTypeNF', 'FiType not found.');
+INSERT INTO :filu.error(caption, etext) VALUES('FTypeNUQ', 'FiType already exist, give me the ID for an update.');
 
-CREATE OR REPLACE FUNCTION :schema.ftype_insert
+CREATE OR REPLACE FUNCTION :filu.ftype_insert
 (
-  aCaption  :schema.ftype.caption%TYPE,
-  aFTypeId  :schema.ftype.ftype_id%TYPE-- could be 0/NULL
+  aCaption  :filu.ftype.caption%TYPE,
+  aFTypeId  :filu.ftype.ftype_id%TYPE-- could be 0/NULL
 )
-RETURNS :schema.ftype.ftype_id%TYPE AS
+RETURNS :filu.ftype.ftype_id%TYPE AS
 $BODY$
 
 DECLARE
-  mId       :schema.ftype.ftype_id%TYPE; -- New ID
+  mId       :filu.ftype.ftype_id%TYPE; -- New ID
 
 BEGIN
 
   mId := COALESCE(aFTypeId, 0);
 
   IF mId = 0 THEN
-    mId := :schema.id_from_caption('ftype', aCaption);
-    IF mId > 0 THEN RETURN mId/*:schema.error_code('FTypeNUQ')*/; END IF;-- see stype_insert
+    mId := :filu.id_from_caption('ftype', aCaption);
+    IF mId > 0 THEN RETURN mId/*:filu.error_code('FTypeNUQ')*/; END IF;-- see stype_insert
 
-    mId := nextval(':schema.ftype_ftype_id_seq');
-    INSERT  INTO :schema.ftype(ftype_id, caption)
+    mId := nextval(':filu.ftype_ftype_id_seq');
+    INSERT  INTO :filu.ftype(ftype_id, caption)
             VALUES(mId, aCaption);
 
     RETURN mId;
   END IF;
 
-  UPDATE :schema.ftype
+  UPDATE :filu.ftype
     SET caption    = aCaption
     WHERE ftype_id = aFTypeId;
 
   IF FOUND THEN RETURN aFTypeId; END IF;
 
-  RETURN :schema.error_code('PrimaryKeyNF');
+  RETURN :filu.error_code('PrimaryKeyNF');
 
 END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.ftype_insert
+-- END OF FUNCTION :filu.ftype_insert
 --

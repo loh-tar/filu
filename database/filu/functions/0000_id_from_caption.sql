@@ -38,11 +38,11 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-INSERT INTO :schema.error(caption, etext) VALUES('CaptionEY', 'Caption is empty.');
-INSERT INTO :schema.error(caption, etext) VALUES('CaptionNF', 'Caption not found.');
-INSERT INTO :schema.error(caption, etext) VALUES('CaptionNUQ', 'Caption is not unique.');
+INSERT INTO :filu.error(caption, etext) VALUES('CaptionEY', 'Caption is empty.');
+INSERT INTO :filu.error(caption, etext) VALUES('CaptionNF', 'Caption not found.');
+INSERT INTO :filu.error(caption, etext) VALUES('CaptionNUQ', 'Caption is not unique.');
 
-CREATE OR REPLACE FUNCTION :schema.id_from_caption
+CREATE OR REPLACE FUNCTION :filu.id_from_caption
 (
   aTable   varchar, -- search in this table
   aCaption varchar  -- search this caption
@@ -61,28 +61,28 @@ BEGIN
   --
   -- Returns Unique Id if found or < 0 if not or trouble
   --
-  IF aCaption IS NULL THEN RETURN :schema.error_code('CaptionEY'); END IF;
+  IF aCaption IS NULL THEN RETURN :filu.error_code('CaptionEY'); END IF;
 
   mCaption := trim(both from aCaption);
-  IF char_length(mCaption) = 0 THEN RETURN :schema.error_code('CaptionEY'); END IF;
+  IF char_length(mCaption) = 0 THEN RETURN :filu.error_code('CaptionEY'); END IF;
 
   -- go for caption
   mQuery := 'SELECT ' || quote_ident(aTable) || '_id::int4 AS id' ||
-            ' FROM :schema.' || quote_ident(aTable) ||
+            ' FROM :filu.' || quote_ident(aTable) ||
             ' WHERE lower(caption) LIKE lower(' || quote_literal(mCaption) || ')';
 
-  --RAISE NOTICE ':schema.id_from_caption: %', mQuery;
+  --RAISE NOTICE ':filu.id_from_caption: %', mQuery;
   mCount := 0;
   FOR mRec IN EXECUTE mQuery LOOP
       mCount := mCount +1;
       mId := mRec.id;
   END LOOP;
 
-  IF mId IS NULL THEN mId := :schema.error_code('CaptionNF'); END IF;
+  IF mId IS NULL THEN mId := :filu.error_code('CaptionNF'); END IF;
 
   IF mCount > 1 THEN
-    --RAISE NOTICE ':schema.id_from_caption: More than one caption >%< found. ', aCaption;
-    mId := :schema.error_code('CaptionNUQ');
+    --RAISE NOTICE ':filu.id_from_caption: More than one caption >%< found. ', aCaption;
+    mId := :filu.error_code('CaptionNUQ');
   END IF;
 
   RETURN mId;
@@ -91,5 +91,5 @@ END
 $BODY$
 LANGUAGE PLPGSQL STABLE;
 --
--- END OF FUNCTION :schema.id_from_caption
+-- END OF FUNCTION :filu.id_from_caption
 --

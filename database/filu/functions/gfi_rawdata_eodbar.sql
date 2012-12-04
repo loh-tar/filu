@@ -17,15 +17,15 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.gfi_rawdata_eodbar
+CREATE OR REPLACE FUNCTION :filu.gfi_rawdata_eodbar
 (
-  aFiId        :schema.fi.fi_id%TYPE,
-  aMarketId    :schema.market.market_id%TYPE,
-  aFDate       :schema.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
-  aTDate       :schema.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
+  aFiId        :filu.fi.fi_id%TYPE,
+  aMarketId    :filu.market.market_id%TYPE,
+  aFDate       :filu.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
+  aTDate       :filu.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
   aLimit       int4                             DEFAULT 0 -- max number of rows
 )
-RETURNS SETOF :schema.fbar AS
+RETURNS SETOF :filu.fbar AS
 $BODY$
 DECLARE
   mFDate        date;
@@ -38,7 +38,7 @@ BEGIN
 
   -- fetch last date if limited rowcount needed
   IF aLimit > 0 THEN
-      SELECT qdate INTO mFDate FROM :schema.eodbar
+      SELECT qdate INTO mFDate FROM :filu.eodbar
        WHERE fi_id = aFiId
          and market_id = aMarketId
          and qdate <= mTDate
@@ -55,7 +55,7 @@ BEGIN
                     , cast(e.qclose as float)
                     , cast(e.qvol   as float)
                     , cast(e.qoi    as float)
-                   FROM :schema.eodbar e
+                   FROM :filu.eodbar e
                    WHERE e.fi_id = aFiId
                      and qdate BETWEEN mFDate and mTDate
                      and market_id = aMarketId
@@ -66,5 +66,5 @@ $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
 --
--- END OF FUNCTION :schema.gfi_rawdata_eodbar(...)
+-- END OF FUNCTION :filu.gfi_rawdata_eodbar(...)
 --

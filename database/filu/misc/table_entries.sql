@@ -19,52 +19,52 @@
 --
 -- Usual Error Messages
 --
-INSERT INTO :schema.error(caption, etext) VALUES('ForeignKV', 'Foreign key violation.');
-INSERT INTO :schema.error(caption, etext) VALUES('PrimaryKeyNF', 'Given primary key (the ID) not found.');
-INSERT INTO :schema.error(caption, etext) VALUES('QualityToBad', 'Quality is not good enough for an update.');
-INSERT INTO :schema.error(caption, etext) VALUES('UniqueV', 'Unique violation.');
-INSERT INTO :schema.error(caption, etext) VALUES('UnkownErr', 'Oops, unknown error.');
---INSERT INTO :schema.error(caption, etext) VALUES('', '.');
+INSERT INTO :filu.error(caption, etext) VALUES('ForeignKV', 'Foreign key violation.');
+INSERT INTO :filu.error(caption, etext) VALUES('PrimaryKeyNF', 'Given primary key (the ID) not found.');
+INSERT INTO :filu.error(caption, etext) VALUES('QualityToBad', 'Quality is not good enough for an update.');
+INSERT INTO :filu.error(caption, etext) VALUES('UniqueV', 'Unique violation.');
+INSERT INTO :filu.error(caption, etext) VALUES('UnkownErr', 'Oops, unknown error.');
+--INSERT INTO :filu.error(caption, etext) VALUES('', '.');
 --
 --
 -- FI Types
 --
 -- Don't remove Currency, it's a must have!
-INSERT INTO :schema.ftype(caption) VALUES('Currency');
+INSERT INTO :filu.ftype(caption) VALUES('Currency');
 --
-INSERT INTO :schema.ftype(caption) VALUES('Stock');
-INSERT INTO :schema.ftype(caption) VALUES('Index');
---INSERT INTO :schema.ftype(caption) VALUES('Bond');
---INSERT INTO :schema.ftype(caption) VALUES('FutureMaster');
---INSERT INTO :schema.ftype(caption) VALUES('Future');
---INSERT INTO :schema.ftype(caption) VALUES('Option');
---INSERT INTO :schema.ftype(caption) VALUES('Warrant');
---INSERT INTO :schema.ftype(caption) VALUES('IRS');
---INSERT INTO :schema.ftype(caption) VALUES('CRS');
+INSERT INTO :filu.ftype(caption) VALUES('Stock');
+INSERT INTO :filu.ftype(caption) VALUES('Index');
+--INSERT INTO :filu.ftype(caption) VALUES('Bond');
+--INSERT INTO :filu.ftype(caption) VALUES('FutureMaster');
+--INSERT INTO :filu.ftype(caption) VALUES('Future');
+--INSERT INTO :filu.ftype(caption) VALUES('Option');
+--INSERT INTO :filu.ftype(caption) VALUES('Warrant');
+--INSERT INTO :filu.ftype(caption) VALUES('IRS');
+--INSERT INTO :filu.ftype(caption) VALUES('CRS');
 --
 --
 -- Non Provider Symbol Types
 --
 -- Don't remove Reuters, it's a must have!
-INSERT INTO :schema.stype(caption, seq) VALUES('Reuters', 100);
+INSERT INTO :filu.stype(caption, seq) VALUES('Reuters', 100);
 --
-INSERT INTO :schema.stype(caption, seq) VALUES('ISIN', 1100);
---INSERT INTO :schema.stype(caption, seq) VALUES('ISO', 300);
---INSERT INTO :schema.stype(caption, seq) VALUES('WKN', 1000);
---INSERT INTO :schema.stype(caption, seq) VALUES('Generic', 500);
+INSERT INTO :filu.stype(caption, seq) VALUES('ISIN', 1100);
+--INSERT INTO :filu.stype(caption, seq) VALUES('ISO', 300);
+--INSERT INTO :filu.stype(caption, seq) VALUES('WKN', 1000);
+--INSERT INTO :filu.stype(caption, seq) VALUES('Generic', 500);
 --
 --
 -- Provider Symbol Types
 --
-INSERT INTO :schema.stype(caption, seq, isprovider) VALUES('Yahoo', 200, true);
---INSERT INTO :schema.stype(caption, seq, isprovider) VALUES('futuresguide', 1100, true);
+INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('Yahoo', 200, true);
+--INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('futuresguide', 1100, true);
 --
 --
 -- Markets
 --
 -- Don't remove Currency or change the symbol USD, it's a must have!
-SELECT :schema.market_insert('Currency', 'US Dollar', 'USD', -1); -- "-1" Says "That's the NoMarket insert"
+SELECT :filu.market_insert('Currency', 'US Dollar', 'USD', -1); -- "-1" Says "That's the NoMarket insert"
 --
---SELECT :schema.market_insert('NYSE', '', 'USD'); -- No need to give name, USD already exist
---SELECT :schema.market_insert('Xetra', 'Euro', 'EUR');
+--SELECT :filu.market_insert('NYSE', '', 'USD'); -- No need to give name, USD already exist
+--SELECT :filu.market_insert('Xetra', 'Euro', 'EUR');
 --

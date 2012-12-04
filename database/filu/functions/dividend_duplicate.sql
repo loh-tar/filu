@@ -17,17 +17,17 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.dividend_duplicate()
+CREATE OR REPLACE FUNCTION :filu.dividend_duplicate()
 RETURNS TRIGGER AS
 $BODY$
 
 DECLARE
-  mExist    :schema.dividend.dividend_id%TYPE;
+  mExist    :filu.dividend.dividend_id%TYPE;
 
 BEGIN
 
   -- try to update data
-  UPDATE :schema.dividend
+  UPDATE :filu.dividend
       SET ddate     = new.ddate,
           dpayout   = new.dpayout,
           dcomment  = new.dcomment
@@ -39,7 +39,7 @@ BEGIN
 
   -- check if data exist but quality to bad
   SELECT INTO mExist dividend_id
-      FROM :schema.dividend
+      FROM :filu.dividend
       WHERE
         fi_id   = new.fi_id and
         ddate   = new.ddate;
@@ -48,7 +48,7 @@ BEGIN
 
   -- no, its not here, make an insert
   IF COALESCE(new.dividend_id, 0) = 0 -- but only if id is not set
-  THEN new.dividend_id := nextval(':schema.dividend_dividend_id_seq'); END IF;
+  THEN new.dividend_id := nextval(':filu.dividend_dividend_id_seq'); END IF;
 
   RETURN new;
 
@@ -56,11 +56,11 @@ END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
-DROP TRIGGER IF EXISTS :schema_dividend_duplicates ON :schema.dividend;
+DROP TRIGGER IF EXISTS :filu_dividend_duplicates ON :filu.dividend;
 
-CREATE TRIGGER :schema_dividend_duplicates
+CREATE TRIGGER :filu_dividend_duplicates
   BEFORE INSERT
-  ON :schema.dividend
+  ON :filu.dividend
   FOR EACH ROW
-  EXECUTE PROCEDURE :schema.dividend_duplicate()
+  EXECUTE PROCEDURE :filu.dividend_duplicate()
 ;

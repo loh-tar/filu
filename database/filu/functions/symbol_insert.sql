@@ -17,50 +17,50 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO :schema.error(caption, etext) VALUES('SymbolEY', 'Symbol is empty.');
-INSERT INTO :schema.error(caption, etext) VALUES('SymbolNF', 'Symbol not found.');
-INSERT INTO :schema.error(caption, etext) VALUES('SymbolNUQ', 'Symbol is not unique.');
---INSERT INTO :schema.error(caption, etext) VALUES('', '.');
+INSERT INTO :filu.error(caption, etext) VALUES('SymbolEY', 'Symbol is empty.');
+INSERT INTO :filu.error(caption, etext) VALUES('SymbolNF', 'Symbol not found.');
+INSERT INTO :filu.error(caption, etext) VALUES('SymbolNUQ', 'Symbol is not unique.');
+--INSERT INTO :filu.error(caption, etext) VALUES('', '.');
 
-CREATE OR REPLACE FUNCTION :schema.symbol_insert
+CREATE OR REPLACE FUNCTION :filu.symbol_insert
 (
-  aFiId     :schema.fi.fi_id%TYPE,
-  aSymbolId :schema.symbol.symbol_id%TYPE,
-  aSymbol   :schema.symbol.caption%TYPE, -- like "AAPL"
-  aMarket   :schema.market.caption%TYPE, -- like "NASDAQ"
-  aSType    :schema.stype.caption%TYPE   -- like "Yahoo"
+  aFiId     :filu.fi.fi_id%TYPE,
+  aSymbolId :filu.symbol.symbol_id%TYPE,
+  aSymbol   :filu.symbol.caption%TYPE, -- like "AAPL"
+  aMarket   :filu.market.caption%TYPE, -- like "NASDAQ"
+  aSType    :filu.stype.caption%TYPE   -- like "Yahoo"
 )
-RETURNS :schema.symbol.symbol_id%TYPE AS
+RETURNS :filu.symbol.symbol_id%TYPE AS
 $BODY$
 
 DECLARE
-  mSymbol    :schema.symbol.caption%TYPE;
-  mSymbolId  :schema.symbol.symbol_id%TYPE;
-  mSTypeId   :schema.stype.stype_id%TYPE;
-  mMarketId  :schema.market.market_id%TYPE;
+  mSymbol    :filu.symbol.caption%TYPE;
+  mSymbolId  :filu.symbol.symbol_id%TYPE;
+  mSTypeId   :filu.stype.stype_id%TYPE;
+  mMarketId  :filu.market.market_id%TYPE;
 
 BEGIN
 
   mSymbol := trim(both from aSymbol);
-  IF char_length(mSymbol) = 0 THEN RETURN :schema.error_code('SymbolEY'); END IF; -- aSymbol caption empty, pointless
+  IF char_length(mSymbol) = 0 THEN RETURN :filu.error_code('SymbolEY'); END IF; -- aSymbol caption empty, pointless
 
-  mSTypeId := :schema.id_from_caption('stype', aSType);
-  IF mSTypeId < 1 THEN RETURN :schema.error_code('STypeNF'); END IF;
+  mSTypeId := :filu.id_from_caption('stype', aSType);
+  IF mSTypeId < 1 THEN RETURN :filu.error_code('STypeNF'); END IF;
 
-  mMarketId  := :schema.id_from_caption('market', aMarket);
-  IF mMarketId < 1 THEN RETURN :schema.error_code('MarketNF'); END IF;
+  mMarketId  := :filu.id_from_caption('market', aMarket);
+  IF mMarketId < 1 THEN RETURN :filu.error_code('MarketNF'); END IF;
 
   IF aFiId < 1 THEN -- aFiId is a must have, we don't add or update, only look if exist
-    mSymbolId := :schema.id_from_caption('symbol', mSymbol);
-    IF mSymbolId = :schema.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
+    mSymbolId := :filu.id_from_caption('symbol', mSymbol);
+    IF mSymbolId = :filu.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
       SELECT INTO mSymbolId symbol_id
-        FROM :schema.symbol
+        FROM :filu.symbol
         WHERE
           lower(caption) = lower(aSymbol)
           and market_id = mMarketId
           and stype_id  = mSTypeId;
 
-      IF mSymbolId IS NULL THEN RETURN :schema.error_code('SymbolNUQ'); END IF;
+      IF mSymbolId IS NULL THEN RETURN :filu.error_code('SymbolNUQ'); END IF;
 
     END IF; -- mSymbolId = -1
 
@@ -71,19 +71,19 @@ BEGIN
   mSymbolId := COALESCE(aSymbolId, 0);
 
   IF mSymbolId < 1 THEN -- no aSymbolId given, we have to check if the symbol is already known
-     mSymbolId := :schema.id_from_caption('symbol', mSymbol);
+     mSymbolId := :filu.id_from_caption('symbol', mSymbol);
 
-    IF mSymbolId = :schema.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
+    IF mSymbolId = :filu.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
       SELECT symbol_id INTO mSymbolId
-        FROM :schema.symbol
+        FROM :filu.symbol
         WHERE
           lower(caption) = lower(mSymbol)
           and market_id = mMarketId
           and stype_id  = mSTypeId;
 
-    ELSEIF mSymbolId = :schema.error_code('CaptionNF') THEN -- check if combi fi/stype/market exist
+    ELSEIF mSymbolId = :filu.error_code('CaptionNF') THEN -- check if combi fi/stype/market exist
         SELECT symbol_id INTO mSymbolId
-          FROM :schema.symbol
+          FROM :filu.symbol
                   WHERE fi_id     = aFiId
                     and market_id = mMarketId
                     and stype_id  = mSTypeId;
@@ -92,15 +92,15 @@ BEGIN
     mSymbolId := COALESCE(mSymbolId, 0);
 
     IF mSymbolId < 1 THEN -- insert the new symbol
-      mSymbolId := nextval(':schema.symbol_symbol_id_seq');
+      mSymbolId := nextval(':filu.symbol_symbol_id_seq');
       BEGIN
-        INSERT INTO :schema.symbol(symbol_id, market_id, stype_id, fi_id, caption)
+        INSERT INTO :filu.symbol(symbol_id, market_id, stype_id, fi_id, caption)
                VALUES(mSymbolId, mMarketId, mSTypeId, aFiId, mSymbol);
 
         RETURN mSymbolId;
 
-        EXCEPTION WHEN unique_violation THEN RETURN :schema.error_code('UniqueV');
-                  WHEN foreign_key_violation THEN RETURN :schema.error_code('ForeignKV');
+        EXCEPTION WHEN unique_violation THEN RETURN :filu.error_code('UniqueV');
+                  WHEN foreign_key_violation THEN RETURN :filu.error_code('ForeignKV');
       END;
 
     END IF; -- insert the new symbol
@@ -108,7 +108,7 @@ BEGIN
 
   BEGIN
     -- ok, we have to update the symbol
-    UPDATE :schema.symbol
+    UPDATE :filu.symbol
       SET
         market_id    = mMarketId,
         stype_id     = mSTypeId,
@@ -122,7 +122,7 @@ BEGIN
 
       RETURN mSymbolId;
 
-    EXCEPTION WHEN unique_violation THEN RETURN :schema.error_code('SymbolNUQ');
+    EXCEPTION WHEN unique_violation THEN RETURN :filu.error_code('SymbolNUQ');
 
   END;
 
@@ -130,5 +130,5 @@ END
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.symbol_insert
+-- END OF FUNCTION :filu.symbol_insert
 --

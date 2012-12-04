@@ -17,42 +17,42 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO :schema.error(caption, etext) VALUES('BrokerIdNF', 'Broker Id not found or quality to bad.');
+INSERT INTO :filu.error(caption, etext) VALUES('BrokerIdNF', 'Broker Id not found or quality to bad.');
 
-CREATE OR REPLACE FUNCTION :schema.broker_insert
+CREATE OR REPLACE FUNCTION :filu.broker_insert
 (
-  aCaption    :schema.broker.caption%TYPE,
-  aCurrSymbol :schema.symbol.caption%TYPE,
-  aFeeFormula :schema.broker.feeformula%TYPE,
-  aQuality    :schema.broker.quality%TYPE,
-  aBrokerId   :schema.broker.broker_id%TYPE-- could be 0/NULL
+  aCaption    :filu.broker.caption%TYPE,
+  aCurrSymbol :filu.symbol.caption%TYPE,
+  aFeeFormula :filu.broker.feeformula%TYPE,
+  aQuality    :filu.broker.quality%TYPE,
+  aBrokerId   :filu.broker.broker_id%TYPE-- could be 0/NULL
 )
-RETURNS :schema.broker.broker_id%TYPE AS
+RETURNS :filu.broker.broker_id%TYPE AS
 $BODY$
 
 DECLARE
-  mId         :schema.broker.broker_id%TYPE; -- New ID
-  mCurrId     :schema.fi.fi_id%TYPE;
+  mId         :filu.broker.broker_id%TYPE; -- New ID
+  mCurrId     :filu.fi.fi_id%TYPE;
 
 BEGIN
 -- See also split_insert for a more smart check if exist/updateable
 
-  mCurrId := :schema.fiid_from_symbolcaption(aCurrSymbol);
+  mCurrId := :filu.fiid_from_symbolcaption(aCurrSymbol);
   IF mCurrId < 1 THEN RETURN mCurrId; END IF;
 
   mId := COALESCE(aBrokerId, 0);
 
-  IF mId = 0 THEN mId := :schema.id_from_caption('broker', aCaption); END IF;
+  IF mId = 0 THEN mId := :filu.id_from_caption('broker', aCaption); END IF;
 
   IF mId < 1 THEN
-      mId := nextval(':schema.broker_broker_id_seq');
-      INSERT INTO :schema.broker(broker_id, caption, currency_fi_id, feeformula, quality)
+      mId := nextval(':filu.broker_broker_id_seq');
+      INSERT INTO :filu.broker(broker_id, caption, currency_fi_id, feeformula, quality)
              VALUES(mId, aCaption, mCurrId, aFeeFormula, aQuality);
 
       RETURN mId;
 
   ELSE
-      UPDATE :schema.broker
+      UPDATE :filu.broker
           SET caption        = aCaption,
               currency_fi_id = mCurrId,
               feeformula     = aFeeFormula,
@@ -61,7 +61,7 @@ BEGIN
 
       IF FOUND
         THEN RETURN mId;
-        ELSE RETURN :schema.error_code('BrokerIdNF');
+        ELSE RETURN :filu.error_code('BrokerIdNF');
       END IF;
 
   END IF;
@@ -70,5 +70,5 @@ END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.broker_insert
+-- END OF FUNCTION :filu.broker_insert
 --

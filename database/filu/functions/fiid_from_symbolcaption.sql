@@ -17,35 +17,35 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO :schema.error(caption, etext) VALUES('SymbolCaptionNUQ', 'Symbol references different FIs.');
+INSERT INTO :filu.error(caption, etext) VALUES('SymbolCaptionNUQ', 'Symbol references different FIs.');
 
-CREATE OR REPLACE FUNCTION :schema.fiid_from_symbolcaption
+CREATE OR REPLACE FUNCTION :filu.fiid_from_symbolcaption
 (
-  aSymbol :schema.symbol.caption%TYPE   -- like "AAPL"
+  aSymbol :filu.symbol.caption%TYPE   -- like "AAPL"
 )
-RETURNS :schema.fi.fi_id%TYPE AS
+RETURNS :filu.fi.fi_id%TYPE AS
 $BODY$
 
 DECLARE
-  mSymbol    :schema.symbol.caption%TYPE;
-  mFiId      :schema.fi.fi_id%TYPE;
-  mFiId2     :schema.fi.fi_id%TYPE := -1;
+  mSymbol    :filu.symbol.caption%TYPE;
+  mFiId      :filu.fi.fi_id%TYPE;
+  mFiId2     :filu.fi.fi_id%TYPE := -1;
 
 BEGIN
 
   mSymbol := trim(both from aSymbol);
-  IF char_length(mSymbol) = 0 THEN RETURN :schema.error_code('SymbolEY'); END IF;
+  IF char_length(mSymbol) = 0 THEN RETURN :filu.error_code('SymbolEY'); END IF;
 
   FOR mFiId IN SELECT fi_id
-                 FROM :schema.symbol
+                 FROM :filu.symbol
                  WHERE lower(caption) LIKE lower(mSymbol)
   LOOP
       IF (mFiId2 = -1) THEN mFiId2 := mFiId; END IF;
-      IF mFiId2 <> mFiId THEN RETURN :schema.error_code('SymbolCaptionNUQ'); END IF;
+      IF mFiId2 <> mFiId THEN RETURN :filu.error_code('SymbolCaptionNUQ'); END IF;
 
   END LOOP;
 
-  IF mFiId IS NULL THEN RETURN :schema.error_code('SymbolNF'); END IF;
+  IF mFiId IS NULL THEN RETURN :filu.error_code('SymbolNF'); END IF;
 
   RETURN mFiId;
 
@@ -53,5 +53,5 @@ END
 $BODY$
 LANGUAGE PLPGSQL STABLE;
 --
--- END OF FUNCTION :schema.fiid_from_symbolcaption
+-- END OF FUNCTION :filu.fiid_from_symbolcaption
 --

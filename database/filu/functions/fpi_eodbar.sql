@@ -38,23 +38,23 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-CREATE OR REPLACE FUNCTION :schema.fpi_eodBar
+CREATE OR REPLACE FUNCTION :filu.fpi_eodBar
 (
     "fiId"      int4
   , "marketId"  int4
   , "fdate"     date
   , "tdate"     date
 )
-RETURNS SETOF :schema.fbar AS
+RETURNS SETOF :filu.fbar AS
 $BODY$
 DECLARE
   my_record    record;
-  my_result    :schema.fbar;
+  my_result    :filu.fbar;
 
 BEGIN
 
   FOR my_record IN
-      SELECT * FROM :schema.eodbar
+      SELECT * FROM :filu.eodbar
        WHERE fi_id     = "fiId"
          and market_id = "marketId"
          and qdate BETWEEN "fdate" and "tdate"
@@ -78,5 +78,5 @@ $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
 --
--- END OF FUNCTION :schema.fpi_eodBar(...)
+-- END OF FUNCTION :filu.fpi_eodBar(...)
 --

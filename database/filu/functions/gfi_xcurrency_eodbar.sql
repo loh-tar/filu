@@ -17,50 +17,50 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.gfi_xcurrency_eodbar
+CREATE OR REPLACE FUNCTION :filu.gfi_xcurrency_eodbar
 (
-  aFiId        :schema.fi.fi_id%TYPE,
-  aMarketId    :schema.market.market_id%TYPE,
-  aFDate       :schema.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
-  aTDate       :schema.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
+  aFiId        :filu.fi.fi_id%TYPE,
+  aMarketId    :filu.market.market_id%TYPE,
+  aFDate       :filu.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
+  aTDate       :filu.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
   aLimit       int4                             DEFAULT 0 -- max number of rows
 )
-RETURNS SETOF :schema.fbar AS
+RETURNS SETOF :filu.fbar AS
 $BODY$
 DECLARE
   mRecord       record;
   mCurryMarket  CONSTANT int := 1;
   mUSDollar     CONSTANT int := 2;           -- US Dollar has always ID 2
-  mSCurrId      :schema.fi.fi_id%TYPE;
-  mDCurrId      :schema.fi.fi_id%TYPE;
-  mSymbol       :schema.symbol.caption%TYPE;
+  mSCurrId      :filu.fi.fi_id%TYPE;
+  mDCurrId      :filu.fi.fi_id%TYPE;
+  mSymbol       :filu.symbol.caption%TYPE;
   mHelp         TEXT[];
-  mResult       :schema.fbar;
+  mResult       :filu.fbar;
 
 BEGIN
   --
   -- Fetch both currencys...
   -- The symbols at the begining of the FI caption e.g. "USD/EUR"
   --
-  SELECT caption INTO mRecord FROM :schema.fi WHERE fi_id = aFiId;
+  SELECT caption INTO mRecord FROM :filu.fi WHERE fi_id = aFiId;
   IF mRecord IS NULL THEN RETURN; END IF;
 
   mHelp := regexp_split_to_array(mRecord.caption, E'\\/');
-  mDCurrId := :schema.fiid_from_symbolcaption(mHelp[1]);
+  mDCurrId := :filu.fiid_from_symbolcaption(mHelp[1]);
   IF mDCurrId < 1 THEN RETURN; END IF;
 
   mHelp := regexp_split_to_array(mHelp[2], E'\\s');
-  mSCurrId := :schema.fiid_from_symbolcaption(mHelp[1]);
+  mSCurrId := :filu.fiid_from_symbolcaption(mHelp[1]);
   IF mSCurrId < 1 THEN RETURN; END IF;
 
   IF mSCurrId = mUSDollar THEN
-    RETURN QUERY SELECT * FROM :schema.gfi_rawdata_eodbar(mDCurrId, aMarketId, aFDate, aTDate, aLimit);
+    RETURN QUERY SELECT * FROM :filu.gfi_rawdata_eodbar(mDCurrId, aMarketId, aFDate, aTDate, aLimit);
   END IF;
 
 
   IF mDCurrId = mUSDollar THEN
     FOR mRecord IN
-        SELECT * FROM :schema.gfi_rawdata_eodbar(mSCurrId, aMarketId, aFDate, aTDate, aLimit)
+        SELECT * FROM :filu.gfi_rawdata_eodbar(mSCurrId, aMarketId, aFDate, aTDate, aLimit)
     LOOP
       mResult.fdate  := mRecord.fdate;
       mResult.ftime  := mRecord.ftime;
@@ -85,8 +85,8 @@ END
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
-INSERT INTO :schema.ftype(caption) VALUES('XCurrency');
+INSERT INTO :filu.ftype(caption) VALUES('XCurrency');
 
 --
--- END OF FUNCTION :schema.gfi_currency_eodbar(...)
+-- END OF FUNCTION :filu.gfi_currency_eodbar(...)
 --

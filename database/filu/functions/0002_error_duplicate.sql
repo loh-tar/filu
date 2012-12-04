@@ -17,20 +17,20 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.error_duplicate()
+CREATE OR REPLACE FUNCTION :filu.error_duplicate()
 RETURNS TRIGGER AS
 $BODY$
 DECLARE
-  mExist   :schema.error.error_id%TYPE;
-  mErrEmpty CONSTANT int := :schema.error_code('CaptionEY');
+  mExist   :filu.error.error_id%TYPE;
+  mErrEmpty CONSTANT int := :filu.error_code('CaptionEY');
 
 BEGIN
 
-  SELECT INTO mExist :schema.id_from_caption('error', new.caption);
+  SELECT INTO mExist :filu.id_from_caption('error', new.caption);
 
   IF mExist > 0 THEN
       RAISE NOTICE 'ErrorType "%" allready exists! Now updated to "%".', new.caption, new.etext;
-      UPDATE :schema.error
+      UPDATE :filu.error
         SET caption = new.caption
           , etext = new.etext
         WHERE error_id = mExist;
@@ -50,10 +50,10 @@ END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
-DROP TRIGGER IF EXISTS :schema_error_duplicates ON :schema.error;
+DROP TRIGGER IF EXISTS :filu_error_duplicates ON :filu.error;
 
-CREATE TRIGGER :schema_error_duplicates
+CREATE TRIGGER :filu_error_duplicates
   BEFORE INSERT
-  ON :schema.error
+  ON :filu.error
   FOR EACH ROW
-  EXECUTE PROCEDURE :schema.error_duplicate();
+  EXECUTE PROCEDURE :filu.error_duplicate();

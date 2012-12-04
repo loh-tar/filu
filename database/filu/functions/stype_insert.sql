@@ -17,45 +17,45 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO :schema.error(caption, etext) VALUES('STypeEY', 'SymbolType is empty.');
-INSERT INTO :schema.error(caption, etext) VALUES('STypeNF', 'SymbolType not found.');
---INSERT INTO :schema.error(caption, etext) VALUES('', '.');
+INSERT INTO :filu.error(caption, etext) VALUES('STypeEY', 'SymbolType is empty.');
+INSERT INTO :filu.error(caption, etext) VALUES('STypeNF', 'SymbolType not found.');
+--INSERT INTO :filu.error(caption, etext) VALUES('', '.');
 
-CREATE OR REPLACE FUNCTION :schema.stype_insert
+CREATE OR REPLACE FUNCTION :filu.stype_insert
 (
-  aSTypeId     :schema.stype.stype_id%TYPE,
-  aCaption     :schema.stype.caption%TYPE,
-  aSeq         :schema.stype.seq%TYPE,
-  aIsProvider  :schema.stype.isprovider%TYPE
+  aSTypeId     :filu.stype.stype_id%TYPE,
+  aCaption     :filu.stype.caption%TYPE,
+  aSeq         :filu.stype.seq%TYPE,
+  aIsProvider  :filu.stype.isprovider%TYPE
 )
 
-RETURNS :schema.stype.stype_id%TYPE AS
+RETURNS :filu.stype.stype_id%TYPE AS
 
 $BODY$
 
 DECLARE
-  mExist :schema.stype.stype_id%TYPE;
-  mId    :schema.stype.stype_id%TYPE;
+  mExist :filu.stype.stype_id%TYPE;
+  mId    :filu.stype.stype_id%TYPE;
 
 BEGIN
 
   mId := COALESCE(aSTypeId, 0);
 
   IF mId = 0 THEN -- check if mExist
-    mId := :schema.id_from_caption('stype', aCaption);
-    IF mId = :schema.error_code('CaptionEY')
-    THEN RETURN :schema.error_code('STypeEY'); END IF;-- see ftype_insert
+    mId := :filu.id_from_caption('stype', aCaption);
+    IF mId = :filu.error_code('CaptionEY')
+    THEN RETURN :filu.error_code('STypeEY'); END IF;-- see ftype_insert
   END IF;
 
   IF mId < 0 THEN
    -- make the insert
-    mId := nextval(':schema.stype_stype_id_seq');
-    INSERT INTO :schema.stype(stype_id, caption, seq, isprovider)
+    mId := nextval(':filu.stype_stype_id_seq');
+    INSERT INTO :filu.stype(stype_id, caption, seq, isprovider)
            VALUES(mId, aCaption, aSeq, aIsProvider);
     --RAISE INFO 'stype_insert added %,  %', mId, aCaption;
 
   ELSE -- make an update
-    UPDATE :schema.stype
+    UPDATE :filu.stype
       SET
         caption    = aCaption,
         seq        = aSeq,
@@ -70,5 +70,5 @@ END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.stype_insert
+-- END OF FUNCTION :filu.stype_insert
 --

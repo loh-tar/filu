@@ -17,27 +17,27 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO :schema.error(caption, etext) VALUES('ErrorNF', 'Error key not found, should never happens!');
--- INSERT INTO :schema.error(caption, etext) VALUES('', '.');
--- :schema.error_code('');
+INSERT INTO :filu.error(caption, etext) VALUES('ErrorNF', 'Error key not found, should never happens!');
+-- INSERT INTO :filu.error(caption, etext) VALUES('', '.');
+-- :filu.error_code('');
 
-CREATE OR REPLACE FUNCTION :schema.error_code
+CREATE OR REPLACE FUNCTION :filu.error_code
 (
-  aCaption :schema.error.caption%TYPE
+  aCaption :filu.error.caption%TYPE
 )
-RETURNS :schema.error.error_id%TYPE AS
+RETURNS :filu.error.error_id%TYPE AS
 $BODY$
 
 DECLARE
-  mErrorCode :schema.error.error_id%TYPE;
+  mErrorCode :filu.error.error_id%TYPE;
 
 BEGIN
 
-  mErrorCode := :schema.id_from_caption('error', aCaption);
+  mErrorCode := :filu.id_from_caption('error', aCaption);
 
   IF mErrorCode < 1 THEN
     RAISE WARNING 'Error key "%" not found.', aCaption;
-    RETURN :schema.error_code('ErrorNF');
+    RETURN :filu.error_code('ErrorNF');
   END IF;
 
   RETURN -mErrorCode;
@@ -47,5 +47,5 @@ $BODY$
 LANGUAGE PLPGSQL IMMUTABLE; --STABLE; -- I think it could be IMMUTABLE because we not change the error table
                                       -- after Filu was installed
 --
--- END OF FUNCTION :schema.error_code
+-- END OF FUNCTION :filu.error_code
 --

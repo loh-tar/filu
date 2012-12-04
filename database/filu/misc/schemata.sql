@@ -19,6 +19,6 @@
 --
 -- Create The Filu Schema
 --
-CREATE SCHEMA :schema AUTHORIZATION :dbuser;
+CREATE SCHEMA :filu AUTHORIZATION :dbuser;
 
--- GRANT ALL ON SCHEMA :schema TO :dbuser;
+-- GRANT ALL ON SCHEMA :filu TO :dbuser;

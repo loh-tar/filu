@@ -17,56 +17,56 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-INSERT INTO :schema.error(caption, etext) VALUES('MotherSymbolNUQ', 'Mother symbol is not unique.');
-INSERT INTO :schema.error(caption, etext) VALUES('MotherSymbolNF', 'Mother not found.');
-INSERT INTO :schema.error(caption, etext) VALUES('MotherSymbolEY', 'Mother is empty.');
-INSERT INTO :schema.error(caption, etext) VALUES('UlySymbolNUQ', 'Underlying symbol is not unique.');
-INSERT INTO :schema.error(caption, etext) VALUES('UlySymbolNF', 'Underlying not found.');
-INSERT INTO :schema.error(caption, etext) VALUES('UlySymbolEY', 'Underlying is empty.');
+INSERT INTO :filu.error(caption, etext) VALUES('MotherSymbolNUQ', 'Mother symbol is not unique.');
+INSERT INTO :filu.error(caption, etext) VALUES('MotherSymbolNF', 'Mother not found.');
+INSERT INTO :filu.error(caption, etext) VALUES('MotherSymbolEY', 'Mother is empty.');
+INSERT INTO :filu.error(caption, etext) VALUES('UlySymbolNUQ', 'Underlying symbol is not unique.');
+INSERT INTO :filu.error(caption, etext) VALUES('UlySymbolNF', 'Underlying not found.');
+INSERT INTO :filu.error(caption, etext) VALUES('UlySymbolEY', 'Underlying is empty.');
 
-CREATE OR REPLACE FUNCTION :schema.underlying_insert
+CREATE OR REPLACE FUNCTION :filu.underlying_insert
 (
-  aMotherSymbol  :schema.symbol.caption%TYPE,
-  aSymbol        :schema.symbol.caption%TYPE,
-  aWeight        :schema.underlying.weight%TYPE
+  aMotherSymbol  :filu.symbol.caption%TYPE,
+  aSymbol        :filu.symbol.caption%TYPE,
+  aWeight        :filu.underlying.weight%TYPE
 )
 RETURNS int2 AS
 $BODY$
 
 DECLARE
-  mMotherFi      :schema.fi.fi_id%TYPE;
-  mUndlyFi       :schema.fi.fi_id%TYPE;
-  mUndlyId       :schema.underlying.underlying_id%TYPE;
+  mMotherFi      :filu.fi.fi_id%TYPE;
+  mUndlyFi       :filu.fi.fi_id%TYPE;
+  mUndlyId       :filu.underlying.underlying_id%TYPE;
 
 BEGIN
   -- Added the given aSymbol as underlying to the aMotherSymbol.
 
-  mMotherFi := :schema.fiid_from_symbolcaption(aMotherSymbol);
+  mMotherFi := :filu.fiid_from_symbolcaption(aMotherSymbol);
   IF mMotherFi < 1 THEN
-    IF mMotherFi = :schema.error_code('SymbolCaptionNUQ') THEN RETURN :schema.error_code('MotherSymbolNUQ');
-      ELSEIF mMotherFi = :schema.error_code('SymbolNF') THEN RETURN :schema.error_code('MotherSymbolNF');
-      ELSE RETURN :schema.error_code('MotherSymbolEY');
+    IF mMotherFi = :filu.error_code('SymbolCaptionNUQ') THEN RETURN :filu.error_code('MotherSymbolNUQ');
+      ELSEIF mMotherFi = :filu.error_code('SymbolNF') THEN RETURN :filu.error_code('MotherSymbolNF');
+      ELSE RETURN :filu.error_code('MotherSymbolEY');
     END IF;
   END IF;
 
-  mUndlyFi := :schema.fiid_from_symbolcaption(aSymbol);
+  mUndlyFi := :filu.fiid_from_symbolcaption(aSymbol);
   IF mUndlyFi < 1 THEN
-    IF mMotherFi = :schema.error_code('SymbolCaptionNUQ') THEN RETURN :schema.error_code('UlySymbolNUQ');
-      ELSEIF mMotherFi = :schema.error_code('SymbolNF') THEN RETURN :schema.error_code('UlySymbolNF');
-      ELSE RETURN :schema.error_code('UlySymbolEY');
+    IF mMotherFi = :filu.error_code('SymbolCaptionNUQ') THEN RETURN :filu.error_code('UlySymbolNUQ');
+      ELSEIF mMotherFi = :filu.error_code('SymbolNF') THEN RETURN :filu.error_code('UlySymbolNF');
+      ELSE RETURN :filu.error_code('UlySymbolEY');
     END IF;
   END IF;
 
   -- Check if already associated to mother
   SELECT underlying_id INTO mUndlyId
-      FROM :schema.underlying
+      FROM :filu.underlying
       WHERE fi_id = mMotherFi and underlying_fi_id = mUndlyFi;
 
   IF FOUND THEN RETURN mUndlyId; END IF;
 
   -- Ok, add them
-  mUndlyId := nextval(':schema.underlying_underlying_id_seq');
-  INSERT INTO :schema.underlying(underlying_id, fi_id, underlying_fi_id, weight)
+  mUndlyId := nextval(':filu.underlying_underlying_id_seq');
+  INSERT INTO :filu.underlying(underlying_id, fi_id, underlying_fi_id, weight)
         VALUES(mUndlyId, mMotherFi, mUndlyFi, aWeight);
 
   RETURN mUndlyId;
@@ -75,5 +75,5 @@ END
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.underlying_insert
+-- END OF FUNCTION :filu.underlying_insert
 --

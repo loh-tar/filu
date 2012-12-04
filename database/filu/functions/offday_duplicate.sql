@@ -17,7 +17,7 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.offday_duplicate()
+CREATE OR REPLACE FUNCTION :filu.offday_duplicate()
 RETURNS TRIGGER AS
 $BODY$
 DECLARE
@@ -26,7 +26,7 @@ DECLARE
 BEGIN
 
   SELECT INTO mExist offday_id
-      FROM :schema.offday
+      FROM :filu.offday
       WHERE market_id = new.market_id
         and offday    = new.offday;
 
@@ -42,10 +42,10 @@ END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
-DROP TRIGGER IF EXISTS :schema_offday_duplicates ON :schema.offday;
+DROP TRIGGER IF EXISTS :filu_offday_duplicates ON :filu.offday;
 
-CREATE TRIGGER :schema_offday_duplicates
+CREATE TRIGGER :filu_offday_duplicates
   BEFORE INSERT
-  ON :schema.offday
+  ON :filu.offday
   FOR EACH ROW
-  EXECUTE PROCEDURE :schema.offday_duplicate();
+  EXECUTE PROCEDURE :filu.offday_duplicate();

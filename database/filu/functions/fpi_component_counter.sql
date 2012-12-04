@@ -38,19 +38,19 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-CREATE OR REPLACE FUNCTION :schema.fpi_ccp
+CREATE OR REPLACE FUNCTION :filu.fpi_ccp
   (
     fiId      bigint,
     marketId  bigint,
     fdate     date,
     tdate     date
   )
-RETURNS SETOF :schema.fdouble AS
+RETURNS SETOF :filu.fdouble AS
 $BODY$
 
 DECLARE
   mRecord    record;
-  mResult    :schema.fdouble;
+  mResult    :filu.fdouble;
   mULcount   int; -- underlying count
 --
 --LongName:Component Counter Percentage
@@ -65,7 +65,7 @@ DECLARE
 BEGIN
   -- Check how many underlying has the FI
   PERFORM underlying_fi_id
-    FROM :schema.underlying
+    FROM :filu.underlying
     WHERE fi_id = fiId;
 
   GET DIAGNOSTICS mULcount = ROW_COUNT;
@@ -76,7 +76,7 @@ BEGIN
 --     mResult.fdate := fdate;
 --     FOR mRecord IN
 --     SELECT qdate
---       FROM :schema.eodbar
+--       FROM :filu.eodbar
 --       WHERE market_id = marketId
 --         and qdate BETWEEN fdate and tdate
 --         and fi_id = fiId
@@ -105,14 +105,14 @@ BEGIN
                   WHEN e2.qopen < e2.qclose THEN  1
                   ELSE 0 END))::float8 AS beef
 
-    FROM :schema.eodbar e1, :schema.eodbar e2
+    FROM :filu.eodbar e1, :filu.eodbar e2
   WHERE 1=1
     and e1.market_id = marketId
     and e1.qdate BETWEEN fdate and tdate
     and e1.qdate = e2.qdate
     and e1.market_id = e2.market_id
     and e2.fi_id in (SELECT underlying_fi_id
-                        FROM :schema.underlying
+                        FROM :filu.underlying
                       WHERE fi_id = fiId)
     and e1.fi_id = fiId
   GROUP BY e1.qdate
@@ -130,5 +130,5 @@ END
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.fpi_ccp(...)
+-- END OF FUNCTION :filu.fpi_ccp(...)
 --

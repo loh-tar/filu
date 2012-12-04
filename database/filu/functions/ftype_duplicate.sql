@@ -17,7 +17,7 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.ftype_duplicate()
+CREATE OR REPLACE FUNCTION :filu.ftype_duplicate()
 RETURNS TRIGGER AS
 $BODY$
 DECLARE
@@ -28,14 +28,14 @@ BEGIN
   new.ftype_id := COALESCE(new.ftype_id, 0);
 
   -- Try to update
-  UPDATE :schema.ftype
+  UPDATE :filu.ftype
       SET caption    = new.caption
       WHERE ftype_id = new.ftype_id;
 
   IF FOUND THEN RETURN NULL; END IF;
 
   -- Not updated, check if caption exist
-  SELECT INTO mExist :schema.id_from_caption('ftype', new.caption);
+  SELECT INTO mExist :filu.id_from_caption('ftype', new.caption);
 
   IF mExist > 0 THEN RETURN NULL; END IF; -- Nothing todo
 
@@ -45,10 +45,10 @@ END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 
-DROP TRIGGER IF EXISTS :schema_ftype_duplicates ON :schema.ftype;
+DROP TRIGGER IF EXISTS :filu_ftype_duplicates ON :filu.ftype;
 
-CREATE TRIGGER :schema_ftype_duplicates
+CREATE TRIGGER :filu_ftype_duplicates
   BEFORE INSERT
-  ON :schema.ftype
+  ON :filu.ftype
   FOR EACH ROW
-  EXECUTE PROCEDURE :schema.ftype_duplicate();
+  EXECUTE PROCEDURE :filu.ftype_duplicate();

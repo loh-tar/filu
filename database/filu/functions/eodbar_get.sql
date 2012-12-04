@@ -17,15 +17,15 @@
  *   along with Filu. If not, see <http://www.gnu.org/licenses/>.
  */
 
-CREATE OR REPLACE FUNCTION :schema.eodbar_get
+CREATE OR REPLACE FUNCTION :filu.eodbar_get
 (
-  aFiId        :schema.fi.fi_id%TYPE,
-  aMarketId    :schema.market.market_id%TYPE,
-  aFDate       :schema.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
-  aTDate       :schema.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
+  aFiId        :filu.fi.fi_id%TYPE,
+  aMarketId    :filu.market.market_id%TYPE,
+  aFDate       :filu.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
+  aTDate       :filu.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
   aLimit       int4                             DEFAULT 0  -- max number of rows
 )
-RETURNS SETOF :schema.fbar AS
+RETURNS SETOF :filu.fbar AS
 $BODY$
 DECLARE
   mHasFunc      int4;
@@ -37,13 +37,13 @@ BEGIN
 -- http://www.mail-archive.com/pgsql-performance@postgresql.org/msg12945.html
 
   SELECT ftype.caption INTO mFunc
-    FROM  :schema.ftype
-      LEFT JOIN :schema.fi USING(ftype_id)
+    FROM  :filu.ftype
+      LEFT JOIN :filu.fi USING(ftype_id)
     WHERE fi.fi_id = aFiId;
 
   IF lower(mFunc) = 'stock' THEN -- Save some time
     --RAISE NOTICE 'As most times...Stock';
-    RETURN QUERY SELECT * FROM :schema.gfi_stock_eodbar(aFiId, aMarketId, aFDate, aTDate, aLimit);
+    RETURN QUERY SELECT * FROM :filu.gfi_stock_eodbar(aFiId, aMarketId, aFDate, aTDate, aLimit);
     RETURN;
   END IF;
 
@@ -57,18 +57,18 @@ BEGIN
     FROM  pg_namespace ns, pg_proc proc, pg_type rt
     WHERE ns.oid = proc.pronamespace
       and proc.prorettype = rt.oid
-      and ns.nspname = ':schema'
+      and ns.nspname = ':filu'
       and proc.proname = mFunc;
 
   IF mHasFunc IS NULL THEN mFunc := 'gfi_rawdata_eodbar'; END IF;
 
   --RAISE NOTICE 'Used function is %', mFunc;
-  RETURN QUERY EXECUTE 'SELECT * FROM :schema.' || quote_ident(mFunc) || ' ($1, $2, $3, $4, $5)'
+  RETURN QUERY EXECUTE 'SELECT * FROM :filu.' || quote_ident(mFunc) || ' ($1, $2, $3, $4, $5)'
                 USING aFiId, aMarketId, aFDate, aTDate, aLimit;
 
 END;
 $BODY$
 LANGUAGE PLPGSQL VOLATILE;
 --
--- END OF FUNCTION :schema.eodbar_get(...)
+-- END OF FUNCTION :filu.eodbar_get(...)
 --

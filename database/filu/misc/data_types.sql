@@ -26,9 +26,9 @@
 --
 -- Double Type
 --
-DROP TYPE IF EXISTS :schema.fdouble CASCADE;
+DROP TYPE IF EXISTS :filu.fdouble CASCADE;
 
-CREATE TYPE :schema.fdouble AS(
+CREATE TYPE :filu.fdouble AS(
     fdate     date,
     ftime     time,
     fdata     float
@@ -39,9 +39,9 @@ CREATE TYPE :schema.fdouble AS(
 --
 -- Double2 Type
 --
-DROP TYPE IF EXISTS :schema.fdouble2 CASCADE;
+DROP TYPE IF EXISTS :filu.fdouble2 CASCADE;
 
-CREATE TYPE :schema.fdouble2 AS(
+CREATE TYPE :filu.fdouble2 AS(
     fdate     date,
     ftime     time,
     fdata1    float,
@@ -59,9 +59,9 @@ CREATE TYPE :schema.fdouble2 AS(
 --
 -- Bar Type
 --
-DROP TYPE IF EXISTS :schema.fbar CASCADE;
+DROP TYPE IF EXISTS :filu.fbar CASCADE;
 
-CREATE TYPE :schema.fbar AS(
+CREATE TYPE :filu.fbar AS(
     fdate     date,
     ftime     time,
     fopen     float,
