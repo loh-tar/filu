@@ -38,12 +38,14 @@ void FiluU::openDB()
 
   if(hasError()) return;
 
-  mUserSchema = "user_" + qgetenv("USER");
-
   QString devil = mRcFile->getST("Devil");
   if(!devil.isEmpty())
   {
-    mUserSchema.append("_" + devil);
+    mSqlStaticParms.insert(":user", "user_" + qgetenv("USER") + "_" + devil);
+  }
+  else
+  {
+    mSqlStaticParms.insert(":user", "user_" + qgetenv("USER"));
   }
 
   execute("_UserExist", "SELECT nspname FROM pg_namespace WHERE nspname = ':user'");
@@ -203,7 +205,7 @@ bool FiluU::putCOs(COTuple& co)
   {
     if(co.id() < 1)
     {
-      co.setId(getNextId(mUserSchema, "co"));
+      co.setId(getNextId(mSqlStaticParms.value(":user"), "co"));
     }
 
     query->bindValue(":id", co.id());

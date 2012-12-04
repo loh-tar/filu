@@ -614,8 +614,14 @@ void Filu::setSqlParm(const QString& parm, const QVariant& value)
 {
   // Work together with execSql(). All parameter a SQL need
   // has to set by multiple call of this function
-
   mSqlParm.insert(parm, value);
+}
+
+void Filu::setStaticSqlParm(const QString& parm, const QString& value)
+{
+  // Similar to setSqlParm() but the substitution is done before the
+  // SQL is send to the server. There must not underscores in parm
+  mSqlStaticParms.insert(parm, value);
 }
 
 int Filu::quality(const QString& qual)
@@ -1311,7 +1317,7 @@ void Filu::createSchema()
 
   execSql("filu/misc/schemata");
   if(hasError()) return;
-  verbose(FUNC, tr("New filu schema '%1' successful created.").arg(mFiluSchema));
+  verbose(FUNC, tr("New filu schema '%1' successful created.").arg(mSqlStaticParms.value(":filu")));
 
   execSql("filu/misc/data_types");
   if(hasError()) return;
@@ -1512,10 +1518,13 @@ QString Filu::parseSql(const QString& name, const QString& rawSql)
   QString sql = rawSql;
 
   // Fix the schema and client place holder
-  sql.replace(":schema", mFiluSchema);
-  sql.replace(":dbuser", mRcFile->getST("PgUserRole"));
-  sql.replace(":filu", mFiluSchema);
-  sql.replace(":user", mUserSchema);
+  foreach(QString parm, mSqlStaticParms.keys())
+  {
+    // Matches ':foo.' but not ':foobar.'
+    QString pattern = QString("%1(?=[\\W_])").arg(parm);
+    QRegExp rx(pattern);
+    sql.replace(rx, mSqlStaticParms.value(parm));
+  }
 
   // Extract all parameter ":foo" of the SQL
   StringSet parms;
@@ -1752,7 +1761,6 @@ void Filu::readSettings()
 {
   QCoreApplication::addLibraryPath(mRcFile->getST("PluginPath"));
   mSqlPath = mRcFile->getST("SqlPath");
-  mFiluSchema = mRcFile->getST("FiluSchema");
   mCommitBlockSize = mRcFile->getIT("CommitBlockSize");
   mDaysToFetchIfNoData = mRcFile->getIT("DaysToFetchIfNoData");
 
@@ -1762,11 +1770,20 @@ void Filu::readSettings()
   QString devil = mRcFile->getST("Devil");
   if(!devil.isEmpty())
   {
-    mFiluSchema.append("_" + qgetenv("USER") + "_" + devil);
+    QString filuSchema("%1_%2_%3");
+    mSqlStaticParms.insert(":filu", filuSchema.arg(mRcFile->getST("FiluSchema")
+                                                 , qgetenv("USER")
+                                                 , devil));
     QString info = devilInfoText();
     verbose(FUNC, info, eEver);
     record(FUNC, info);
   }
+  else
+  {
+    mSqlStaticParms.insert(":filu", mRcFile->getST("FiluSchema"));
+  }
+
+  mSqlStaticParms.insert(":dbuser", mRcFile->getST("PgUserRole"));
 
   if(verboseLevel(eMax)) printSettings();
 }
@@ -1783,7 +1800,7 @@ void Filu::printSettings()
   print(txt.arg("PgUserRole", width).arg(mRcFile->getST("PgUserRole")));
   print(txt.arg("Password", width).arg(mRcFile->getST("Password")));
   print(txt.arg("DatabaseName", width).arg(mRcFile->getST("DatabaseName")));
-  print(txt.arg("FiluSchema", width).arg(mFiluSchema));
+  print(txt.arg("FiluSchema", width).arg(mSqlStaticParms.value(":filu")));
   print(txt.arg("SqlPath ", width).arg(mSqlPath));
   print(txt.arg("CommitBlockSize", width).arg(mCommitBlockSize));
   print(txt.arg("DaysToFetchIfNoData", width).arg(mDaysToFetchIfNoData));

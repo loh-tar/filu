@@ -195,6 +195,7 @@ class Filu : public Newswire
     // Should only be used in rare cases or while development.
     QSqlQuery*  execSql(const QString& name);
     void        setSqlParm(const QString& parm, const QVariant& value);
+    void        setStaticSqlParm(const QString& parm, const QString& value);
 
     int         quality(const QString& quality);
     QString     quality(int quality);
@@ -228,7 +229,6 @@ class Filu : public Newswire
 
     RcFile*     mRcFile;
     QString     mSqlPath;
-    QString     mUserSchema;
     QString     mConnectionName;
     QString     mFromDate;
     QString     mToDate;
@@ -241,9 +241,9 @@ class Filu : public Newswire
 
     QSqlDatabase                mFiluDB;
     QHash<QString, QSqlQuery*>  mSQLs;
-    QHash<QString, QVariant>    mSqlParm;      // Holds all values of ':foo' sql parameters
-                                               // to all SQLs
-    QHash<QString, StringSet>   mSqlParmNames; // Holds all parameter names to a sql
+    QHash<QString, QVariant>    mSqlParm;       // Holds values of ':foo' sql parameters to all SQLs
+    QHash<QString, QString>     mSqlStaticParms;// Holds static values of ':foo' sql parameters
+    QHash<QString, StringSet>   mSqlParmNames;  // Holds all parameter names to a sql
 
   private:
     BarTuple*     fillQuoteTuple(QSqlQuery*);
@@ -253,7 +253,6 @@ class Filu : public Newswire
 
     // Some Filu Settings
     void        readSettings();
-    QString     mFiluSchema;
     int         mCommitBlockSize;
     int         mDaysToFetchIfNoData;
 };
