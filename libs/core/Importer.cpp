@@ -241,6 +241,7 @@ bool Importer::notFound(const QString& what/* = ""*/)
 
 void Importer::reset()
 {
+  mFilu->setNoErrorLogging(); // FIXME It bothers me
   clearErrors();
   mPendingData.clear();
   mHeader.clear();
