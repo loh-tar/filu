@@ -28,6 +28,7 @@
 #include "ManagerF.h"
 
 #include "AddFiPage.h"
+#include "FiluU.h"
 #include "FiPage.h"
 #include "IndicatorPage.h"
 #include "LogBookPage.h"
@@ -80,7 +81,17 @@ ManagerF::ManagerF(QApplication& app)
   dummy->setLayout(mainLayout);
   setCentralWidget(dummy);
 
-  setWindowTitle(tr("ManagerF - The Filu Manager"));
+  QString devil = mFilu->devilInfoText();
+  if(!devil.isEmpty())
+  {
+    setWindowTitle(devil);
+    messageBox(makeMessage(FUNC, devil, eInfoMsg));
+  }
+  else
+  {
+    setWindowTitle(tr("ManagerF - The Filu Manager"));
+  }
+
 
   //
   // Restore all settings

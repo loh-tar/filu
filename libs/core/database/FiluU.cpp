@@ -40,6 +40,12 @@ void FiluU::openDB()
 
   mUserSchema = "user_" + qgetenv("USER");
 
+  QString devil = mRcFile->getST("Devil");
+  if(!devil.isEmpty())
+  {
+    mUserSchema.append("_" + devil);
+  }
+
   execute("_UserExist", "SELECT nspname FROM pg_namespace WHERE nspname = ':user'");
 
   if(mLastResult == eNoData)

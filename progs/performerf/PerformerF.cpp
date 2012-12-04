@@ -37,7 +37,16 @@
 PerformerF::PerformerF(QApplication& app)
           : FMainApp("PerformerF", app)
 {
-  mWindowTitel = tr("PerformerF - The Filu Chart Tool");
+  QString devil = mFilu->devilInfoText();
+  if(!devil.isEmpty())
+  {
+    mWindowTitel = devil;
+  }
+  else
+  {
+    mWindowTitel = tr("PerformerF - The Filu Chart Tool");
+  }
+
   setWindowTitle(mWindowTitel);
 
   // Some needs

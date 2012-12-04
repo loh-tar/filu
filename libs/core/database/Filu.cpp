@@ -34,8 +34,6 @@
 #include "SymbolTuple.h"
 #include "SymbolTypeTuple.h"
 
-
-
 Filu::Filu(const QString& cn, RcFile* rcFile)
     : Newswire(FUNC)
     , mRcFile(rcFile)
@@ -1209,6 +1207,15 @@ QString Filu::serverVersion()
   return mLastQuery->value(0).toString();
 }
 
+QString Filu::devilInfoText()
+{
+  QString devil = mRcFile->getST("Devil");
+
+  if(devil.isEmpty()) return "";
+
+  return tr("*** Using devil version %1 ***").arg(devil);
+}
+
 int Filu::getNextId(const QString& schema, const QString& table)
 {
   const QString sql = QString("SELECT nextval('%1.%2_%2_id_seq')").arg(schema).arg(table);
@@ -1221,8 +1228,8 @@ int Filu::getNextId(const QString& schema, const QString& table)
 void Filu::openDB()
 {
   readSettings();
-  mFiluDB = QSqlDatabase::addDatabase("QPSQL", mConnectionName);
 
+  mFiluDB = QSqlDatabase::addDatabase("QPSQL", mConnectionName);
   mFiluDB.setHostName(mRcFile->getST("HostName"));
   mFiluDB.setPort(mRcFile->getIT("HostPort"));
   mFiluDB.setDatabaseName(mRcFile->getST("DatabaseName"));
@@ -1751,6 +1758,15 @@ void Filu::readSettings()
 
   setLogFile(/*FIXME:FUNC, */mRcFile->getST("LogFile"));
   setVerboseLevel(FUNC, mRcFile->getST("SqlDebug"));
+
+  QString devil = mRcFile->getST("Devil");
+  if(!devil.isEmpty())
+  {
+    mFiluSchema.append("_" + qgetenv("USER") + "_" + devil);
+    QString info = devilInfoText();
+    verbose(FUNC, info, eEver);
+    record(FUNC, info);
+  }
 
   if(verboseLevel(eMax)) printSettings();
 }

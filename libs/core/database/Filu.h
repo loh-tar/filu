@@ -209,6 +209,7 @@ class Filu : public Newswire
     int         lastResult() { return mLastResult; };
     QString     dbFuncErrText(int errorCode);
     QString     serverVersion();
+    QString     devilInfoText();
 
   protected:
     bool        executeSqls(const QString& path);
