@@ -1290,18 +1290,25 @@ void Filu::createSchema()
 {
   execute("_Psst!", "SET client_min_messages TO WARNING");
 
+  // Note: In PostgreSQL 9.0 and later, PL/pgSQL is pre-installed by default.
+  if(eData == execute("_Test4Language", "SELECT 1 FROM pg_language WHERE lanname='plpgsql'"))
+  {
+    verbose(FUNC, "Language plpgsql exist, skip creation.");
+  }
+  else
+  {
+    execute("_CreateLanguage", "CREATE LANGUAGE plpgsql");
+    if(hasError()) return;
+    verbose(FUNC, tr("Language plpgsql successful created."));
+  }
+
   execSql("filu/misc/schemata");
   if(hasError()) return;
   verbose(FUNC, tr("New filu schema '%1' successful created.").arg(mFiluSchema));
 
-  execSql("filu/misc/languages");
-  if(hasError()) return;
-  verbose(FUNC, tr("Languags successful created."));
-
   execSql("filu/misc/data_types");
   if(hasError()) return;
   verbose(FUNC, tr("Data types successful created."));
-
 
   createTables();
   createFunctions();
