@@ -71,6 +71,7 @@ class AgentF : public FCoreApp
     void cmdAdd();
     void deleteBars();
     void splitBars();
+    void exorcise();
     void printSettings();
     void printError(const QString message);
     void check4MasterCMD();
