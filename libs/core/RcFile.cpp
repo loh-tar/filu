@@ -174,6 +174,8 @@ QStringList RcFile::takeConfigParms(QStringList& cmdLine)
     return filuParms;
   }
 
+  bool makePermanent = cmdLine.at(1) == "set" ? true : false;
+
   cmdLine.takeAt(pos); // Remove --config
 
   QString parm;
@@ -197,9 +199,22 @@ QStringList RcFile::takeConfigParms(QStringList& cmdLine)
   if(mForced.size())
   {
     QStringList keys = mForced.keys();
+    int width = - FTool::maxSizeOfStrings(keys);
     foreach(QString key, keys)
-      mNewswire->verbose(FUNC, tr("Taken config parm: Set  '%1' to '%2'")
-                                 .arg(key).arg(mForced.value(key).toString()), Newswire::eAmple);
+    {
+      if(makePermanent)
+      {
+        mNewswire->verbose(FUNC, tr("Write to config file: %1 = %2")
+                                 .arg(key, width).arg(mForced.value(key).toString()), Newswire::eEver);
+
+        set(key, mForced.value(key));
+      }
+      else
+      {
+        mNewswire->verbose(FUNC, tr("Use temporary config parm: %1 = %2")
+                                  .arg(key, width).arg(mForced.value(key).toString()), Newswire::eAmple);
+      }
+    }
   }
 
   return filuParms;
