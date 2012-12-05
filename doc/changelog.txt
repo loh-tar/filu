@@ -1,3 +1,32 @@
+2012-12-06
+============
+Damn Santa Claus Snapshot
+---------------------------
+You have your shoes polished!
+
+A lot of changes at not so interesting parts. It is poor tested, so I hope it
+make not to much trouble. It should be easier to install and compile faster.
+Anyway we have some nice user experience improvements.
+
+PerformerF and ManagerF shows tables a little spaces sparing and without grids.
+ManagerF can now hide the page icons by a splitter and the indicator editor
+is a little bit less pesky.
+
+PerformerF is now watching the used indicator and reload them if edited which
+is very nice while indicator development. The indicator picker remember his
+last selection.
+
+AgentF has now better help text, write nicer into the log file and has new
+devilish commands. That's, and because all is almost untested, is why the
+snapshot is 'damn' ;-)
+
+An update should work without special treatments. Take a look at the readme
+and go on reading the changelog to notice what may affect you.
+
+PS: At 6th of December in Germany comes 'Der Nikolaus' and places some candy
+in well polished shoes.
+
+
 2012-12-05
 ============
 AgentF
