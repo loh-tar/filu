@@ -296,6 +296,8 @@ bool CmdHelper::isMissingParms(int n/* = 0*/)
     return true;
   }
 
+  Option saveInqOpt = mInqOpt;
+
   if(mMandatory.size())
   {
     foreach(StrSet mo, mMandatory)
@@ -313,9 +315,10 @@ bool CmdHelper::isMissingParms(int n/* = 0*/)
     }
   }
 
-  if(hasError()) return true;
+  mInqOpt = saveInqOpt;
 
-  if(!n) return false;
+  if(hasError()) return true;
+  if(!n)         return false;
 
   int missing = n - mInqOpt.parmCount;
 
