@@ -306,7 +306,7 @@ bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
   return true;
 }
 
-void AgentF::readCommandFile()
+void AgentF::cmdRcf()
 {
   // Command looks like
   // agentf rcf mycommands.txt
@@ -320,27 +320,41 @@ void AgentF::readCommandFile()
     return;
   }
 
-  QFile file(mCmd->argStr(1));
+  // Don't execute some commands which could make trouble
+  bool saveIamEvil = mIamEvil;
+  mIamEvil = true;
+
+  QString fileName = mCmd->argStr(1);
+
+  QFile file(fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    error(FUNC, tr("Can't open file: %1").arg(mCmd->argStr(1)));
+    error(FUNC, tr("Can't open file: %1").arg(fileName));
     return;
   }
 
   // Read the commands from file
   QTextStream in(&file);
+  int lnNo = 0;
   while (!in.atEnd())
   {
     QString line = in.readLine();
+    ++lnNo;
     QStringList cmd;
 
     if(!lineToCommand(line, cmd)) continue;
 
     cmd.prepend("RCF"); // Add the "caller", normaly is here "agentf" placed
     execCmd(cmd);
+    if(hasError())
+    {
+      error(FUNC, tr("Error after executing line %1 of file %2").arg(lnNo).arg(fileName));
+      break;
+    }
   }
 
   file.close();
+  mIamEvil = saveIamEvil;
 }
 
 void AgentF::beEvil()
@@ -886,7 +900,7 @@ void AgentF::execCmd(const QStringList& parm)
   // Look for each known command and call the related function
   if(mCmd->hasCmd("this"))               addEODBarData();
   else if(mCmd->hasCmd("full"))          updateAllBars();
-  else if(mCmd->hasCmd("rcf"))           readCommandFile();
+  else if(mCmd->hasCmd("rcf"))           cmdRcf();
   else if(mCmd->hasCmd("imp"))           import();
   else if(mCmd->hasCmd("exp"))           exxport();
   else if(mCmd->hasCmd("scan"))          scan();

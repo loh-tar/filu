@@ -61,7 +61,7 @@ class AgentF : public FCoreApp
     void addEODBarData();
     void updateAllBars();
     bool lineToCommand(const QString& line, QStringList& cmd);
-    void readCommandFile();
+    void cmdRcf();
     void beEvil();
     void import();
     void exxport();
