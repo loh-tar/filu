@@ -23,6 +23,7 @@
 #include "FiluU.h"
 
 #include "COTuple.h"
+#include "FTool.h"
 #include "RcFile.h"
 
 FiluU::FiluU(const QString& connectionName, RcFile* rcFile)
@@ -38,8 +39,8 @@ void FiluU::openDB()
 
   if(hasError()) return;
 
-  QString devil = mRcFile->getST("Devil");
-  if(!devil.isEmpty())
+  QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));
+  if(!devil.isEmpty() and "_" != devil)
   {
     mSqlStaticParms.insert(":user", "user_" + qgetenv("USER") + "_" + devil);
   }

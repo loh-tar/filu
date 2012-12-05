@@ -306,3 +306,13 @@ FTool::maxSizeOfStrings(const QStringList& sl)
   foreach(QString s, sl) max = qMax(max, s.size());
   return max;
 }
+
+QString
+FTool::makeValidWord(const QString& s)
+{
+  QString w = s;
+  w.replace(QRegExp("\\W"), "_");                 // Replace all non "word" character
+  while(w.contains("__")) w.replace("__", "_");   // Remove doubled underscores
+  if(w.contains(QRegExp("^\\d"))) w.prepend("_"); // Don't start with a digit
+  return w;
+}

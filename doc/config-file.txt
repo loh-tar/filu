@@ -49,12 +49,12 @@ DatabaseName=filu
 Devil=
 HostName=localhost
 HostPort=5432
-FiluSchema=filu
 Password=filu
 PgUserRole=filu
   Which database is to use and how could it be accessed. Yes, Password in clear text
   looks like that there could be things improved. The Devil key is used as appendix
-  to FiluSchema and UserSchema for testing purposes, for devil-opers ;-)
+  to the Filu schema and user schema for testing purposes, for devil-opers ;-)
+  The easiest way to change the Devil value is to use 'sum' and 'exo' commands.
 
 CommitBlockSize=500
   How many data rows will be send to the server before they will committed. Sadly

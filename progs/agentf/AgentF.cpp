@@ -30,6 +30,7 @@
 #include "Depots.h"
 #include "Exporter.h"
 #include "FiluU.h"
+#include "FTool.h"
 #include "Importer.h"
 #include "RcFile.h"
 #include "Scanner.h"
@@ -684,15 +685,17 @@ void AgentF::summon()
   {
     if(mCmd->printThisWay("<Devil>")) return;
 
-    mCmd->printComment(tr("Switch to (or create new) development schemata for the current user."));
+    mCmd->printComment(tr("Switch to (or create new) development schemata for the current user. "
+                          "The name should only contain 'valid' word characters, otherwise will "
+                          "they replaced by underscroes."));
     mCmd->printNote(tr("To list existing development schemata use the 'exo' command."));
     mCmd->printForInst("newidea");
     mCmd->aided();
     return;
   }
 
-  QString devil = mCmd->parmStr(1);
-  if(mRcFile->getST("Devil") == devil)
+  QString devil = FTool::makeValidWord(mCmd->parmStr(1));
+  if(FTool::makeValidWord(mRcFile->getST("Devil")) == devil)
   {
     verbose(FUNC, tr("I'm already a devilish '%1'").arg(devil));
     return;
@@ -718,7 +721,7 @@ void AgentF::exorcise()
     return;
   }
 
-  QString devil = mRcFile->getST("Devil");
+  QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));
   if(!devil.isEmpty())
   {
     verbose(FUNC, tr("I renunciate the devil '%1'").arg(devil));
@@ -780,7 +783,7 @@ void AgentF::exorcise()
   {
     if(devils.contains(killDevil))
     {
-      mFilu->setStaticSqlParm(":filuDevil", filuDevil.arg(mRcFile->getST("FiluSchema"), user, killDevil));
+      mFilu->setStaticSqlParm(":filuDevil", filuDevil.arg("filu", user, killDevil));
       mFilu->setStaticSqlParm(":userDevil", userDevil.arg(user, killDevil));
       mFilu->execSql("BackToHell");
 
@@ -833,6 +836,8 @@ void AgentF::cmdSet()
                           "--help does not prevent from writing into the config file."));
 
     mCmd->printForInst("--config SqlDebug=Ample Verbose=Ample");
+    mCmd->printForInst("--config Devil=-");
+    mCmd->printComment(tr("Use the hyphens to disable *temporary* an existing Devil=foo setting"));
     mCmd->aided();
     return;
   }

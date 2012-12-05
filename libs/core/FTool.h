@@ -81,5 +81,10 @@ formatToTable(const QStringList& data, int width
 int
 maxSizeOfStrings(const QStringList& sl);
 
+// Retruns a string where all not valid word characters are replaced
+// by an underscore "_"
+QString
+makeValidWord(const QString& s);
+
 }
 #endif

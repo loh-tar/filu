@@ -29,6 +29,7 @@
 #include "BarTuple.h"
 #include "BrokerTuple.h"
 #include "FiTuple.h"
+#include "FTool.h"
 #include "MarketTuple.h"
 #include "RcFile.h"
 #include "SymbolTuple.h"
@@ -1767,20 +1768,18 @@ void Filu::readSettings()
   setLogFile(/*FIXME:FUNC, */mRcFile->getST("LogFile"));
   setVerboseLevel(FUNC, mRcFile->getST("SqlDebug"));
 
-  QString devil = mRcFile->getST("Devil");
-  if(!devil.isEmpty())
+  QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));
+  if(!devil.isEmpty() and "_" != devil)
   {
     QString filuSchema("%1_%2_%3");
-    mSqlStaticParms.insert(":filu", filuSchema.arg(mRcFile->getST("FiluSchema")
-                                                 , qgetenv("USER")
-                                                 , devil));
+    mSqlStaticParms.insert(":filu", filuSchema.arg("filu", qgetenv("USER"), devil));
     QString info = devilInfoText();
     verbose(FUNC, info, eEver);
     record(FUNC, info);
   }
   else
   {
-    mSqlStaticParms.insert(":filu", mRcFile->getST("FiluSchema"));
+    mSqlStaticParms.insert(":filu", "filu");
   }
 
   mSqlStaticParms.insert(":dbuser", mRcFile->getST("PgUserRole"));
@@ -1800,7 +1799,6 @@ void Filu::printSettings()
   print(txt.arg("PgUserRole", width).arg(mRcFile->getST("PgUserRole")));
   print(txt.arg("Password", width).arg(mRcFile->getST("Password")));
   print(txt.arg("DatabaseName", width).arg(mRcFile->getST("DatabaseName")));
-  print(txt.arg("FiluSchema", width).arg(mSqlStaticParms.value(":filu")));
   print(txt.arg("SqlPath ", width).arg(mSqlPath));
   print(txt.arg("CommitBlockSize", width).arg(mCommitBlockSize));
   print(txt.arg("DaysToFetchIfNoData", width).arg(mDaysToFetchIfNoData));
