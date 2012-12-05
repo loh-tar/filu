@@ -441,7 +441,7 @@ void CmdAdd::takeDepotOptions()
     mHeader << "DepotId";
     mData   << mCmd->strParmInt(1);
   }
-  else //if(mCmd->has("dp"))
+  else if(mCmd->has("dp")) // We must ask because mCmd has to set intern variables
   {
     if(mCmd->parmCount() > 1)
     {
