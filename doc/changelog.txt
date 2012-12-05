@@ -1,3 +1,21 @@
+2012-12-05
+============
+AgentF
+--------
+ - New command 'exo', exorcise the devil, remove development schemata
+ - New command 'sum', summon the devil, create new development schemata
+ - New command 'set', set config file values
+ - Change command 'rcf', stop if execution cause an error
+
+Config File
+-------------
+ - Remove key FiluSchema
+ - Add key Devil
+
+The Devil value is used as appendix to the Filu schema, which s now fix, and
+UserSchema for testing purposes,
+
+
 2012-12-03
 ============
 Sundries
