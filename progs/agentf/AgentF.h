@@ -71,6 +71,7 @@ class AgentF : public FCoreApp
     void cmdAdd();
     void deleteBars();
     void splitBars();
+    void summon();
     void exorcise();
     void cmdSet();
     void printSettings();

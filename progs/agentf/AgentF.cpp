@@ -50,7 +50,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
-  mCmd->regCmds("this full rcf imp exp scan add daemon exo "
+  mCmd->regCmds("this full rcf imp exp scan add daemon sum exo "
                 "filu deleteBars splitBars info depots set");
 
   mCmd->regStdOpts("verbose");
@@ -664,6 +664,32 @@ void AgentF::splitBars()
   else verbose(FUNC, tr("%1 bars adjusted.").arg(nra));
 }
 
+void AgentF::summon()
+{
+  if(mCmd->isMissingParms(1))
+  {
+    if(mCmd->printThisWay("<Devil>")) return;
+
+    mCmd->printComment(tr("Switch to (or create new) development schemata for the current user."));
+    mCmd->printNote(tr("To list existing development schemata use the 'exo' command."));
+    mCmd->printForInst("newidea");
+    mCmd->aided();
+    return;
+  }
+
+  QString devil = mCmd->parmStr(1);
+  if(mRcFile->getST("Devil") == devil)
+  {
+    verbose(FUNC, tr("I'm already a devilish '%1'").arg(devil));
+    return;
+  }
+
+  verbose(FUNC, tr("I summon the devil '%1'").arg(devil));
+  mRcFile->set("Devil", devil);
+  mFilu->closeDB();
+  mFilu->openDB();
+}
+
 void AgentF::exorcise()
 {
   if(mCmd->isMissingParms())
@@ -827,6 +853,7 @@ void AgentF::execCmd(const QStringList& parm)
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
+    mCmd->inCmdBrief("sum", tr("Summon the devil"));
     mCmd->inCmdBrief("exo", tr("Exorcise the devil"));
     mCmd->inCmdBrief("set", tr("Set config file values"));
 
@@ -869,6 +896,7 @@ void AgentF::execCmd(const QStringList& parm)
   else if(mCmd->hasCmd("filu"))          filu();
   else if(mCmd->hasCmd("deleteBars"))    deleteBars();
   else if(mCmd->hasCmd("splitBars"))     splitBars();
+  else if(mCmd->hasCmd("sum"))           summon();
   else if(mCmd->hasCmd("exo"))           exorcise();
   else if(mCmd->hasCmd("set"))           cmdSet();
   else if(mCmd->hasCmd("info"))
