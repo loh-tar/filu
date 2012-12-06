@@ -29,3 +29,26 @@ set(USERFILES_PATH /usr/local/lib/Filu/userfiles)
 install(DIRECTORY ${USERFILES_FILES}
         DESTINATION ${USERFILES_PATH}
 )
+
+# Install MakeNameNice.conf file
+install(FILES ${FiluRoot_SOURCE_DIR}/doc/make-name-nice.conf
+        DESTINATION ${USERFILES_PATH}
+        RENAME MakeNameNice.conf
+)
+
+# Install user settings file
+install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-settings-file.conf
+        DESTINATION ${USERFILES_PATH}
+        RENAME Filu.conf
+)
+
+# Install systemwide settings file
+set(SYSTEM_WIDE_SETTINGS_FILE Filu.conf)
+if(EXISTS /etc/xdg/Filu.conf)
+    set(SYSTEM_WIDE_SETTINGS_FILE Filu.conf.new)
+endif(EXISTS /etc/xdg/Filu.conf)
+
+install(FILES ${FiluRoot_SOURCE_DIR}/doc/systemwide-settings-file.conf
+        DESTINATION /etc/xdg/
+        RENAME ${SYSTEM_WIDE_SETTINGS_FILE}
+)
