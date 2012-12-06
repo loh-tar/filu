@@ -57,7 +57,6 @@ class RcFile : public QSettings
                   };
 
     void          checkFiluHome();
-    bool          createDir(const QString& d);
     void          setFullPath(const QString& path, const QString& key);
 
     Newswire*     mNewswire;

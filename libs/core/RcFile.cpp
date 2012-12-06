@@ -28,54 +28,15 @@ RcFile::RcFile(Newswire* parent)
       : QSettings("Filu")
       , mNewswire(parent)
 {
-  mDefault.reserve(34);
+  mDefault.reserve(6);
 
-  // Global stuff
-  mDefault.insert("InstallPath",       "/usr/local/lib/Filu/"); // FIXME Don't hard code, use a cmake target
-  mDefault.insert("PluginPath",        "");
-  mDefault.insert("ProviderPath",      "provider/");
-  mDefault.insert("FiluHome",          "Filu/");
+  mDefault.insert("FiluHome",          "/Filu/");
   mDefault.insert("IndicatorPath",     "Indicators/");
   mDefault.insert("IndiSetsPath",      "IndicatorSets/");
   mDefault.insert("TradingRulePath",   "TradingRules/");
   mDefault.insert("IndiFilterSetPath", "IndicatorFilterSettings/");
-  mDefault.insert("MakeNameNice",      "true");
-  mDefault.insert("Verbose",           "Info");
 
-  // Filu stuff
-  mDefault.insert("HostName",          "localhost");
-  mDefault.insert("HostPort",          5432);
-  mDefault.insert("PgUserRole",        "filu");
-  mDefault.insert("Password",          "filu"); // FIXME: hmm, pw in clear text...
-  mDefault.insert("DatabaseName",      "filu");
-  mDefault.insert("FiluSchema",        "filu");
-  mDefault.insert("SqlPath",           "/usr/local/lib/Filu/sqls/");
-  mDefault.insert("CommitBlockSize",   500);
-  mDefault.insert("DaysToFetchIfNoData",    365);
-  mDefault.insert("SqlDebug",          "Quiet");
-
-  // Agent stuff
-  mDefault.insert("MaxClones",         5);
   mDefault.insert("LogFile",           "filu.log");
-
-  // Performer stuff
-  mDefault.insert("PerformerSize",     QSize(832,512));
-  mDefault.insert("PerformerPosition", "");
-  mDefault.insert("PerformerState",    "");
-  mDefault.insert("PerformerIndiSet",  "Default");
-
-  // Manager stuff
-  mDefault.insert("ManagerSize",     QSize(832,512));
-  mDefault.insert("ManagerPosition", "");
-  mDefault.insert("ManagerState",    "");
-  mDefault.insert("LastProvider",    "Filu");
-  mDefault.insert("LastScript",      "Search FI");
-
-  // Inspetor stuff
-  mDefault.insert("InspectorSize",     QSize(832,512));
-  mDefault.insert("InspectorPosition", "");
-  mDefault.insert("InspectorState",    "");
-  //mDefault.insert("",    "");
 
   checkFiluHome();
 }
@@ -229,57 +190,33 @@ void RcFile::checkFiluHome()
 {
   QString filuHome = getST("FiluHome");
 
-  // In case of first run is filuHome = ".Filu/"
-  // In case of any run is filuHome = "/home/steve/.Filu/"
-  if(filuHome.startsWith('/') and QDir().exists(filuHome)) return;
+  if(QFile::exists(filuHome)) return;
 
-    mNewswire->verbose(FUNC, "Check FiluHome ...", Newswire::eEver);
-
-    QString dir;
-    if(!filuHome.startsWith('/')) // ".Filu/" ?
-    {
-      dir = QDir::homePath();
-      dir.append("/" + filuHome); // Now: "/home/steve/.Filu/"
-    }
-    else
-    {
-      // An other filuHome was given in config file
-      dir = filuHome;
-    }
-
-    if(!createDir(dir)) return;
-
-    set("FiluHome", dir); // Write to config file
-
-    FTool::copyDir(getST("InstallPath") + "userfiles/", dir);
-
-    // Write all relevant keys to the (still empty) config file
-    setValue("InstallPath", getST("InstallPath"));
-
-    setFullPath("InstallPath", "PluginPath");
-    setFullPath("InstallPath", "ProviderPath");
-    setFullPath("FiluHome", "IndicatorPath");
-    setFullPath("FiluHome", "IndiSetsPath");
-    setFullPath("FiluHome", "TradingRulePath");
-    setFullPath("FiluHome", "IndiFilterSetPath");
-    setFullPath("FiluHome", "LogFile");
-
-    mNewswire->verbose(FUNC, tr("Check FiluHome...done."), Newswire::eEver);
-
-    sync();
-}
-
-bool RcFile::createDir(const QString& d)
-{
-  mNewswire->verbose(FUNC, tr("Create... %1").arg(d), Newswire::eEver);
-  QDir dir;
-  if(!dir.mkpath(d))
+  if(mDefault.value("FiluHome").toString() == filuHome)
   {
-    mNewswire->error(FUNC, tr("FAIL! to create %1").arg(d));
-    return false;
+    filuHome = QDir::homePath() + filuHome;
   }
 
-  return true;
+  mNewswire->verbose(FUNC, tr("Create new FiluHome: %1").arg(filuHome));
+
+  FTool::copyDir(getST("InstallPath") + "userfiles/", filuHome);
+
+  QString filuConf = QDir::homePath() + "/.config/Filu.conf";
+  if(!QFile::exists(filuConf))
+  {
+    mNewswire->verbose(FUNC, tr("Create user settings file: %1").arg(filuConf));
+    QFile::copy(filuHome + "Filu.conf", filuConf);
+  }
+
+  QFile::remove(filuHome + "Filu.conf");
+
+  // Write some relevant keys to the new config file
+  set("FiluHome", filuHome);
+  setFullPath("FiluHome", "IndicatorPath");
+  setFullPath("FiluHome", "IndiSetsPath");
+  setFullPath("FiluHome", "TradingRulePath");
+  setFullPath("FiluHome", "IndiFilterSetPath");
+  setFullPath("FiluHome", "LogFile");
 }
 
 void RcFile::setFullPath(const QString& path, const QString& key)
