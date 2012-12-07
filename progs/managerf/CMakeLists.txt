@@ -47,4 +47,4 @@ install(TARGETS managerf
 )
 
 install(FILES filu-managerf.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
-install(FILES filu-managerf.png DESTINATION ${ICON_INSTALL_DIR})
+install(FILES managerf.png DESTINATION ${ICON_INSTALL_DIR})

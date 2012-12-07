@@ -36,4 +36,4 @@ install(TARGETS performerf
 )
 
 install(FILES filu-performerf.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
-install(FILES filu-performerf.png DESTINATION ${ICON_INSTALL_DIR})
+install(FILES performerf.png DESTINATION ${ICON_INSTALL_DIR})

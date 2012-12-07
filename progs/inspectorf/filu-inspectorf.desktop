@@ -1,0 +1,15 @@
+[Desktop Entry]
+Categories=Office;Finance;Applications;Qt;
+Comment[en_US]=
+Comment=
+Exec=inspectorf
+GenericName[en_US]=The Filu Backtester
+GenericName=The Filu Backtester
+Icon=/usr/share/icons/hicolor/48x48/apps/inspectorf.png
+MimeType=
+Name[en_US]=InspectorF
+Name=InspectorF
+StartupNotify=true
+Terminal=false
+Type=Application
+Version=1.0

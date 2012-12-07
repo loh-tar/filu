@@ -4,19 +4,17 @@ find_package(Qt4 REQUIRED)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
-# This setting is controversial. But without we got a linker runtime error
-# when use the self compiled Qt library.
-# An other solution is to include the line
-#   /usr/local/Trolltech/Qt-4.3.5/lib
-# to FiluSource/libs/Filu.conf. Let me know what is the right way.
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# This setting was used at times where we need an own Qt lib with the fixed driver
+# There was as option the entry..
+#     /usr/local/Trolltech/Qt-4.3.5/lib
+# ..in our /etc/ld.conf file
+# nowday are both not needed, I hope
+# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# When we use ...
-# set(XDG_APPS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/applications CACHE FILEPATH "Install path for .desktop files")
-# set(ICON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/pixmaps CACHE FILEPATH "Global icon install path")
-# ...will the *.desktop files and icons not found (!?) so we hard code:
-set(XDG_APPS_INSTALL_DIR /usr/share/applications CACHE FILEPATH "Install path for .desktop files")
-set(ICON_INSTALL_DIR /usr/share/pixmaps CACHE FILEPATH "Global icon install path")
+set(XDG_APPS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/applications CACHE FILEPATH "Install path for .desktop files")
+# FIXME Here hard code the icon pfad because its also hard coded in the .desktop files
+set(ICON_INSTALL_DIR /usr/share/icons/hicolor/48x48/apps/ CACHE FILEPATH "Global icon install path")
+# set(ICON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps CACHE FILEPATH "Global icon install path")
 
 add_subdirectory(libs)
 add_subdirectory(progs)
@@ -24,7 +22,7 @@ add_subdirectory(database)
 
 # Install user default files
 set(USERFILES_FILES ${FiluRoot_SOURCE_DIR}/userfiles/)
-set(USERFILES_PATH /usr/local/lib/Filu/userfiles)
+set(USERFILES_PATH ${CMAKE_INSTALL_PREFIX}/lib/Filu/userfiles)
 
 install(DIRECTORY ${USERFILES_FILES}
         DESTINATION ${USERFILES_PATH}

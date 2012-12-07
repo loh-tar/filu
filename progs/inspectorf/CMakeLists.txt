@@ -30,3 +30,6 @@ target_link_libraries(inspectorf FiluCore FiluGui ${QT_LIBRARIES})
 install(TARGETS inspectorf
         RUNTIME DESTINATION bin
 )
+
+install(FILES filu-inspectorf.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
+install(FILES inspectorf.png DESTINATION ${ICON_INSTALL_DIR})
