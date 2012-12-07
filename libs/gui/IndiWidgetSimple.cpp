@@ -44,7 +44,7 @@ IndiWidgetSimple::IndiWidgetSimple(const QString& name, FClass* parent, const QS
   init();
 }
 
-IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FClass* parent)
+IndiWidgetSimple::IndiWidgetSimple(const QString& name, int number, FClass* parent)
                : FWidget(parent, FUNC + QString::number(number + 1))
                , mName(QString::number(number + 1))
                , mSetName(name)
@@ -52,7 +52,7 @@ IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FClass
   init();
 }
 
-IndiWidgetSimple::IndiWidgetSimple(const QString& name, const int number, FClass* parent, const QString& className)
+IndiWidgetSimple::IndiWidgetSimple(const QString& name, int number, FClass* parent, const QString& className)
                : FWidget(parent, className + QString::number(number + 1))
                , mName(QString::number(number + 1))
                , mSetName(name)
@@ -85,19 +85,12 @@ void IndiWidgetSimple::init()
   addActions(mSheet->actions());
 }
 
-void IndiWidgetSimple::setName(const QString& name)
+void IndiWidgetSimple::loadSetup(const QString& name, int number)
 {
-  saveSettings();
-  mName = name;
-  readSettings();
-}
+  if(name == mSetName) return;
 
-void IndiWidgetSimple::loadSetup(const QString& name, const int number)
-{
   saveSettings();
-  mSetName = name;
-  mName = QString::number(number + 1);
-  readSettings();
+  readSettings(name, number);
 }
 
 void IndiWidgetSimple::sync()
@@ -135,6 +128,16 @@ void IndiWidgetSimple::showBarData(BarTuple* bars)
 void IndiWidgetSimple::showFiIdMarketId(int fiId, int marketId)
 {
   mSheet->showFiIdMarketId(fiId, marketId);
+}
+
+void IndiWidgetSimple::readSettings(const QString& setName, int number)
+{
+  if(setName == mSetName) return;
+
+  mSetName = setName;
+  mName    = QString::number(number + 1);
+
+  readSettings();
 }
 
 void IndiWidgetSimple::readSettings()

@@ -40,7 +40,7 @@ class IndicatorWidget : public IndiWidgetSimple
 
   public:
                   IndicatorWidget(const QString& name, FWidget* parent);
-                  IndicatorWidget(const QString& name, const int number, FWidget* parent);
+                  IndicatorWidget(const QString& name, int number, FWidget* parent);
     virtual      ~IndicatorWidget();
 
     signals:
@@ -57,13 +57,15 @@ class IndicatorWidget : public IndiWidgetSimple
 
   protected:
     void          init();
-    void          readSettings();
+    void          readSettings(const QString& setName, int number);
     void          saveSettings();
 
     IndicatorPicker*   mPicker;
     IndicatorDataView* mDataView;
     QSplitter*         mSplitter;
 
+  private:
+    void          readSettings();
 };
 
 #endif

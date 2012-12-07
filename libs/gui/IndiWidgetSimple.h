@@ -42,12 +42,11 @@ class IndiWidgetSimple : public FWidget
   public:
                   IndiWidgetSimple(const QString& name, FClass* parent);
                   IndiWidgetSimple(const QString& name, FClass* parent, const QString& className);
-                  IndiWidgetSimple(const QString& name, const int number, FClass* parent);
-                  IndiWidgetSimple(const QString& name, const int number, FClass* parent, const QString& className);
+                  IndiWidgetSimple(const QString& name, int number, FClass* parent);
+                  IndiWidgetSimple(const QString& name, int number, FClass* parent, const QString& className);
     virtual      ~IndiWidgetSimple();
 
-    void          setName(const QString& name);
-    void          loadSetup(const QString& name, const int number);
+    void          loadSetup(const QString& name, int number);
     void          sync();
 
     signals:
@@ -65,7 +64,7 @@ class IndiWidgetSimple : public FWidget
 
   protected:
     void          init();
-    virtual void  readSettings();
+    virtual void  readSettings(const QString& setName, int number);
     virtual void  saveSettings();
             void  contextMenuEvent(QContextMenuEvent* event);
 
@@ -76,6 +75,9 @@ class IndiWidgetSimple : public FWidget
     QString       mUsedIndiFile;
 
     QFileSystemWatcher*   mIndiWatcher;
+
+  private:
+    void          readSettings();
 };
 
 #endif

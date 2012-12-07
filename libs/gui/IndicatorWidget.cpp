@@ -32,7 +32,7 @@ IndicatorWidget::IndicatorWidget(const QString& name, FWidget* parent)
   init();
 }
 
-IndicatorWidget::IndicatorWidget(const QString& name, const int number, FWidget* parent)
+IndicatorWidget::IndicatorWidget(const QString& name, int number, FWidget* parent)
                : IndiWidgetSimple(name, number, parent, FUNC)
 {
   init();
@@ -98,6 +98,15 @@ void IndicatorWidget::setSize(QList<int>& size)
   mSplitter->setSizes(size);
 }
 
+void IndicatorWidget::readSettings(const QString& setName, int number)
+{
+  if(setName == mSetName) return;
+
+  IndiWidgetSimple::readSettings(setName, number);
+
+  readSettings();
+}
+
 void IndicatorWidget::readSettings()
 {
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
@@ -108,6 +117,8 @@ void IndicatorWidget::readSettings()
 
 void IndicatorWidget::saveSettings()
 {
+  IndiWidgetSimple::saveSettings();
+
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   settings.setValue("IndicatorSplitter", mSplitter->saveState());
   settings.beginGroup(mName);
