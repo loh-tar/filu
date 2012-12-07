@@ -255,8 +255,8 @@ void InspectorF::readSettings()
   mEditor.mIndi.moveCursor(QTextCursor::Start);
 
   // Restore testing page
-  mFromDate.setDate(mRcFile->value("FromDate").toDate());
-  mToDate.setDate(mRcFile->value("ToDate").toDate());
+  mFromDate.setDate(mRcFile->getDT("FromDate"));
+  mToDate.setDate(mRcFile->getDT("ToDate"));
 
   mRcFile->endGroup();
 }
@@ -272,8 +272,8 @@ void InspectorF::saveSettings()
   mRcFile->setValue("Rule", mEditor.mRule.toPlainText());
   mRcFile->setValue("Indicator", mEditor.mIndi.toPlainText());
 
-  mRcFile->setValue("FromDate", mFromDate.date());
-  mRcFile->setValue("ToDate", mToDate.date());
+  mRcFile->set("FromDate", mFromDate.date());
+  mRcFile->set("ToDate", mToDate.date());
 
   mRcFile->endGroup();
 }
