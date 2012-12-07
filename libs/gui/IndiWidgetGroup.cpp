@@ -95,8 +95,8 @@ void IndiWidgetGroup::addWindow()
 {
     IndicatorWidget* indi = new IndicatorWidget(mSetName, mSplitter->count(), this);
     indi->showBarData(mBars);
-    indi->insertActions(indi->actions().at(0), actions());
-
+    //indi->insertActions(indi->actions().at(0), actions());
+    indi->addActions(actions());
     connect(indi, SIGNAL(newSize(QList<int>*)), this, SLOT(childSplitterMoved(QList<int>*)));
     connect(indi, SIGNAL(mouse(MyMouseEvent*)), this, SLOT(mouseSlot(MyMouseEvent*)));
 

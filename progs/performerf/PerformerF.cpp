@@ -19,6 +19,7 @@
 
 #include <QAction>
 #include <QDockWidget>
+#include <QMenu>
 
 #include "PerformerF.h"
 
@@ -54,6 +55,7 @@ PerformerF::PerformerF(QApplication& app)
   FToolBar*     tb;
   QDockWidget*  dw;
   QAction*      act;
+  QMenu*        menu = new QMenu(this); // Collect toggle actions
 
   //
   // Create the Main Tool Bar
@@ -83,6 +85,7 @@ PerformerF::PerformerF(QApplication& app)
   dw->setWidget(searchFi);
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
+  menu->addAction(act);
   icon.fill(Qt::red);
   act->setIcon(icon);
   tb->addAction(act);
@@ -104,6 +107,7 @@ PerformerF::PerformerF(QApplication& app)
   dw->setWidget(mGroupNavi);
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
+  menu->addAction(act);
   icon.fill(Qt::blue);
   act->setIcon(icon);
   tb->addAction(act);
@@ -124,6 +128,7 @@ PerformerF::PerformerF(QApplication& app)
   dw->setWidget(mGroupNavi2);
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
+  menu->addAction(act);
   icon.fill(Qt::cyan);
   act->setIcon(icon);
   tb->addAction(act);
@@ -139,17 +144,23 @@ PerformerF::PerformerF(QApplication& app)
   dw->setWidget(mZoomWidget);
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
+  menu->addAction(act);
   icon.fill(Qt::black);
   act->setIcon(icon);
   tb->addAction(act);
 
   addDockWidget(Qt::LeftDockWidgetArea, dw);
 
+  // Add Main Tool Bar
+  // Is done late here that all tool bars are listed close together
+  menu->addAction(tb->toggleViewAction());
+
   //
   // Create the LaunchPad with an own tool bar
   tb = new FToolBar("LaunchPad", this);
   addToolBar(tb);
   tb->setObjectName("LPToolBar");
+  menu->addAction(tb->toggleViewAction());
 
   mLaunchPad = new LaunchPad("LaunchPad", this);
   mLaunchPad->loadSettings();
@@ -160,6 +171,7 @@ PerformerF::PerformerF(QApplication& app)
   tb = new FToolBar("IndiSetPad", this);
   addToolBar(tb);
   tb->setObjectName("ISToolBar");
+  menu->addAction(tb->toggleViewAction());
 
   IndiSetPad* isp = new IndiSetPad("PerformerIndiSetPad", this);
   isp->loadSettings();
@@ -173,6 +185,7 @@ PerformerF::PerformerF(QApplication& app)
   tb = new FToolBar("Chart Objects", this);
   addToolBar(tb);
   tb->setObjectName("COToolBar");
+  menu->addAction(tb->toggleViewAction());
 
   QStringList coTypes;
   COType::getAllTypes(coTypes);
@@ -228,15 +241,14 @@ PerformerF::PerformerF(QApplication& app)
 
   mRcFile->endGroup(); // "Performer"
 
+  //
+  // Add filled toggle menu
+  act = new QAction(tr("Toggle..."), this);
+  act->setMenu(menu);
+  mIndiGroup->addAction(act);
+
   mIndiGroup->loadSetup(indiSet);  // Must done after mRcFile->endGroup(); // "Performer"
   isp->setCurrentSetup(indiSet);
-
-//   FIXME: Doesn't work, see doc/todo.txt
-//   // Set a short cut to bring up the toolbars/dock widget menu
-//   // which appears by right click on a toolbar/docwidget
-//   act = createPopupMenu()->menuAction();
-//   act->setShortcut(QKeySequence(QKeySequence::HelpContents));
-//   act->setShortcutContext(Qt::ApplicationShortcut);
 }
 
 PerformerF::~PerformerF()
