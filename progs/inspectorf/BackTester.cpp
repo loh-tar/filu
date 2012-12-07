@@ -61,7 +61,7 @@ void BackTester::init()
   mTrader = new Trader(this);
 
   mConstMatcher.setPattern("(\\b\\d+\\.?\\d*)");
-  mEditedMatcher.setPattern("\\{([\\d\\.\\-\\i\\;\\s]+)\\}");
+  mEditedMatcher.setPattern("\\{([\\d\\.\\-i\\;\\s]+)\\}");
   //mErrorMatcher.setPattern();
 }
 
@@ -358,7 +358,7 @@ void BackTester::buildConstants(const QString& constExp, QStringList& constList)
   // "10-100 i 10" or "10; 20; 30"
   if(constExp.contains("-") and constExp.contains("i"))
   {
-    QStringList parts = constExp.split(QRegExp("[\\-\\i]"));
+    QStringList parts = constExp.split(QRegExp("[\\-i]"));
     parts.replaceInStrings(" ", "");
     if(parts.size() < 3)
     {
@@ -454,7 +454,7 @@ void BackTester::buildStrategyId()
     idGenerator.addData(line.toUtf8());
   }
 
-  mStrategyId = idGenerator.result().toHex();
+  mStrategyId = idGenerator.result().toHex().left(8);
   //qDebug() << "BackTester::buildStrategyId() " << mStrategyId;
 }
 
