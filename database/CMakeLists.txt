@@ -15,26 +15,12 @@ add_custom_target(init-filu
     # psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='USR_NAME'" | grep -q 1 || createuser ...
 
     # Without option -P (prompt for password). Password is currently anyway not used
-    createuser -e -D -R -S -U postgres ${DBUSER}
+    COMMAND createuser -e -D -R -S -U postgres ${DBUSER}
     COMMAND createdb -e -T template1 -U postgres -O ${DBUSER} ${DBNAME} "Filu - Supports your stock trading"
 )
 
 #
-# Install all SQLs ...
-set(SQL_PATH /usr/local/lib/Filu/sqls)
-
-# ...Filu SQLs
-install(DIRECTORY ./filu
-        DESTINATION ${SQL_PATH}
-)
-
-# ...user SQLs. Rearrange them at the destination
-install(DIRECTORY ./user/functions/
-        DESTINATION ${SQL_PATH}/user/functions
-)
-install(DIRECTORY ./user/tables/
-        DESTINATION ${SQL_PATH}/user/tables
-)
-install(DIRECTORY ./user/sqls/
-        DESTINATION ${SQL_PATH}
+# Install all SQLs
+install(DIRECTORY ./sqls/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu/sqls
 )
