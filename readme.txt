@@ -151,7 +151,7 @@ with first-steps.txt.
 4- Uninstall
 ==============
 To remove the Filu program collection cd into FiluSource/build and do:
-  sudo xargs rm < install_manifest.txt
+  make uninstall
 
 cd into each other of the above visited directories and do:
   sudo make uninstall

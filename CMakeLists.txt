@@ -50,3 +50,12 @@ install(FILES ${FiluRoot_SOURCE_DIR}/doc/systemwide-settings-file.conf
         DESTINATION /etc/xdg/
         RENAME ${SYSTEM_WIDE_SETTINGS_FILE}
 )
+
+# Unistall target
+# For a more complex solution see
+#   http://www.cmake.org/Wiki/CMake_FAQ#Can_I_do_.22make_uninstall.22_with_CMake.3F
+add_custom_target(uninstall
+    COMMAND echo "Going remove Filu from the system..."
+    COMMAND sudo xargs rm < install_manifest.txt
+    COMMAND echo "Filu programs and files are now removed. The database is untouched."
+)
