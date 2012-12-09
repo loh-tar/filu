@@ -38,6 +38,7 @@ use Date::Parse;
 use Yahoo; # Our own module, shipped with Filu
 
 if ($#ARGV < 0) { &usage }
+if ($ARGV[0] eq "--info") { &info }
 
 my $search4 = $ARGV[0];
 
@@ -127,10 +128,21 @@ sub parse($)
 
 sub usage()
 {
-  print STDERR "call me like this: \n" .
-                "./me <Symbol>\n" .
-                "./me ^GDAXI\n";
+  print STDERR "Call me like this: \n" .
+                "  ./me <Symbol>\n" .
+                "  ./me ^GDAXI\n";
   die "\n";
+}
+
+sub info()
+{
+  print "Name:    fetchCompList_Yahoo\n";
+  print "Purpose: Fetch all associated underlying to an Index with RefSymbol and Weight\n";
+  print "Input:   Symbol";
+  print "Output:  Reuters Name Type Yahoo Market Weight Quality Notice\n";
+  print "Comment: Sometimes Yahoo deliver more or less components as needed\n";
+
+  exit 0; #exit good
 }
 
 # Usual in perl last line is...

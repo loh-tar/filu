@@ -46,6 +46,8 @@ use Date::Simple(':all');
 use lib '../../perlmodules';
 use FiluDate;
 
+if ($#ARGV < 0) { &usage }
+if ($ARGV[0] eq "--info") { &info }
 if ($#ARGV < 3) { &usage }
 
 #build url:
@@ -182,10 +184,21 @@ sub parse($)
 
 sub usage()
 {
-  print STDERR "call me like this: \n" .
-                "./me fromdate todate symbol market\n" .
-                "./me 2007-01-01 2007-04-21 AAPL NYSE\n";
+  print STDERR "Call me like this: \n" .
+                "  ./me fromdate todate symbol market\n" .
+                "  ./me 2007-01-01 2007-04-21 AAPL NYSE\n";
   die "\n";
+}
+
+sub info()
+{
+  print "Name:    fetchBar_Yahoo\n";
+  print "Purpose: Fetch EOD Bar data to a FI in a given time frame\n";
+  print "Input:   FromDate ToDate Symbol Market";
+  print "Output:  Date Open High Low Close Volume OpenInterest Quality\n";
+  print "Comment: Sadly delivers Yahoo sometimes buggy historical data\n";
+
+  exit 0; #exit good
 }
 
 # Usual in perl last line is...

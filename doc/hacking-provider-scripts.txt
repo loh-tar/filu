@@ -10,10 +10,9 @@ Each provider which is usable in Filu must have a folder located below
 progs/agentf/provider. The folder name *must* *exactly* fit with the name of the
 provider used in the database, <FiluSchema>.stype.caption.
 
-After ./configure && sudo make install the provider will copied to the Filu
-ProviderPath, which is as default /usr/local/lib/Filu/provider. If you use a
-binary package of Filu then you have to copy your own provider below these
-ProviderPath.
+After 'sudo make install' the provider will copied to the Filu ProviderPath,
+which is as default /usr/local/lib/Filu/provider. If you use a binary package of
+Filu then you have to copy your own provider below these ProviderPath.
 
 The names of the scripts subject to only one regulation: The name *must* begin
 with a unique name described below. Than could follow any other valid file name
@@ -31,6 +30,16 @@ character. It is behooves by the script to use all parameter or not. The data
 delivered by the script will read from stdin. So the script must write to
 stdout.
 
+The script must accept a switch '--info' where will be printed some lines of
+semantic. The format of these lines is <Key><Colon><Value>.
+Needed keys are: Input, Output, Purpose
+Optional keys are: Author, Comment, Copyright, Date, Name, Version
+The order of printed keys has to be: Name, Version, Date, Author, Purpose,
+Input, Output, Comment
+
+If the script is called without any parameter it should print a short usage hint
+and an example.
+
 The data written by the script must separate by a semicolon. The first line must
 be a header line, keys separate by a semicolon too. Each data set must
 terminated with a newline character. No footer line.
@@ -47,33 +56,33 @@ way into the database for a little better performance.
 
 Used Terms and Notes
 ======================
-As already described in import-file-format.txt means in the following:
+As already described in doc/import-file-format.txt means in the following:
 
 RefSymbol
   Any Symbol which may useful, list as much as possible.
 
-<KnownSymbolType>
-  When listed will it be installed.
-
-<SymbolDataSet>
-  Means 'Provider, Symbol, Market'. Should be extended by a number.
+<SymbolType>
+  When known will it be installed.
+  Note: As in doc/import-file-format.txt explained should it here named
+  KnownSymbolType, but that would be confusing. The sript can't know
+  what Filu knows.
 
 Keys in brackets [] are optional.
 Keys separate by a vertical bar | means 'either or'.
 
 Market
-  Because markets currently handled in Filu simplified the scripts has to ship
-  standardized names. See doc/import-file-format.txt, Appendix A.
+  Because markets currently handled in Filu simplified, the scripts has to ship
+  standardized names. See doc/import-file-format.txt, Appendix B.
 
 Quality
-  A script should only deliver gold or bronze.
-  See doc/import-file-format.txt, Appendix B.
+  A script should only deliver Gold or Bronze.
+  See doc/import-file-format.txt, Appendix A.
 
 
 Script Functions
 ==================
 Name:     fetchBar*
-Purpose:  EOD Bar data to a FI in a given time frame.
+Purpose:  Fetch EOD Bar data to a FI in a given time frame.
 Input:    FromDate, ToDate, Symbol, Market
 Output:   Date, Open, High, Low, Close, Volume, OpenInterest, Quality
 Comment:  If only a close price is available, the missed prices must filled
@@ -81,14 +90,14 @@ Comment:  If only a close price is available, the missed prices must filled
           to Tin.
 
 Name:     fetchFI*
-Purpose:  The master data to a FI.
+Purpose:  Fetch the master data to a FI.
 Input:    SearchString
-Output:   Name, Type, <SymbolDataSet>|<KnownSymbolType>[, RefSymbol]
+Output:   Name, Type, <SymbolType>[, RefSymbol]
 Comment:  The SearchString could be a Symbol or a part of the name.
 
 Name:     fetchCompList*
-Purpose:  All associated underlyings to an Index with RefSymbol and Weight.
+Purpose:  Fetch all associated underlying to an Index with RefSymbol and Weight.
 Input:    Symbol
-Output:   RefSymbol, Weight[, Name, Type, <SymbolDataSet>|<KnownSymbolType>]
+Output:   RefSymbol, Weight[, Name, Type, <SymbolType>]
 Comment:  Name, Type and more Symbol(s) are optional but desired.
           If Weight is not available fill it with 1, it is anyway not yet used.

@@ -42,6 +42,8 @@
 use LWP::Simple;
 use Date::Simple(':all');
 
+if ($#ARGV < 0) { &usage }
+if ($ARGV[0] eq "--info") { &info }
 if ($#ARGV < 3) { &usage }
 
 #build url:
@@ -123,12 +125,22 @@ while ( $toDate - $fromDate >= 199 || ( !defined($toDate) && !defined($fromDate)
 
 sub usage()
 {
-    print STDERR "call me like this: \n" .
-                 "./me fromdate todate symbol market\n" .
-                 "./me 2007-01-01 2007-04-21 EUR \"Foreign Exchange\"\n";
+    print STDERR "Call me like this: \n" .
+                 "  ./me fromdate todate symbol\n" .
+                 "  ./me 2007-01-01 2007-04-21 EUR\n";
     die "\n";
 }
 
+sub info()
+{
+  print "Name:    fetchBar_oanda\n";
+  print "Purpose: Fetch EOD Bar data to a FI in a given time frame\n";
+  print "Input:   FromDate ToDate Symbol";
+  print "Output:  Date Open High Low Close Volume OpenInterest Quality\n";
+  print "Comment: Currently broken, go and FIXME\n";
+
+  exit 0; #exit good
+}
 
 sub parse($)
 {

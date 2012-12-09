@@ -50,6 +50,7 @@ use HTML::TableExtract;
 use Yahoo; # Our own module, shipped with Filu
 
 if ($#ARGV < 0) { &usage }
+if ($ARGV[0] eq "--info") { &info }
 
 my $search4 = $ARGV[0];
 
@@ -90,10 +91,21 @@ exit 0;
 
 sub usage()
 {
-  print STDERR "call me like this: \n" .
-                "./me foo\n" .
-                "./me aapl\n";
+  print STDERR "Call me like this: \n" .
+                "  ./me foo\n" .
+                "  ./me aapl\n";
   die "\n";
+}
+
+sub info()
+{
+  print "Name:    fetchFi_Yahoo\n";
+  print "Purpose: Fetch the master data to a FI\n";
+  print "Input:   SearchString";
+  print "Output:  Name Type <SymbolType> [RefSymbol]\n";
+  print "Comment: The SearchString can be a part of a symbol or FI name\n";
+
+  exit 0; #exit good
 }
 
 # Usual in perl last line is...
