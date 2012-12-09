@@ -1,3 +1,17 @@
+2012-12-10
+============
+Sundries
+----------
+ - Provider Scripts: Add switch --info
+ - Database: Change Currency(Market) to Forex
+ - AgentF: Change the config key 'SqlPath' at commands 'sum' and 'exo'
+ - PerformerF: Add toggle toolbars/widgets to IndiWidgetGroup context menu
+ - PerformerF: Fix broken indicator set savings
+ - BackTester: Fix not working const pattern {10;20 i 3}
+ - Add Inspector icon. You can find him now also in your apps/office menu
+ - Move/add default settings files into doc/
+
+
 2012-12-06
 ============
 Damn Santa Claus Snapshot
