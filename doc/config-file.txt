@@ -4,10 +4,13 @@ This file is part of Filu (C) 2007, 2010, 2011, 2012 loh.tar@googlemail.com
 Config File Keys
 ==================
 If you need different settings as the defaults (listed below), you can modify
-some by create a system wide config file /etc/xdg/Filu.conf or an user config
+some by edit the system wide config file /etc/xdg/Filu.conf or the user config
 file ~/.config/Filu.conf with contents like these in the [General] section. The
 other sections are not as interesting to change because they are updated by the
 progs at run time.
+
+The templates files used at install are doc/systemwide-settings-file.conf and
+doc/user-settings-file.conf. So you can modify these too if needed.
 
 FiluHome=~/Filu
   The location where Filu stores your personal data and settings, but none of the
@@ -73,6 +76,6 @@ Verbose=Info
   How many info while running an application will be printed. Possible values
   are Quiet, Info, Ample and Max or 0/1/2/3. The names are not case sensitive.
 
-SqlDebug=Quiet
+SqlDebug=Info
   How many infos by the DB access will be printed while running. Same possible
   values as Verbose has.

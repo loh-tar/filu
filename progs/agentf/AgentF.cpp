@@ -19,6 +19,7 @@
 
 #include <QFile>
 #include <QProcess>
+#include <QRegExp>
 #include <QSqlQuery>
 #include <QTextStream>
 #include <QTimer>
@@ -688,6 +689,9 @@ void AgentF::summon()
     mCmd->printComment(tr("Switch to (or create new) development schemata for the current user. "
                           "The name should only contain 'valid' word characters, otherwise will "
                           "they replaced by underscroes."));
+    mCmd->printNote(tr("The config key 'SqlPath' is set to 'FiluSource/database/sqls/' in the user "
+                       "settings file if you run AgentF from your 'FiluSource/[build/]' directory. "
+                       "In fact is that test poor. It's only tested if '[../build/]database/sqls/' exist."));
     mCmd->printNote(tr("To list existing development schemata use the 'exo' command."));
     mCmd->printForInst("newidea");
     mCmd->aided();
@@ -703,6 +707,18 @@ void AgentF::summon()
 
   verbose(FUNC, tr("I summon the devil '%1'").arg(devil));
   mRcFile->set("Devil", devil);
+  QString devilSqls(getenv("PWD"));
+  devilSqls.remove(QRegExp("/build$"));
+  devilSqls.append("/database/sqls/");
+  if(QFile::exists(devilSqls))
+  {
+    verbose(FUNC, tr("Change SqlPath to: %1").arg(devilSqls));
+    mRcFile->set("SqlPath", devilSqls);
+  }
+  else
+  {
+    verbose(FUNC, tr("Let SqlPath untouched: %1").arg(mRcFile->getST("SqlPath")));
+  }
   mFilu->closeDB();
   mFilu->openDB();
 }
@@ -715,6 +731,7 @@ void AgentF::exorcise()
 
     mCmd->printComment(tr("Switch in any case back to the productive version and remove "
                           "(if given) the development schemata."));
+    mCmd->printNote(tr("The config key 'SqlPath' is removed from the user settings file."));
 
     mCmd->printForInst("mylastidea");
     mCmd->aided();
@@ -726,6 +743,8 @@ void AgentF::exorcise()
   {
     verbose(FUNC, tr("I renunciate the devil '%1'").arg(devil));
     mRcFile->remove("Devil");
+    mRcFile->remove("SqlPath");
+    verbose(FUNC, tr("SqlPath is now: %1").arg(mRcFile->getST("SqlPath")));
     mFilu->closeDB();
     mFilu->openDB();
   }
