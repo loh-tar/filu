@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION :filu.gfi_xcurrency_eodbar
   aMarketId    :filu.market.market_id%TYPE,
   aFDate       :filu.eodbar.qdate%TYPE       DEFAULT '1000-01-01',
   aTDate       :filu.eodbar.qdate%TYPE       DEFAULT '3000-01-01',
-  aLimit       int4                             DEFAULT 0 -- max number of rows
+  aLimit       int4                          DEFAULT 0 -- max number of rows
 )
 RETURNS SETOF :filu.fbar AS
 $BODY$

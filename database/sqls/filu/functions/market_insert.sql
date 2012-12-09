@@ -34,7 +34,7 @@ $BODY$
 DECLARE
   mFiId      :filu.fi.fi_id%TYPE;
   mMId       :filu.market.market_id%TYPE; -- Market ID
-  mNoMId     int := 1;                       -- NoMarket has always ID 1
+  mNoMId     int := 1;                    -- NoMarket has always ID 1
   mNumRows   int;
 
 BEGIN
@@ -87,7 +87,7 @@ BEGIN
                     , :filu.id_from_caption('stype', 'Reuters')
                     , mNoMId);
 
-      RAISE INFO 'Dummy stuff NoMarket and NoCurrency had been created.';
+      --RAISE INFO 'Dummy stuff NoMarket and NoCurrency had been created.';
     END IF;
 
     IF aCurrency IS NULL THEN RETURN :filu.error_code('FiNameEY'); END IF;

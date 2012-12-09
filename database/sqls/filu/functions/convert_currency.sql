@@ -31,7 +31,7 @@ DECLARE
   mSQuote       :filu.eodbar.qclose%TYPE; -- Source quote
   mDQuote       :filu.eodbar.qclose%TYPE; -- Destination quote
   mDMoney       :filu.eodbar.qclose%TYPE; -- Destination aMoney
-  mUSDollar     CONSTANT int := 2;           -- US Dollar has always ID 2
+  mUSDollar     CONSTANT int := 2;        -- US Dollar has always ID 2
 
 BEGIN
   --
