@@ -62,8 +62,8 @@ INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('Yahoo', 200, true);
 --
 -- Markets
 --
--- Don't remove Currency or change the symbol USD, it's a must have!
-SELECT :filu.market_insert('Currency', 'US Dollar', 'USD', -1); -- "-1" Says "That's the NoMarket insert"
+-- Don't remove Forex or change the symbol USD, it's a must have!
+SELECT :filu.market_insert('Forex', 'US Dollar', 'USD', -1); -- "-1" Says "That's the NoMarket insert"
 --
 --SELECT :filu.market_insert('NYSE', '', 'USD'); -- No need to give name, USD already exist
 --SELECT :filu.market_insert('Xetra', 'Euro', 'EUR');
