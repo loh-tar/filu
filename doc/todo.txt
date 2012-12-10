@@ -235,7 +235,6 @@ M: Print a progressbar while checking, force Trader to print nothing in that cas
 Exporter
 ==========
 H: split pays not attention about from/toDate
-H: don't print NoMarket at --markets
 H: market_insert.sql expect Reuters as symbol (what?)
 
 

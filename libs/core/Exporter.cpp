@@ -612,7 +612,7 @@ bool Exporter::expMarkets()
 {
   mDataText = "Markets";
 
-  mFilu->setSqlParm(":marketId", 0);
+  mFilu->setSqlParm(":marketId", -1); // Ignore NoMarket and Forex
   QSqlQuery* query = mFilu->execSql("GetMarket");
 
   if(badQuery(query)) return false;
