@@ -26,10 +26,12 @@ FROM
 WHERE
   sp.fi_id = f.fi_id
   and f.ftype_id = ft.ftype_id
+  and sp.sdate BETWEEN :fromDate and :toDate
   and CASE WHEN length(:ftype) = 0  THEN true ELSE ft.caption = :ftype END
-  and CASE WHEN length(:group) = 0  THEN true
+  and CASE WHEN length(:group) = 0
+           THEN true
            ELSE f.fi_id IN (select fi_id from :user.gmember gm
-                                         where gm.group_id = :user.group_id_from_path(:group)) END
+                            where gm.group_id = :user.group_id_from_path(:group)) END
 
 ORDER BY
   ls.symbol,
