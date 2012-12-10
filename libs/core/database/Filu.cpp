@@ -1596,9 +1596,28 @@ bool Filu::loadQuery(const QString& name, QString& sql)
     // Make sure it ends with a whitespace
     line.append("\n");
 
-    // FIXME: Use a RegExp so that also remarks at the end of a line are cleaned
-    //        and the from  /* comment */ is detected too
-    if(helpLine.startsWith("--")) line.replace(":", " "); // Oh dear, could make nice trouble
+    // Investigate comments, if there are colons or single quotes
+    // could these make big trouble. I guess its once more a Qt bug
+    // FIXME The RegEx does not test if /* or -- is part of a string
+    // I hope we did not run into these trap some times...but Murphy...
+
+    // Start with /* */
+    QRegExp rx("/\\*.*\\*/");
+    int     pos = 0;
+    while((pos = rx.indexIn(line, pos)) != -1)
+    {
+      QString comment = rx.cap(0);
+      comment.replace(QRegExp("[\\:\\']"), " ");
+      line.replace(pos, rx.matchedLength(), comment);
+      pos += comment.size();
+    }
+
+    // And now --
+    rx.setPattern("--");
+    pos = rx.indexIn(line, 0);
+    QString comment = line.mid(pos);
+    comment.replace(QRegExp("[\\:\\']"), " ");
+    line.replace(pos, line.size(), comment);
 
     sql.append(line);
   }
