@@ -129,7 +129,7 @@ BarTuple* Filu::getBars(int fiId, int marketId
   query->bindValue(":fromDate", fromDate);
   query->bindValue(":toDate", toDate);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   BarTuple* bars = fillQuoteTuple(query);
 
@@ -172,7 +172,7 @@ BarTuple* Filu::getBars(int fiId, int marketId
   query->bindValue(":limit", limit);
   query->bindValue(":toDate", toDate);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   BarTuple* bars = fillQuoteTuple(query);
 
@@ -202,7 +202,7 @@ SymbolTuple* Filu::getSymbols(int fiId, const QString& fiType
   query->bindValue(":market", market);
   query->bindValue(":onlyProviderSymbols", onlyProviderSymbols);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   return fillSymbolTuple(query);
 }
@@ -215,7 +215,7 @@ SymbolTuple* Filu::getSymbols(int fiId)
 
   query->bindValue(":fiId", fiId);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   return fillSymbolTuple(query);
 }
@@ -264,7 +264,7 @@ SymbolTypeTuple* Filu::getSymbolTypes(int filter/* = eAllTypes FIXME, bool order
   query->bindValue(":isProvider", isProvider);
   //query->bindValue(":", orderBySeq);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   SymbolTypeTuple* symbolType = new SymbolTypeTuple(query->size());
   while(symbolType->next())
@@ -291,7 +291,7 @@ MarketTuple* Filu::getMarkets(const QString& name/* = ""*/)
   query->bindValue(":market", name);
   query->bindValue(":marketId", 0);  // Don't use id
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   return fillMarketTuple(query);
 }
@@ -305,7 +305,7 @@ MarketTuple* Filu::getMarket(int marketId)
   query->bindValue(":market", "");  // Don't use name
   query->bindValue(":marketId", marketId);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   MarketTuple* market = fillMarketTuple(query);
 
@@ -326,7 +326,7 @@ FiTuple* Filu::getFi(int fiId)
   query->bindValue(":fuzzy", false);
   query->bindValue(":fiId", fiId);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   FiTuple* fi = fillFiTuple(query);
   if(fi) fi->next();
@@ -419,7 +419,7 @@ BrokerTuple* Filu::getBroker(int brokerId/* = 0*/)
 
   query->bindValue(":brokerId", brokerId);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   BrokerTuple* broker = new BrokerTuple(query->size());
   while(query->next())
@@ -1373,25 +1373,25 @@ bool Filu::executeSqls(const QString& path)
   return true;
 }
 
-BarTuple* Filu::fillQuoteTuple(QSqlQuery* tuple)
+BarTuple* Filu::fillQuoteTuple(QSqlQuery* query)
 {
-  int count = tuple->size();
-  if(!count) return 0;
+  if(!query) return 0;
+  if(!query->size()) return 0;
 
   // Fill the object to be returned to client
-  BarTuple* bars = new BarTuple(count);
+  BarTuple* bars = new BarTuple(query->size());
   while(bars->next())
   {
-    tuple->next();
+    query->next();
 
     int i = bars->mIndex;
-    bars->mDate[i]   = tuple->value(0).toDate();
-    bars->mTime[i]   = tuple->value(1).toTime();
-    bars->mOpen[i]   = tuple->value(2).toDouble();
-    bars->mHigh[i]   = tuple->value(3).toDouble();
-    bars->mLow[i]    = tuple->value(4).toDouble();
-    bars->mClose[i]  = tuple->value(5).toDouble();
-    bars->mVolume[i] = tuple->value(6).toDouble();
+    bars->mDate[i]   = query->value(0).toDate();
+    bars->mTime[i]   = query->value(1).toTime();
+    bars->mOpen[i]   = query->value(2).toDouble();
+    bars->mHigh[i]   = query->value(3).toDouble();
+    bars->mLow[i]    = query->value(4).toDouble();
+    bars->mClose[i]  = query->value(5).toDouble();
+    bars->mVolume[i] = query->value(6).toDouble();
   }
 
   bars->rewind();
@@ -1399,25 +1399,25 @@ BarTuple* Filu::fillQuoteTuple(QSqlQuery* tuple)
   return bars;
 }
 
-FiTuple* Filu::fillFiTuple(QSqlQuery* tuple)
+FiTuple* Filu::fillFiTuple(QSqlQuery* query)
 {
-  int count = tuple->size();
-  if(!count) return 0;
+  if(!query) return 0;
+  if(!query->size()) return 0;
 
   // Fill the object to be returned to client
-  FiTuple* fi = new FiTuple(count);
+  FiTuple* fi = new FiTuple(query->size());
   while(fi->next())
   {
-    tuple->next();
+    query->next();
 
     int i = fi->mIndex;
-    fi->mId[i]     = tuple->value(0).toInt();
-    fi->mTypeId[i] = tuple->value(1).toInt();
-    fi->mName[i]   = tuple->value(2).toString();
-    fi->mType[i]   = tuple->value(3).toString();
+    fi->mId[i]     = query->value(0).toInt();
+    fi->mTypeId[i] = query->value(1).toInt();
+    fi->mName[i]   = query->value(2).toString();
+    fi->mType[i]   = query->value(3).toString();
     fi->mSymbol[i] = 0;
-    //    fi->IssueDate[i] = tuple->value(3).toString();
-    //    fi->MaturityDate[i] = tuple->value(3).toString();
+    //    fi->IssueDate[i] = query->value(3).toString();
+    //    fi->MaturityDate[i] = query->value(3).toString();
   }
 
   fi->rewind();
@@ -1427,11 +1427,11 @@ FiTuple* Filu::fillFiTuple(QSqlQuery* tuple)
 
 MarketTuple* Filu::fillMarketTuple(QSqlQuery* query)
 {
-  int count = query->size();
-  if(!count) return 0;
+  if(!query) return 0;
+  if(!query->size()) return 0;
 
   // Fill the object to be returned to client
-  MarketTuple* market = new MarketTuple(count);
+  MarketTuple* market = new MarketTuple(query->size());
   while(market->next())
   {
     query->next();
@@ -1451,8 +1451,8 @@ MarketTuple* Filu::fillMarketTuple(QSqlQuery* query)
 
 SymbolTuple* Filu::fillSymbolTuple(QSqlQuery* query)
 {
-  int count = query->size();
-  if(!count) return 0;
+  if(!query) return 0;
+  if(!query->size()) return 0;
 
   // Fill the object to be returned to client
   SymbolTuple* symbols= new SymbolTuple(query->size());

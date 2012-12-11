@@ -89,7 +89,7 @@ QSqlQuery* FiluU::getGroups(int motherId /*= -1*/)
 
   query->bindValue(":motherId", motherId);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   return query;
 }
@@ -104,7 +104,7 @@ QSqlQuery* FiluU::getGMembers(int groupId)
 
   query->bindValue(":groupId", groupId);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   return query;
 }
@@ -256,7 +256,7 @@ QSqlQuery* FiluU::getBacktest()
 
   //query->bindValue(":", );
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   return query;
 }
@@ -289,7 +289,7 @@ QSqlQuery* FiluU::getBTLog(int backtestId, int fiId, int marketId)
   query->bindValue(":fiId", fiId);
   query->bindValue(":marketId", marketId);
 
-  if(execute(query) < eData) return 0;
+  if(execute(query) < eNoData) return 0;
 
   return query;
 }
