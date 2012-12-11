@@ -41,8 +41,11 @@ typedef QHash<QString, QString>   KeyVal;
 class Filu : public Newswire
 {
   public:
-         Filu(const QString&, RcFile*);
-        ~Filu();
+                Filu(const QString&, RcFile*);
+               ~Filu();
+
+    static const bool  eHideNoMarket = true;
+    static const bool  eWithNoMarket = false;
 
     enum SomeEnums
     {
@@ -200,6 +203,7 @@ class Filu : public Newswire
     int         quality(const QString& quality);
     QString     quality(int quality);
     int         convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& date);
+    QSqlQuery*  searchFi(const QString& name, const QString& type, bool hideNoMarket = eHideNoMarket);
     int         searchCaption(const QString& table, const QString& caption);
     void        deleteRecord(const QString& schema, const QString& table, int id);
     int         updateField(const QString& field, const QVariant& newValue

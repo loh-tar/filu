@@ -62,8 +62,6 @@ class FiluU : public Filu
 
     void        openDB();
 
-    QSqlQuery*  searchFi(const QString& name, const QString& type);
-
     QSqlQuery*  getGroups(int motherId = -1); // -1 returns all groups
     QSqlQuery*  getGMembers(int groupId);
     int         getGroupId(const QString& path);

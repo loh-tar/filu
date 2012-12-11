@@ -692,6 +692,22 @@ int Filu::convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& 
   return eData;
 }
 
+QSqlQuery* Filu::searchFi(const QString& name, const QString& type
+                        , bool hideNoMarket/* = eHideNoMarket*/)
+{
+  if(!initQuery("SearchFi")) return 0;
+
+  QSqlQuery* query = mSQLs.value("SearchFi");
+
+  query->bindValue(":name", name);
+  query->bindValue(":type", type);
+  query->bindValue(":hideNoMarket", hideNoMarket);
+
+  if(execute(query) < eNoData) return 0;
+
+  return query;
+}
+
 int Filu::searchCaption(const QString& table, const QString& caption)
 {
   const QString sql("SELECT * FROM :filu.id_from_caption(:table, :caption)");

@@ -67,20 +67,6 @@ void FiluU::openDB()
   }
 }
 
-QSqlQuery* FiluU::searchFi(const QString& name, const QString& type)
-{
-  if(!initQuery("SearchFi")) return 0;
-
-  QSqlQuery* query = mSQLs.value("SearchFi");
-
-  query->bindValue(":name", name);
-  query->bindValue(":type", type);
-
-  if(execute(query) < eData) return 0;
-
-  return query;
-}
-
 QSqlQuery* FiluU::getGroups(int motherId /*= -1*/)
 {
   if(!initQuery("GetGroups")) return 0;
