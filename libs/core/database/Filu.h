@@ -112,18 +112,10 @@ class Filu : public Newswire
     FiTuple*     getFiBySymbol(const QString& symbol);
     int          getFiIdBySymbol(const QString& symbol);  // Returns FiId to symbol or < eError
 
-    SymbolTuple* getSymbols(int fiId, const QString& fiType
-                            , const QString& symbolType
-                            , const QString& symbol
-                            , const QString& market
-                            , bool onlyProviderSymbols);  // getSymbol stuff needs rethinking
-
     SymbolTuple* getSymbols(int fiId);
-    SymbolTuple* getAllProviderSymbols();
-
-    SymbolTuple* searchSymbol(const QString& symbol
-                            , const QString& market = ""
-                            , const QString& owner  = "");
+    SymbolTuple* getSymbol(const QString& symbol
+                         , const QString& market
+                         , const QString& owner  );
 
     SymbolTypeTuple* getSymbolTypes(int filter = eAllTypes/* FIXME, bool orderBySeq = true*/);
 

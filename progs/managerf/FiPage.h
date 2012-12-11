@@ -24,9 +24,8 @@ class QModelIndex;
 
 #include "ManagerPage.h"
 
-class FiTableView;
 class IndicatorWidget;
-class SearchField;
+class SearchFiWidget;
 class SymbolTableView;
 
 class FiPage : public ManagerPage
@@ -38,20 +37,18 @@ class FiPage : public ManagerPage
     virtual         ~FiPage();
 
   protected:
-    SearchField*     mLook4Edit;
     void             createPage();
     void             showEvent(QShowEvent* /*event*/);
 
+    SearchFiWidget*  mLookUp;
     SymbolTuple*     mSymbols;
     SymbolTableView* mSymbolView;
     FiTuple*         mFi;
-    FiTableView*     mFiView;
     IndicatorWidget* mPlotSheet;
     BarTuple*        mBars;
 
   protected slots:
-    void            search();
-    void            fiClicked(const QModelIndex&);
+    void            fiClicked(int fiId, int marketId);
     void            symbolClicked(const QModelIndex&);
 };
 

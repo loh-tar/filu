@@ -22,15 +22,16 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSplitter>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QVBoxLayout>
 
 #include "FiPage.h"
 
-#include "FiTableView.h"
 #include "FiTuple.h"
 #include "FiluU.h"
 #include "IndicatorWidget.h"
-#include "SearchField.h"
+#include "SearchFiWidget.h"
 #include "SymbolTableView.h"
 #include "SymbolTuple.h"
 
@@ -39,7 +40,6 @@ FiPage::FiPage(FClass* parent)
       , mSymbols(0)
       , mSymbolView(0)
       , mFi(0)
-      , mFiView(0)
       , mPlotSheet(0)
       , mBars(0)
 {
@@ -60,30 +60,24 @@ void FiPage::createPage()
 
   QLabel* lookLabel = new QLabel(tr("Name or Symbol"));
 
-  mLook4Edit = new SearchField(this);
-  connect(mLook4Edit, SIGNAL(textChanged()), this, SLOT(search()));
-
   mSymbolView = new SymbolTableView(mSymbols);
   connect(mSymbolView, SIGNAL(clicked(const QModelIndex &)),
           this, SLOT(symbolClicked(const QModelIndex &)));
 
-  mFiView = new FiTableView(mFi);
-  connect(mFiView, SIGNAL(clicked(const QModelIndex &)),
-          this, SLOT(fiClicked(const QModelIndex &)));
+  mLookUp = new SearchFiWidget(this);
+  connect(mLookUp, SIGNAL(selected(int, int)),
+          this, SLOT(fiClicked(int, int)));
 
   mPlotSheet = new IndicatorWidget("FiPage", this);
 
   QGridLayout* gridLayout = new QGridLayout;
   int i = 0; // "count" rows
-  gridLayout->addWidget(lookLabel, i, 0);
-  gridLayout->addWidget(mLook4Edit, i, 1);
- // gridLayout->addWidget(new QPushButton, i, 3);
   gridLayout->setColumnStretch(1, 1);
   gridLayout->setColumnStretch(2, 1);
 
   QHBoxLayout* hbox = new QHBoxLayout;
   hbox->setMargin(0);
-  hbox->addWidget(mFiView);
+  hbox->addWidget(mLookUp);
   hbox->addWidget(mSymbolView);
 
   QWidget* hboxwid = new QWidget;
@@ -105,51 +99,13 @@ void FiPage::createPage()
 
 void FiPage::showEvent(QShowEvent * /*event*/)
 {
-  mLook4Edit->setFocus();
+  mLookUp->setFocus();
 }
 
-void FiPage::search()
+void FiPage::fiClicked(int fiId, int /* marketId */)
 {
-  QString text = mLook4Edit->text();
-  if(text.isEmpty()) return;
-
-  SymbolTuple* symbols = mFilu->searchSymbol(text);
-
-  if(symbols)
-  {
-    if(mFi) delete mFi;
-    mFi = mFilu->getFi(symbols->fiId());
-    mFiView->setContent(mFi);
-
-    if(mSymbols) delete mSymbols;
-    mSymbols = mFilu->getSymbols(symbols->fiId());
-    mSymbolView->setContent(mSymbols);
-
-    delete symbols;
-  }
-  else
-  {
-    if(mFi) delete mFi;
-    mFi = mFilu->getFiLike(text);
-    mFiView->setContent(mFi);
-
-    if(mSymbols) delete mSymbols;
-    mSymbols = 0;
-    mSymbolView->setContent(mSymbols);
-  }
-}
-
-void FiPage::fiClicked(const QModelIndex& index)
-{
-  static int oldFiId = -1;
-
-  int fiId = index.sibling(index.row(), 0).data().toInt();
-
-  if(oldFiId == fiId) return;
-
-  oldFiId = fiId;
-
   if(mSymbols) delete mSymbols;
+
   mSymbols = mFilu->getSymbols(fiId);
   mSymbolView->setContent(mSymbols);
 }

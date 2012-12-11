@@ -1,9 +1,11 @@
 /*
  *  Purpose:
- *     To fetch all symbols a FI has ordered by seq
+ *     To fetch a given symbol
  *
  *  Inputs: (variable names are important and begins with a colon)
- *      :fiId
+ *      :symbol
+ *      :market
+ *      :owner
  *
  *  Outputs: (order is important)
  *      SymbolId
@@ -14,7 +16,7 @@
  *      Owner    // owner, issuer, provider naming is controversial
  */
 
--- GetSymbolsToFiId.sql
+-- GetSymbol.sql
 SELECT
     s.symbol_id as "SymbolId",
     s.fi_id     as "FiId",
@@ -28,6 +30,6 @@ FROM :filu.symbol s
 JOIN :filu.market as m USING(market_id)
 JOIN :filu.stype  as t USING(stype_id)
 
-WHERE fi_id = :fiId
-
-ORDER BY t.seq
+WHERE s.caption = :symbol
+  and m.caption = :market
+  and t.caption = :owner

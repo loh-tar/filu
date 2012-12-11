@@ -34,7 +34,9 @@
 *
 *
 ************************************************************************/
-SearchFiWidget::SearchFiWidget(FClass* parent) : FWidget(parent, FUNC)
+SearchFiWidget::SearchFiWidget(FClass* parent)
+              : FWidget(parent, FUNC)
+              , mHideNoMarket(false)
 {
   init();
 }
@@ -46,6 +48,7 @@ void SearchFiWidget::init()
 {
   mSearchField = new SearchField(this);
   connect(mSearchField, SIGNAL(textChanged()), this, SLOT(search()));
+  setFocusProxy(mSearchField);
 
   mTypeSelBtn = new FiTypeSelBtn(this);
   connect(mTypeSelBtn, SIGNAL(selectionChanged()), this, SLOT(search()));
@@ -72,10 +75,21 @@ void SearchFiWidget::init()
   layout->addWidget(mView, 1, 0, 1, 2);
 
   setLayout(layout);
+
+  search();
 }
+
+void SearchFiWidget::setHideNoMarket(bool hide/* = true*/)
+{
+  mHideNoMarket = hide;
+  search();
+}
+
 void SearchFiWidget::search()
 {
-  QSqlQuery* query = mFilu->searchFi(mSearchField->text(),  mTypeSelBtn->selected());
+  QSqlQuery* query = mFilu->searchFi(mSearchField->text()
+                                   , mTypeSelBtn->selected()
+                                   , mHideNoMarket);
 
   if(!query) query = mFilu->lastQuery();
   mModel->setQuery(*query);
@@ -84,6 +98,10 @@ void SearchFiWidget::search()
   mView->resizeRowsToContents();
   mView->hideColumn(0);
   mView->hideColumn(1);
+  mView->hideColumn(2);
+  mView->hideColumn(5);
+  mView->hideColumn(6);
+  mView->hideColumn(7);
   //resize(mView->columnWidth(2) + mView->columnWidth(3) + mView->columnWidth(4) + mView->columnWidth(5) + 10, height());
 
   mCurrentRow = -1;
@@ -99,12 +117,14 @@ void SearchFiWidget::clicked(const QModelIndex& index)
   mCurrentRow = row;
 
   // Symbol, Market
-  emit selected(mModel->index(row, 4).data().toString()
-              , mModel->index(row, 5).data().toString());
+  emit selected(mModel->index(row, 5).data().toString()
+              , mModel->index(row, 6).data().toString());
 
   // FiId, MarketId
   emit selected(mModel->index(row, 0).data().toInt()
               , mModel->index(row, 1).data().toInt());
+
+  mSearchField->setFocus();
 }
 
 /*

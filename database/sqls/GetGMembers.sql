@@ -15,11 +15,11 @@
 
 -- GetGMembers.sql
 SELECT
-  g.gmember_id,
-  g.fi_id,
-  ls.symbol,
-  m.caption AS market,
-  m.market_id
+    g.gmember_id  as "GroupMemberId"
+  , g.fi_id       as "FiId"
+  , ls.symbol     as "Symbol"
+  , m.caption     as "Market"
+  , m.market_id   as "MarketId"
 
 FROM
   :user.gmember g

@@ -69,6 +69,8 @@ class SearchFiWidget : public FWidget
                 SearchFiWidget(FClass* parent);
     virtual    ~SearchFiWidget();
 
+    void        setHideNoMarket(bool hide = true);
+
     signals:
     void        selected(int fiId, int marketId);
     void        selected(QString symbol, QString market);
@@ -93,6 +95,7 @@ class SearchFiWidget : public FWidget
     FiTypeSelBtn*   mTypeSelBtn;
     QPoint          mDragStartPosition;
     int             mCurrentRow;
+    bool            mHideNoMarket;
 };
 
 #endif

@@ -185,28 +185,6 @@ BarTuple* Filu::getBars(int fiId, int marketId
   return bars;
 }
 
-SymbolTuple* Filu::getSymbols(int fiId, const QString& fiType
-                            , const QString& symbolType
-                            , const QString& symbol
-                            , const QString& market
-                            , bool onlyProviderSymbols)
-{
-  if(!initQuery("GetSymbols")) return 0;
-
-  QSqlQuery* query = mSQLs.value("GetSymbols");
-
-  query->bindValue(":fiId", fiId);
-  query->bindValue(":ftype", fiType);
-  query->bindValue(":provider", symbolType);
-  query->bindValue(":symbol", symbol);
-  query->bindValue(":market", market);
-  query->bindValue(":onlyProviderSymbols", onlyProviderSymbols);
-
-  if(execute(query) < eNoData) return 0;
-
-  return fillSymbolTuple(query);
-}
-
 SymbolTuple* Filu::getSymbols(int fiId)
 {
   if(!initQuery("GetSymbolsToFiId")) return 0;
@@ -220,16 +198,21 @@ SymbolTuple* Filu::getSymbols(int fiId)
   return fillSymbolTuple(query);
 }
 
-SymbolTuple* Filu::getAllProviderSymbols()
+SymbolTuple* Filu::getSymbol(const QString& symbol
+                         , const QString& market
+                         , const QString& owner  )
 {
-  return getSymbols(0, "", "", "", "", true);
-}
+  if(!initQuery("GetSymbol")) return 0;
 
-SymbolTuple* Filu::searchSymbol(const QString& symbol
-                              , const QString& market /* = "" */
-                              , const QString& owner  /* = "" */)
-{
-  return getSymbols(0, "", owner, symbol, market, false);
+  QSqlQuery* query = mSQLs.value("GetSymbol");
+
+  query->bindValue(":symbol", symbol);
+  query->bindValue(":market", market);
+  query->bindValue(":owner", owner);
+
+  if(execute(query) < eNoData) return 0;
+
+  return fillSymbolTuple(query);
 }
 
 SymbolTypeTuple* Filu::getSymbolTypes(int filter/* = eAllTypes FIXME, bool orderBySeq = true*/)
@@ -316,14 +299,12 @@ MarketTuple* Filu::getMarket(int marketId)
 
 FiTuple* Filu::getFi(int fiId)
 {
-  // Not yet used, but soon...I hope
+  if(fiId < 1) return 0;
+
   if(!initQuery("GetFi")) return 0;
 
   QSqlQuery* query = mSQLs.value("GetFi");
 
-  query->bindValue(":name", "");
-  query->bindValue(":type", "");
-  query->bindValue(":fuzzy", false);
   query->bindValue(":fiId", fiId);
 
   if(execute(query) < eNoData) return 0;
@@ -336,27 +317,12 @@ FiTuple* Filu::getFi(int fiId)
 
 FiTuple* Filu::getFiLike(const QString& pattern)
 {
-  if(!initQuery("GetFi")) return 0;
-
-  QSqlQuery* query = mSQLs.value("GetFi");
-
-  query->bindValue(":name", pattern);
-  query->bindValue(":type", "");
-  query->bindValue(":fuzzy", true);
-  query->bindValue(":fiId", 0);
-
-  if(execute(query) < eData) return 0;
-
-  return fillFiTuple(query);
+  return fillFiTuple(searchFi(pattern, "", eWithNoMarket));
 }
 
 FiTuple* Filu::getFiBySymbol(const QString& symbol)
 {
-  int fiId = getFiIdBySymbol(symbol);
-
-  if(fiId < 1) return 0;
-
-  return getFi(fiId);
+  return getFi(getFiIdBySymbol(symbol));
 }
 
 int Filu::getFiTypes(QStringList& type)
@@ -1477,11 +1443,13 @@ SymbolTuple* Filu::fillSymbolTuple(QSqlQuery* query)
     query->next();
 
     int i = symbols->mIndex;
-    symbols->mFiId[i]     = query->value(0).toInt();
-    symbols->mMarketId[i] = query->value(1).toInt();
-    symbols->mCaption[i]  = query->value(2).toString();
-    symbols->mMarket[i]   = query->value(3).toString();
-    symbols->mOwner[i]    = query->value(4).toString();
+    symbols->mId[i]       = query->value(0).toInt();
+    symbols->mFiId[i]     = query->value(1).toInt();
+    symbols->mMarketId[i] = query->value(2).toInt();
+    symbols->mCaption[i]  = query->value(3).toString();
+    symbols->mMarket[i]   = query->value(4).toString();
+    symbols->mOwner[i]    = query->value(5).toString();
+    symbols->mQuality[i]  = query->value(6).toInt();
   }
   symbols->rewind();
 

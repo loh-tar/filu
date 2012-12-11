@@ -18,6 +18,7 @@
 //
 
 #include <QDir>
+#include <QSqlRecord>
 #include <QSqlQuery>
 #include <QTextStream>
 
@@ -336,8 +337,8 @@ void Scanner::scanGroup()
 
 void Scanner::scanAll()
 {
-  SymbolTuple* symbols = mFilu->getAllProviderSymbols();
-  if(!symbols)
+  QSqlQuery* query = mFilu->searchFi("", "");
+  if(!query->size())
   {
     error(FUNC, tr("No symbols found."));
     return;
@@ -346,13 +347,13 @@ void Scanner::scanAll()
   if(verboseLevel(eInfo))
   {
     QString txt = tr("%1 FIs to scan.");
-    verbose(FUNC, txt.arg(symbols->count()));
+    verbose(FUNC, txt.arg(query->size()));
   }
 
-  while(symbols->next())
+  while(query->next())
   {
-    //qDebug() << "scan: " << symbols->caption() << symbols->fiId() << hasError();
-    scanThis(symbols->fiId(), symbols->marketId());
+    QSqlRecord r = query->record();
+    scanThis(r.value("FiId").toInt(), r.value("MarketId").toInt());
   }
 }
 

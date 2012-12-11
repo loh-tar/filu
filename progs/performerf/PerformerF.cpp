@@ -73,6 +73,7 @@ PerformerF::PerformerF(QApplication& app)
   //
   // Create the FI Search Dock
   SearchFiWidget* searchFi = new SearchFiWidget(this);
+  searchFi->setHideNoMarket();
   connect(searchFi, SIGNAL(selected(const QString &, const QString &))
         , this, SLOT(showWindowTitle(const QString &, const QString &)));
   connect(searchFi, SIGNAL(selected(int, int))
@@ -83,6 +84,7 @@ PerformerF::PerformerF(QApplication& app)
   dw->setAllowedAreas(Qt::LeftDockWidgetArea |
                               Qt::RightDockWidgetArea);
   dw->setWidget(searchFi);
+  dw->setFocusProxy(searchFi); // FIXME Take no effect :-/
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
   menu->addAction(act);

@@ -384,15 +384,15 @@ void FiGroupWidget::getGMembers()
 
 void FiGroupWidget::userDragInData(QTableView* tv)
 {
-  //if(tv == mMemberView) return;
+  if(tv == mMemberView) return;
 
   QAbstractItemModel* m = tv->horizontalHeader()->model();
 
   int fiIdColumn = 0;
   for(; fiIdColumn < tv->horizontalHeader()->count(); ++fiIdColumn)
   {
-    //qDebug() << m->headerData(i, Qt::Horizontal).toString();
-    if(m->headerData(fiIdColumn, Qt::Horizontal).toString() == "fi_id") break;
+    //qDebug() << m->headerData(fiIdColumn, Qt::Horizontal).toString();
+    if(m->headerData(fiIdColumn, Qt::Horizontal).toString() == "FiId") break;
   }
 
   QModelIndexList mil = tv->selectionModel()->selectedIndexes();

@@ -35,8 +35,6 @@ H: Handle issue date an mariture date at select for eodbar update
 H: gfi_xcurrency_eodbar, it seems I have it not finished.
 H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
-H: write new GetSymbols.sql, now is too complicate an delivers not ever what
-   expected.
 M: add NOTIFY/LISTEN support. db.driver()->subscribeToNotification()
    e.g. if table eodbar updated -> performerf "ah, reload chart"
    Note: Because of a Qt driver limitation is the 'payload' not supported.

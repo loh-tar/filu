@@ -55,9 +55,7 @@ class AgentF : public FCoreApp
     void startClones();
     void readSettings();
 
-    QStringList* fetchBarsFromProvider(const QString& provider,
-                                       const QStringList& parameters);
-
+    void cmdFetch();
     void addEODBarData();
     void updateAllBars();
     bool lineToCommand(const QString& line, QStringList& cmd);
@@ -74,9 +72,12 @@ class AgentF : public FCoreApp
     void summon();
     void exorcise();
     void cmdSet();
+
     void printSettings();
     void printError(const QString message);
     void check4MasterCMD();
+    void addEODBarData(const QString& symbol, const QString& market, const QString& provider
+                     , const QDate& fromDate, const QDate& toDate, int fiId, int marketId);
 
     Script*            mScript;
     Importer*          mImporter;
