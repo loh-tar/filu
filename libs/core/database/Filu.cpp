@@ -471,7 +471,7 @@ int Filu::getIndicatorInfo(KeyVal* info, const QString& name)
     if(line.startsWith("BEGIN", Qt::CaseInsensitive)) break;
     if(!line.startsWith("--")) continue;
 
-    int i = line.indexOf(':');
+    int i = line.indexOf(' ');
     QString attrib = line.left(i);
     attrib.remove("--");
     if(attrib.isEmpty()) continue;

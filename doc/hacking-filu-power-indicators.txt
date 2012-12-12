@@ -6,16 +6,14 @@ skip this chapter. But if you have an idea for a new Filu Power Indicator and
 you want implement that, then find you here the needed information how you can
 do this.
 
-Filu Power Indicators are Postgres SQL functions located in database/functions
-and begin with 'fpi_'. Once you have create such a file you could run in your
-database directory:
+Filu Power Indicators are Postgres SQL functions located in
+database/sqls/filu/functions and begin with 'fpi_'. Once you have create such a
+file you could run in your FiluSorce directory:
 
-  ./configure -UDST
-  sudo make install
+  agentf sum testmyfpi
 
-This replaced some stuff but does not delete any of your data, or shouldn't be.
-If you use other than the default database settingss then you have to be care of
-that by setting one of (or all) -d foo1 -u foo2 -s foo3.
+This create a new test schema where you can play around after you have
+fill in data.
 
 The concept how FPI are be implemented is orientated on TA-Lib but is not as
 well thought out. So if you think something should done differed, let me know.
@@ -43,7 +41,7 @@ uppercase letter and should not contain underscores.
 Use $BODY$ to quote the entire function.
 
 Prefix the function name, each table reference and each non standard data type
-with <schema>. That will later replaced by the ./configure script.
+with :filu. That will later replaced by the sql loader.
 
 
 Function Name
@@ -71,8 +69,8 @@ The time column is currently not used but maybe in the future. So fill these
 with '23:59:59' if you don't use it.
 Any data you want to return has to be FLOAT, anyway if you calculate int or
 bool results. Return as much data columns as you like after the above noted data
-column. In database/misc/data_types.sql find you some handy return types you can
-use.
+column. In database/sqls/filu/misc/data_types.sql find you some handy return
+types you can use.
 
 
 Function Error Codes
