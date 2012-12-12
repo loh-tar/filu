@@ -137,8 +137,8 @@ sub usage()
 sub info()
 {
   print "Name:    fetchCompList_Yahoo\n";
-  print "Purpose: Fetch all associated underlying to an Index with RefSymbol and Weight\n";
-  print "Input:   Symbol";
+  print "Purpose: To fetch all associated underlying to an Index with RefSymbol and Weight\n";
+  print "Input:   Symbol\n";
   print "Output:  Reuters Name Type Yahoo Market Weight Quality Notice\n";
   print "Comment: Sometimes Yahoo deliver more or less components as needed\n";
 

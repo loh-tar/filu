@@ -10,7 +10,7 @@ case "$1" in
 
   "--info" )
   echo "Name:    fetchCompList_Filu"
-  echo "Purpose: Fetch all associated underlying to an Index with RefSymbol and Weight."
+  echo "Purpose: To illustrate how could be all associated underlying to an Index with RefSymbol and Weight fetched"
   echo "Input:   Symbol"
   echo "Output:  RefSymbol Weight"
   echo "Comment: I know only the two indexes 'DAX' and 'NDX' with outdated demo data"

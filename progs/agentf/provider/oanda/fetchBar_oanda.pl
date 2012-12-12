@@ -134,7 +134,9 @@ sub usage()
 sub info()
 {
   print "Name:    fetchBar_oanda\n";
-  print "Purpose: Fetch EOD Bar data to a FI in a given time frame\n";
+  print "Date:    2006\n";
+  print "Author:  Christian Kindler\n";
+  print "Purpose: To fetch currency bar data in a given time frame\n";
   print "Input:   FromDate ToDate Symbol";
   print "Output:  Date Open High Low Close Volume OpenInterest Quality\n";
   print "Comment: Currently broken, go and FIXME\n";

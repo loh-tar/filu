@@ -10,11 +10,11 @@ case "$1" in
 
   "--info" )
   echo "Name:    fetchFi_Filu"
-  echo "Purpose: Fetch the master data to a FI"
+  echo "Purpose: To illustrate how could be the master data of a FI fetched"
   echo "Input:   SearchString"
   echo "Output:  Name Type <SymbolType> [RefSymbol]"
-  echo "Comment: The SearchString can be a part of a symbol or FI name"
-  echo "Comment: I know only few FIs with outdated demo data"
+  echo "Comment: Knows only a few FIs with outdated demo data"
+  echo "Comment: The SearchString can be part of a symbol or FI name"
   exit 0
   ;;
 

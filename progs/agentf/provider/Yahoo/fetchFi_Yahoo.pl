@@ -100,7 +100,7 @@ sub usage()
 sub info()
 {
   print "Name:    fetchFi_Yahoo\n";
-  print "Purpose: Fetch the master data to a FI\n";
+  print "Purpose: To fetch the master data of a FI\n";
   print "Input:   SearchString";
   print "Output:  Name Type <SymbolType> [RefSymbol]\n";
   print "Comment: The SearchString can be a part of a symbol or FI name\n";

@@ -193,7 +193,9 @@ sub usage()
 sub info()
 {
   print "Name:    fetchBar_Yahoo\n";
-  print "Purpose: Fetch EOD Bar data to a FI in a given time frame\n";
+  print "Date:    2012\n";
+  print "Author:  Christian Kindler, loh.tar\n";
+  print "Purpose: To fetch EOD Bar data to a FI in a given time frame\n";
   print "Input:   FromDate ToDate Symbol Market";
   print "Output:  Date Open High Low Close Volume OpenInterest Quality\n";
   print "Comment: Sadly delivers Yahoo sometimes buggy historical data\n";

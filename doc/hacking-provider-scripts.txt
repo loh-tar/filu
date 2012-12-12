@@ -32,8 +32,8 @@ stdout.
 
 The script must accept a switch '--info' where will be printed some lines of
 semantic. The format of these lines is <Key><Colon><Value>.
-Needed keys are: Input, Output, Purpose
-Optional keys are: Author, Comment, Copyright, Date, Name, Version
+Needed keys are: Input, Name, Output, Purpose
+Optional keys are: Author, Comment, Date, Version
 The order of printed keys has to be: Name, Version, Date, Author, Purpose,
 Input, Output, Comment
 
