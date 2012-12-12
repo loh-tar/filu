@@ -183,6 +183,9 @@ AutoGroupChild_* which than can select the content (FIs) of the child group.
 
 M: redesign FiGroupWidget signals/slots. use QModelIndex for slots and
    QHash<QString, QString> for signals. (hmm...)
+M: Review Drag&Drop. It's not possible to drag in from an other application, only
+   from his own. After short googling I was pointed to
+     http://doc.qt.digia.com/4.6/model-view-dnd.html#encoding-exported-data
 
 
 LaunchPad

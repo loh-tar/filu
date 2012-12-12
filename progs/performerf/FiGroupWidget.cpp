@@ -535,8 +535,15 @@ void MyTableWidget::dropEvent( QDropEvent* event )
     event->accept();
     //event->acceptProposedAction();
     //qDebug() << ":" << (static_cast<QTableView*>(event->source()))->model()->headerData(0, Qt::Horizontal);
+    event->setDropAction(Qt::IgnoreAction);
     //qDebug() << "event->dropAction() =" << event->dropAction();
-    if(event->source() != this) emit dragInFromTableView(static_cast<QTableView*>(event->source()));
+    if(event->source() != this and event->source())
+    {
+      //event->accept();
+      event->setDropAction( Qt::CopyAction );
+      emit dragInFromTableView(static_cast<QTableView*>(event->source()));
+    }
+
   }
   else
   {
@@ -551,9 +558,16 @@ void MyTableWidget::dragEnterEvent(QDragEnterEvent* event)
   if(event->mimeData()->hasFormat("application/Filu_SqlTableView")
      or event->mimeData()->hasFormat("application/Filu_MyTableWidget"))
   {
-    event->setDropAction(Qt::CopyAction);
-    event->accept();
     //qDebug() << "MyTableWidget::dragEnterEvent";
+    event->accept();
+    if(event->source() != this and event->source())
+    {
+      event->setDropAction(Qt::CopyAction);
+    }
+    else
+    {
+      event->setDropAction(Qt::IgnoreAction);
+    }
   }
   else
   {
