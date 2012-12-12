@@ -36,6 +36,73 @@ Script::~Script()
   if(mProc) delete mProc;
 }
 
+QStringList Script::providerList()
+{
+  QDir dir(mProviderPath);
+  return dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+}
+
+QStringList Script::functionList(const QString& provider)
+{
+  QDir dir(mProviderPath + "/" + provider, "fetch*");
+  QStringList files = dir.entryList(QDir::Files, QDir::Name);
+  files.replaceInStrings(QRegExp("_.*"), "");
+  files.replaceInStrings(QRegExp("fetch"), "");
+
+  return files;
+}
+
+QHash<QString, QString> Script::functionInfo(const QString& provider, const QString& function)
+{
+  QHash<QString, QString> info;
+  blockSignals(true);
+  bool SaveShowWaitWindow = mShowWaitWindow;
+  mShowWaitWindow = false;
+
+  QStringList* data = askProvider(provider, "fetch" + function, QStringList() << "--info");
+  if(data)
+  {
+    QRegExp rx(":");
+    for(int i = 0; i < data->size(); ++i)
+    {
+      int pos = rx.indexIn(data->at(i));
+      if(pos < 1)
+      {
+        fatal(FUNC, QString("No valid meta data rom script: fetch%1_%2").arg(function, provider));
+        continue;
+      }
+
+      // Support more than one meta key of same name
+      QString meta = data->at(i).left(pos);
+      if(info.contains(meta))
+      {
+        for(int i = 2;; ++i)
+        {
+          QString meta2 = meta + QString::number(i);
+          if(info.contains(meta2)) continue;
+
+          meta = meta2;
+          break;
+        }
+      }
+
+      if(verboseLevel(eMax))
+      {
+        verbose(FUNC, data->at(i));
+        verbose(FUNC, meta);
+        verbose(FUNC, data->at(i).mid(pos + 1).trimmed());
+      }
+
+      info.insert(meta, data->at(i).mid(pos + 1).trimmed());
+    }
+
+    delete data;
+  }
+
+  mShowWaitWindow = SaveShowWaitWindow;
+  blockSignals(false);
+  return info;
+}
 
 QStringList * Script::execute(const QString& script, const QStringList& parameters)
 {

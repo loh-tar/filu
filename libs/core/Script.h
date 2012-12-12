@@ -32,6 +32,10 @@ class Script : public FObject
                   Script(FClass* parent);
     virtual      ~Script();
 
+    QStringList   providerList();
+    QStringList   functionList(const QString& provider);
+    QHash<QString, QString> functionInfo(const QString& provider, const QString& function);
+
     QStringList*  execute(const QString& script, const QStringList& parameters);
 
     QStringList*  askProvider(const QString& provider

@@ -98,6 +98,9 @@ class AddFiPage : public ManagerPage
     void          saveSettings();
 
   protected slots:
+    void          providerChanged(const QString& provider);
+    void          providerFuncChanged(const QString& func);
+    void          showProviderFuncInfo();
     void          search();
     void          insertRow();
     void          removeRow();
@@ -118,7 +121,7 @@ class AddFiPage : public ManagerPage
     void          searchIdx();
     bool          importFails(const QString& func, const QString& data);
 
-    QComboBox*    mTypeSelector;
+    QComboBox*    mProviderFuncSelector;
     QComboBox*    mProviderSelector;
     SearchField*  mSearchField;
     QTableWidget* mResultList;
@@ -140,6 +143,8 @@ class AddFiPage : public ManagerPage
     QMultiHash<QString, int> mResultKeys; // Only used by TWIB
     QStringList              mPreparedHeader;
     QHash<QString, QString>  mPreparedHeaderData;
+    QHash<QString, QStringList> mProviderFunctions;
+    QHash<QString, QHash<QString, QString> > mProviderFuncInfo;
 };
 
 class TWIB : public QWidget // Table-Widget-Install-Button

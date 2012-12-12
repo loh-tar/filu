@@ -43,6 +43,9 @@
 #include "SymbolTuple.h"
 #include "SymbolTypeTuple.h"
 
+static const QString cCancel = QObject::tr("Cancel");
+static const QString cSearch = QObject::tr("Search");
+
 AddFiPage::AddFiPage(FClass* parent)
          : ManagerPage(parent, FUNC)
          , mHitCounter(this)
@@ -70,29 +73,33 @@ void AddFiPage::createPage()
   mImporter = new Importer(this);
   if(mImporter->hasError()) addErrors(mImporter->errors());
 
-  QGroupBox* searchGroup = new QGroupBox(tr("Add a new FI to the Data Base"));
-
-  mSearchCancelBtn = new QPushButton;
-  mSearchCancelBtn->setText(tr("Search"));
-  connect(mSearchCancelBtn, SIGNAL(clicked()), this, SLOT(searchOrCancel()));
-
   mProviderSelector = new QComboBox;
-  QDir dir(mRcFile->getST("ProviderPath"));
-  mProviderSelector->insertItems(0, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot));
+  mProviderSelector->insertItems(0, mScripter->providerList());
   mProviderSelector->setCurrentIndex(mProviderSelector->findText("Filu"));
+  connect(mProviderSelector, SIGNAL(currentIndexChanged(const QString&))
+        , this, SLOT(providerChanged(const QString&)));
+
+  mProviderFuncSelector = new QComboBox;
+  connect(mProviderFuncSelector, SIGNAL(currentIndexChanged(const QString&))
+        , this, SLOT(providerFuncChanged(const QString&)));
+
+  QPushButton* funcInfoBtn = new QPushButton;
+  funcInfoBtn->setText("?");
+  funcInfoBtn->setToolTip(tr("Show provider function infos"));
+  connect(funcInfoBtn, SIGNAL(clicked()), this, SLOT(showProviderFuncInfo()));
 
   mSearchField = new SearchField(this);
-
   connect(mSearchField, SIGNAL(returnPressed()), this, SLOT(search()));
 
-  mTypeSelector = new QComboBox;
-  mTypeSelector->insertItem(1, "Search FI");
-  mTypeSelector->insertItem(2, "Search Index");
+  mSearchCancelBtn = new QPushButton;
+  mSearchCancelBtn->setText(cSearch);
+  connect(mSearchCancelBtn, SIGNAL(clicked()), this, SLOT(searchOrCancel()));
 
   QPushButton* insertRowBtn = new QPushButton;
   insertRowBtn->setText("+");
   insertRowBtn->setToolTip(tr("Insert new row"));
   connect(insertRowBtn, SIGNAL(clicked()), this, SLOT(insertRow()));
+
   QPushButton* removeRowBtn = new QPushButton;
   removeRowBtn->setText("-");
   removeRowBtn->setToolTip(tr("Remove selected row"));
@@ -193,7 +200,8 @@ void AddFiPage::createPage()
 
   QHBoxLayout* topLine = new QHBoxLayout;
   topLine->addWidget(mProviderSelector);
-  topLine->addWidget(mTypeSelector);
+  topLine->addWidget(mProviderFuncSelector);
+  topLine->addWidget(funcInfoBtn);
   topLine->addWidget(mSearchField);
   topLine->addWidget(mSearchCancelBtn);
   topLine->addWidget(&mHitCounter);
@@ -211,12 +219,72 @@ void AddFiPage::createPage()
   //
   // Build the main layout
 
+  QGroupBox* searchGroup = new QGroupBox(tr("Add a new FI to the Data Base"));
   searchGroup->setLayout(searchLayout);
 
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addWidget(searchGroup);
   mainLayout->addStretch(1);
   setLayout(mainLayout);
+}
+
+void AddFiPage::providerChanged(const QString& provider)
+{
+  QString oldFunc = mProviderFuncSelector->currentText();
+  mProviderFuncSelector->blockSignals(true);
+  mProviderFuncSelector->clear();
+
+  if(!mProviderFunctions.contains(provider))
+  {
+    mProviderFunctions.insert(provider, mScripter->functionList(provider));
+  }
+
+  mProviderFuncSelector->addItems(mProviderFunctions.value(provider));
+
+  int idx = mProviderFuncSelector->findText(oldFunc);
+  if(idx > -1)
+  {
+    mProviderFuncSelector->setCurrentIndex(idx);
+    providerFuncChanged(oldFunc);
+  }
+  else
+  {
+    providerFuncChanged(mProviderFuncSelector->currentText());
+  }
+
+  mProviderFuncSelector->blockSignals(false);
+}
+
+void AddFiPage::providerFuncChanged(const QString& func)
+{
+  QString provider = mProviderSelector->currentText();
+  if(!mProviderFuncInfo.contains(provider + func))
+  {
+    mProviderFuncInfo.insert(provider + func, mScripter->functionInfo(provider, func));
+  }
+}
+
+void AddFiPage::showProviderFuncInfo()
+{
+  QString providerFunc = mProviderSelector->currentText();
+  providerFunc.append(mProviderFuncSelector->currentText());
+  const QHash<QString, QString> funcInfo = mProviderFuncInfo.value(providerFunc);
+
+  QString mask = ("%1;%2");
+  QStringList* result = new QStringList;
+  result->append("[Header]Meta;Value");
+
+                                    result->append(mask.arg("Name", funcInfo.value("Name")));
+  if(funcInfo.contains("Version"))  result->append(mask.arg("Version", funcInfo.value("Version")));
+  if(funcInfo.contains("Date"))     result->append(mask.arg("Date", funcInfo.value("Date")));
+  if(funcInfo.contains("Author"))   result->append(mask.arg("Author", funcInfo.value("Author")));
+                                    result->append(mask.arg("Purpose", funcInfo.value("Purpose")));
+                                    result->append(mask.arg("Comment", funcInfo.value("Comment")));
+
+  //if(funcInfo.contains("")) result->append(mask.arg("", funcInfo.value("")));
+
+  mNewQuery = true;
+  fillResultTable(result);
 }
 
 void AddFiPage::showEvent(QShowEvent * /*event*/)
@@ -281,19 +349,27 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
 void AddFiPage::search()
 {
   mNewQuery = true;
-  mSearchCancelBtn->setText("Cancel");
+  mSearchCancelBtn->setText(cCancel);
 
   mProvider = mProviderSelector->currentText();
 
-  if(mTypeSelector->currentText() == "Search FI")
+  if(mProviderFuncSelector->currentText() == "Fi")
   {
     mDisplayType = "Stock";
     searchFi();
   }
-  else if(mTypeSelector->currentText() == "Search Index")
+  else if(mProviderFuncSelector->currentText() == "CompList")
   {
     mDisplayType = "Index";
     searchIdx();
+  }
+  else
+  {
+    QStringList* result = new QStringList;
+    result->append("[Header]Sorry");
+    result->append("Not yet implemented");
+    fillResultTable(result);
+    mSearchCancelBtn->setText(cSearch);
   }
 }
 
@@ -324,6 +400,7 @@ void AddFiPage::removeRow()
 
 void AddFiPage::searchFi()
 {
+//   mSearchCancelBtn->setText(cCancel);
   QString msg = tr("Search FI at %1 matched to '%2'...");
   emitMessage(FUNC, msg.arg(mProvider).arg(mSearchField->text()));
   QStringList parms(mSearchField->text());
@@ -333,6 +410,7 @@ void AddFiPage::searchFi()
 
 void AddFiPage::searchIdx()
 {
+//   mSearchCancelBtn->setText(cCancel);
   QString msg = tr("Search Components at %1 for '%2'...");
   emitMessage(FUNC, msg.arg(mProvider).arg(mSearchField->text()));
   QStringList parms(mSearchField->text());
@@ -465,8 +543,15 @@ void AddFiPage::loadSettings()
 {
   mRcFile->beginGroup("AddFiPage");
 
+  mProviderSelector->blockSignals(true);
+  mProviderFuncSelector->blockSignals(true);
+
   mProviderSelector->setCurrentIndex(mProviderSelector->findText(mRcFile->getST("LastProvider")));
-  mTypeSelector->setCurrentIndex(mTypeSelector->findText(mRcFile->getST("LastScript")));
+  mProviderFuncSelector->setCurrentIndex(mProviderFuncSelector->findText(mRcFile->getST("LastScript")));
+  providerChanged(mRcFile->getST("LastProvider"));
+
+  mProviderFuncSelector->blockSignals(false);
+  mProviderSelector->blockSignals(false);
 
   mType->setCurrentIndex(mType->findText(mRcFile->getST("Type")));
 
@@ -486,7 +571,7 @@ void AddFiPage::saveSettings()
   mRcFile->beginGroup("AddFiPage");
 
   mRcFile->set("LastProvider", mProviderSelector->currentText());
-  mRcFile->set("LastScript", mTypeSelector->currentText());
+  mRcFile->set("LastScript", mProviderFuncSelector->currentText());
 
   mRcFile->set("Type", mType->currentText());
 
@@ -505,7 +590,7 @@ void AddFiPage::searchOrCancel()
 {
   if(mSearchCancelBtn->hasFocus())
   {
-    if(mSearchCancelBtn->text() == "Cancel")
+    if(mSearchCancelBtn->text() == cCancel)
     {
       mScripter->stopRunning();
       emitMessage(FUNC, tr("Script canceled."));
@@ -516,7 +601,7 @@ void AddFiPage::searchOrCancel()
 
 void AddFiPage::scriptFinished()
 {
-  mSearchCancelBtn->setText(tr("Search"));
+  mSearchCancelBtn->setText(cSearch);
 
   if(mScripter->hasError())
   {
@@ -540,7 +625,7 @@ void AddFiPage::scriptFinished()
 void AddFiPage::searchCompBtnClicked(int idx)
 {
   mNewQuery = true;
-  mSearchCancelBtn->setText("Cancel");
+  mSearchCancelBtn->setText(cCancel);
   mProvider = mPSMGrp.provider(idx)->currentText();
   mSearchField->setText(mPSMGrp.symbol(idx)->text());
   mDisplayType = "Index";
