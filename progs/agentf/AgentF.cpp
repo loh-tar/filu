@@ -696,7 +696,8 @@ void AgentF::summon()
                           "they replaced by underscroes."));
     mCmd->printNote(tr("The config key 'SqlPath' is set to 'FiluSource/database/sqls/' in the user "
                        "settings file if you run AgentF from your 'FiluSource/[build/]' directory. "
-                       "In fact is that test poor. It's only tested if '[../build/]database/sqls/' exist."));
+                       "In fact is that test poor. It's only tested if '[../build/]database/sqls/' exist."
+                       "These applies correspondingly to 'ProviderPath'."));
     mCmd->printNote(tr("To list existing development schemata use the 'exo' command."));
     mCmd->printForInst("newidea");
     mCmd->aided();
@@ -706,23 +707,29 @@ void AgentF::summon()
   QString devil = FTool::makeValidWord(mCmd->parmStr(1));
   if(FTool::makeValidWord(mRcFile->getST("Devil")) == devil)
   {
-    verbose(FUNC, tr("I'm already a devilish '%1'").arg(devil));
+    verbose(FUNC, tr("I'm already '%1' devilish").arg(devil));
     return;
   }
 
   verbose(FUNC, tr("I summon the devil '%1'").arg(devil));
   mRcFile->set("Devil", devil);
-  QString devilSqls(getenv("PWD"));
-  devilSqls.remove(QRegExp("/build$"));
-  devilSqls.append("/database/sqls/");
-  if(QFile::exists(devilSqls))
+  QString devilPath(getenv("PWD"));
+  devilPath.remove(QRegExp("/build$"));
+  devilPath.append("/database/sqls/");
+  if(QFile::exists(devilPath))
   {
-    verbose(FUNC, tr("Change SqlPath to: %1").arg(devilSqls));
-    mRcFile->set("SqlPath", devilSqls);
+    verbose(FUNC, tr("Change SqlPath to: %1").arg(devilPath));
+    mRcFile->set("SqlPath", devilPath);
+
+    devilPath.remove(QRegExp("/database/sqls/$"));
+    devilPath.append("/scripts/provider/");
+    verbose(FUNC, tr("Change ProviderPath to: %1").arg(devilPath));
+    mRcFile->set("ProviderPath", devilPath);
   }
   else
   {
     verbose(FUNC, tr("Let SqlPath untouched: %1").arg(mRcFile->getST("SqlPath")));
+    verbose(FUNC, tr("Let ProviderPath untouched: %1").arg(mRcFile->getST("ProviderPath")));
   }
   mFilu->closeDB();
   mFilu->openDB();
@@ -734,9 +741,10 @@ void AgentF::exorcise()
   {
     if(mCmd->printThisWay("[<Devil>]")) return;
 
-    mCmd->printComment(tr("Switch in any case back to the productive version and remove "
+    mCmd->printComment(tr("Switch in any case back to the productive version and delete "
                           "(if given) the development schemata."));
-    mCmd->printNote(tr("The config key 'SqlPath' is removed from the user settings file."));
+    mCmd->printNote(tr("The config keys 'SqlPath' and 'ProviderPath' will removed from "
+                       "the user settings file."));
 
     mCmd->printForInst("mylastidea");
     mCmd->aided();
@@ -744,12 +752,15 @@ void AgentF::exorcise()
   }
 
   QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));
+
   if(!devil.isEmpty())
   {
     verbose(FUNC, tr("I renunciate the devil '%1'").arg(devil));
     mRcFile->remove("Devil");
     mRcFile->remove("SqlPath");
+    mRcFile->remove("ProviderPath");
     verbose(FUNC, tr("SqlPath is now: %1").arg(mRcFile->getST("SqlPath")));
+    verbose(FUNC, tr("ProviderPath is now: %1").arg(mRcFile->getST("ProviderPath")));
     mFilu->closeDB();
     mFilu->openDB();
   }
@@ -824,19 +835,22 @@ void AgentF::exorcise()
     }
   }
 
-  if(!devils.size())
+  if(verboseLevel(eInfo))
   {
-    verbose(FUNC, tr("No devils out of hell."));
-  }
-  else if(devils.size() == 1)
-  {
-    verbose(FUNC, tr("The Devil is still amongst us:"));
-    verbose(FUNC, QString("  %1").arg(devils.toList().at(0)));
-  }
-  else
-  {
-    verbose(FUNC, tr("The Devils are still amongst us:"));
-    foreach(QString d, devils) verbose(FUNC, QString("  %1").arg(d));
+    if(!devils.size())
+    {
+      verbose(FUNC, tr("No devils out of hell."));
+    }
+    else if(devils.size() == 1)
+    {
+      verbose(FUNC, tr("The Devil is still amongst us:"));
+      verbose(FUNC, QString("  %1").arg(devils.toList().at(0)));
+    }
+    else
+    {
+      verbose(FUNC, tr("These Devils are still amongst us:"));
+      foreach(QString d, devils) verbose(FUNC, QString("  %1").arg(d));
+    }
   }
 }
 
