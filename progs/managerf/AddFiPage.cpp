@@ -26,6 +26,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QSplitter>
 #include <QTableWidget>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -73,6 +74,17 @@ void AddFiPage::createPage()
   mImporter = new Importer(this);
   if(mImporter->hasError()) addErrors(mImporter->errors());
 
+  //
+  // Create The Main Layout Widgets
+  QSplitter* splitter  = new QSplitter;
+  QWidget* upperWidget = new QWidget;
+  QWidget* lowerWidget = new QWidget;
+  splitter->setOrientation(Qt::Vertical);
+  splitter->addWidget(upperWidget);
+  splitter->addWidget(lowerWidget);
+
+  //
+  // Create the search line widgets and there connections
   mProviderSelector = new QComboBox;
   mProviderSelector->insertItems(0, mScripter->providerList());
   mProviderSelector->setCurrentIndex(mProviderSelector->findText("Filu"));
@@ -88,7 +100,7 @@ void AddFiPage::createPage()
   funcInfoBtn->setToolTip(tr("Show provider function infos"));
   connect(funcInfoBtn, SIGNAL(clicked()), this, SLOT(showProviderFuncInfo()));
 
-  mSearchField = new SearchField(this);
+  mSearchField = new SearchField(upperWidget);
   connect(mSearchField, SIGNAL(returnPressed()), this, SLOT(search()));
 
   mSearchCancelBtn = new QPushButton;
@@ -110,6 +122,8 @@ void AddFiPage::createPage()
   addAllBtn->setToolTip(tr("Add all listed FIs to the Database"));
   connect(addAllBtn, SIGNAL(clicked()), this, SLOT(addAllToDB()));
 
+  //
+  // The Result List
   mResultList = new QTableWidget;
   mResultList->verticalHeader()->hide();
   mResultList->setShowGrid(false);
@@ -117,7 +131,7 @@ void AddFiPage::createPage()
   connect(mResultList, SIGNAL(cellClicked(int, int)), this, SLOT(selectResultRow(int, int)));
 
   //
-  // The add area
+  // The Edit Area
   QPushButton* addBtn = new QPushButton;
   addBtn->setText(tr("Add to DB"));
   addBtn->setToolTip(tr("Add this one FI with all Symbols to the Database"));
@@ -151,7 +165,7 @@ void AddFiPage::createPage()
     check4FiluError(FUNC, tr("No Markets found"));
   }
 
-  // Build the edit line layout
+  // Build The Edit Area Layout
   QGridLayout* editNameLO = new QGridLayout;
   editNameLO->addWidget( new QLabel("RefSymbol"), 0, 0);
   editNameLO->addWidget(mRefSymbol              , 1, 0);
@@ -213,18 +227,25 @@ void AddFiPage::createPage()
   QVBoxLayout* searchLayout = new QVBoxLayout;
   searchLayout->addLayout(topLine);
   searchLayout->addWidget(mResultList);
-  searchLayout->addLayout(editNameLO);
-  searchLayout->addLayout(editSymbolLO);
+
+  QVBoxLayout* editLayout = new QVBoxLayout;
+  editLayout->addLayout(editNameLO);
+  editLayout->addLayout(editSymbolLO);
+  editLayout->addStretch(1);
 
   //
   // Build the main layout
+  upperWidget->setLayout(searchLayout);
+  lowerWidget->setLayout(editLayout);
 
-  QGroupBox* searchGroup = new QGroupBox(tr("Add a new FI to the Data Base"));
-  searchGroup->setLayout(searchLayout);
+  QVBoxLayout* groupBoxLayout = new QVBoxLayout;
+  groupBoxLayout->addWidget(splitter);
+
+  QGroupBox* groupBox = new QGroupBox(tr("Add a new FI to the Data Base"));
+  groupBox->setLayout(groupBoxLayout);
 
   QVBoxLayout* mainLayout = new QVBoxLayout;
-  mainLayout->addWidget(searchGroup);
-  mainLayout->addStretch(1);
+  mainLayout->addWidget(groupBox);
   setLayout(mainLayout);
 }
 
