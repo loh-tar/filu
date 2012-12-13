@@ -43,16 +43,11 @@ class SearchField : public LineEdit
 
     signals:
     void          textChanged();
-    void          newtext(const QString&);
-
-  public slots:
-    void          clearField();
 
   private:
     QListWidget*  mHistory;
 
   private slots:
-    void          updateClearBtn(const QString &text);
     void          clearBtnClicked();
     void          updateHistory();
     void          historyChosen(QListWidgetItem* item);

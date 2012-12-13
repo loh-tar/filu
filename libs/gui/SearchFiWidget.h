@@ -79,9 +79,6 @@ class SearchFiWidget : public FWidget
     void        search();
     void        clicked(const QModelIndex& index);
 
-   //void clearField();
-   // void setFocus();
-
   protected:
     void        init();
     //void mousePressEvent(QMouseEvent* event);

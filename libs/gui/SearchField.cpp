@@ -18,25 +18,29 @@
 //
 
 #include <QListWidget>
+// #include <QTimer>
 #include <QToolButton>
 
 #include "SearchField.h"
 
 SearchField::SearchField(QWidget* parent) : LineEdit(parent)
 {
+  doNotHideClearButton();
+
   mHistory = new QListWidget(parent);
   mHistory->setWindowFlags(Qt::FramelessWindowHint);
-  mHistory->setMinimumSize(QSize(0,0));
+//   mHistory->setMinimumSize(QSize(0,0));
   mHistory->hide();
   connect(mHistory, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(historyChosen(QListWidgetItem*)));
 
   connect(this, SIGNAL(textChanged(const QString &)), this, SIGNAL(textChanged()));
-  connect(this, SIGNAL(textChanged(const QString &)), this, SIGNAL(newtext(const QString &)));
   connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(updateHistory()));
 }
 
 SearchField::~SearchField()
-{}
+{
+  delete mHistory;
+}
 
 QRegExp SearchField::filter()
 {
@@ -44,37 +48,21 @@ QRegExp SearchField::filter()
   return filter;
 }
 
-void SearchField::clearField()
-{
-  clear();
-  setFocus();
-  emit textChanged();
-}
-
-void SearchField::updateClearBtn(const QString& text)
-{
-  if(text.isEmpty())
-  {
-    mClearBtn->hide();
-  }
-  else
-  {
-    mHistory->hide();
-    mClearBtn->show();
-  }
-}
-
 void SearchField::clearBtnClicked()
 {
-  mHistory->show();
-
+  mHistory->hide();
   QPoint p = pos();
   p.setX(p.x() + width() - mHistory->width());
   p.setY(p.y() + height());
   mHistory->move(p);
   mHistory->raise();
 
+
   clear();
+
+  // FIXME Works not perfect. The given time is not always bided. Qt Bug?
+//   QTimer::singleShot(9000, mHistory, SLOT(hide()));
+  mHistory->show();
 }
 
 void SearchField::updateHistory()
@@ -84,6 +72,8 @@ void SearchField::updateHistory()
   QString txt = text();
   if(txt.isEmpty()) return;
 
+  mHistory->hide();
+
   if(lastInserted == txt) return;
 
   if(lastInserted.size() - txt.size() == 1)
@@ -91,21 +81,24 @@ void SearchField::updateHistory()
     // Probably 'DEL' pressed
     if(mHistory->count() > 0) delete mHistory->takeItem(0);
   }
-
-  txt.chop(1);
-  if((lastInserted == txt))
+  else
   {
-    // Simple any char added
-    if(mHistory->count() > 0) delete mHistory->takeItem(0);
+    txt.chop(1);
+    if(lastInserted == txt)
+    {
+      // Simple any char added
+      if(mHistory->count() > 0) delete mHistory->takeItem(0);
+    }
+
+    lastInserted = text();
   }
 
-  lastInserted = text();
-
-//   QList<QListWidgetItem *> has = mHistory->findItems(lastInserted, Qt::MatchExactly);
-//   if(has.size() > 0)
-//   {
-//     delete has.at(0);
-//   }
+  // Don't list entrys twice
+  QList<QListWidgetItem *> has = mHistory->findItems(lastInserted, Qt::MatchExactly);
+  if(has.size() > 0)
+  {
+    delete has.at(0);
+  }
 
   mHistory->insertItem(0, lastInserted);
   if(mHistory->count() > 7) delete mHistory->takeItem(7);
@@ -125,5 +118,6 @@ void SearchField::historyChosen(QListWidgetItem* item)
 {
   mHistory->hide();
   setText(item->text());
+  mHistory->removeItemWidget(item);
   setFocus();
 }
