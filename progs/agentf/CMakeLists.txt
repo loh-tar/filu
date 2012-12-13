@@ -19,21 +19,3 @@ target_link_libraries(agentf FiluCore ${QT_LIBRARIES})
 install(TARGETS agentf
         RUNTIME DESTINATION bin
 )
-
-#
-# Install provider scripts
-#
-set(PROVIDER_FILES ${agentf_SOURCE_DIR}/provider/)
-set(PROVIDER_PATH /usr/local/lib/Filu/provider)
-install(DIRECTORY ${PROVIDER_FILES}
-        USE_SOURCE_PERMISSIONS
-        DESTINATION ${PROVIDER_PATH}
-)
-
-#
-# Install perl modules
-#
-install(DIRECTORY ${agentf_SOURCE_DIR}/perlmodules/
-        USE_SOURCE_PERMISSIONS
-        DESTINATION /usr/local/lib/Filu/perlmodules
-)

@@ -51,6 +51,24 @@ install(FILES ${FiluRoot_SOURCE_DIR}/doc/systemwide-settings-file.conf
         RENAME ${SYSTEM_WIDE_SETTINGS_FILE}
 )
 
+#
+# Install provider scripts
+#
+set(PROVIDER_FILES ${FiluRoot_SOURCE_DIR}/scripts/provider/)
+set(PROVIDER_PATH ${CMAKE_INSTALL_PREFIX}/lib/Filu/provider)
+install(DIRECTORY ${PROVIDER_FILES}
+        USE_SOURCE_PERMISSIONS
+        DESTINATION ${PROVIDER_PATH}
+)
+
+#
+# Install perl modules
+#
+install(DIRECTORY ${FiluRoot_SOURCE_DIR}/scripts/perlmodules/
+        USE_SOURCE_PERMISSIONS
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu/perlmodules
+)
+
 # Unistall target
 # For a more complex solution see
 #   http://www.cmake.org/Wiki/CMake_FAQ#Can_I_do_.22make_uninstall.22_with_CMake.3F
