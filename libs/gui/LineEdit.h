@@ -39,7 +39,9 @@ class LineEdit : public QLineEdit
 
   public:
                   LineEdit(QWidget *parent = 0);
-                 ~LineEdit();
+    virtual      ~LineEdit();
+
+    void          doNotHideClearButton(bool noHide = true);
 
   protected:
     void          resizeEvent(QResizeEvent *);

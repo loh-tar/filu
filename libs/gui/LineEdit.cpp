@@ -32,10 +32,9 @@ LineEdit::LineEdit(QWidget *parent)
   mClearBtn->setCursor(Qt::ArrowCursor);
   mClearBtn->setStyleSheet("QToolButton { border: none; padding: 0px; }");
   mClearBtn->setToolTip(tr("Clear Field"));
-  mClearBtn->hide();
 
   connect(mClearBtn, SIGNAL(clicked()), this, SLOT(clearBtnClicked()));
-  connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateClearBtn(const QString&)));
+  doNotHideClearButton(false);
 
   int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
 
@@ -48,6 +47,26 @@ LineEdit::LineEdit(QWidget *parent)
 
 LineEdit::~LineEdit()
 {}
+
+void LineEdit::doNotHideClearButton(bool noHide/* = true*/)
+{
+  static bool connected = false;
+
+  if(noHide)
+  {
+    if(connected) this->disconnect(SIGNAL(textChanged(const QString&)));
+
+    mClearBtn->show();
+    connected = false;
+  }
+  else
+  {
+    if(!connected) connect(this, SIGNAL(textChanged(const QString&))
+                         , this, SLOT(updateClearBtn(const QString&)));
+    mClearBtn->hide();
+    connected = true;
+  }
+}
 
 void LineEdit::resizeEvent(QResizeEvent *)
 {
