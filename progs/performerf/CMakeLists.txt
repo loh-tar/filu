@@ -1,7 +1,6 @@
 project(performerf)
 #CONFIG += thread warn_on debug
 #QMAKE_CXXFLAGS += -rdynamic
-
 set(QT_USE_QTSQL TRUE)
 include(${QT_USE_FILE})
 
