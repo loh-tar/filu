@@ -31,7 +31,7 @@ H: Change market table to have timezone column and lunch
 H: Add a 'Settings' table to store several info like version, creation date,
    last 'full' run etc
 H: Add version to the DB, and auto detect updates
-H: Handle issue date an mariture date at select for eodbar update
+H: Handle issue date and mariture date at select for eodbar update
 H: gfi_xcurrency_eodbar, it seems I have it not finished.
 H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
@@ -75,6 +75,9 @@ L: Oops, the Password setting take no effekt. I guess it is the consequence of
    the "trust" setting in /etc/postgresql/.../pg_hba.conf
 L: figure out optimum postgres parameters.
 L: list all markets a specific provider provides (?)
+L: Change Filu/U to to FiluCore and FiluUser and add a new class Filu as part of FClass
+   instead of FiluU
+L: Add (a) header file(s) with useful typedefs like 'QHash<QString, QString> HashStrStr'
 
 
 AgentF
@@ -112,7 +115,7 @@ PerformerF
 M: add an "about" button with copyright and other stuff
 M: Think about an option to *not* save the desity to prevent that a prefered
    adjustet density is overwritten
-L: Fix SearchFi widget to set cursor inside when aktivated and show all FI.
+L: Fix SearchFi widget to set cursor inside when aktivated.
    Hm, it seems that's an issue with the DockWidget, when shown got it not the
    focus.
 L: Add spin boxes to set the to be loaded date range
@@ -121,6 +124,22 @@ L: Add to IndiWidetGroup context menu "load indicator". The indi picker is not
 
 ManagerF
 ==========
+AddFiPage
+-----------
+H: Add a 'Check' button where the result table is examinded which data are
+   already known and which not. Indicate these by a small colored icon in the
+   result list. (or do all this auto maticly without button)
+H: Split to own files for PSMGrp, HitCountLabel and TWIB. Rethink if
+   all are needed.
+H: Make a own class for the symbol edit area so that it can easy
+   dynamically add/remove symbol lines depending on how many symbols the result
+   table got
+M: Rename to 'AddToDbPage' and improve all so that can be any kind of
+   data fetched by a script editet and added to the db
+M: Save/Restore splitter
+
+Sundries
+----------
 M: make data at FI page editable.
 M: add a split browse table to FI page, editable of course.
 M: add the possibility to edit jobs, see above
@@ -141,12 +160,16 @@ L: add a help page to display all (or most) available docu, copyright and other
 
 Libf
 ======
+L: Fill FooTuple with FooId and Quality. Well, tuples are not likely used except of
+   bars. But I don't like to drop entierly the idea of a universal lib where such
+   tuples may usefull, or not?
 L: Rethink error handling if using of  try/catch not the better way
 L: Rethink logging see http://unix.stackexchange.com/questions/11953/make-a-log-file
 L: Think about security. Is it an improvement if config key 'SqlPath' (and maybe
    some other) is forced to read from global (QSettings::SystemScope) settings file?
    If so, add some '#ifdef DEBBUG' in the code and a 'QSet<QString> mSystemScope'
    variable to RcFile which holds keys they are must read from SystemScope.
+
 
 CmdHelper
 ===========
@@ -201,6 +224,10 @@ M: rethink MyMouseEvent. Use QVariant or a union to be more flexible. Rename to
 L: logarithmic Y-Scaling
 
 
+Script
+========
+
+
 Indicator
 ===========
 M: change the parsing, split it just after the reading from file into parts
@@ -235,7 +262,6 @@ M: Print a progressbar while checking, force Trader to print nothing in that cas
 
 Exporter
 ==========
-H: market_insert.sql expect Reuters as symbol (what?)
 
 
 Importer
@@ -243,3 +269,4 @@ Importer
 H: add [Include]
 M: add [Skip], follow data will ignored until [UnSkip] or [Piks] ?
 M: add [Ignore]foo=bar, will ignore all data where key 'foo' has value 'bar'
+L: market_insert.sql expect Reuters as symbol (yes, but?)
