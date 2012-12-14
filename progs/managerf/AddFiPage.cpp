@@ -808,17 +808,13 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
       for(int i = 1; i <= sl.size(); ++i)
       {
         symbol->next();
-        symbol->setCaption(mResultList->item(row, sl.at(i - 1))->text());
-        symbol->setMarket("");
-        symbol->setOwner("");
+        symbol->set(mResultList->item(row, sl.at(i - 1))->text(), "", "");
       }
 
       for(int i = 1; i <= msl.size(); ++i)
       {
         symbol->next();
-        symbol->setCaption(mResultList->item(row, msl.at(i - 1))->text());
-        symbol->setMarket("");
-        symbol->setOwner("");
+        symbol->set(mResultList->item(row, msl.at(i - 1))->text(), "", "");
       }
 
       for(int i = 1; i <= psml.size(); ++i)
@@ -827,9 +823,7 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
         if(!twib) continue;
         QStringList txt = twib->text().split(" ");
         symbol->next();
-        symbol->setCaption(txt.at(1));
-        symbol->setMarket("");
-        symbol->setOwner("");
+        symbol->set(txt.at(1), "", "");
       }
     }
     else
@@ -838,15 +832,13 @@ void AddFiPage::addToDBbyTWIB(QString psm, int row)
     }
 
     symbol->next();
-    symbol->setCaption(psmSplitted.at(1));
-    symbol->setMarket(psmSplitted.at(2));
-    symbol->setOwner(psmSplitted.at(0));
+    symbol->set(psmSplitted.at(1), psmSplitted.at(2), psmSplitted.at(0));
 
     fi.next(); // Set on first position
 
-    fi.setSymbol(symbol);
-    fi.setName(mResultList->item(row, mResultKeys.value("Name"))->text());
-    fi.setType(mResultList->item(row, mResultKeys.value("Type"))->text());
+    fi.set(mResultList->item(row, mResultKeys.value("Name"))->text()
+         , mResultList->item(row, mResultKeys.value("Type"))->text()
+         , symbol);
 
     // Here is the beef
     mFilu->addFiCareful(fi);

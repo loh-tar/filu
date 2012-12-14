@@ -33,21 +33,23 @@ class BarTuple : public Tuple
 
     int           findDate(const QDate& date) const;
 
-    const QDate&  date() const;
-    const QTime&  time() const;
-    double        open() const;
-    double        high() const;
-    double        low() const;
-    double        close() const;
-    double        volume() const;
-    int           fiId() const;
-    int           marketId() const;
+    int           fiId()      const { return mFiId; }
+    int           marketId()  const { return mMarketId; }
+    const QDate&  date()      const;
+    const QTime&  time()      const;
+    double        open()      const { return mOpen[mIndex]; }
+    double        high()      const { return mHigh[mIndex]; }
+    double        low()       const { return mLow[mIndex]; }
+    double        close()     const { return mClose[mIndex]; }
+    double        volume()    const { return mVolume[mIndex]; }
 
     friend class Filu;
     friend class DataTupleSet;
 
   protected:
     // Holds the beef
+    int         mFiId;
+    int         mMarketId;
     QDate*      mDate;
     QTime*      mTime;
     double*     mOpen;
@@ -56,44 +58,6 @@ class BarTuple : public Tuple
     double*     mClose;
     double*     mVolume;
     double*     mOpenInterest;
-
-    int         mFiId;
-    int         mMarketId;
 };
-
-inline double BarTuple::open() const
-{
-  return mOpen[mIndex];
-}
-
-inline double BarTuple::high() const
-{
-  return mHigh[mIndex];
-}
-
-inline double BarTuple::low() const
-{
-  return mLow[mIndex];
-}
-
-inline double BarTuple::close() const
-{
-  return mClose[mIndex];
-}
-
-inline double BarTuple::volume() const
-{
-  return mVolume[mIndex];
-}
-
-inline int BarTuple::fiId() const
-{
-  return mFiId;
-}
-
-inline int BarTuple::marketId() const
-{
-  return mMarketId;
-}
 
 #endif

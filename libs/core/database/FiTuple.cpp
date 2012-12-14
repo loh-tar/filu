@@ -17,20 +17,20 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDate>
 #include <QString>
 
 #include "FiTuple.h"
 #include "SymbolTuple.h"
 
-FiTuple::FiTuple(int size) : Tuple(size)
-{
-  mTypeId = new int[size];
-  mType   = new QString[size];
-  mName   = new QString[size];
-  mSymbol = new SymbolTuple*[size];
-  //mIssueDate = new QString[size];
-  //mMaturityDate = new QString[size];
-}
+FiTuple::FiTuple(int size)
+       : Tuple(size)
+       , mTypeId(new int[size])
+       , mType(new QString[size])
+       , mName(new QString[size])
+       , mSymbol(new SymbolTuple*[size])
+
+{}
 
 FiTuple::~FiTuple()
 {
@@ -42,4 +42,11 @@ FiTuple::~FiTuple()
   delete []mSymbol;
   //delete []mIssueDate;
   //delete []mMaturityDate;
+}
+
+void FiTuple::set(const QString& name, const QString& type, SymbolTuple* symbol)
+{
+  mName[mIndex] = name;
+  mType[mIndex] = type;
+  mSymbol[mIndex] = symbol;
 }

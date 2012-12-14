@@ -21,13 +21,13 @@
 
 #include "MarketTuple.h"
 
-MarketTuple::MarketTuple(int size) : Tuple(size)
-{
-  mName       = new QString[size];
-  mCurrId     = new int[size];
-  mCurrName   = new QString[size];
-  mCurrSymbol = new QString[size];
-}
+MarketTuple::MarketTuple(int size)
+           : Tuple(size)
+           , mName(new QString[size])
+           , mCurrId(new int[size])
+           , mCurrName(new QString[size])
+           , mCurrSymbol(new QString[size])
+{}
 
 MarketTuple::~MarketTuple()
 {

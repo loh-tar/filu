@@ -43,18 +43,20 @@ class Tuple
                 Tuple(int size);
     virtual    ~Tuple();
 
-    int         id() const { return mId[mIndex]; };
-    int         quality() const { return mQuality[mIndex]; };
+    int         id()        const { return mId[mIndex]; }
+    int         quality()   const { return mQuality[mIndex]; }
 
-    void        setId(int id) { mId[mIndex] = id; };
-    void        setQuality(int q) { mQuality[mIndex] = q; };
+    void        setId(int id)     { mId[mIndex] = id; }
+    void        setQuality(int q) { mQuality[mIndex] = q; }
 
     bool        next();
     int         rewind(int start = -1);
-    int         count() const { return  mMaxIndex + 1; };
+    int         count()     const { return  mMaxIndex + 1; }
+    int         size()      const { return  mMaxIndex + 1; }
     bool        isInvalid() const;
 
     friend class Filu;
+    friend class FiluU;
 
   protected:
     int         mIndex;

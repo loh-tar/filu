@@ -17,24 +17,52 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDate>
 #include <QString>
 
 #include "SymbolTuple.h"
 
-SymbolTuple::SymbolTuple(int size) : Tuple(size)
-{
-  mFiId     = new int[size];
-  mMarketId = new int[size];
-  mCaption  = new QString[size];
-  mMarket   = new QString[size];
-  mOwner    = new QString[size];
-}
+SymbolTuple::SymbolTuple(int size)
+           : Tuple(size)
+           , mOwnerId(new int[size])
+           , mFiId(new int[size])
+           , mMarketId(new int[size])
+           , mCaption(new QString[size])
+           , mMarket(new QString[size])
+           , mOwner(new QString[size])
+           , mIssueDate(new QDate[size])
+           , mMaturityDate(new QDate[size])
+{}
 
 SymbolTuple::~SymbolTuple()
 {
+  delete []mOwnerId;
   delete []mFiId;
   delete []mMarketId;
   delete []mCaption;
   delete []mMarket;
   delete []mOwner;
+  delete []mIssueDate;
+  delete []mMaturityDate;
+}
+
+void SymbolTuple::set(const QString& s, const QString& m, const QString& o
+                    , const QDate* idate /*QDate(1000, 1, 1)*/
+                    , const QDate* mdate /*QDate(3000, 1, 1)*/)
+{
+  mCaption[mIndex] = s;
+  mMarket[mIndex] = m;
+  mOwner[mIndex] = o;
+  mIssueDate[mIndex] = (0 == idate ? QDate(1000, 1, 1) : *idate);
+  mMaturityDate[mIndex] = (0 == mdate ? QDate(3000, 1, 1) : *mdate);
+}
+
+const QDate& SymbolTuple::issueDate() const
+{
+  return mIssueDate[mIndex];
+}
+
+const QDate& SymbolTuple::maturityDate() const
+{
+  return mMaturityDate[mIndex];
 }

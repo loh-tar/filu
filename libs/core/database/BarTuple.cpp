@@ -22,17 +22,17 @@
 
 #include "BarTuple.h"
 
-BarTuple::BarTuple(int size) : Tuple(size)
-{
-  mDate = new QDate[size];
-  mTime = new QTime[size];
-  mOpen = new double[size];
-  mHigh = new double[size];
-  mLow  = new double[size];
-  mClose  = new double[size];
-  mVolume = new double[size];
-  mOpenInterest = new double[size];
-}
+BarTuple::BarTuple(int size)
+        : Tuple(size)
+        , mDate(new QDate[size])
+        , mTime(new QTime[size])
+        , mOpen(new double[size])
+        , mHigh(new double[size])
+        , mLow(new double[size])
+        , mClose(new double[size])
+        , mVolume(new double[size])
+        , mOpenInterest(new double[size])
+{}
 
 BarTuple::~BarTuple()
 {

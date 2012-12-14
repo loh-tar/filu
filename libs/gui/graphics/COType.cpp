@@ -624,16 +624,6 @@ bool COType::save()
   toSkip << "Id" << "FiId" << "MarketId" << "ViewName"
          << "AnchorDate" << "Type";
 
-  // But add them to a COTuple
-  COTuple co(1);
-  co.next();
-  co.setId(mAttribute.value("Id").value<int>());
-  co.setFiId(mAttribute.value("FiId").value<int>());
-  co.setMarketId(mAttribute.value("MarketId").value<int>());
-  co.setViewName(mAttribute.value("ViewName").value<QString>());
-  co.setAnchorDate(mAttribute.value("AnchorDate").value<QDate>());
-  co.setType(mAttribute.value("Type").value<QString>());
-
   QStringList paraList;
   QHashIterator<QString, QVariant> i(mAttribute);
   while (i.hasNext())
@@ -695,7 +685,16 @@ bool COType::save()
 
   QString parameters = paraList.join("\n");
 
-  co.setAttributes(parameters);
+  // But add them to a COTuple
+  COTuple co(1);
+  co.next();
+  co.set(mAttribute.value("Id").value<int>()
+       , mAttribute.value("FiId").value<int>()
+       , mAttribute.value("MarketId").value<int>()
+       , mAttribute.value("ViewName").value<QString>()
+       , mAttribute.value("AnchorDate").value<QDate>()
+       , mAttribute.value("Type").value<QString>()
+       , parameters);
 
   // Write to DB
   mFilu->putCOs(co);

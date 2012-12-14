@@ -17,30 +17,18 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "Tuple.h"
+#include <QString>
 
-Tuple::Tuple(int size)
-     : mIndex(-1)
-     , mMaxIndex(size - 1)
-     , mId(new int[size])
-     , mQuality(new int[size])
+#include "BrokerTuple.h"
+
+BrokerTuple::BrokerTuple(int size)
+           : Tuple(size)
+           , mName(new QString[size])
+           , mFeeFormula(new QString[size])
 {}
 
-Tuple::~Tuple()
+BrokerTuple::~BrokerTuple()
 {
-  delete []mId;
-  delete []mQuality;
-}
-
-int Tuple::rewind(int start /* = -1*/)
-{
-  int status = eValid;
-
-  if(start < 0) status = eUnderRange;
-  if(start > mMaxIndex) status = eOverRange;
-
-  if(status != eValid) mIndex = -1;
-  else mIndex = start;
-
-  return status;
+  delete []mName;
+  delete []mFeeFormula;
 }

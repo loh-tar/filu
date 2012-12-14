@@ -17,39 +17,68 @@ include_directories(${MUPARSER_INCLUDE_DIR})
 set(LIBS ${LIBS} ${MUPARSER_LIBRARIES})
 
 set(FiluCore_SRC ${FiluCore_SRC}
+    database/Tuple.cpp
+    database/BarTuple.cpp
+    database/BrokerTuple.cpp
+    database/COTuple.cpp
+    database/FiTuple.cpp
+    database/MarketTuple.cpp
+    database/QuoteTuple.cpp
+    database/SymbolTuple.cpp
+    database/Filu.cpp
+    database/FiluU.cpp
+)
+set(FiluCore_MOCH ${FiluCore_MOCH}
+    #database/Tuple.h
+    #database/BarTuple.h
+    #database/BrokerTuple.h
+    #database/COTuple.h
+    #database/FiTuple.h
+    #database/MarketTuple.h
+    #database/QuoteTuple.h
+    #database/SymbolTuple.h
+    #database/Filu.h
+    #database/FiluU.h
+)
+include_directories(database)
+
+set(FiluCore_SRC ${FiluCore_SRC}
+    FTool.cpp
+    RcFile.cpp
+    Newswire.cpp
+    FClass.cpp
+    FObject.cpp
+    FCoreApp.cpp
     CmdHelper.cpp
     DataTuple.cpp
     DataTupleSet.cpp
     Depots.cpp
     Exporter.cpp
-    FClass.cpp
-    FCoreApp.cpp
-    FObject.cpp
-    FTool.cpp
     Importer.cpp
-    Newswire.cpp
-    RcFile.cpp
     Scanner.cpp
     Script.cpp
 )
 set(FiluCore_MOCH ${FiluCore_MOCH}
+    #FTool.h
+    #RcFile.h
+    #Newswire.h
+    #FClass.h
+    #FObject.h
+    #FCoreApp.h
     #DataTuple.h
     #DataTupleSet.h
     #Depots.h
     #Exporter.h
-    #FClass.h
-    #FCoreApp.h
-    #FObject.h
-    #FTool.h
     #Importer.h
-    #Newswire.h
-    #RcFile.h
     #Scanner.h
     Script.h
 )
 include_directories(.)
 
 set(FiluCore_SRC ${FiluCore_SRC}
+    calc/MyParser.cpp
+    calc/TALib.cpp
+    calc/CalcType.cpp
     calc/CalcBetween.cpp
     calc/CalcCross.cpp
     calc/CalcFilu.cpp
@@ -58,14 +87,14 @@ set(FiluCore_SRC ${FiluCore_SRC}
     calc/CalcSetColor.cpp
     calc/CalcTALib.cpp
     calc/CalcTrade.cpp
-    calc/CalcType.cpp
     calc/CalcWatchDogs.cpp
     calc/Indicator.cpp
-    calc/MyParser.cpp
-    calc/TALib.cpp
     calc/Trader.cpp
 )
 set(FiluCore_MOCH ${FiluCore_MOCH}
+    #calc/MyParser.h
+    #calc/TALib.h
+    #calc/CalcType.h
     #calc/CalcBetween.h
     #calc/CalcCross.h
     #calc/CalcFilu.h
@@ -74,41 +103,11 @@ set(FiluCore_MOCH ${FiluCore_MOCH}
     #calc/CalcSetColor.h
     #calc/CalcTALib.h
     #calc/CalcTrade.h
-    #calc/CalcType.h
     #calc/CalcWatchDogs.h
     #calc/Indicator.h
-    #calc/MyParser.h
-    #calc/TALib.h
     #calc/Trader.h
 )
 include_directories(calc)
-
-set(FiluCore_SRC ${FiluCore_SRC}
-    database/BarTuple.cpp
-    #database/BrokerTuple.cpp
-    database/COTuple.cpp
-    database/Filu.cpp
-    database/FiluU.cpp
-    database/FiTuple.cpp
-    database/MarketTuple.cpp
-    database/QuoteTuple.cpp
-    database/SymbolTuple.cpp
-    database/Tuple.cpp
-)
-set(FiluCore_MOCH ${FiluCore_MOCH}
-    #database/BarTuple.h
-    #database/BrokerTuple.h
-    #database/COTuple.h
-    #database/Filu.h
-    #database/FiluU.h
-    #database/FiTuple.h
-    #database/MarketTuple.h
-    #database/QuoteTuple.h
-    #database/SymbolTuple.h
-    #database/Tuple.h
-)
-include_directories(database)
-
 QT4_WRAP_CPP(FiluCore_MOCSRC ${FiluCore_MOCH})
 add_library(FiluCore SHARED ${FiluCore_SRC} ${FiluCore_MOCSRC})
 set_target_properties(FiluCore PROPERTIES

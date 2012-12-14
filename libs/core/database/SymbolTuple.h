@@ -20,6 +20,9 @@
 #ifndef SYMBOLTUPLE_HPP
 #define SYMBOLTUPLE_HPP
 
+class QDate;
+class QString;
+
 #include "Tuple.h"
 
 class SymbolTuple : public Tuple
@@ -28,84 +31,32 @@ class SymbolTuple : public Tuple
                 SymbolTuple(int size);
     virtual    ~SymbolTuple();
 
-    //int         typeId() const;
-    int         fiId() const;
-    int         marketId() const;
-    const QString&  caption() const;
-    //const QString&  issueDate() const;
-    //const QString&  maturityDate() const;
-    const QString&  market() const;
-    const QString&  owner() const;
+    int             ownerId()       const { return mOwnerId[mIndex]; }
+    int             fiId()          const { return mFiId[mIndex]; }
+    int             marketId()      const { return mMarketId[mIndex]; }
+    const QString&  caption()       const { return mCaption[mIndex]; }
+    const QString&  market()        const { return mMarket[mIndex]; }
+    const QString&  owner()         const { return mOwner[mIndex]; }
+    const QDate&    issueDate()     const;
+    const QDate&    maturityDate()  const;
 
-    void        setFiId(const int id);
-    void        setMarketId(const int id);
-    void        setCaption(const QString&);
-    void        setMarket(const QString&);
-    void        setOwner(const QString&);
+    void        set(const QString& s, const QString& m, const QString& o
+                  , const QDate* idate = 0 /*QDate(1000, 1, 1)*/
+                  , const QDate* mdate = 0 /*QDate(3000, 1, 1)*/);
 
     friend class Filu;
     friend class SymbolTableModel;
 
   protected:
     // Holds the beef
-    //int*        mStypeId;
+    int*        mOwnerId;
     int*        mFiId;
     int*        mMarketId;
     QString*    mCaption;
-    //QString*    mIssuedate;
-    //QString*    mMaturitydate;
     QString*    mMarket;
     QString*    mOwner;
+    QDate*      mIssueDate;
+    QDate*      mMaturityDate;
 };
-
-inline int SymbolTuple::fiId() const
-{
-  return mFiId[mIndex];
-}
-
-inline int SymbolTuple::marketId() const
-{
-  return mMarketId[mIndex];
-}
-
-inline const QString& SymbolTuple::caption() const
-{
-  return mCaption[mIndex];
-}
-
-inline const QString& SymbolTuple::market() const
-{
-  return mMarket[mIndex];
-}
-
-inline const QString& SymbolTuple::owner() const
-{
-  return mOwner[mIndex];
-}
-
-inline void SymbolTuple::setFiId(const int id)
-{
-  mFiId[mIndex] = id;
-}
-
-inline void SymbolTuple::setMarketId(const int id)
-{
-  mMarketId[mIndex] =  id;
-}
-
-inline void SymbolTuple::setCaption(const QString& caption)
-{
-  mCaption[mIndex] = caption;
-}
-
-inline void SymbolTuple::setMarket(const QString& market)
-{
-  mMarket[mIndex] = market;
-}
-
-inline void SymbolTuple::setOwner(const QString& owner)
-{
-  mOwner[mIndex] = owner;
-}
 
 #endif

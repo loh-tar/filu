@@ -31,19 +31,15 @@ class COTuple : public Tuple
               COTuple(int size);
     virtual  ~COTuple();
 
-          int       fiId() const;
-          int       marketId() const;
-    const QString&  viewName() const;
-    const QDate&    anchorDate() const;
-    const QString&  type() const;
-    const QString&  attributes() const;
+          int       fiId()        const { return mFiId[mIndex]; }
+          int       marketId()    const { return mMarketId[mIndex]; }
+    const QString&  viewName()    const { return mViewName[mIndex]; }
+    const QDate&    anchorDate()  const { return mAnchorDate[mIndex]; }
+    const QString&  type()        const { return mType[mIndex]; }
+    const QString&  attributes()  const { return mAttributes[mIndex]; }
 
-    void      setFiId(int);
-    void      setMarketId(int);
-    void      setViewName(const QString&);
-    void      setAnchorDate(const QDate&);
-    void      setType(const QString&);
-    void      setAttributes(const QString&);
+    void set(int id, int fiId, int marketId, const QString& name
+           , const QDate& date, const QString& type, const QString& attr);
 
     friend class FiluU;
 
@@ -55,65 +51,5 @@ class COTuple : public Tuple
     QString*  mType;
     QString*  mAttributes;
 };
-
-inline int COTuple::fiId() const
-{
-  return mFiId[mIndex];
-}
-
-inline int COTuple::marketId() const
-{
-  return mMarketId[mIndex];
-}
-
-inline const QString& COTuple::viewName() const
-{
-  return mViewName[mIndex];
-}
-
-inline const QDate& COTuple::anchorDate() const
-{
-  return mAnchorDate[mIndex];
-}
-
-inline const QString& COTuple::type() const
-{
-  return mType[mIndex];
-}
-
-inline const QString& COTuple::attributes() const
-{
-  return mAttributes[mIndex];
-}
-
-inline void COTuple::setFiId(int id)
-{
-  mFiId[mIndex] = id;
-}
-
-inline void COTuple::setMarketId(int id)
-{
-  mMarketId[mIndex] = id;
-}
-
-inline void COTuple::setViewName(const QString& name)
-{
-  mViewName[mIndex] = name;
-}
-
-inline void COTuple::setAnchorDate(const QDate& date)
-{
-  mAnchorDate[mIndex] = date;
-}
-
-inline void COTuple::setType(const QString& type)
-{
-  mType[mIndex] = type;
-}
-
-inline void COTuple::setAttributes(const QString& attr)
-{
-  mAttributes[mIndex] = attr;
-}
 
 #endif

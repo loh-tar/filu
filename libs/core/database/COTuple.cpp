@@ -22,15 +22,15 @@
 
 #include "COTuple.h"
 
-COTuple::COTuple(int size) : Tuple(size)
-{
-  mFiId       = new int[size];
-  mMarketId   = new int[size];
-  mViewName   = new QString[size];
-  mAnchorDate = new QDate[size];
-  mType       = new QString[size];
-  mAttributes = new QString[size];
-}
+COTuple::COTuple(int size)
+       : Tuple(size)
+       , mFiId(new int[size])
+       , mMarketId(new int[size])
+       , mViewName(new QString[size])
+       , mAnchorDate(new QDate[size])
+       , mType(new QString[size])
+       , mAttributes(new QString[size])
+{}
 
 COTuple::~COTuple()
 {
@@ -40,4 +40,16 @@ COTuple::~COTuple()
   delete []mAnchorDate;
   delete []mType;
   delete []mAttributes;
+}
+
+void COTuple::set(int id, int fiId, int marketId, const QString& name
+                , const QDate& date, const QString& type, const QString& attr)
+{
+  mId[mIndex] = id;
+  mFiId[mIndex] = fiId;
+  mMarketId[mIndex] = marketId;
+  mViewName[mIndex] = name;
+  mAnchorDate[mIndex] = date;
+  mType[mIndex] = type;
+  mAttributes[mIndex] = attr;
 }

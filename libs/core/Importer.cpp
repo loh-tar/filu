@@ -886,11 +886,9 @@ void Importer::setSymbolTuple()
   for(int i = 0; i < mUsedRefSymbols.size(); ++i)
   {
     mSymbol->next();
-    mSymbol->setCaption(mData.value(mUsedRefSymbols.at(i)));
     // Don't set market & owner, so the symbol will not added
     // but used for searching for the FI
-    mSymbol->setMarket("");
-    mSymbol->setOwner("");
+    mSymbol->set(mData.value(mUsedRefSymbols.at(i)), "", "");
     //qDebug() << "Importer::setSymbolTuple 1:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 
@@ -898,17 +896,16 @@ void Importer::setSymbolTuple()
   for(int i = 0; i < mUsedKnownSymbols.size(); ++i)
   {
     mSymbol->next();
-    mSymbol->setCaption(mData.value(mUsedKnownSymbols.at(i)));
     if(mKnownSTisProvider.value(mUsedKnownSymbols.at(i)))
     {
       // We cant install a provider symbol without a market
-      mSymbol->setMarket("");
-      mSymbol->setOwner("");
+      mSymbol->set(mData.value(mUsedKnownSymbols.at(i)), "", "");
     }
     else
     {
-      mSymbol->setMarket("NoMarket");
-      mSymbol->setOwner(mUsedKnownSymbols.at(i));
+      mSymbol->set(mData.value(mUsedKnownSymbols.at(i))
+                  , "NoMarket"
+                  , mUsedKnownSymbols.at(i));
     }
     //qDebug() << "Importer::setSymbolTuple 2:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
@@ -920,9 +917,7 @@ void Importer::setSymbolTuple()
     QString s = "Symbol" + QString::number(i);
     QString m = "Market" + QString::number(i);
     mSymbol->next();
-    mSymbol->setCaption(mData.value(s));
-    mSymbol->setMarket(mData.value(m));
-    mSymbol->setOwner(mData.value(p));
+    mSymbol->set(mData.value(s), mData.value(m), mData.value(p));
     //qDebug() << "Importer::setSymbolTuple 3:" << mSymbol->caption() << mSymbol->market() << mSymbol->owner();
   }
 

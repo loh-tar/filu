@@ -25,20 +25,11 @@
 class BrokerTuple : public Tuple
 {
   public:
-                BrokerTuple(int size) : Tuple(size)
-                {
-                  mName = new QString[size];
-                  mFeeFormula = new QString[size];
-                };
+                    BrokerTuple(int size);
+    virtual        ~BrokerTuple();
 
-    virtual    ~BrokerTuple()
-                {
-                  delete []mName;
-                  delete []mFeeFormula;
-                };
-
-    const QString&  name() const { return mName[mIndex]; };
-    const QString&  feeFormula() const { return mFeeFormula[mIndex]; };
+    const QString&  name()       const { return mName[mIndex]; }
+    const QString&  feeFormula() const { return mFeeFormula[mIndex]; }
 
     friend class Filu;
 

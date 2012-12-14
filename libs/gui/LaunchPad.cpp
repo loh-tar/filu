@@ -108,11 +108,7 @@ void LaunchPad::buttonClicked(int id)
     // the program anyway a FI was not selected
     SymbolTuple st(1);
     st.next();
-    st.setMarket("NoMarket");
-    st.setOwner("Reuters");
-    st.setCaption("Foo");
-    st.setFiId(0);
-    st.setMarketId(1);
+    st.set("Foo", "NoMarket", "Reuters");
     execCmd(mCommands.at(id), &st);
     return;
   }

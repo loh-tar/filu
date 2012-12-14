@@ -32,17 +32,12 @@ class FiTuple : public Tuple
                   FiTuple(int size);
     virtual      ~FiTuple();
 
-    int             typeId() const;
-    const QString&  type() const;
-    const QString&  name() const;
-    SymbolTuple*    symbol() const;
-    //const QString       issueDate() const;
-    //const QString       maturityDate() const;
+    int             typeId()  const { return mTypeId[mIndex]; }
+    const QString&  type()    const { return mType[mIndex]; }
+    const QString&  name()    const { return mName[mIndex]; }
+    SymbolTuple*    symbol()  const { return mSymbol[mIndex]; }
 
-    void          setTypeId(int type);
-    void          setType(const QString& type);
-    void          setName(const QString& name);
-    void          setSymbol(SymbolTuple* symbol);
+    void          set(const QString& name, const QString& type, SymbolTuple* symbol);
 
     friend class  Filu;
     friend class  FiTableModel;
@@ -53,60 +48,6 @@ class FiTuple : public Tuple
     QString*      mType;
     QString*      mName;
     SymbolTuple** mSymbol;
-    //QString*      mIssueDate;
-    //QString*      mMaturityDate;
 };
-
-inline int FiTuple::typeId() const
-{
-  return mTypeId[mIndex];
-}
-
-inline const QString& FiTuple::type() const
-{
-  return mType[mIndex];
-}
-
-inline const QString& FiTuple::name() const
-{
-  return mName[mIndex];
-}
-
-inline SymbolTuple* FiTuple::symbol() const
-{
-  return mSymbol[mIndex];
-}
-
-/*
-inline const QString& FiTuple::issueDate() const
-{
-  return mIssueDate[mIndex];
-}
-
-inline const QString& FiTuple::maturityDate() const
-{
-  return mMaturityDate[mIndex];
-}
-*/
-
-inline void FiTuple::setTypeId(int type)
-{
-  mTypeId[mIndex] = type;
-}
-
-inline void FiTuple::setType(const QString& type)
-{
-  mType[mIndex] = type;
-}
-
-inline void FiTuple::setName(const QString& name)
-{
-  mName[mIndex] = name;
-}
-
-inline void FiTuple::setSymbol(SymbolTuple* symbol)
-{
-  mSymbol[mIndex] = symbol;
-}
 
 #endif

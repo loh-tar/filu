@@ -28,10 +28,10 @@ class MarketTuple : public Tuple
                 MarketTuple(int size);
     virtual    ~MarketTuple();
 
-    const QString&  name() const { return mName[mIndex]; };
-          int       currId() const { return mCurrId[mIndex]; };
-    const QString&  currName() const { return mCurrName[mIndex]; };
-    const QString&  currSymbol() const { return mCurrSymbol[mIndex]; };
+    const QString&  name()        const { return mName[mIndex]; }
+          int       currId()      const { return mCurrId[mIndex]; }
+    const QString&  currName()    const { return mCurrName[mIndex]; }
+    const QString&  currSymbol()  const { return mCurrSymbol[mIndex]; }
 
     friend class Filu;
 
@@ -41,6 +41,7 @@ class MarketTuple : public Tuple
     int*        mCurrId;
     QString*    mCurrName;
     QString*    mCurrSymbol;
+
 };
 
 #endif
