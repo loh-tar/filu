@@ -17,47 +17,26 @@ If you want to update your existing Filu installation to a new snapshot take a
 look at doc/changelog.txt for things which must be considered. In general it is
 a good idea to uninstall your old installation which means *only* to uninstall
 the Filu progs. cd into your old FiluSource-YYYY-MM-DD/build directory and do:
-  sudo xargs rm < install_manifest.txt
+  make uninstall
 
 After that you have only to compile the new progs as described in chapter 1-2,
 that's all. And *don't* touch your database except the changelog says
 something else.
 
-The following infos apply to Ubuntu, a Debian like Linux and Arch Linux. If you
-use a different OS you may need to do something deviating.
+The following infos apply to Ubuntu and Arch Linux. If you use a different OS
+you may need to do something deviating. But please report in that case what do
+you had to do to got it running.
+
+Take a look at the Ubuntu directions for possibly additional hints.
 
 
 1-1- Needed Dependencies
 ==========================
-
-Arch
-------
-To compile the programs you need:
-  base-devel
-  cmake
-  qt
-
-The perl scripts needs the packages:
-  perl-libwww
-  perl-timedate
-
-One more package available in AUR:
-  perl-date-simple
-
-To install TALib and muParser you could follow the Ubuntu instructions or use
-packages from AUR:
-  muparser
-  ta-lib
-
-The database:
-  postgresql
-
-After install of the server ensure that the server is running, now
-and in the future.
-
-
 Ubuntu
 --------
+Note: These infos are a bit getting outdated. It was tested with Lucid Lynx.
+      So please report if you run in trouble with Precise Pangolin or newer.
+
 To compile the programs you need the .deb packages:
   build-essential
   cmake
@@ -104,6 +83,34 @@ edit the file to be right and reload postgres:
   sudo /etc/init.d/postgresql-8.4 reload
 
 
+Arch
+------
+To compile the programs you need:
+  base-devel
+  cmake
+  qt
+
+The perl scripts needs the packages:
+  perl-libwww
+  perl-timedate
+
+One more package available in AUR:
+  perl-date-simple
+
+To install TALib and muParser you could follow the Ubuntu instructions or use
+packages from AUR:
+  muparser
+  ta-lib
+
+The database:
+  postgresql
+
+After install of the server ensure that the server is running, now
+and in the future.
+
+Note: If you are a champ, you write, and send me, a PKGBUILD.
+
+
 1-2- Compilation
 ====================
 After install of all dependencies above you have to do:
@@ -128,6 +135,8 @@ you have the programs:
   managerf
   inspectorf
 
+Which you should find at your application menu below 'Office'.
+
 
 2- Customizing
 ================
@@ -136,8 +145,8 @@ the cmake config step above the switch -D use and run:
   cmake -D DBUSER=anyUserName -D DBNAME=anyDBName .. // Still two dots!
   make init-filu
 
-Note: There are only the two commands createuser and createdb invoked with some
-      options. So you can these also run direct.
+Note: There are only the two commands 'createuser' and 'createdb' invoked with
+      some options. So you can these also run direct.
 
 For more tunings see doc/config-file.txt.
 
