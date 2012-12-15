@@ -1,3 +1,40 @@
+2012-12-15
+============
+Sundries
+----------
+ - Change source tree: Move provider scripts up to FiluSource/scripts/
+ - InspectorF: Change his (new) icon to a more ugly one. If you didn't notice
+   a change delete your icon cache and relogin
+ - Filu: Fix fpi loading
+
+Exporter
+----------
+ - Don't export NoMarket and Forex at 'markets'
+ - Pay attention of from/to at splits
+ - Fix: Add 'Type' to Mother Header at 'ulys'. At import was the type taken by
+   any previous use of 'Type' instead of his own.
+
+AgentF
+--------
+ - New command 'fetch'
+ - Set/Remove config key 'ProviderPath' at 'sum'/'exo' like 'SqlPath'
+
+GUI
+-----
+ - SearchField: Don't list history entries twice
+ - SearchFIWidget: Don't to show NoMarkets in some use cases, like at PerformerF
+ - SearchFiWidget: Shows at start up content
+ - SearchFiWidget: His SearchField clutch the focus
+
+ManagerF
+----------
+ - FiPage: Got a SearchFiWidget. Looks bad but works nice. Anyway is the entire
+   page still nearly useless
+ - AddFiPage: Add provider function info button '?'
+ - AddFiPage: Add splitter between result list and edit fields. The splitter did
+   not save&restore his state
+
+
 2012-12-10
 ============
 Sundries
@@ -188,7 +225,8 @@ Save these lines as 'filu-dbfix-2011-09-08.sql'.
   ALTER TABLE :filu.broker ADD COLUMN currency_fi_id  int4 NOT NULL;
   ALTER TABLE :filu.broker ADD FOREIGN KEY(currency_fi_id)
     REFERENCES :filu.fi(fi_id) ON DELETE RESTRICT;
-  INSERT INTO :filu.error(caption, etext) VALUES('BrokerNF', 'Broker not found.');
+  INSERT INTO :filu.error(caption, etext) VALUES('BrokerNF', 'Broker not
+found.');
   ALTER TABLE :user.depot DROP COLUMN currency ;
 
 To save most of the depot stuff you could run with your *old* progs:
