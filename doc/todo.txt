@@ -27,6 +27,8 @@ L: Create and use fancy Icons at the user interfaces.
 
 Filu/Database
 ===============
+H: Think about FI delitions. What happens with depot history when a FI is
+   entierly removed?
 H: Change market table to have timezone column and lunch
 H: Add a 'Settings' table to store several info like version, creation date,
    last 'full' run etc
@@ -78,6 +80,9 @@ L: list all markets a specific provider provides (?)
 L: Change Filu/U to to FiluCore and FiluUser and add a new class Filu as part of FClass
    instead of FiluU
 L: Add (a) header file(s) with useful typedefs like 'QHash<QString, QString> HashStrStr'
+L: FiTable field deletedate: I guess it was intended to short living FIs like options.
+   It is currently not used. Could it removed or replaced by an entry in upcoming
+   'jobs' table?
 
 
 AgentF

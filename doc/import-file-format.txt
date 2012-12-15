@@ -128,9 +128,9 @@ Name
   The FI name, e.g 'Apple Computer'
 
 Type
-  The FI type, e.g 'Stock', 'Curency', 'Index'
+  The FI type, e.g 'Stock', 'Currency', 'Index'
 
-DDate (optional) FIXME: not implemented
+DDate (optional)
   Delete date, of the FI
 
 Provider
