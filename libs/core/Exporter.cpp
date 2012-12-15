@@ -724,9 +724,10 @@ bool Exporter::expUnderlyings()
     mOLine << "*";
     mOLine << "* " + mfi.value("Name").toString();
     mOLine << "*";
-    mOLine << "[Header]Name;DDate;Symbol;Provider;Market;IDate;MDate";
+    mOLine << "[Header]Type;Name;DDate;Symbol;Provider;Market;IDate;MDate";
     mOLine << NewLine;
 
+    mDLine << mfi.value("Type").toString();
     mDLine << mfi.value("Name").toString();
     mDLine << mfi.value("DDate").toDate().toString(Qt::ISODate);
     mDLine << mfi.value("Symbol").toString();
