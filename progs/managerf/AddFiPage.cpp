@@ -151,20 +151,6 @@ void AddFiPage::createPage()
   mFilu->getFiTypes(types);
   mType->addItems(types);
 
-  // Read all markets out of the DB
-  MarketTuple* markets = mFilu->getMarkets();
-  QStringList marketList;
-  if(markets)
-  {
-    while(markets->next()) marketList.append(markets->name());
-    marketList.sort();
-    delete markets;
-  }
-  else
-  {
-    check4FiluError(FUNC, tr("No Markets found"));
-  }
-
   // Build The Edit Area Layout
   QGridLayout* editNameLO = new QGridLayout;
   editNameLO->addWidget( new QLabel("RefSymbol"), 0, 0);
@@ -187,6 +173,8 @@ void AddFiPage::createPage()
   {
     check4FiluError(FUNC, tr("No SymbolTypes found"));
   }
+
+  QStringList marketList = getMarkets();
 
   for(int i = 0; i < 3; ++i)
   {
@@ -247,6 +235,26 @@ void AddFiPage::createPage()
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addWidget(groupBox);
   setLayout(mainLayout);
+}
+
+QStringList AddFiPage::getMarkets()
+{
+  QStringList marketList;
+
+  // Read all markets out of the DB
+  MarketTuple* markets = mFilu->getMarkets();
+  if(markets)
+  {
+    while(markets->next()) marketList.append(markets->name());
+    marketList.sort();
+    delete markets;
+  }
+  else
+  {
+    check4FiluError(FUNC, tr("No Markets found"));
+  }
+
+  return marketList;
 }
 
 void AddFiPage::providerChanged(const QString& provider)
@@ -325,6 +333,29 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
   }
   //qDebug() << mPreparedHeaderData;
 
+  // Quick and dirty hack to add market insert possibility
+  if("Market" == mDisplayType)
+  {
+    mRefSymbol->setText("");
+    mName->setText(mPreparedHeaderData.value("Currency"));
+    int idx = mType->findText("Currency");
+    mType->setCurrentIndex(idx);
+
+    // Clear all symbol fields
+    for(int i = 0; i < mPSMGrp.size(); ++i)
+    {
+      mPSMGrp.symbol(i)->setText("");
+      mPSMGrp.searchBtn(i)->hide();
+    }
+
+    mPSMGrp.symbol(0)->setText(mPreparedHeaderData.value("CurrencySymbol"));
+    idx = mPSMGrp.market(0)->findText("NoMarket");
+    mPSMGrp.market(0)->setCurrentIndex(idx);
+    idx = mPSMGrp.provider(0)->findText("Reuters");
+    mPSMGrp.provider(0)->setCurrentIndex(idx);
+    return;
+  }
+
   mRefSymbol->setText(mPreparedHeaderData.value("RefSymbol0"));
   mName->setText(mPreparedHeaderData.value("Name"));
 
@@ -384,6 +415,11 @@ void AddFiPage::search()
   {
     mDisplayType = "Index";
     searchIdx();
+  }
+  else if(mProviderFuncSelector->currentText() == "Market")
+  {
+    mDisplayType = "Market";
+    searchMarket();
   }
   else
   {
@@ -447,6 +483,16 @@ void AddFiPage::searchIdx()
 //
 //     fillResultTable(result);
 //   }
+}
+
+void AddFiPage::searchMarket()
+{
+//   mSearchCancelBtn->setText(cCancel);
+  QString msg = tr("Search Market at %1 matched to '%2'...");
+  emitMessage(FUNC, msg.arg(mProvider).arg(mSearchField->text()));
+  QStringList parms(mSearchField->text());
+  mScripter->showWaitWindow();
+  mScripter->askProvider(mProvider, "fetchMarket", parms);
 }
 
 bool AddFiPage::importFails(const QString& func, const QString& data)
@@ -569,8 +615,8 @@ void AddFiPage::loadSettings()
   mProviderFuncSelector->blockSignals(true);
 
   mProviderSelector->setCurrentIndex(mProviderSelector->findText(mRcFile->getST("LastProvider")));
-  mProviderFuncSelector->setCurrentIndex(mProviderFuncSelector->findText(mRcFile->getST("LastScript")));
   providerChanged(mRcFile->getST("LastProvider"));
+  mProviderFuncSelector->setCurrentIndex(mProviderFuncSelector->findText(mRcFile->getST("LastScript")));
 
   mProviderFuncSelector->blockSignals(false);
   mProviderSelector->blockSignals(false);
@@ -656,20 +702,29 @@ void AddFiPage::searchCompBtnClicked(int idx)
 
 void AddFiPage::addToDB()
 {
+  if("Market" == mDisplayType)
+  {
+    addMarketToDB();
+    return;
+  }
+
   // Build a hopefully useful log message
   QStringList msg;
 
   if(!mName->text().isEmpty())
   {
-    msg.append(tr("Add new FI to DB: "));
-    msg.append("Name=" + mName->text() + ", ");
-    msg.append("Type=" + mType->currentText() + ", ");
-    if(!mRefSymbol->text().isEmpty()) msg.append("RefSymbol=" + mRefSymbol->text() + ", ");
+    QString intro = tr("Add new FI to DB:");
+    intro.append(" Name=" + mName->text());
+    intro.append(", Type=" + mType->currentText());
+    if(!mRefSymbol->text().isEmpty()) intro.append(", RefSymbol=" + mRefSymbol->text());
+
+    msg.append(intro);
   }
   else
   {
-    msg.append(tr("Add more Symbols to DB: "));
-    if(!mRefSymbol->text().isEmpty()) msg.append("RefSymbol=" + mRefSymbol->text() + ", ");
+    QString intro = tr("Add more Symbols to DB:");
+    if(!mRefSymbol->text().isEmpty()) intro.append(" RefSymbol=" + mRefSymbol->text());
+    msg.append(intro);
   }
 
   for(int i = 0; i < mPSMGrp.size(); ++i)
@@ -682,48 +737,43 @@ void AddFiPage::addToDB()
     msg.append("Symbol" + suffix + "=" +
                 mPSMGrp.symbol(i)->text() + "-" +
                 mPSMGrp.provider(i)->currentText() + "-" +
-                mPSMGrp.market(i)->currentText() + ", ");
+                mPSMGrp.market(i)->currentText());
   }
-  // Remove last ", "
-  QString last = msg.at(msg.size() - 1);
-  last.chop(2);
-  msg.replace((msg.size() - 1), last);
-  emitMessage(FUNC, msg.join(""));
+
+  emitMessage(FUNC, msg.join(", "));
 
   // Build Header and Data Line
-  QString header = "[Header]";
-  QString data;
+  QStringList header;
+  QStringList data;
 
   if(!mRefSymbol->text().isEmpty())
   {
-    header.append("RefSymbol;");
-    data.append(mRefSymbol->text() + ";");
+    header << "RefSymbol";
+    data   << mRefSymbol->text();
   }
 
   if(!mName->text().isEmpty())
   {
-    header.append("Name;Type;");
-    data.append(mName->text() + ";");
-    data.append(mType->currentText() + ";");
+    header << "Name" << "Type";
+    data << mName->text() << mType->currentText();
   }
 
   for(int i = 0; i < mPSMGrp.size(); ++i)
   {
     if(mPSMGrp.symbol(i)->text().isEmpty()) continue;
 
-    header.append("Provider;Symbol;Market;");
-    data.append(mPSMGrp.provider(i)->currentText() + ";" +
-                mPSMGrp.symbol(i)->text() + ";" +
-                mPSMGrp.market(i)->currentText() + ";");
+    header << "Provider" << "Symbol" << "Market";
+    data << mPSMGrp.provider(i)->currentText()
+         << mPSMGrp.symbol(i)->text()
+         << mPSMGrp.market(i)->currentText();
   }
-  // Do it very nice, remove last ";"
-  header.chop(1);
-  data.chop(1);
+
+  header[0] = "[Header]" + header.at(0);
 
   // Import the stuff
   mImporter->reset();
-  if(importFails(FUNC, header)) return;
-  if(importFails(FUNC, data)) return;
+  if(importFails(FUNC, header.join(";"))) return;
+  if(importFails(FUNC, data.join(";"))) return;
 
   // Looks good, clear the edit fields
   mRefSymbol->setText("");
@@ -735,6 +785,48 @@ void AddFiPage::addToDB()
   }
 
   emitMessage(FUNC, tr("New FI added to DB."));
+}
+
+void AddFiPage::addMarketToDB()
+{
+  // Quick and dirty hack to add market insert possibility
+  // Build Header and Data Line
+  QStringList header;
+  QStringList data;
+
+  header << "MarketName" << "MarketSymbol" << "Currency" << "CurrencySymbol"
+         << "OpenTime" << "CloseTime" << "Lunch" << "Location";
+
+  data.append(mPreparedHeaderData.value("MarketName"));
+  data.append(mPreparedHeaderData.value("MarketSymbol"));
+  data.append(mPreparedHeaderData.value("Currency"));
+  data.append(mPreparedHeaderData.value("CurrencySymbol"));
+  data.append(mPreparedHeaderData.value("OpenTime"));
+  data.append(mPreparedHeaderData.value("CloseTime"));
+  data.append(mPreparedHeaderData.value("Lunch"));
+  data.append(mPreparedHeaderData.value("Location"));
+
+  header[0] = "[Header]" + header.at(0);
+
+  // Import the stuff
+  mImporter->reset();
+  if(importFails(FUNC, header.join(";"))) return;
+  if(importFails(FUNC, data.join(";"))) return;
+
+  // Looks good, clear the edit fields
+  // and reload markets
+  QStringList marketList = getMarkets();
+  mRefSymbol->setText("");
+  mName->setText("");
+  for(int i = 0; i < mPSMGrp.size(); ++i)
+  {
+    mPSMGrp.symbol(i)->setText("");
+    mPSMGrp.market(i)->clear();
+    mPSMGrp.market(i)->addItems(marketList);
+    mPSMGrp.searchBtn(i)->hide();
+  }
+
+  emitMessage(FUNC, tr("New market added to DB."));
 }
 
 void AddFiPage::addAllToDB()
@@ -784,6 +876,16 @@ void AddFiPage::addAllToDB()
   {
     emitMessage(FUNC, tr("End of Component list."));
     if(importFails(FUNC, "[CompListEnd]")) return;
+  }
+  else if("Market" == mDisplayType)
+  {
+    // Looks good, reload markets
+    QStringList marketList = getMarkets();
+    for(int i = 0; i < mPSMGrp.size(); ++i)
+    {
+      mPSMGrp.market(i)->clear();
+      mPSMGrp.market(i)->addItems(marketList);
+    }
   }
 }
 

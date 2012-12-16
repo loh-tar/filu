@@ -1,0 +1,12 @@
+[Header]MarketName;MarketSymbol;Currency;CurrencySymbol;OpenTime;CloseTime;Lunch;Location
+
+Australian Securities Exchange;ASX;Australian Dollar;AUD;;;;
+Euronext Paris;Euronext;Euro;EUR;;;;
+Frankfurt Stock Exchange;Frankfurt;Euro;EUR;;;;
+Hong Kong Stock Exchange;SEHK;Hong Kong Dollar;HKD;;;;
+London Stock Exchange;LSE;Pound Sterling;GBP;;;;
+NYSE Euronext;NYSE;US Dollar;USD;;;;
+Shanghai Stock Exchange;SSE;Renminbi;CNY;;;;
+Shenzhen Stock Exchange;SZSE;Renminbi;CNY;;;;
+Tokyo Stock Exchange;TSE;Japanese Yen;JPY;;;;
+Xetra Trading Platform;Xetra;Euro;EUR;;;;

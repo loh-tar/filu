@@ -110,15 +110,18 @@ class AddFiPage : public ManagerPage
     void          scriptFinished();
     void          searchCompBtnClicked(int idx);
     void          addToDB();
+    void          addMarketToDB();
     void          addAllToDB();
     void          addToDBbyTWIB(QString psm, int row);
 
   protected:
     void          createPage();
+    QStringList   getMarkets();
     void          showEvent(QShowEvent* /*event*/);
 
     void          searchFi();
     void          searchIdx();
+    void          searchMarket();
     bool          importFails(const QString& func, const QString& data);
 
     QComboBox*    mProviderFuncSelector;
