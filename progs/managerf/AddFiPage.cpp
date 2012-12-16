@@ -318,8 +318,9 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
   mResultList->selectRow(row);
 
   // Place all table entries in the QHash
-  for(int i = 0; i < mResultList->columnCount(); ++i)
+  for(int i = 0; i < mResultList->columnCount()/**/; ++i)
   {
+    if(i > mPreparedHeader.size()) break; // Result list has more rows than Header promise
     mPreparedHeaderData.insert(mPreparedHeader.at(i), mResultList->item(row, i)->text());
   }
   //qDebug() << mPreparedHeaderData;
