@@ -622,7 +622,7 @@ bool Exporter::expMarkets()
   mOLine << "*";
   mOLine << "* All markets with currency and currency symbol";
   mOLine << "*";
-  mOLine << "[Header]Market;OpenTime;CloseTime;CurrencySymbol;Currency";
+  mOLine << "[Header]MarketSymol;OpenTime;CloseTime;CurrencySymbol;Currency";
   mOLine << NewLine;
 
   writeToFile();

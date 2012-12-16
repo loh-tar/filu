@@ -2,7 +2,7 @@
 *
 * Install a market with currency
 *
-[Header]Market;Currency;CurrencySymbol
+[Header]MarketSymbol;Currency;CurrencySymbol
 
 NYSE;US Dollar;USD
 

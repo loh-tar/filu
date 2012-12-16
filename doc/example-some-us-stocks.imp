@@ -25,7 +25,7 @@ ISIN;1100;0
 *
 * All markets with currency and currency symbol.
 *
-[Header]Market;OpenTime;CloseTime;Currency;CurrencySymbol
+[Header]MarketSymbol;OpenTime;CloseTime;Currency;CurrencySymbol
 
 NYSE;00:00:00;23:59:59;US Dollar;USD;
 

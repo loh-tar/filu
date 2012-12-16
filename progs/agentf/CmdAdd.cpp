@@ -257,14 +257,14 @@ void CmdAdd::addMarket()
     mCmd->inOptBrief("curr", "<CurrencyName>"
                    , tr("The currency name is *not* updated in case that she is already known"));
 
-    if(mCmd->printThisWay("<Market> <CurrencySymbol> [~~curr]")) return;
+    if(mCmd->printThisWay("<MarketSymbol> <CurrencySymbol> [~~curr]")) return;
 
     mCmd->printForInst("NYSE USD --curr \"US Dollar\"");
     mCmd->aided();
     return;
   }
 
-  mHeader << "[Header]Market" << "CurrencySymbol";
+  mHeader << "[Header]MarketSymbol" << "CurrencySymbol";
   mData   << mCmd->strParm(1) << mCmd->strParm(2);
 
   if(mCmd->has("curr"))

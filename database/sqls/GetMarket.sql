@@ -17,7 +17,7 @@
 -- GetMarket.sql
 SELECT
   m.market_id    AS "MarketId",
-  m.caption      AS "Market",
+  m.caption      AS "MarketSymbol",
   m.opentime     AS "OpenTime",
   m.closetime    AS "CloseTime",
   currency_fi_id AS "CurrencyId",

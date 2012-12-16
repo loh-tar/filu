@@ -97,14 +97,17 @@ quality field.
 
 Markets
 =========
-Market
-  The (short) name of the market. We have no long names in Filu for markets.
-  See Appendix B
+MarketName FIXME: not handled
+  e.g. "London Stock Exchange"
 
-OpenTime (optional) FIXME: not implemented
-CloseTime (optional) FIXME: not implemented
-Currency
+MarketSymbol
+  e.g. "LSE". See Appendix B
+
+OpenTime (optional) FIXME: not handled
+CloseTime (optional) FIXME: not handled
+Currency (optional)
   The name of the currency FI, e.g. 'US Dollar'
+  Only needed if currency is not already known
 
 CurrencySymbol
   Must be a Reuters symbol, or rather is as such interpreted.
@@ -387,8 +390,8 @@ Tin, 3
   Means there was an logical error in the data detected by the database.
 
 
-Appendix B - Standardized Market Names
-========================================
+Appendix B - Standardized MarketSymbols
+=========================================
 When you add new markets to your database should you choose one of these names.
 If you want to use a different name for a here listed market should you also
 change the name in the existing provider scripts, e.g. Yahoo.pm.
@@ -397,9 +400,11 @@ Barcelona
 Berlin
 Bilbao
 Brussels
+CDNX
 Copenhagen
 Dusseldorf
 Eurex
+Euronext
 Frankfurt
 HKSE
 Hamburg
@@ -409,13 +414,10 @@ Madrid
 Milan
 Munich
 NYSE          Yahoo can't distingues between NYSE/NASDAQ, so always NYSE
-Euronext
 Oslo
-Euronext
 Stockholm
 Stuttgart
 Toronto
-CDNX
 Valence
 Vienna
 Xetra

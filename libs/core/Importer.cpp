@@ -737,7 +737,7 @@ void Importer::prepare()
 
   QStringList importData;
 
-  if(mData.contains("Market0") and mData.contains("CurrencySymbol"))
+  if(mData.contains("MarketSymbol") and mData.contains("CurrencySymbol"))
   {
     importData << "Markets";
     mToDo.insert("addMarket");
@@ -1107,16 +1107,16 @@ void Importer::addSymbolType()
 
 void Importer::addMarket()
 {
-  mFilu->addMarket( mData.value("Market0")
+  mFilu->addMarket( mData.value("MarketSymbol")
                   , mData.value("Currency")
                   , mData.value("CurrencySymbol"));
 
-  mHint << mData.value("Market0") << mData.value("Currency") << mData.value("CurrencySymbol");
+  mHint << mData.value("MarketSymbol") << mData.value("Currency") << mData.value("CurrencySymbol");
   if(notAdded()) return;
 
   if(verboseLevel(eAmple))
   {
-    mHint << mData.value("Market0") << QString("(%1, %2)").arg(mData.value("Currency"), mData.value("CurrencySymbol"));;
+    mHint << mData.value("MarketSymbol") << QString("(%1, %2)").arg(mData.value("Currency"), mData.value("CurrencySymbol"));;
     printStatus(eEffectOk, ", ");
   }
 }
