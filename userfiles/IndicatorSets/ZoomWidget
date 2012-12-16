@@ -1,7 +1,8 @@
 [General]
-Density="@Variant(\0\0\0\x87?\xfd=\xbd)"
-ShowYScale=false
+Tip           = ZoomWidget You can't delete
+Density       = "@Variant(\0\0\0\x87?\xfd=\xbd)"
+ShowYScale    = false
 
 [1]
-ShowXScale=false
-ScaleToScreen=10
+ScaleToScreen = 10
+ShowXScale    = false

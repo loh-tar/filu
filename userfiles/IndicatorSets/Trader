@@ -1,21 +1,22 @@
 [General]
-GroupSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\x1\x2\0\0\0\xaa\0\0\0X\x1\0\0\0\x3\x1\0\0\0\x2)
-Density=@Variant(\0\0\0\x87@v\xbfh)
-IndicatorSplitter=@ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\0\0\0\0\x3\x42\0\0\0\0\x1\0\0\0\x3\x1\0\0\0\x1)
-IndicatorCount=3
-ShowYScale=true
+Tip               = Using SimpleRule with XsmaTrader
+IndicatorCount    = 3
+Density           = @Variant(\0\0\0\x87@v\xbfh)
+ShowYScale        = true
+GroupSplitter     = @ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\x1\x2\0\0\0\xaa\0\0\0X\x1\0\0\0\x3\x1\0\0\0\x2)
+IndicatorSplitter = @ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\0\0\0\0\x3\x42\0\0\0\0\x1\0\0\0\x3\x1\0\0\0\x1)
 
 [2]
-ShowXScale=false
-ScaleToScreen=10
-Indicator=TradeBalance
+Indicator         = TradeBalance
+ScaleToScreen     = 10
+ShowXScale        = false
 
 [1]
-ShowXScale=false
-ScaleToScreen=10
-Indicator=TradeView
+Indicator         = TradeView
+ScaleToScreen     = 10
+ShowXScale        = false
 
 [3]
-Indicator=XsmaTrader
-ShowXScale=true
-ScaleToScreen=10
+Indicator         = XsmaTrader
+ScaleToScreen     = 10
+ShowXScale        = true
