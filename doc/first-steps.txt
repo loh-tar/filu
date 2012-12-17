@@ -1,69 +1,107 @@
 This file is part of Filu (C) 2007, 2010, 2011, 2012 loh.tar@googlemail.com
 
 
+Index
+=======
+1- Introdution
+2- First Steps
+3- The Filu Programs
+4- Further Readings
+
+
+1- Introdution
+================
 OK, if you has follow all installation instructions, you have done so many steps
 but didn't see any chart. Don't give up, you are so close to success.
 
-Let's short ask what's should work: The database is up and running, the programs
-compiled, installed and short started in a terminal without an error message?
-Good!
+Let's short ask what's should work: The database server is up and running, the
+programs compiled, installed and short started in a terminal without an error
+message? Great!
 
-To understand what still is missing and we will do shortly, you should take a
-look into fimi_digest_EN.odp or FiMi_0.1.6_DE.doc. There is described how the
-data are organised by Filu. But because Filu has dropped some goals from the
-original FiMi project there be some things outdated.
+Then go on reading, and have fun!
+
+
+2- First Steps
+================
+Let me route you to three short tours *without* to explain each command. Well,
+one command should I anyway notice: With 'sum' you create a test "DB", more
+exactly a test schema inside the Filu database, where you can play. To remove
+these schema later use 'exo'.
+
+
+Tour 1 - For The Very Impatient
+---------------------------------
+Execute these commands in your terminal...
+  agentf sum tour1
+  agentf imp doc/example-some-us-stocks.imp
+  agentf full
+  performerf
+
+...and you can start to fiddle around.
+
+
+Tour 2 - For The Impatient Terminal Hater
+-------------------------------------------
+My respect that you nonetheless managed so far ;-)
+
+  - Execute once more in your terminal: agentf sum tour2
+  - Start from your application menu below 'Office' ManagerF
+  - Click 'AddFi' page
+  - Select at the upper left 'Filu' and 'Market'
+  - Enter 'nyse' in the middle search field and click 'Search'
+  - Click the result and click some right below 'Add to DB'
+  - Change at upper left to 'Yahoo' and 'Fi'
+  - Enter 'dji' -> 'Search'
+  - Click 'Dow Jones Industrial Average' (with ISIN US2605661048)
+  - Click 'Search Comp' a little bit lower/left from 'Add to DB'
+  - Clink into the name field and add '30' that it looks '~trial Average 30'
+  - Click 'Add to DB'
+  - Click 'Add all to DB' at top right and confirm with 'OK'
+  - Start from your application menu below 'Office' PerformerF
+  - Click at the LaunchPad 'Full'
+
+And you can also start to fiddle around.
+
+
+Tour 3 - For The Inquisitive For Knowledge
+--------------------------------------------
+I assume you went *not* thru tour 1 or 2.
 
 Per default there are nearly absolutely no data in the database. Therefore you
-have to import all that stuff *YOU* need. Markets, currencies, stocks and so on.
-A long time ago in a galaxy far, far away... there was all imagine default data
-pre installed. But I don't like that bloating and removed all.
+have to import all that stuff *you* need, markets, currencies, stocks and so on.
 
 The goal is that you could use ManagerF to import all stuff easily live from
-somewhere of the Internet. But that need more work, especially at the provider
-scripts.
+somewhere of the Internet. But that need still some work, especially at the
+provider scripts.
 
-Till ManagerF works as desired, we have to import data with 'agentf imp <File>'
-command. What we need is a *.imp file with the data we are interested in. Take a
-look into Master-of-imp-files.ods and you see a way how to create that. Adding
-new FIs with ManagerF works well but you have to install the markets you are
-interested in.
+Even though some already work with ManagerF, we like now import data with
+'agentf imp' command.
+Let us do some less commands to bring up the chart of Apple Inc.
+  agentf sum tour3
+  agentf imp doc/example-apple.imp
+  agentf full
+  performerf
 
-NOTE: About market names see hacking-provider-scripts.txt
-
-Furthermore read import-file-format.txt to get an overview of the
-possibilities.
-
-So many words but no beef? OK, let us do some less commands to bring up the
-chart of Apple Inc.
-
-lot@N110:~/FiluSource$ agentf imp doc/example-apple.imp
-lot@N110:~/FiluSource$ agentf full
-lot@N110:~/FiluSource$ performerf
-
-Go to the 'Search FI' widget, type in 'a' and click 'Apple Inc.' Nice?
+Go to the 'Search FI' at the left and click 'Apple Inc.'. Nice?
 
 What have we done? 'cat doc/example-apple.imp' shows the content of the import
 file. As you can see there are only two Header and two data lines included, the
 rest is comment which explain what kind of data we have imported. The second
 command 'agentf full' forces an update of all eodBars of all FIs stored in the
 database. We have three FIs in the database. 'Three?' Yes! Of cause 'Apple Inc.'
-as stock but also 'US Dollar' as currency and one more dummy currency 'No
-Currency'.
+as stock but also 'US Dollar' as currency and one more dummy
+currency 'No Currency'.
 
 But because we have only one provider symbol installed there will only be
 eodBars for one FI downloaded. This point is important to understand.
 
-The dummy currency and the dummy market 'NoMarket' that you can see in the
-search widget are needed. The reason is a little complicated. Symbols are used
-to download price (or other) data by a market with a provider script. Therefore
-a symbol *must* always have a market. But a market *must* always have a
-currency. However what is with symbols you want to store to a FI as extra
-reference but not to download data? Such universal symbols with no special
-purpose need anyway a market and these market a currency.
-
-This concept of symbols with fixed bundled market and provider as the key to
-select anything to force a download with a provider script was the result of a
-time-consuming consideration between me and Christian.
+The dummy currency and the dummy market 'NoMarket' that you can see at
+ManagerF's 'FI Details' page are needed. The reason is a little complicated.
+Symbols are used to download price (or other) data by a market with a provider
+script. Therefore a symbol *must* always have a market. But a market *must*
+always have a currency. However what is with symbols you want to store to a FI
+as extra reference but not to download data? Such universal symbols with no
+special purpose need anyway a market and these market a currency.
 
 A symbol has a type, or owner. Well known types are ISIN or Reuters which is
 often seen in TV broad castings or old-school newspaper tables. When a symbol
@@ -75,207 +113,52 @@ download anything.
 As consequence of that naming convention is 'Reuters' a symbol type but not a
 provider because we have no Reuters-Script to download anything from Reuters.
 Currently we have less than a handful provider usable at Filu. Yahoo, oander
-and Filu. 'Filu?'. Um...yes, there are some simple shell scripts they are
-usable at ManagerF AddFi-Page.
+(currently broken, sorry) and Filu. 'Filu?'. Um...yes, there are some simple
+shell scripts they are usable at ManagerF's 'AddFi-Page'. These data come not
+out of the database or from the internet but rather out of some *.csv files
+located at the Filu install directory.
 
-Choose 'Filu' in the upper left list box, 'Search FI' right of that, type 'app'
-in the middle edit field and hit 'Search' at the right or simple press Enter.
-Now you should see 'Apple Inc.' and some others in the center. These data come
-not out of the database but rather out of some *.csv files located at
-/usr/local/lib/Filu/provider/Filu, and was read by fetchFi_Filu.sh. When you now
-click one of the rows in the shown list will these FI copy to the fields below
-where you can make some edits or simple click 'Add to DB'.
-
-For more information about provider and how to write your own provider script
-read doc/hacking-provider-scripts.txt
-
-The most important things do you know now. In the doc directory you find more
+The most important things you do know now. In the doc directory you find more
 information about the Filu parts but not a typical user manual. Because of that
-I want make some notes at this place.
-
-I hope that all Filu programs are self-explanatory. But some things may hidden
-or be known to be improved.
+I want make some notes at this place. I hope that all Filu programs are
+self-explanatory. But some things may hidden or be known to be improved.
 
 
-All Progs
-===========
-...take on the command line the parameter '--config key=value [key=value]..'.
-Where as 'key' a config file key is. That mean you could overwrite any config
-setting on the command line, see doc/config-file.txt. To be on the save side
-only append these as last parameter, e.g.
+3- The Filu Programs
+======================
+All programs take on the command line the switch
+'--config key=value [key=value]..', where as 'key' a config file key is. That
+mean you could overwrite any config setting on the command line, see
+doc/config-file.txt. To be on the save side only append these as last parameter,
+e.g.
 
-  agentf full 2001-01-01 --config DatabaseName=MyNewTestDB Verbose=Max
+  agentf full 2001-01-01 --config MaxClones=10 Verbose=Max
 
 
 AgentF
 ========
 He is like the Swiss knife of Filu. He starts multiple instances to do a big job
 e.g. at 'full' to download quotes in parallel. The amount of instances is
-configurable in the settings file, ~/.config/Filu.conf by setting MaxClones=X.
+configurable in the settings file by MaxClones=X, see doc/config-file.txt.
+
 In general AgentF takes always only options with double hyphens '--' with the
 one and only exception of '-h'. The call looks like:
 
   agentf <Command> [<ParmList>] [<SubCommand> [<ParmList>]]..
          [OptList] [-h|--help]
 
-Most of the commands have build in help text. You can also give 'help' as
-command, like:
+The command and subcommand can also given with double hyphens and you can
+give 'help' as command, like:
 
     agentf help [<Command>]
     agentf -h [<Command>]
+    agentf --help [<Command>]
+    agentf -h add broker
+    agentf add broker MyBank USD "5.95 + OV * 0.001"
+    agentf --add --broker MyBank USD "5.95 + OV * 0.001"
 
-The command and subcommand can also given with double hyphens.
 
-add
------
-Lets you adding a single dataset to the database by using Importer.
-
-help
-  Tells you all what is possible.
-
-daemon
---------
-Is not a daemon as typical known. It is very similar to rcf. He read from stdin
-and execute each command line he read until Ctrl+D is pressed or 'quit' is read.
-The optional name parameter is only used at message logging.
-
-depots
---------
-Performs actions with your portfolios. See also doc/depot-management.txt.
-Most depots commands respekt the optional filter settings:
-  --owner <Owner> (only depots by...)
-  --dpid <Id>
-  --from <Date>
-  --to <Date>
-  --4date <Date> (the same as --to)
-
-At the first command/switch after 'depots' can the double hyphens be omitted.
-
-cancel <OrderId>
-  Cancel order, which is active.
-
-check
- Yes, run a check over all your portfolios and save suggestions to order, based
- on the trading rule file noted in the depot. To list the suggestions use --lso.
-
-cho <OrderId> [<Field=Value>]..
-  Change order, which was not executet and make them active.
-  Possible Fields are Limit, Pieces, Date and Valid. When no Field=Value is
-  given the order is still changed to Active. You could say it is the
-  counterpart to '--cancel'.
-
-clo
-  Clears orders, which are not active.
-
-delete
-  Delete depots with all relating data, (positions, account, orders). There will
-  a confirmation prompted for each depot unless '--I-am-sure' was given. It is
-  highly recommended to use '--dpid <Id>' for filtering.
-
-lsd
-  List depots.
-
-lso [m|t]
-  List orders. Option 'm' means machine like form and 't' ticket format. Without
-  option lists in a human friendly short format.
-
-simtrade <Trader> <BrokerName> <FromDate> <ToDate>
-        [--weekly [<n>] (check only each n weeks, when not given each day is checked)
-        [--checkDay <ShortDayName> (default Fri)]]
-  Creates a new depot owned by 'Simulator' with a auto generated name and runs a
-  full complex trading simulation with a fix start cash of 10,000.00.
-
-verbose
-  Set the verbosity, values are the same as for global 'Verbose', see
-  doc/config-file.txt.
-
-  agentf depots lsd --4day 2011-05-01
-  agentf depots check --lso --verbose Ample
-  agentf depots simtrade SimpleRule MyBank 2005-05-01 2011-05-01 \
-                --weekly 2 --checkDay Mon
-  agentf depots delete --owner Simulator --I-am-sure  // Use it carefully !
-
-exp
------
-Export data from the database. See doc/export-data.txt.
-
-filu
-------
-Create or update the Filu database.
-
-create [--db <DBName>] [--schema <Schema>]
-  Create a new Filu database. Defaults of <DBName> and <Schema> are 'filu'.
-  FIXME: Not yet implemented.
-
-drop <DBName>
-  Delete an existing database.
-  FIXME: Not yet implemented.
-
-update
-  Rebuild the database (user) functions.
-
-vacuum
-  Perform some janitor tasks by running vacuumdb.
-  See http://www.postgresql.org/docs/8.4/interactive/app-vacuumdb.html
-  FIXME: Not yet implemented.
-
-  agentf filu create --db testdb
-  agentf filu update
-
-imp
------
-Imports an (surprise!) import file. See doc/import-file-format.txt.
-
-rcf
------
-Read Command File. The file can contain each command supported by AgentF. Lines
-begin with an asterisk are ignored as usual.
-
-scan
-------
-Yes, it starts a scan. Over the entire database, one or more groups or only one
-FI with one or more scanners. These scanners are indicators with a SCAN4
-variable, see doc/indicator-file-format.txt. There are also more info about some
-things noted below. When the scan has found a FI will it added to the PerformerF
-group 'ScanResults/<Today>/<IndicatorName>'.
-
-The parameters are leaded by '--' and can given in any order, they are:
-
-group <Path> [<Path>]..
-  A list of group paths to scan. When 'all' is given all FIs are scanned.
-
-this <Symbol> <Market>
-  Scan only this FI.
-
-indi <Name> [<Name>]..
-  A list of indicators to use for scanning.
-
-auto
-  Selects all indicators with a ScanFreq Key and take care of its value, so
-  avoids unwanted scans. When you also use '--indi' will these indicator also
-  used.
-
-force
-  Forces '--auto' to scan anyway if needed or not.
-
-timeFrame <Name>|<Number>
-  The time frame to be scanned. Overwrite the ScanFreq Key of the indicator when
-  '--auto' is used but still respect if there is a need to be scanned. Use also
-  '--force' to ignore that too.
-
-mark
-  Save the scan date in the settings file ~/.config/Filu.conf.
-
-verbose <LevelName>|number
-  Set the verbosity, values are the same as for global 'Verbose', see
-  doc/config-file.txt.
-
-NOTE: Each time the bars of an FI are be updated a scan will automatic performed
-      with the '--auto' switch. So you normally not have to scan directly except
-for testing purposes or multiuser mode.
-
-  agentf scan --group all --indi MyNewIdea --timeFrame Quarter
-  agentf scan --group all --auto
+All commands have more or less build in help text. So ckeck it out.
 
 
 ManagerF
@@ -293,8 +176,8 @@ your search string in the middle. Hit Return or click 'Search' to fetch the data
 from the provider. The results will are listed in the center table. Clicking one
 row will copy the FI into the below area.
 
-You can also enter by hand the FI data into the fields, without using a previous
-search. Click 'Add to DB' right from the Type ComboBox to store this one FI. You
+you can also enter by hand the FI data into the fields, without using a previous
+search. Click 'Add to DB' right from the Type ComboBox to store this one FI. you
 can also add more symbols to existing FIs by filling the new symbol data and
 give an already known symbol in the RefSymbol field, Name and Type could leave
 blank in that case.
@@ -311,9 +194,9 @@ with many more FIs as you may like. Hit 'Cancel', the 'Search' Button at the top
 has changed the caption, to stop the script.
 
 When the table is filled with all components could you add or remove lines with
-the '+/-' Buttons at the upper right and edit the a line itself by double click.
-Clicking 'Add all to DB' will...You guess it. Furthermore will all FIs added as
-underlying to the Index-FI. You can hit that button also to add all results from
+the '+/-' Buttons at the upper right or edit the line itself by double click.
+Clicking 'Add all to DB' will...you guess it. Furthermore will all FIs added as
+underlying to the Index-FI. you can hit that button also to add all results from
 a normal search, its your decision if it make sense. Adding underlines will not
 perform in that case.
 
@@ -342,8 +225,8 @@ Log Book
 Here find you some messages which may produce the other pages. Currently write
 only 'Add Fi' some messages, and not the very best.
 
-On the second tab 'LogFile' could you view the messages written by AgentF. In
-the future may more messages logged there. RightClick to clear the file,
+On the second tab 'LogFile' could you view the messages written by all programs.
+In the future may more messages logged there. RightClick to clear the file,
 
 
 PerformerF
@@ -385,7 +268,7 @@ Available chart object types are currently only 'Line'.
 IndiSetPad
 ------------
 Let you quickly switch between sets of indicators. The buttons are stored in
-~/Filu/ButtonPads/PerformerIndiSetPad.ini. You can edit, add and remove buttons
+~/Filu/ButtonPads/PerformerIndiSetPad.ini. you can edit, add and remove buttons
 of the IndiSetPad by Right-Click with the mouse and move around the buttons by
 Ctrl-LeftMouseBtn. The settings of the IndicatorSets itself are stored in
 ~/Filu/IndicatorSets. The name of the button is used for the IndicatorSet-Name.
@@ -396,7 +279,7 @@ The ComboBox list all existing sets and shows which set is actual used.
 LaunchPad Configuration
 -------------------------
 The LaunchPad can start any application you want with some parameter related to
-the current viewing FI. For details see doc/launchpad-file-format.txt. You can
+the current viewing FI. For details see doc/launchpad-file-format.txt. you can
 edit, add and remove buttons of the LaunchPad by Right-Click with the mouse and
 move around the buttons by Ctrl-LeftMouseBtn.
 
@@ -405,7 +288,7 @@ Zoom View
 This is a single and a little simplified indicator screen. The idea is to have a
 small window which give an overview with a longer time frame. The widget uses an
 indicator settings file 'ZoomWidget' in ~/Filu/IndicatorSets. To use an
-indicator of your choice append a 'Indicator=YourChoice' line or select in the
+indicator of your choice append a 'Indicator=yourChoice' line or select in the
 ComboBox of the IndiSetPad 'ZoomWidget', select a different indicator and
 restart PerformerF.
 
@@ -439,9 +322,29 @@ The column names means:
   score, Score
 
 Score is actual calculated as:
-  ln(exp(won long trades * agwlp)/exp(lost long trades * alltp)) / total count of trades
+  ln(exp(won long trades * agwlp)/exp(lost long trades * alltp)) / total count
+of trades
 
 All these trading analyses are very experimental. Suggestions for improvements
 are welcome.
 
 See also doc/trading-rule-file-format.txt.
+
+
+4- Further Readings
+=====================
+Filu has start as FiMi in 2007 by me and Christian Kindler. He had some great
+ideas which he has noted in fimi_digest_EN.odp and FiMi_0.1.6_DE.doc. There is
+described how the data are organized by Filu. But because Filu has dropped some
+goals from the original FiMi project there be some things outdated.
+
+To become an import file from your own data you do may have 'lie around' take a
+look at doc/Master-of-imp-files.ods and doc/import-file-format.txt.
+
+Data provider are the main thing for a finance software like Filu. Data by Yahoo
+are sadly not the very best. In defense should be said that other free sides
+like Google sometimes the same wrong data delivers. To write your own provider
+script look at doc/hacking-provider-scripts.txt.
+
+There are more doc/hacking-foo.txt available if you like, and I hope you do, to
+improve Filu.
