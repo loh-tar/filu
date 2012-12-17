@@ -10,7 +10,7 @@ There are two kind of Tags where both looking the same, assignment Tags and
 controlling Tags. Tags are capsulated in square brackets [].
 
 Assignment Tags declare a variable, a Key, which will filled with data, whereas
-a controling Tag force an action, declare a list of variabes or capsulate a
+a controlling Tag force an action, declare a list of variables or capsulate a
 special data block.
 
 NOTE: Exporter.cpp generate such an import file, see doc/export-data.txt, and
@@ -28,7 +28,7 @@ Controlling Tags
   Importer that no more data follow.
 
 [Header]<Foo>;<Bar>...
-  Comma separated files have typicaly a header, here we have headers too. It
+  Comma separated files have typically a header, here we have headers too. It
   declare a list of variables, the Header Keys, separated by a semicolon. The
   following data are ordered in the same wise as the here listed Keys. Depend on
   which Keys are set will the Importer determine what data are able to store in
@@ -54,7 +54,7 @@ Controlling Tags
 [Piks] FIXME: not implemented
 
 [Reset]
-  Clears all declared Keys and controling Tags. After this Tag the Importer
+  Clears all declared Keys and controlling Tags. After this Tag the Importer
   behaves like reading the very first line of the import file.
 
 [Stop]
@@ -139,7 +139,7 @@ DDate (optional)
 Provider
 Symbol
 Market (either these three Keys or <KnownSymbolType>)
-  These three Keys are bind together to build the symbol dataset. Internally
+  These three Keys are bind together to build the symbol data set. Internally
   will these Keys append with a number 0..n, (e.g. Provider2) dependent on which
   number not already exist. So if you have more than one symbols in a row, you
   have to append them with a number 1..n (Provider1, Symbol1, Market1,
@@ -162,9 +162,9 @@ RefSymbol (optional)
   market is given otherwise will it only used as RefSymbol.
   NOTE: Internally will <KnownSymbolType> replaced by SymbolX whereas X is a
         number 0..n which not already exist. That means that you could run into
-  truble when you use your own numbering simultaneous for Provider/Symbol/Market
-  when you declare your own after <KnownSymbolType> and chose a number which was
-  already auto generated.
+  trouble when you use your own numbering simultaneous for
+  Provider/Symbol/Market when you declare your own after <KnownSymbolType> and
+  chose a number which was already auto generated.
 
 
 Symbols
@@ -180,14 +180,14 @@ IDate (optional) FIXME: not implemented
   Issue date, of the symbol.
 
 MDate (optional) FIXME: not implemented
- Maritury date, of the symbol.
+ Maturity date, of the symbol.
 
 
 Underlying
 ============
 CompList (either or Mother)
   You can call it 'index symbol'. All <SymbolKey> listed in the following
-  represent the full set of underlyings to this FI. Not listed FIs will remove
+  represent the full set of underlying to this FI. Not listed FIs will remove
   from the underlying list. If the FI name contains a number is this number used
   to validate the list, e.g. 'DAX 30'. If there is a mismatch nothing happens,
   but an error is thrown.
@@ -353,7 +353,7 @@ Take a look at doc/example-apple.imp
 
 Example 2
 ===========
-Add a symbol to an existing FI interactiv in a console.
+Add a symbol to an existing FI interactive in a console.
 
   [lot@N110 ~/FiluSource]$ agentf imp --config Verbose=2
   [Header]RefSymbol;ISIN
@@ -390,7 +390,7 @@ Tin, 3
   Means there was an logical error in the data detected by the database.
 
 
-Appendix B - Standardized MarketSymbols
+Appendix B - Standardized Market Symbols
 =========================================
 When you add new markets to your database should you choose one of these names.
 If you want to use a different name for a here listed market should you also
@@ -413,7 +413,7 @@ London
 Madrid
 Milan
 Munich
-NYSE          Yahoo can't distingues between NYSE/NASDAQ, so always NYSE
+NYSE          Yahoo can't distinguish between NYSE/NASDAQ, so always NYSE
 Oslo
 Stockholm
 Stuttgart

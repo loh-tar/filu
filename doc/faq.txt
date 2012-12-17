@@ -16,8 +16,8 @@ static data out of the database. For details see doc/export-data.txt.
 
 Q: Which other platforms than Ubuntu and Arch Linux are supported?
 A: I can't say it for sure, but it should run on all Unix like systems with some
-   CMakeLists.txt modifications. If you are an experienced BSD, OSX, Suse,
-RedHat, what-ever-Linux user and got it running let me know how we can put all
+   CMakeLists.txt modifications. If you are an experienced BSD, OSX, SUSE,
+Red Hat, what-ever-Linux user and got it running let me know how we can put all
 under one hood. I think it will not run on Windows, but if you got it, let me
 know too.
 
@@ -60,7 +60,7 @@ Q: I'm an expert of <foo>. Did you know that your source code lacks of some
 A: I'm not an expert and struggle me each day again with many things. I would me
    pleased to learn from your advice.
 
-Q: I read somewhere in the docs about Qtstalker, and performerf looks
+Q: I read somewhere in the docs about Qtstalker, and PerformerF looks
    similar to that. Why do you not contribute Qtstalker but start a new project?
 A: In 2006/7 I was impressed by Steve's Qtstalker and after a while I began to
    make suggestions. Steve implement some of these. A little time later I start
@@ -77,15 +77,14 @@ A: A team has one goal where each player is fighting for. Christian was not as
 library preferably usable with Perl, which was not my primary goal and ask too
 much of my C++ skills. Furthermore he changed many times the database
 structure to get some of his ideas working, but that makes me unlucky. I hope
-these kind of truble can be avoid by using git at Gitorious.org where everybody
+these kind of trouble can be avoid by using git at Gitorious.org where everybody
 is his own boss.
 
 
 Known Issues
 ==============
-Mouse moves in the upper left corner of the plotsheet are not recognised. It
-could be a Qt Bug or a Ubuntu issue or something with the self compiled QT
-Library. What ever, there will no QEvent received.
+Mouse moves in the upper left corner of the plot sheet are not recognized.
+There will no QEvent received. No idea what could be wrong, you?
 
 
 Technical Details
@@ -95,7 +94,7 @@ A: To avoid unwanted changes by a script. Only to decide by e.g. the date if a
    eodBar is final is not enough. If you have repaired some wrong data by hand
 will these fixes be lost when you run an data update again.
 
-Q: Why is it not possible to store two FIs with the same name but a differnt
+Q: Why is it not possible to store two FIs with the same name but a different
    type?
 A: Um....It makes DB-insert functions much less complicate and a small suffix
-   in the name to make them differend is also for the user not as bad.
+   in the name to make them different is also for the user not as bad.
