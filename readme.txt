@@ -145,8 +145,11 @@ the cmake config step above the switch -D use and run:
   cmake -D DBUSER=anyUserName -D DBNAME=anyDBName .. // Still two dots!
   make init-filu
 
-Note: There are only the two commands 'createuser' and 'createdb' invoked with
-      some options. So you can these also run direct.
+There are only the two commands 'createuser' and 'createdb' invoked with some
+options. So you can these also run direct.
+
+  createuser -e -D -R -S -U postgres anyUserName
+  createdb -e -T template1 -U postgres -O anyUserName anyDBName "Info Text"
 
 For more tunings see doc/config-file.txt.
 
