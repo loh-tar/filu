@@ -1181,7 +1181,6 @@ void Importer::addSymbol()
     if(mSymbol->caption().isEmpty()) continue;
     if(mSymbol->owner().isEmpty()) continue;
     if(mSymbol->market().isEmpty()) continue;
-    if(mSymbol->caption() == mData.value("_LastRefSymbol")) continue; // Make no sens to add when ref by itself
 
     mFilu->addSymbol(mSymbol->caption(), mSymbol->market()
                    , mSymbol->owner(), mId.value("Fi"));
