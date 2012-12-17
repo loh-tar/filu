@@ -71,28 +71,18 @@ BEGIN
   mSymbolId := COALESCE(aSymbolId, 0);
 
   IF mSymbolId < 1 THEN -- no aSymbolId given, we have to check if the symbol is already known
-     mSymbolId := :filu.id_from_caption('symbol', mSymbol);
 
-    IF mSymbolId = :filu.error_code('CaptionNUQ') THEN --ops, really rare, aSymbol exist more than one time.
-      SELECT symbol_id INTO mSymbolId
-        FROM :filu.symbol
-        WHERE
-          lower(caption) = lower(mSymbol)
-          and market_id = mMarketId
-          and stype_id  = mSTypeId;
+    SELECT symbol_id INTO mSymbolId
+      FROM :filu.symbol
+      WHERE
+        lower(caption) = lower(mSymbol)
+        and market_id = mMarketId
+        and stype_id  = mSTypeId;
 
-    ELSEIF mSymbolId = :filu.error_code('CaptionNF') THEN -- check if combi fi/stype/market exist
-        SELECT symbol_id INTO mSymbolId
-          FROM :filu.symbol
-                  WHERE fi_id     = aFiId
-                    and market_id = mMarketId
-                    and stype_id  = mSTypeId;
-    END IF;
+    IF mSymbolId IS NOT NULL THEN RETURN mSymbolId; END IF; -- Nothing to do
 
-    mSymbolId := COALESCE(mSymbolId, 0);
-
-    IF mSymbolId < 1 THEN -- insert the new symbol
       mSymbolId := nextval(':filu.symbol_symbol_id_seq');
+
       BEGIN
         INSERT INTO :filu.symbol(symbol_id, market_id, stype_id, fi_id, caption)
                VALUES(mSymbolId, mMarketId, mSTypeId, aFiId, mSymbol);
@@ -103,7 +93,6 @@ BEGIN
                   WHEN foreign_key_violation THEN RETURN :filu.error_code('ForeignKV');
       END;
 
-    END IF; -- insert the new symbol
   END IF; -- no aSymbolId given, we have to check if the symbol is already known
 
   BEGIN
