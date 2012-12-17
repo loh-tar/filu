@@ -131,6 +131,7 @@ sub convertMarket($)
   # $markets{BI} = "Bilbao";
   $markets{BRU} = "Brussels";
   # $markets{CO} = "Copenhagen";
+  $markets{DJI} = "NYSE";
   $markets{DUS} = "Dusseldorf";
   $markets{ENX} = "Euronext";
   $markets{EUX} = "Eurex";
