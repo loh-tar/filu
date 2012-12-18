@@ -751,7 +751,7 @@ void Depots::listOrders(const QSqlRecord& depot)
   listOrders(orders, FiluU::eOrderAdvice);
   listOrders(orders, FiluU::eOrderActive);
   listOrders(orders, FiluU::eOrderExecuted);
-  listOrders(orders, FiluU::eOrderExperied);
+  listOrders(orders, FiluU::eOrderExpired);
 
   if(!orders->size())
   {

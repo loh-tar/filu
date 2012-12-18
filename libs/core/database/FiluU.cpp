@@ -518,19 +518,19 @@ int FiluU::FiluU::orderStatus(const QString& status)
   int s = status.toInt(&ok);
   if(ok)
   {
-    if(s == eOrderAdvice || s == eOrderExperied || s == eOrderExecuted || s == eOrderCanceled ||
+    if(s == eOrderAdvice || s == eOrderExpired || s == eOrderExecuted || s == eOrderCanceled ||
        s == eOrderNeedHelp || s == eOrderActive || s == eOrderAdvCancel) return s;
   }
   else
   {
     const QString sl = status.toLower();
-    if(sl == orderStatus(eOrderAdvice).toLower())   return eOrderAdvice;
-    if(sl == orderStatus(eOrderExperied).toLower()) return eOrderExperied;
-    if(sl == orderStatus(eOrderExecuted).toLower()) return eOrderExecuted;
-    if(sl == orderStatus(eOrderCanceled).toLower()) return eOrderCanceled;
-    if(sl == orderStatus(eOrderNeedHelp).toLower()) return eOrderNeedHelp;
-    if(sl == orderStatus(eOrderActive).toLower())   return eOrderActive;
-    if(sl == orderStatus(eOrderAdvCancel).toLower()) return eOrderAdvCancel;
+    if(sl == orderStatus(eOrderAdvice).toLower())     return eOrderAdvice;
+    if(sl == orderStatus(eOrderExpired).toLower())    return eOrderExpired;
+    if(sl == orderStatus(eOrderExecuted).toLower())   return eOrderExecuted;
+    if(sl == orderStatus(eOrderCanceled).toLower())   return eOrderCanceled;
+    if(sl == orderStatus(eOrderNeedHelp).toLower())   return eOrderNeedHelp;
+    if(sl == orderStatus(eOrderActive).toLower())     return eOrderActive;
+    if(sl == orderStatus(eOrderAdvCancel).toLower())  return eOrderAdvCancel;
   }
 
   error(FUNC, tr("Order status '%1' is unknown.").arg(status));
@@ -542,14 +542,14 @@ QString FiluU::orderStatus(int status)
 {
   switch(status)
   {
-    case eOrderAdvice:   return tr("Advice");
-    case eOrderExperied: return tr("Experied");
-    case eOrderExecuted: return tr("Executed");
-    case eOrderCanceled: return tr("Canceled");
-    case eOrderNeedHelp: return tr("Unsure");
-    case eOrderActive:   return tr("Active");
-    case eOrderAdvCancel: return tr("AdvCancel");
-    default:             break;
+    case eOrderAdvice:      return tr("Advice");
+    case eOrderExpired:     return tr("Expired");
+    case eOrderExecuted:    return tr("Executed");
+    case eOrderCanceled:    return tr("Canceled");
+    case eOrderNeedHelp:    return tr("Unsure");
+    case eOrderActive:      return tr("Active");
+    case eOrderAdvCancel:   return tr("AdvCancel");
+    default:                break;
   }
 
   error(FUNC, tr("Order status number '%1' is unknown.").arg(status));

@@ -434,7 +434,7 @@ Appendix D - Order Status
 Advice
   A suggestion by your trading rule.
 
-Experied
+Expired
 Executed
 Canceled
   Canceled by your trading rule.

@@ -247,11 +247,11 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
 
         if(date > vDate)
         {
-          // Order experied
-          verbText.append(tr("Experied on %1").arg(date.toString(Qt::ISODate)));
+          // Order expired
+          verbText.append(tr("Expired on %1").arg(date.toString(Qt::ISODate)));
           verbose(FUNC, verbText);
 
-          mFilu->updateField("status", FiluU::eOrderExperied, ":user", "order", orderId);
+          mFilu->updateField("status", FiluU::eOrderExpired, ":user", "order", orderId);
           break;
         }
 

@@ -42,7 +42,7 @@ class FiluU : public Filu
       // If you change here something take a look at orderStatus(...), Depots, Trader, GetDepotOrders.sql
       eOrderExecuted  =  10,
       eOrderCanceled  =  20,
-      eOrderExperied  =  30,
+      eOrderExpired   =  30,
       eOrderAdvice    =  50,
       eOrderActive    = 100,
       eOrderAdvCancel = 110,
