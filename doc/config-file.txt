@@ -63,7 +63,7 @@ CommitBlockSize=500
   How many data rows will be send to the server before they will committed. Sadly
   has these settings no effect because of broken Qt Driver.
 
-DaysToFetchIfNoData=365
+DaysToFetchIfNoData=730
   How many bars, in days, should be downloaded the first time.
 
 MakeNameNice=true
