@@ -206,6 +206,7 @@ void RcFile::checkFiluHome()
   {
     mNewswire->verbose(FUNC, tr("Create user settings file: %1").arg(filuConf));
     QFile::copy(filuHome + "Filu.conf", filuConf);
+    sync();
   }
 
   QFile::remove(filuHome + "Filu.conf");
