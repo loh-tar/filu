@@ -176,7 +176,7 @@ void CmdAdd::addEodBar()
 
   mHeader << "Open;High;Low;Close";
 
-  if(mCmd->has("close"))
+  if(mCmd->hasOpt("close"))
   {
     // We have to use 4 times the close price
     // otherwise the database will set the quality to Tin
@@ -189,13 +189,13 @@ void CmdAdd::addEodBar()
             << mCmd->strParmDouble(3) << mCmd->strParmDouble(4);
   }
 
-  if(mCmd->has("vol"))
+  if(mCmd->hasOpt("vol"))
   {
     mHeader << "Volume";
     mData   << mCmd->strParmDouble(1);
   }
 
-  if(mCmd->has("oi"))
+  if(mCmd->hasOpt("oi"))
   {
     mHeader << "OpenInterest";
     mData   << mCmd->strParmInt(1);
@@ -267,7 +267,7 @@ void CmdAdd::addMarket()
   mHeader << "[Header]MarketSymbol" << "CurrencySymbol";
   mData   << mCmd->strParm(1) << mCmd->strParm(2);
 
-  if(mCmd->has("curr"))
+  if(mCmd->hasOpt("curr"))
   {
     mHeader << "Currency";
     mData   << mCmd->strParm(1);
@@ -436,12 +436,12 @@ void CmdAdd::addUnderlyg()
 
 void CmdAdd::takeDepotOptions()
 {
-  if(mCmd->has("dpid"))
+  if(mCmd->hasOpt("dpid"))
   {
     mHeader << "DepotId";
     mData   << mCmd->strParmInt(1);
   }
-  else if(mCmd->has("dp")) // We must ask because mCmd has to set intern variables
+  else if(mCmd->hasOpt("dp")) // We must ask because mCmd has to set intern variables
   {
     if(mCmd->parmCount() > 1)
     {

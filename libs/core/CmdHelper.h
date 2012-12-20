@@ -164,10 +164,12 @@ class CmdHelper : public Newswire
     bool          wantHelp() { return isSet("WantHelp"); }
     void          aided();
 
-    // Obtain any info about command line stuf
+    // Obtain any info about command line stuff
+    bool          has(const QString& opt);        // Don't change mInqOpt
+    // All these change mInqOpt
     bool          hasCmd(const QString& cmd);
     bool          hasSubCmd(const QString& cmd);
-    bool          has(const QString& opt);
+    bool          hasOpt(const QString& opt);
     int           parmCount() { return mInqOpt.parmCount; }
 
     QString       cmd() { return mInqCmd.name; }

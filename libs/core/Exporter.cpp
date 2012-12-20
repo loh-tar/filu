@@ -307,7 +307,7 @@ bool Exporter::exec(CmdHelper* ch)
 
   // Look for each command, and execute them if was given.
   // The order of look up is important.
-  if(mCmd->has("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
+  if(mCmd->hasOpt("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
 
   if(mCmd->hasSubCmd("all")) cmdAll();
   else if(mCmd->hasSubCmd("core")) cmdCore();
@@ -433,7 +433,7 @@ bool Exporter::exxport()
   if(hasError()) return false;
 
   // Open output file, if needed
-  if(mCmd->has("into"))
+  if(mCmd->hasOpt("into"))
   {
     QString fileName = mCmd->optStr("into");
     if(fileName.isEmpty())
@@ -471,7 +471,7 @@ bool Exporter::exxport()
       return false;
     }
 
-    if(!mCmd->has("verbose")) setVerboseLevel(eNoVerbose);
+    if(!mCmd->hasOpt("verbose")) setVerboseLevel(eNoVerbose);
   }
 
   mOutput.setDevice(mOutFile);
@@ -1038,7 +1038,7 @@ bool Exporter::expGroups()
   buffer << "*";
   buffer << "[Header]RefSymbol\n";
 
-  if(mCmd->has("listed"))
+  if(mCmd->hasOpt("listed"))
   {
     mDataText = "Group";
     mOLine << buffer.join("\n");

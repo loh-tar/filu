@@ -952,7 +952,7 @@ void AgentF::execCmd(const QStringList& parm)
 
   if(mCmd->cmdLineLooksBad(parm)) return;
 
-  if(mCmd->has("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
+  if(mCmd->hasOpt("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
 
   if(mCmd->wantHelp())
   {
@@ -1067,7 +1067,7 @@ void AgentF::startClones()
 
     mCloneNames.append(QString::number(i + 1));
     QString cmd = QString("%1 %2 %3").arg(QCoreApplication::applicationFilePath(), "daemon").arg(mCloneNames.at(i));
-    if(mCmd->has("verbose")) cmd.append(" --verbose " + mCmd->optStr("verbose"));
+    if(mCmd->hasOpt("verbose")) cmd.append(" --verbose " + mCmd->optStr("verbose"));
     if(mConfigParms.size()) cmd.append(" --config " + mConfigParms.join(" "));
     clone->start(cmd);
 

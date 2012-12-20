@@ -239,6 +239,19 @@ bool CmdHelper::cmdLineLooksBad(const QStringList& cmdLine)
   return false;
 }
 
+bool CmdHelper::has(const QString& opt)
+{
+  // Don't change mInqOpt, test only if exist
+
+  if(mOptions.has(opt)) return true;
+  if(!verboseLevel(eAmple)) return false;
+
+  if(!mOpts.contains(opt) and !mSubCmds.contains(opt))
+    fatal(FUNC, QString("Test for unregistered option or subcommand: %1").arg(opt));
+
+  return false;
+}
+
 bool CmdHelper::hasCmd(const QString& cmd)
 {
   mInqOpt = mOptions.named(cmd);
@@ -271,13 +284,13 @@ bool CmdHelper::hasSubCmd(const QString& cmd)
   return false;
 }
 
-bool CmdHelper::has(const QString& opt)
+bool CmdHelper::hasOpt(const QString& opt)
 {
   mInqOpt = mOptions.named(opt);
 
   if(mInqOpt.idxPos > -1) return true;
   if(!verboseLevel(eAmple)) return false;
-  if(!mOpts.contains(opt)) fatal(FUNC, QString("Test for unregistered subcommand: %1").arg(opt));
+  if(!mOpts.contains(opt)) fatal(FUNC, QString("Test for unregistered option: %1").arg(opt));
 
   return false;
 }

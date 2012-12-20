@@ -120,15 +120,15 @@ bool Scanner::exec(CmdHelper* ch)
 
   // Look for each command, and execute them if was given.
   // The order of look up is important.
-//   if(mCmd->has("reset"))     reset();
-  if(mCmd->has("verbose"))   setVerboseLevel(FUNC, mCmd->parmStr(1));
-  if(mCmd->has("force"))     mForce = true;
-  if(mCmd->has("timeFrame")) setTimeFrame(mCmd->parmStr(1));
-  if(mCmd->has("indi"))      loadIndicator(mCmd->parmList());
-  if(mCmd->has("auto"))      autoSetup();
-  if(mCmd->has("group"))     scanGroup();
-  if(mCmd->has("this"))      scanThis();
-  if(mCmd->has("mark"))      mark();
+//   if(mCmd->hasOpt("reset"))     reset();
+  if(mCmd->hasOpt("verbose"))   setVerboseLevel(FUNC, mCmd->parmStr(1));
+  if(mCmd->hasOpt("force"))     mForce = true;
+  if(mCmd->hasOpt("timeFrame")) setTimeFrame(mCmd->parmStr(1));
+  if(mCmd->hasOpt("indi"))      loadIndicator(mCmd->parmList());
+  if(mCmd->hasOpt("auto"))      autoSetup();
+  if(mCmd->hasOpt("group"))     scanGroup();
+  if(mCmd->hasOpt("this"))      scanThis();
+  if(mCmd->hasOpt("mark"))      mark();
 
   return hasError();
 }

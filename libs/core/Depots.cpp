@@ -105,7 +105,7 @@ bool Depots::exec(CmdHelper* ch)
 
   // Look for each command, and execute them if was given.
   // The order of look up is important.
-  if(mCmd->has("verbose"))   setVerboseLevel(FUNC, mCmd->cmdLine());
+  if(mCmd->hasOpt("verbose"))   setVerboseLevel(FUNC, mCmd->cmdLine());
 
   mToday     = mCmd->optDate("4day", QDate::currentDate());
   mToday     = mCmd->optDate("to", mToday);
@@ -181,14 +181,14 @@ void Depots::simtrade()
 
   checking << 1; // Check each day
 
-  if(mCmd->has("weekly"))
+  if(mCmd->hasOpt("weekly"))
   {
     depotName.append("Weekly");
     checking << 5; // Add checkDay=Friday
 
     checking[0] = 7 * mCmd->optInt("weekly", 1);
 
-    if(mCmd->has("checkDay"))
+    if(mCmd->hasOpt("checkDay"))
     {
       QStringList dayNames;
       dayNames << "Mon" << "Tue" << "Wed" << "Thu" << "Fri";
