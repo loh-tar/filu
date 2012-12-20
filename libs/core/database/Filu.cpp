@@ -1298,15 +1298,13 @@ void Filu::createSchema()
     verbose(FUNC, tr("Language plpgsql successful created."));
   }
 
-  execSql("filu/misc/schemata");
+  createTables();
   if(hasError()) return;
-  verbose(FUNC, tr("New filu schema '%1' successful created.").arg(mSqlStaticParms.value(":filu")));
 
   execSql("filu/misc/data_types");
   if(hasError()) return;
   verbose(FUNC, tr("Data types successful created."));
 
-  createTables();
   createFunctions();
   createViews();
 
@@ -1321,7 +1319,7 @@ void Filu::createTables()
 {
   if(!executeSqls("filu/tables/")) return;
 
-  verbose(FUNC, tr("Filu tables successful created."));
+  verbose(FUNC, tr("Filu schema and tables successful created."));
 }
 
 void Filu::createFunctions()
