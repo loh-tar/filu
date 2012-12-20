@@ -17,6 +17,7 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDir>
 #include <QFile>
 #include <QProcess>
 #include <QSqlRecord>
@@ -27,7 +28,7 @@
 
 #include "AgentF.h"
 
-#include "CmdAdd.h"
+#include "CmdClass.h"
 #include "CmdHelper.h"
 #include "Depots.h"
 #include "Exporter.h"
@@ -54,12 +55,12 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
   mCmd->regCmds("this full rcf imp exp scan add daemon sum exo "
-                "filu deleteBars splitBars info depots set fetch");
+                "db deleteBars splitBars info depots set fetch");
 
   mCmd->regStdOpts("verbose");
   mCmd->inGreeter("AgentF is part of Filu. Visit http://filu.sourceforge.net");
 
-  execCmd(mCommandLine);
+  exec(mCommandLine);
 
   QTimer::singleShot(500, this, SLOT(run()));
 }
@@ -352,7 +353,7 @@ void AgentF::cmdRcf()
     if(!lineToCommand(line, cmd)) continue;
 
     cmd.prepend("RCF"); // Add the "caller", normaly is here "agentf" placed
-    execCmd(cmd);
+    exec(cmd);
     if(hasError())
     {
       error(FUNC, tr("Error after executing line %1 of file %2").arg(lnNo).arg(fileName));
@@ -409,7 +410,7 @@ void AgentF::beEvil()
     if(cmd.at(0) == "quit") break;
 
     cmd.prepend("DAEMON"); // Add the "caller", normaly is here "agentf" placed
-    execCmd(cmd);
+    exec(cmd);
   }
 
   mQuit = true;
@@ -500,92 +501,14 @@ void AgentF::depots()
   delete depots;
 }
 
-void AgentF::filu()
+void AgentF::cmdExec(const QString& cmd)
 {
-  // Command list looks like
-  // agentf filu update
-  // agentf filu create [--db <DBName>] [--schema <Schema>]
+  CmdClass* cmdClass = CmdClass::createNew(cmd, this);
 
-  mCmd->regSubCmds("update create drop vacuum");
+  cmdClass->exec(mCmd);
+  addErrors(cmdClass->errors());
 
-  if(mCmd->subCmdLooksBad()) return;
-
-  if(mCmd->wantHelp())
-  {
-    mCmd->inSubBrief("update", tr("Update the database user functions"));
-    mCmd->inSubBrief("create", tr("Create a new Filu database schema"));
-    mCmd->inSubBrief("drop",   tr("Delete a Filu database schema"));
-    mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
-  }
-
-  if(mCmd->needHelp(2))
-  {
-    if(mCmd->printThisWay("<Command> [<ParmList>]")) return;
-
-    mCmd->aided();
-    return;
-  }
-
-  if(mCmd->hasSubCmd("update"))
-  {
-    if(mCmd->isMissingParms())
-    {
-      if(mCmd->printThisWay("")) return;
-
-      mCmd->printComment(tr("No parameters needed."));
-      mCmd->aided();
-      return;
-    }
-
-//     mFilu->createUserFunctions();
-
-    if(!mFilu->hasError())
-    {
-      verbose(FUNC, tr("Sorry, currently disabled."));
-//       verbose(FUNC, tr("Database user functions successful updated."));
-    }
-    else
-    {
-      addErrors(mFilu->errors());
-    }
-  }
-  else if(mCmd->hasSubCmd("create"))
-  {
-    if(mCmd->isMissingParms())
-    {
-      if(mCmd->printThisWay("[<Schema>]")) return;
-
-      mCmd->printForInst("testschema");
-
-      mCmd->aided();
-      return;
-    }
-    verbose(FUNC, tr("Sorry, currently disabled."));
-//     mFilu->createSchema(mCmd->argStr(1, "filu"));
-  }
-  else if(mCmd->hasSubCmd("drop"))
-  {
-    verbose(FUNC, tr("Sorry, not yet implemented, feel free to FIXME."));
-  }
-  else if(mCmd->hasSubCmd("vacuum"))
-  {
-    verbose(FUNC, tr("Sorry, not yet implemented, feel free to FIXME."));
-  }
-  else
-  {
-    fatal(FUNC,tr("Unsupported command: %1").arg(mCmd->subCmd()));
-  }
-}
-
-void AgentF::cmdAdd()
-{
-  CmdAdd* cmdAdd = new CmdAdd(this);
-
-  cmdAdd->exec(mCmd);
-  addErrors(cmdAdd->errors());
-
-  delete cmdAdd;
-  return;
+  delete cmdClass;
 }
 
 void AgentF::deleteBars()
@@ -943,7 +866,7 @@ void AgentF::cmdFetch()
   }
 }
 
-void AgentF::execCmd(const QStringList& parm)
+void AgentF::exec(const QStringList& parm)
 {
   if(mFilu->hasError()) return;
 
@@ -961,7 +884,6 @@ void AgentF::execCmd(const QStringList& parm)
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
     mCmd->inCmdBrief("imp", tr("Imports an (surprise!) import file. See doc/import-file-format.txt"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
-    mCmd->inCmdBrief("filu", tr("Create or update the Filu database"));
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
@@ -970,10 +892,11 @@ void AgentF::execCmd(const QStringList& parm)
     mCmd->inCmdBrief("set", tr("Set config file values"));
     mCmd->inCmdBrief("fetch", tr("To fetch data (currently only eodBars) from providers"));
 
+    CmdClass::allBriefIn(mCmd);
+
     Depots::briefIn(mCmd);
     Scanner::briefIn(mCmd);
     Exporter::briefIn(mCmd);
-    CmdAdd::briefIn(mCmd);
 
     mCmd->inOptBrief("verbose", "<Level>"
                               , tr("How talkative has it to be. Level can be 0-3 or "
@@ -1004,9 +927,9 @@ void AgentF::execCmd(const QStringList& parm)
   else if(mCmd->hasCmd("exp"))           exxport();
   else if(mCmd->hasCmd("scan"))          scan();
   else if(mCmd->hasCmd("depots"))        depots();
-  else if(mCmd->hasCmd("add"))           cmdAdd();
+  else if(mCmd->hasCmd("add"))           cmdExec("Add");
   else if(mCmd->hasCmd("daemon"))        beEvil();
-  else if(mCmd->hasCmd("filu"))          filu();
+  else if(mCmd->hasCmd("db"))            cmdExec("DB");
   else if(mCmd->hasCmd("deleteBars"))    deleteBars();
   else if(mCmd->hasCmd("splitBars"))     splitBars();
   else if(mCmd->hasCmd("sum"))           summon();

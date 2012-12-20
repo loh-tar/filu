@@ -17,52 +17,36 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CMDADD_HPP
-#define CMDADD_HPP
+#ifndef CMDCLASS_HPP
+#define CMDCLASS_HPP
 
-#include "CmdClass.h"
+#include "FClass.h"
 
-class Importer;
+class CmdHelper;
 
 /***********************************************************************
 *
-*   Yes, represent the 'add' command of AgentF.
-*
-*   He is like an convenience interface for Importer
-*   to add one dataset to the database.
+*   The base class of all CmdFoo classes
+*   which are represend a AgentF command
 *
 ************************************************************************/
 
-class CmdAdd : public CmdClass
+class CmdClass : public FClass
 {
   public:
-                  CmdAdd(FClass* parent);
-    virtual      ~CmdAdd();
+                          CmdClass(FClass* parent, const QString& func);
+    virtual              ~CmdClass();
 
-    static void   briefIn(CmdHelper* ch);
-    bool          exec(CmdHelper* ch);
+    static  CmdClass*     createNew(const QString& type, FClass* parent);
+    static void           allBriefIn(CmdHelper* ch);
+
+    static void           briefIn(CmdHelper* ch);
+    virtual bool          exec(CmdHelper* ch) = 0;
 
   protected:
-    void          import();
+    bool                  init(CmdHelper* ch);
 
-    void          addBroker();
-    void          addEodBar();
-    void          addFi();
-    void          addMarket();
-    void          addSplit();
-    void          addSymbol();
-    void          addSymbolType();
-    void          addOrder();
-    void          addDepot();
-    void          addDepotPos();
-    void          addAccPosting();
-    void          addUnderlyg();
-
-    void          takeDepotOptions();
-
-    Importer*         mImporter;
-    QStringList       mHeader;
-    QStringList       mData;
+    CmdHelper*            mCmd;
 
   private:
 

@@ -1336,6 +1336,14 @@ void Filu::createViews()
   verbose(FUNC, tr("Filu views successful created."));
 }
 
+void Filu::executeSql(const QString& path, const QString& sql)
+{
+  execute("_Psst!", "SET client_min_messages TO WARNING");
+  execSql(path + sql);
+  if(hasError()) verbose(FUNC, tr("Create/Update: %1...FAULT!").arg(sql, -30, '.'));
+  else verbose(FUNC, tr("Create/Update: %1...OK").arg(sql, -30, '.'));
+}
+
 bool Filu::executeSqls(const QString& path)
 {
   if(hasError()) return false;

@@ -43,7 +43,7 @@ class AgentF : public FCoreApp
     AgentF(QCoreApplication& app);
    ~AgentF();
 
-    void  execCmd(const QStringList& parm);
+    void  exec(const QStringList& parm);
 
   protected slots:
     void run();
@@ -55,6 +55,7 @@ class AgentF : public FCoreApp
     void startClones();
     void readSettings();
 
+    void cmdExec(const QString& cmd);
     void cmdFetch();
     void addEODBarData();
     void updateAllBars();
@@ -65,8 +66,6 @@ class AgentF : public FCoreApp
     void exxport();
     void scan();
     void depots();
-    void filu();
-    void cmdAdd();
     void deleteBars();
     void splitBars();
     void summon();

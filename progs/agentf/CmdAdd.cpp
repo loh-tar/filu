@@ -19,12 +19,11 @@
 
 #include "CmdAdd.h"
 
-#include "Importer.h"
-#include "FTool.h"
 #include "CmdHelper.h"
+#include "Importer.h"
 
 CmdAdd::CmdAdd(FClass* parent)
-      : FClass(parent, FUNC)
+      : CmdClass(parent, FUNC)
       , mImporter(new Importer(this))
 {}
 
@@ -33,25 +32,20 @@ CmdAdd::~CmdAdd()
   delete mImporter;
 }
 
-void CmdAdd::briefIn(CmdHelper* cmd)
+void CmdAdd::briefIn(CmdHelper* ch)
 {
-  if(!cmd) return;
+  if(!ch) return;
 
   static const QString cCmd1 = "add";
   static const QString cCmd1Brief = tr("Allows you add a single dataset to the database by using Importer");
 
-  cmd->inCmdBrief(cCmd1, cCmd1Brief);
+  ch->inCmdBrief(cCmd1, cCmd1Brief);
 }
 
 bool CmdAdd::exec(CmdHelper* ch)
 {
-  if(!ch)
-  {
-    fatal(FUNC, "Called with NULL pointer.");
-    return false;
-  }
+  if(!init(ch)) return false;
 
-  mCmd = ch;
   mCmd->setUp("PrintCmdBriefCompact");
   mCmd->regSubCmds("broker eodBar fi market split symbol symbolType depot depotPos post order underlying");
   mCmd->regOpts("dp dpid");

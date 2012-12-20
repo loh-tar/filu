@@ -17,54 +17,34 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CMDADD_HPP
-#define CMDADD_HPP
+#ifndef CMDDB_HPP
+#define CMDDB_HPP
 
 #include "CmdClass.h"
 
-class Importer;
-
 /***********************************************************************
 *
-*   Yes, represent the 'add' command of AgentF.
-*
-*   He is like an convenience interface for Importer
-*   to add one dataset to the database.
+*   Yes, represent the 'db' command of AgentF.
 *
 ************************************************************************/
 
-class CmdAdd : public CmdClass
+class CmdDB : public CmdClass
 {
   public:
-                  CmdAdd(FClass* parent);
-    virtual      ~CmdAdd();
+                  CmdDB(FClass* parent);
+    virtual      ~CmdDB();
 
     static void   briefIn(CmdHelper* ch);
     bool          exec(CmdHelper* ch);
 
   protected:
-    void          import();
+    void          remake();
+    void          list();
+    void          patch();
+//     void          ();
 
-    void          addBroker();
-    void          addEodBar();
-    void          addFi();
-    void          addMarket();
-    void          addSplit();
-    void          addSymbol();
-    void          addSymbolType();
-    void          addOrder();
-    void          addDepot();
-    void          addDepotPos();
-    void          addAccPosting();
-    void          addUnderlyg();
-
-    void          takeDepotOptions();
-
-    Importer*         mImporter;
-    QStringList       mHeader;
-    QStringList       mData;
-
-  private:
+    QStringList   mTypes;
+private:
 
 };
 

@@ -61,6 +61,7 @@ class FiluU : public Filu
     };
 
     void        openDB();
+    void        createUserFunc(const QString& sql) { executeSql("user/functions/", sql); }
 
     QSqlQuery*  getGroups(int motherId = -1); // -1 returns all groups
     QSqlQuery*  getGMembers(int groupId);

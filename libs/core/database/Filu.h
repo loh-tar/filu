@@ -208,7 +208,12 @@ class Filu : public Newswire
     QString     serverVersion();
     QString     devilInfoText();
 
+    void        createFunc(const QString& sql) { executeSql("filu/functions/", sql); }
+    void        createView(const QString& sql) { executeSql("filu/views/", sql); }
+    void        createMisc(const QString& sql) { executeSql("filu/misc/", sql); }
+
   protected:
+    void        executeSql(const QString& path, const QString& sql);
     bool        executeSqls(const QString& path);
     void        createSchema();
     void        createTables();
