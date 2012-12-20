@@ -46,19 +46,20 @@ class ButtonPad : public FWidget
                     ButtonPad(const QString& name, FClass* parent, const QString& className);
     virtual        ~ButtonPad();
 
-    virtual int     loadSettings();
+    virtual void    loadSettings();
     void            addToToolBar(QToolBar* tb);
 
   public slots:
     void            orientationChanged(Qt::Orientation o); // Only used when standalone widget
 
   protected:
+    virtual void    saveSettings();
     QSettings*      openSettings();
     void            closeSettings();
-    int             saveSettings();
     QToolButton*    newButton(const QString& name, int id = -1);
     void            deleteButton(QAbstractButton* btn);
     void            setButtonName(QAbstractButton* btn, const QString& name);
+    virtual QToolButton* addDummyButton();
 
     QButtonGroup    mButtons;
     QBoxLayout*     mLayout;            // Only used when standalone widget

@@ -93,7 +93,7 @@ void ButtonPad::closeSettings()
   }
 }
 
-int ButtonPad::loadSettings()
+void ButtonPad::loadSettings()
 {
   bool alone = false;
 
@@ -107,14 +107,18 @@ int ButtonPad::loadSettings()
   QStringList buttonGroups = mSettings->childGroups();
   int count = buttonGroups.size();
 
-  // It's not a bug, it's a feature. We add a Dummy button if the file is empty
-  if(!count) count = 1;
+  if(!count)
+  {
+    addDummyButton();
+    if(alone) closeSettings();
+    return;
+  }
 
   for(int i = 0; i < count; ++i)
   {
     mSettings->beginGroup(QString::number(i));
 
-    QString txt = mSettings->value("Name", "Dummy").toString();
+    QString txt = mSettings->value("Name").toString();
     QToolButton* button = newButton(txt, i);
 
     txt = mSettings->value("Tip").toString();
@@ -125,11 +129,9 @@ int ButtonPad::loadSettings()
   }
 
   if(alone) closeSettings();
-
-  return count;
 }
 
-int ButtonPad::saveSettings()
+void ButtonPad::saveSettings()
 {
   bool alone = false;
 
@@ -141,9 +143,7 @@ int ButtonPad::saveSettings()
 
   mSettings->remove("");  // Delete all settings
 
-  QList<QAbstractButton*> btnList = mButtons.buttons();
-
-  foreach(QAbstractButton* btn, btnList)
+  foreach(QAbstractButton* btn, mButtons.buttons())
   {
     int id = mButtons.id(btn);
     mSettings->beginGroup(QString::number(id));
@@ -154,8 +154,6 @@ int ButtonPad::saveSettings()
   }
 
   if(alone) closeSettings();
-
-  return btnList.size();
 }
 
 void ButtonPad::orientationChanged(Qt::Orientation o) // Slot
@@ -272,7 +270,9 @@ QToolButton* ButtonPad::newButton(const QString& name, int id/* = -1*/)
 
 void ButtonPad::deleteButton(QAbstractButton* btn)
 {
-  foreach(QAbstractButton* thisBtn, mButtons.buttons())
+  QList<QAbstractButton *> buttonLst = mButtons.buttons();
+
+  foreach(QAbstractButton* thisBtn, buttonLst)
   {
     int thisId = mButtons.id(thisBtn);
     if(thisId > mButtons.id(btn)) mButtons.setId(thisBtn, thisId - 1);
@@ -294,6 +294,8 @@ void ButtonPad::deleteButton(QAbstractButton* btn)
   }
 
   delete btn;
+
+  if(buttonLst.size() == 1) addDummyButton();
 }
 
 void ButtonPad::setButtonName(QAbstractButton* btn, const QString& name)
@@ -313,4 +315,14 @@ void ButtonPad::setButtonName(QAbstractButton* btn, const QString& name)
       break;
     }
   }
+}
+
+QToolButton* ButtonPad::addDummyButton()
+{
+  QToolButton* button = newButton("Dummy", 0);
+  button->setToolTip(tr("I'm the dummy button. I'll be back...if no one else is present"));
+
+  mButtons.setId(button, 0);
+
+  return button;
 }

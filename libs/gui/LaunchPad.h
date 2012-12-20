@@ -37,14 +37,15 @@ class LaunchPad : public ButtonPad
                   LaunchPad(const QString& name, FClass* parent);
     virtual      ~LaunchPad();
 
-    int           loadSettings();
+    void          loadSettings();
 
   public slots:
     void          newSelection(int fiId, int marketId);
 
   protected:
-    int           saveSettings();
+    void          saveSettings();
     void          execCmd(const QString command, SymbolTuple* st);
+    QToolButton*  addDummyButton();
 
     QStringList   mCommands;
     QStringList   mSymbolTypes;

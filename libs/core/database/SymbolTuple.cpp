@@ -50,6 +50,9 @@ void SymbolTuple::set(const QString& s, const QString& m, const QString& o
                     , const QDate* idate /*QDate(1000, 1, 1)*/
                     , const QDate* mdate /*QDate(3000, 1, 1)*/)
 {
+  mOwnerId[mIndex] = 0;
+  mFiId[mIndex] = 0;
+  mMarketId[mIndex] = 0;
   mCaption[mIndex] = s;
   mMarket[mIndex] = m;
   mOwner[mIndex] = o;

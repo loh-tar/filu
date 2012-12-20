@@ -18,11 +18,13 @@
 //
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QProcess>
 #include <QSettings>
 #include <QToolButton>
@@ -32,6 +34,9 @@
 #include "DialogButton.h"
 #include "FiluU.h"
 #include "SymbolTuple.h"
+#include "SymbolTypeTuple.h"
+
+static const QString cDummyTip = QObject::tr("Print data to stdout - Must run from terminal to see these");
 
 LaunchPad::LaunchPad(const QString& name, FClass* parent)
          : ButtonPad(name, parent, FUNC)
@@ -40,24 +45,17 @@ LaunchPad::LaunchPad(const QString& name, FClass* parent)
 LaunchPad::~LaunchPad()
 {}
 
-int LaunchPad::loadSettings()
+void LaunchPad::loadSettings()
 {
   QSettings* settings = openSettings();
 
-  int count = ButtonPad::loadSettings();
+  ButtonPad::loadSettings();
 
-  // It's not a bug, it's a feature. We add an Dummy button if the file is empty
-  for(int i = 0; i < count; ++i)
+  for(int i = 0; i < mButtons.buttons().size(); ++i)
   {
     settings->beginGroup(QString::number(i));
 
-    QString defaultCmd("echo Dummy button clicked: "
-                       "SymbolType=[Provider] "
-                       "Symbol=[Symbol] Market=[Market] "
-                       "FiId=[FiId] MarketId=[MarketId]");
-
-    mCommands.append(settings->value("Command", defaultCmd).toString());
-
+    mCommands.append(settings->value("Command").toString());
     mSymbolTypes.append(settings->value("SymbolType", "").toString());
     mMultis.append(settings->value("AllMarkets", false).toBool());
 
@@ -66,16 +64,26 @@ int LaunchPad::loadSettings()
 
   closeSettings();
 
-  return count;
+  return;
 }
 
-int LaunchPad::saveSettings()
+void LaunchPad::saveSettings()
 {
   QSettings* settings = openSettings();
 
-  int count = ButtonPad::saveSettings();
+  ButtonPad::saveSettings();
 
-  for(int i = 0; i < count; ++i)
+  int btnCount = mButtons.buttons().size();
+
+  // Don't save the 'I'll be back' info
+  if(btnCount < 2 and mButtons.button(0)->text() == "Echo")
+  {
+    settings->beginGroup(QString::number(0));
+    settings->setValue("Tip", cDummyTip);
+    settings->endGroup();
+  }
+
+  for(int i = 0; i < btnCount; ++i)
   {
     settings->beginGroup(QString::number(i));
 
@@ -87,8 +95,6 @@ int LaunchPad::saveSettings()
   }
 
   closeSettings();
-
-  return count;
 }
 
 void LaunchPad::newSelection(int fiId, int marketId)
@@ -100,9 +106,9 @@ void LaunchPad::newSelection(int fiId, int marketId)
 
 void LaunchPad::buttonClicked(int id)
 {
-  //qDebug() << "LaunchPad::buttonClicked:" << mFiId << id << mCommands.at(id) << mSymbolTypes.at(id);
+  SymbolTuple* st = mFilu->getSymbols(mFiId);
 
-  if(!mFiId)
+  if(!st)
   {
     // Set some dummy values that we can call
     // the program anyway a FI was not selected
@@ -113,18 +119,16 @@ void LaunchPad::buttonClicked(int id)
     return;
   }
 
-  SymbolTuple* st = mFilu->getSymbols(mFiId);
-
-  if(!st) return;
-
   bool found = false;
   while(st->next())
   {
     if(mSymbolTypes.at(id).isEmpty())
     {
-      // Exec cmd with each symbol to FI
+      // Exec cmd only with first symbol to FI
+      // The symbol is anyway not used
       found = true;
       execCmd(mCommands.at(id), st);
+      break;
     }
     else if(st->owner() == mSymbolTypes.at(id))
     {
@@ -144,11 +148,11 @@ void LaunchPad::buttonClicked(int id)
     }
   }
 
-//   if(!found)
-//   {
-//     qDebug() << "LaunchPad::buttonClicked: No symbol type"
-//              << mSymbolTypes.at(id) << "found to FiId" << mFiId;
-//   }
+  if(!found)
+  {
+    verbose(FUNC, tr("No symbol type '%1' found to FiId %2").arg(mSymbolTypes.at(id))
+                                                            .arg(mFiId));
+  }
 
   delete st;
 }
@@ -167,30 +171,50 @@ void  LaunchPad::buttonContextMenu(const QPoint& /*pos*/)
   label->setAlignment(Qt::AlignRight);
   layout.addWidget(label, row, 0);
   QLineEdit name(btn->text());
+  name.setToolTip(tr("Button caption"));
   layout.addWidget(&name, row++, 1);
   layout.setColumnStretch(1, 1);
 
-  label = new QLabel(tr("Tool Tip"));
+  label = new QLabel(tr("Tip"));
   label->setAlignment(Qt::AlignRight);
   layout.addWidget(label, row, 0);
   QLineEdit tip(btn->toolTip());
-  layout.addWidget(&tip, row++, 1);
+  tip.setToolTip(tr("Button tool tip"));
+  tip.setCursorPosition(0);
+  layout.addWidget(&tip, row++, 1, 1, 2);
+  layout.setColumnStretch(2, 3);
 
   label = new QLabel(tr("Command"));
   label->setAlignment(Qt::AlignRight);
   layout.addWidget(label, row, 0);
   QLineEdit command(mCommands.at(id));
   //QTextEdit command(mCommands.at(id));
+  command.setCursorPosition(0);
+  command.setToolTip(tr("Available Tags are: %1").arg("[Provider] [Symbol] [Market] "
+                                                      "[FiId] [MarketId]"));
   layout.addWidget(&command, row++, 1, 1, 2); // Spawn over two colums...
-  layout.setColumnStretch(2, 2);              // ...and take more space
+//   layout.setColumnStretch(2, 2);              // ...and take more space
 
   label = new QLabel(tr("Symbol Type"));
   label->setAlignment(Qt::AlignRight);
   layout.addWidget(label, row, 0);
-  QLineEdit symbolType(mSymbolTypes.at(id));
+//   QLineEdit symbolType(mSymbolTypes.at(id));
+  QComboBox symbolType;
+  symbolType.setToolTip(tr("Witch type has to be [Symbol]. When empty is called once with any symbol\n"
+                           "(You should not use [Symbol] in this case at the command)"));
+  SymbolTypeTuple* st = mFilu->getSymbolTypes(Filu::eAllTypes);
+  if(st)
+  {
+    while(st->next()) symbolType.addItem(st->caption());
+  }
+
+  symbolType.addItem("");
+  symbolType.setCurrentIndex(symbolType.findText(mSymbolTypes.at(id)));
+
   layout.addWidget(&symbolType, row, 1);
 
   QCheckBox allMarkets(tr("All Markets"));
+  allMarkets.setToolTip(tr("Call multiple times with all markets by 'Symbol Type'"));
   allMarkets.setChecked(mMultis.at(id));
   layout.addWidget(&allMarkets, row++, 2);
 
@@ -199,41 +223,58 @@ void  LaunchPad::buttonContextMenu(const QPoint& /*pos*/)
   layout.setRowStretch(row++, 2);
 
   // Build the button line
-  QDialogButtonBox dlgBtns(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  QDialogButtonBox dlgBtns(QDialogButtonBox::Save | QDialogButtonBox::Discard);
+  QPushButton* db = dlgBtns.button(QDialogButtonBox::Discard);
+  dlgBtns.addButton(db, QDialogButtonBox::RejectRole);
   connect(&dlgBtns, SIGNAL(accepted()), &dialog, SLOT(accept()));
   connect(&dlgBtns, SIGNAL(rejected()), &dialog, SLOT(reject()));
 
   DialogButton* remove = new DialogButton(tr("&Remove"), -1);
+  remove->setToolTip(tr("Remove button"));
   dlgBtns.addButton(remove, QDialogButtonBox::ActionRole);
   connect(remove, SIGNAL(clicked(int)), &dialog, SLOT(done(int)));
 
   DialogButton* add = new DialogButton(tr("&Add"), 2);
+  add->setToolTip(tr("Copy to new button"));
   dlgBtns.addButton(add, QDialogButtonBox::ActionRole);
   connect(add, SIGNAL(clicked(int)), &dialog, SLOT(done(int)));
 
   layout.addWidget(&dlgBtns, row, 1, 1, 2);
 
+  dialog.setWindowTitle(tr("LaunchPad - Edit button '%1'").arg(btn->text()));
   dialog.setMinimumWidth(350);
 
   switch (dialog.exec())
   {
-    case 0:     // Cancel
+    case 0:     // Discard
       return;
       break;
     case -1:    // Remove
+    {
+      int ret = QMessageBox::warning(&dialog
+                  , tr("LaunchPad - Last chance to keep your data")
+                  , tr("Are you sure to delete button <b>'%1'</b> with all your work<b>?</b>")
+                      .arg(btn->text())
+                  , QMessageBox::Yes | QMessageBox::No
+                  , QMessageBox::No);
+
+      if(ret == QMessageBox::No) return;
+
       deleteButton(btn);
 
       mCommands.removeAt(id);
       mSymbolTypes.removeAt(id);
       mMultis.removeAt(id);
       break;
-    case  1:    // OK
+    }
+    case  1:    // Save
       setButtonName(btn, name.text());
       btn->setToolTip(tip.text());
 
       mCommands[id] = command.text();
       //mCommands[id] = command.toPlainText();
-      mSymbolTypes[id] = symbolType.text();
+//       mSymbolTypes[id] = symbolType.text();
+      mSymbolTypes[id] = symbolType.currentText();
       mMultis[id] = allMarkets.isChecked();
       break;
     case  2:    // Add
@@ -242,7 +283,8 @@ void  LaunchPad::buttonContextMenu(const QPoint& /*pos*/)
 
       mCommands.append(command.text());
       //mCommands.append(command.toPlainText());
-      mSymbolTypes.append(symbolType.text());
+//       mSymbolTypes.append(symbolType.text());
+      mSymbolTypes.append(symbolType.currentText());
       mMultis.append(allMarkets.isChecked());
       mButtons.setId(btn, mCommands.size() - 1);
       break;
@@ -261,4 +303,26 @@ void LaunchPad::execCmd(const QString command, SymbolTuple* st)
   cmd.replace("[Market]",   st->market());
 
   QProcess::startDetached(cmd);
+}
+
+QToolButton* LaunchPad::addDummyButton()
+{
+  QToolButton* button = ButtonPad::addDummyButton();
+
+  QString tt = cDummyTip;
+  tt.append("\n");
+  tt.append(button->toolTip());
+  button->setToolTip(tt);
+  button->setText("Echo");
+
+  QString cmd("echo Dummy button clicked: "
+              "SymbolType=[Provider] "
+              "Symbol=[Symbol] Market=[Market] "
+              "FiId=[FiId] MarketId=[MarketId]");
+
+  mCommands.append(cmd);
+  mSymbolTypes.append("");
+  mMultis.append(true);
+
+  return button;
 }

@@ -21,6 +21,7 @@
 #define INDISETPAD_HPP
 
 class QComboBox;
+class QLineEdit;
 
 #include "ButtonPad.h"
 
@@ -39,7 +40,7 @@ class IndiSetPad : public ButtonPad
                   IndiSetPad(const QString& name, FClass* parent);
     virtual      ~IndiSetPad();
 
-    int           loadSettings();
+    void          loadSettings();
     void          addToToolBar(QToolBar* tb);
     void          setCurrentSetup(const QString& setup);
 
@@ -49,12 +50,20 @@ class IndiSetPad : public ButtonPad
   public slots:
 
   protected:
+    void          saveSettings();
+    void          saveTip(const QString& name, const QString& tip);
+    QToolButton*  addDummyButton();
+    void          fillSetSelector();
+    void          deleteSet(const QString& name);
+
     QComboBox*    mSetSelector;
+    QLineEdit*    mIndiSetTip;
 
   protected slots:
     void          buttonClicked(int id);
     void          buttonContextMenu(const QPoint& pos);
     void          setSelectorChanged();
+    void          getTip(const QString& name);
 };
 
 #endif
