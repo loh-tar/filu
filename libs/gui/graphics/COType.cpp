@@ -115,7 +115,7 @@ void COType::erase()
 
   if(id < 1) return; // Unvalid, not saved, no need to erase
 
-  mFilu->deleteRecord(":user", "co", id);
+  mFilu->deleteRecord("co", id, Filu::eUser);
 }
 
 void COType::setStatus(Status status)

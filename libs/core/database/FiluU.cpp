@@ -192,7 +192,7 @@ bool FiluU::putCOs(COTuple& co)
   {
     if(co.id() < 1)
     {
-      co.setId(getNextId(mSqlStaticParms.value(":user"), "co"));
+      co.setId(getNextId("co", eUser));
     }
 
     query->bindValue(":id", co.id());
@@ -222,7 +222,7 @@ void FiluU::putBacktest(int& backtestId, const QDate& fromDate, const QDate& toD
 
   QSqlQuery* query = mSQLs.value("PutBacktest");
 
-  if(!backtestId) backtestId = getNextId(":user", "backtest");
+  if(!backtestId) backtestId = getNextId("backtest", eUser);
 
   query->bindValue(":backtestId", backtestId);
   query->bindValue(":fromDate", fromDate);
@@ -290,7 +290,7 @@ int  FiluU::addTradingStrategy( const QString sId,
 
   QSqlQuery* query = mSQLs.value("AddTradingStrategy");
 
-  int tsId = getNextId(":user", "ts");
+  int tsId = getNextId("ts", eUser);
   if(tsId == 0) return 0;
 
   query->bindValue(":tsId", tsId);

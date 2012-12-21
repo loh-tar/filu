@@ -251,7 +251,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
           verbText.append(tr("Expired on %1").arg(date.toString(Qt::ISODate)));
           verbose(FUNC, verbText);
 
-          mFilu->updateField("status", FiluU::eOrderExpired, ":user", "order", orderId);
+          mFilu->updateField("status", FiluU::eOrderExpired, "order", orderId, Filu::eUser);
           break;
         }
 
@@ -294,7 +294,7 @@ bool Trader::prepare(const QSqlRecord& depot, const QDate& lastCheck, const QDat
         else if(executedPrice == -2.0)
         {
           // Update DB
-          mFilu->updateField("status", FiluU::eOrderNeedHelp, ":user", "order", orderId);
+          mFilu->updateField("status", FiluU::eOrderNeedHelp, "order", orderId, Filu::eUser);
 
           verbose(FUNC, verbText + tr("Unsure if executed on %1").arg(date.toString(Qt::ISODate)));
 
@@ -525,7 +525,7 @@ void Trader::postExecutedOrder(const QSqlRecord& order, const QDate& execDate, d
   verbose(FUNC, verbText);
 
   // Update DB
-  mFilu->updateField("status", FiluU::eOrderExecuted, ":user", "order", order.value("OrderId").toInt());
+  mFilu->updateField("status", FiluU::eOrderExecuted, "order", order.value("OrderId").toInt(), Filu::eUser);
 
   int p = execPrice < 2.0 ? 4 : 2; // Precision
   QString txt = tr("%1 %4x %2 at %L5 %3").arg(oType, fiName, curry).arg(pieces).arg(execPrice, 0, 'f', p);

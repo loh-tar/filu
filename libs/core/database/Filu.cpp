@@ -674,7 +674,7 @@ QSqlQuery* Filu::searchFi(const QString& name, const QString& type
   return query;
 }
 
-int Filu::searchCaption(const QString& table, const QString& caption)
+int Filu::searchCaption(const QString& table, const QString& caption, const Schema type/* = eFilu*/)
 {
   const QString sql("SELECT * FROM :filu.id_from_caption(:table, :caption)");
 
@@ -1151,23 +1151,23 @@ int Filu::addBroker(const QString& name
   return result(FUNC, query);
 }
 
-void Filu::deleteRecord(const QString& schema, const QString& table, int id /*= -1*/)
+void Filu::deleteRecord(const QString& table, int id /*= -1*/, const Schema type/* = eFilu*/)
 {
   if(id == -1)
   {
-    execute("_DelRec", QString("DELETE FROM %1.%2 ").arg(schema).arg(table));
+    execute("_DelRec", QString("DELETE FROM %1.%2 ").arg(schema(type), table));
   }
   else
   {
-    execute("_DelOneRec", QString("DELETE FROM %1.%2 WHERE %2_id = %3").arg(schema).arg(table).arg(id));
+    execute("_DelOneRec", QString("DELETE FROM %1.%2 WHERE %2_id = %3").arg(schema(type), table).arg(id));
   }
 }
 
 int Filu::updateField(const QString& field, const QVariant& newValue
-                    , const QString& schema, const QString& table, int id)
+                    , const QString& table, int id, const Schema type/* = eFilu*/)
 {
   execute("_DelOneRec", QString("UPDATE %1.%2  SET %3 = '%4'  WHERE %2_id = %5")
-                           .arg(schema, table, field, newValue.toString()).arg(id));
+                           .arg(schema(type), table, field, newValue.toString()).arg(id));
 
 }
 
@@ -1205,9 +1205,9 @@ QString Filu::devilInfoText()
   return tr("*** Using devil version %1 ***").arg(devil);
 }
 
-int Filu::getNextId(const QString& schema, const QString& table)
+int Filu::getNextId(const QString& table, const Schema type/* = eFilu*/)
 {
-  const QString sql = QString("SELECT nextval('%1.%2_%2_id_seq')").arg(schema).arg(table);
+  const QString sql = QString("SELECT nextval('%1.%2_%2_id_seq')").arg(schema(type), table);
 
   if(execute("_NextVal", sql) <= eError) return eExecError;
 
@@ -1824,23 +1824,15 @@ void Filu::printSettings()
   print("");
 }
 
-QStringList Filu::getTables(const QString& schema)
+QStringList Filu::getTables(const Schema type/* = eFilu*/)
 {
   QStringList tableLst;
 
-  if(schema != "filu" and schema != "user")
-  {
-    fatal(FUNC, QString("'schema' must be 'filu' or 'user' and not: ").arg(schema));
-    return tableLst;
-  }
-
-  QString sql = "SELECT table_name "
-                "  FROM information_schema.tables "
-                "  WHERE table_schema = ':schema'"
-                "  ORDER BY table_schema,table_name";
-
-  // Can't use here setStaticSqlParm(":schema", ":" + schema);
-  sql.replace(":schema", ":" + schema);
+  const QString sql = QString("SELECT table_name "
+                              "  FROM information_schema.tables "
+                              "  WHERE table_schema = '%1'"
+                              "  ORDER BY table_name"
+                             ).arg(schema(type));
 
   if(execute("_GetTables", sql) < eData) return tableLst;
 
@@ -1850,4 +1842,23 @@ QStringList Filu::getTables(const QString& schema)
   }
 
   return tableLst;
+}
+
+QString Filu::schema(const Schema type)
+{
+  if(type == eUser) return mSqlStaticParms.value(":user");
+
+  return mSqlStaticParms.value(":filu");
+
+  // We ignore eNotValid respectively treat as eFilu
+}
+
+Filu::Schema Filu::schema(const QString& type)
+{
+  if(type == "filu")      return eFilu;
+  else if(type == "user") return eUser;
+
+  fatal(FUNC, QString("Schema type '%1'not valid. Must be 'filu' or 'user'").arg(type));
+
+  return eNotValid;
 }

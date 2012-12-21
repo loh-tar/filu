@@ -183,17 +183,18 @@ void CmdDB::list()
     return;
   }
 
-  QString schema = mCmd->has("user") ? "user" : "filu";
+
   QStringList resultLst;
 
   if("tables" == type)
   {
+    Filu::Schema schema = mCmd->has("user") ? Filu::eUser : Filu::eFilu;
     resultLst = mFilu->getTables(schema);
   }
   else
   {
     if("func" == type) type = "functions";
-    schema.append("/");
+    QString schema = mCmd->has("user") ? "user/" : "filu/";
     QDir dir(mRcFile->getST("SqlPath") + schema + type, "*.sql");
     resultLst = dir.entryList(QDir::Files, QDir::Name);
     resultLst.replaceInStrings(".sql", "");

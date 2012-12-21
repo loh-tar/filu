@@ -266,20 +266,20 @@ void Depots::simtrade()
       if(advices->value(12).toBool()) // Check if buy order
       {
         // Ok, make them active...
-        mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", advices->value(0).toInt());
+        mFilu->updateField("status", FiluU::eOrderActive, "order", advices->value(0).toInt(), Filu::eUser);
 
         // ..but check if we have now some cash left
         double neededCash = mFilu->getDepotNeededCash(depotId, advices->value(2).toDate());
         if(cash - neededCash < 0)
         {
           // No, we haven't. Kill that order
-          mFilu->updateField("status", FiluU::eOrderCanceled, ":user", "order", advices->value(0).toInt());
+          mFilu->updateField("status", FiluU::eOrderCanceled, "order", advices->value(0).toInt(), Filu::eUser);
         }
       }
       else
       {
         // No problem, we can always sell
-        mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", advices->value(0).toInt());
+        mFilu->updateField("status", FiluU::eOrderActive, "order", advices->value(0).toInt(), Filu::eUser);
       }
     }
 
@@ -462,11 +462,11 @@ void Depots::changeOrder()
       {
         if(key == "date")
         {
-          mFilu->updateField("odate", date.toString(Qt::ISODate), ":user", "order", id);
+          mFilu->updateField("odate", date.toString(Qt::ISODate), "order", id, Filu::eUser);
         }
         else
         {
-          mFilu->updateField("vdate", date.toString(Qt::ISODate), ":user", "order", id);
+          mFilu->updateField("vdate", date.toString(Qt::ISODate), "order", id, Filu::eUser);
         }
       }
       else
@@ -489,7 +489,7 @@ void Depots::changeOrder()
 
       if(ok)
       {
-        mFilu->updateField("olimit", limit, ":user", "order", id);
+        mFilu->updateField("olimit", limit, "order", id, Filu::eUser);
       }
       else
       {
@@ -503,7 +503,7 @@ void Depots::changeOrder()
 
       if(ok)
       {
-        mFilu->updateField("pieces", pieces, ":user", "order", id);
+        mFilu->updateField("pieces", pieces, "order", id, Filu::eUser);
       }
       else
       {
@@ -527,7 +527,7 @@ void Depots::changeOrder()
     return;
   }
 
-  mFilu->updateField("status", FiluU::eOrderActive, ":user", "order", id);
+  mFilu->updateField("status", FiluU::eOrderActive, "order", id, Filu::eUser);
   mFilu->commit();  // All looks good
 
   if(verboseLevel())
@@ -564,7 +564,7 @@ void Depots::cancelOrder()
     return;
   }
 
-  mFilu->updateField("status", FiluU::eOrderCanceled, ":user", "order", id);
+  mFilu->updateField("status", FiluU::eOrderCanceled, "order", id, Filu::eUser);
 
   if(verboseLevel())
   {
@@ -595,7 +595,7 @@ void Depots::clearOrders()
     {
       if(orders->value(11).toInt() >= FiluU::eOrderActive) continue;
 
-      mFilu->deleteRecord(":user", "order", orders->value(0).toInt());
+      mFilu->deleteRecord("order", orders->value(0).toInt(), Filu::eUser);
     }
   }
 }
@@ -651,7 +651,7 @@ void Depots::deleteDepots()
       }
     }
 
-    mFilu->deleteRecord(":user", "depot", depots->value(0).toInt());
+    mFilu->deleteRecord("depot", depots->value(0).toInt(), Filu::eUser);
 
     verbose(FUNC, tr("R.I.P. Depot with Id %1 has been deleted.").arg(depots->value(0).toInt()));
   }

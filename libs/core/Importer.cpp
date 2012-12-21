@@ -1284,7 +1284,7 @@ void Importer::addCompList()
     {
       foreach(int id, toBeDeleted)
       {
-        mFilu->deleteRecord(":filu", "underlying", id);
+        mFilu->deleteRecord("underlying", id);
         if(check4FiluError(FUNC)) return;
       }
 

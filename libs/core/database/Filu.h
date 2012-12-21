@@ -47,6 +47,13 @@ class Filu : public Newswire
     static const bool  eHideNoMarket = true;
     static const bool  eWithNoMarket = false;
 
+    enum Schema
+    {
+      eNotValid        = -1,
+      eFilu            =  1,
+      eUser            =  2
+    };
+
     enum SomeEnums
     {
       // Return values for functions returning an intenger, mostly a data Id
@@ -196,16 +203,21 @@ class Filu : public Newswire
     QString     quality(int quality);
     int         convertCurrency(double& money, int sCurrId, int dCurrId, const QDate& date);
     QSqlQuery*  searchFi(const QString& name, const QString& type, bool hideNoMarket = eHideNoMarket);
-    int         searchCaption(const QString& table, const QString& caption);
-    void        deleteRecord(const QString& schema, const QString& table, int id);
-    int         updateField(const QString& field, const QVariant& newValue
-                          , const QString& schema, const QString& table, int id);
 
+    bool        hasTable(const QString& table, const Schema type = eFilu);
+    bool        hasTableColumn(const QString& column, const QString& table, const Schema type = eFilu);
+    int         searchCaption(const QString& table, const QString& caption, const Schema type = eFilu);
+    void        deleteRecord(const QString& table, int id, const Schema type = eFilu);
+    int         updateField(const QString& field, const QVariant& newValue
+                          , const QString& table, int id, const Schema type = eFilu);
+
+    QString     schema(const Schema type);
+    Schema      schema(const QString& type);
     QSqlQuery*  lastQuery();
     int         result(const QString& func, QSqlQuery* query);
     int         lastResult() { return mLastResult; };
     QString     dbFuncErrText(int errorCode);
-    QStringList getTables(const QString& schema);
+    QStringList getTables(const Schema type = eFilu);
     QString     serverVersion();
     QString     devilInfoText();
 
@@ -221,7 +233,7 @@ class Filu : public Newswire
     void        createSchema();
     void        createTables();
 
-    int         getNextId(const QString& schema, const QString& table);
+    int         getNextId(const QString& table, const Schema type = eFilu);
     bool        initQuery(const QString& name);
     bool        initQuery(const QString& name, const QString& rawSql);
     QString     parseSql(const QString& name, const QString& rawSql);

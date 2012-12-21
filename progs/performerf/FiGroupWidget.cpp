@@ -413,7 +413,7 @@ void FiGroupWidget::removeFromGroup()
   {
     if(mil.at(i).column() != 0) continue;
     //qDebug() << "mil:" << mil.at(i).row() << mil.at(i).column() << mil.at(i).data().toString();
-    mFilu->deleteRecord(":user", "gmember", mil.at(i).data().toInt());
+    mFilu->deleteRecord("gmember", mil.at(i).data().toInt(), Filu::eUser);
   }
 
   getGMembers();
@@ -435,7 +435,7 @@ void FiGroupWidget::removeGroup()
                    QMessageBox::Yes | QMessageBox::No);
 
     if(ret == QMessageBox::Yes)
-      mFilu->deleteRecord(":user", "group", mil.at(i).data().toInt());
+      mFilu->deleteRecord("group", mil.at(i).data().toInt(), Filu::eUser);
   }
 
   getGroups();
