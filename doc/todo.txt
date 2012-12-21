@@ -91,7 +91,6 @@ L: FiTable field deletedate: I guess it was intended to short living FIs like op
 
 AgentF
 ========
-M: Rethink 'filu' --foo
 M: Add cmd 'copyright'
 L: print more precise info when something goes wrong.
 L: Add a progressbar like Im/Exporter at 'full'
@@ -199,15 +198,16 @@ CmdHelper
 M: Add some docu how to use the class and his functions. Probably very well by
    using http://www.naturaldocs.org or similar http://sourceforge.net/projects/robodoc/
    Of cause would it also great for the whole Filu
+M: Add brief to parms
+M: Add mandatory parms. See 'agentf db remake <func-is-mandatory> <sql>'
 L: Add printTable() which use FTool::formatToTable()
 L: Add hideCmds() to not print at default help, only help+
 L: Add automatic doc generation
-L: Add brief to parms
 L: Add/change regCmds() to take 'foo[:n[:m]]' where n number of min parm count is
    and m number of optional parm groups, see command 'add fi' and his optional
    symbol list
 L: Think about checks for known options and print error or warning
-   if an unknown found
+   if an unknown is found
 
 
 GroupNavi
@@ -236,8 +236,6 @@ M: Review Drag&Drop. It's not possible to drag in from an other application, onl
 
 ButtonPad
 ===========
-M: In case of the removing of the last buttuon, add the default button.
-   Currently is the default button at next start up added
 M: IndiSetPad: Add a 'Protect' key /Checkbox which indicate that some settings
    could not easy changed, e.g. Density, Indicator, IndicatorCount, ShowX/YScale
    If checked add a Button 'Save Current Setup'
@@ -292,7 +290,7 @@ M: Add to context menu 'Show Data View'
 
 IndiWidetGroup
 ================
-M: Handle at on 'save' the 'Protect' key
+M: Handle on 'save' the 'Protect' key
 M: Save 'Density' as string not QVariant
 
 
