@@ -276,7 +276,7 @@ bool Exporter::exec(CmdHelper* ch)
     mCmd->inOptBrief("fiType", "<FiType>", tr("Only this type, e.g. 'Stock'"));
     mCmd->inOptBrief("from", "<Date>", tr("Should be given as YYYY-MM-DD"));
     mCmd->inOptBrief("listed", "<GroupPath>", tr("Only FIs in this PerformerF group createt by the user"));
-    mCmd->inOptBrief("market", "<Market>", tr("Only this market, e.g. 'NYSE'"));
+    mCmd->inOptBrief("market", "<Market>", tr("Only this market, e.g. 'NewYork'"));
     mCmd->inOptBrief("noBars", "", tr("Don't export eodBar data"));
     mCmd->inOptBrief("noUser", "", tr("Don't export user data"));
     mCmd->inOptBrief("to", "<Date>", tr("Should be given as YYYY-MM-DD"));

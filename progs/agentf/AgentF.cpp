@@ -101,7 +101,6 @@ void AgentF::readSettings()
 void AgentF::addEODBarData(const QString& symbol, const QString& market, const QString& provider
                          , const QDate& fromDate, const QDate& toDate, int fiId, int marketId)
 {
-
   DateRange dateRange;
   mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
   // FIXME: To find out if anything is todo we have to check more smarter.
@@ -523,8 +522,8 @@ void AgentF::deleteBars()
     mCmd->printComment(tr("Use dot-dot '..' for most old/new date. "
                           "Without <ToDate> only one bar will delete."));
 
-    mCmd->printForInst("AAPL NYSE 2012-01-01 2012-06-01");
-    mCmd->printForInst("AAPL NYSE 2012-01-01 ..");
+    mCmd->printForInst("AAPL NewYork 2012-01-01 2012-06-01");
+    mCmd->printForInst("AAPL NewYork 2012-01-01 ..");
     mCmd->aided();
     return;
   }
@@ -557,7 +556,7 @@ void AgentF::splitBars()
     if(mCmd->printThisWay("<Symbol> <Market> <FromDate> <ToDate> <SplitPre:Post>")) return;
 
     mCmd->printNote(tr("To accomplish a split event use the 'add split' command."));
-    mCmd->printForInst("KO NYSE 2011-06-01 2012-08-13 1:2");
+    mCmd->printForInst("KO NewYork 2011-06-01 2012-08-13 1:2");
     mCmd->aided();
     return;
   }

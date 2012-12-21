@@ -2,7 +2,7 @@
  *  Purpose:
  *
  *  Inputs: (variable names are important and begins with a colon)
- *     :market     // like "NYSE" or "XETRA" etc
+ *     :market     // like "NewYork" or "XETRA" etc
  *     :marketId
  *
  *  Outputs: (order is important)

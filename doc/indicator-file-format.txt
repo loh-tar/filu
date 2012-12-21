@@ -102,7 +102,7 @@ INCLTALIB(<Type>, <Parameter>[, <Parameter>...])
 -LOADFI(<Symbol>, <Market>, <AsFiAlias>)
   Produce the variables <FiAlias>.OPEN <FiAlias>.HIGH ...
 
-    LOADFI(AAPL, NYSE, apple)
+    LOADFI(AAPL, NewYork, apple)
 
 -LOADCOS(<FiAlias>)
   Load the Chart Objects of the given FI.

@@ -186,7 +186,7 @@ sub usage()
 {
   print STDERR "Call me like this: \n" .
                 "  ./me fromdate todate symbol market\n" .
-                "  ./me 2007-01-01 2007-04-21 AAPL NYSE\n";
+                "  ./me 2007-01-01 2007-04-21 AAPL NewYork\n";
   die "\n";
 }
 

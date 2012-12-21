@@ -56,8 +56,8 @@
 *     agentf filu create [--db <DBName>] [--schema <Schema>]
 *
 *   These grouped program calls are all do the same:
-*     agentf this AAPL NYSE Yahoo
-*     agentf --this AAPL NYSE Yahoo
+*     agentf this AAPL NewYork Yahoo
+*     agentf --this AAPL NewYork Yahoo
 *
 *     agentf scan --group all --indi MyNewIdea --verbose Info
 *     agentf scan --verbose Info --indi MyNewIdea --group all

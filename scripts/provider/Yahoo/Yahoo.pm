@@ -62,7 +62,7 @@ sub marketFromSymbol($)
   if($#symbol_market == 0)
   {
     # No suffix, we can't distinguish between NYSE/NASDAQ ect
-    return "NYSE";
+    return "NewYork";
   }
   #print "marketFromSymbol: $symbol_market[0] $symbol_market[1]\n";
 
@@ -82,7 +82,7 @@ sub marketFromSymbol($)
   $markets{DU} = "Dusseldorf";
   $markets{EX} = "Eurex";
   $markets{F}  = "Frankfurt";
-  $markets{HK} = "HKSE";
+  $markets{HK} = "HongKong";
   $markets{HM} = "Hamburg";
   $markets{HA} = "Hanover";
   $markets{L}  = "London";
@@ -91,13 +91,13 @@ sub marketFromSymbol($)
   $markets{MF} = "Madrid";
   $markets{MI} = "Milan";
   $markets{MU} = "Munich";
-  $markets{NX} = "Euronext";
+  $markets{NX} = "Paris";
   $markets{OL} = "Oslo";
-  $markets{PA} = "Euronext";
+  $markets{PA} = "Paris";
   $markets{ST} = "Stockholm";
   $markets{SG} = "Stuttgart";
   $markets{TO} = "Toronto";
-  $markets{V}  = "CDNX";
+  $markets{V}  = "Calgary";
   $markets{VA} = "Valence";
   $markets{VI} = "Vienna";
   $markets{DE} = "Xetra";
@@ -122,7 +122,7 @@ sub convertMarket($)
   # ...but they fit not exactly to the token need here.
   #
   # Because Yahoo symbols don't distinguish between NYSE/NASDAQ etc
-  # we have to set here always to NYSE.
+  # we have to set here always to NewYork.
   # Take care that the names fit with these in 'marketFromSymbol($)' above
   #
   my %markets;
@@ -131,31 +131,31 @@ sub convertMarket($)
   # $markets{BI} = "Bilbao";
   $markets{BRU} = "Brussels";
   # $markets{CO} = "Copenhagen";
-  $markets{DJI} = "NYSE";
+  $markets{DJI} = "NewYork";
   $markets{DUS} = "Dusseldorf";
-  $markets{ENX} = "Euronext";
+  $markets{ENX} = "Paris";
   $markets{EUX} = "Eurex";
   $markets{FRA} = "Frankfurt";
   $markets{FSI} = "London";
   $markets{HAM} = "Hamburg";
-  $markets{HKG} = "HKSE";
+  $markets{HKG} = "HongKong";
   # $markets{HA} = "Hanover";
   $markets{LSE} = "London";
   $markets{MCE} = "Madrid";
   $markets{MIL} = "Milan";
   $markets{MUN} = "Munich";
   $markets{MEX} = "Mexico";
-  $markets{NAS} = "NYSE";
-  $markets{NGM} = "NYSE"; # NasdaqGM
-  $markets{NMS} = "NYSE"; # NasdaqGM
-  $markets{NYQ} = "NYSE";
+  $markets{NAS} = "NewYork";
+  $markets{NGM} = "NewYork"; # NasdaqGM
+  $markets{NMS} = "NewYork"; # NasdaqGM
+  $markets{NYQ} = "NewYork";
   $markets{OSL} = "Oslo";
-  $markets{PNK} = "NYSE"; # Pink OTC Markets
+  $markets{PNK} = "NewYork"; # Pink OTC Markets
   $markets{STO} = "Stockholm";
   $markets{STU} = "Stuttgart";
   $markets{TOR} = "Toronto";
   $markets{VAL} = "Valence";
-  $markets{VAN} = "CDNX";
+  $markets{VAN} = "Calgary"; # Wiki says TMX group has headquarter in Calgary
   $markets{VIE} = "Vienna";
   $markets{GER} = "Xetra";
 

@@ -4,12 +4,12 @@
 *
 [Header]MarketSymbol;Currency;CurrencySymbol
 
-NYSE;US Dollar;USD
+NewYork;US Dollar;USD
 
 *
 * Install a FI with provider symbol set
 *
 [Header]Name;Type;Symbol;Provider;Market
 
-Apple Inc.;Stock;AAPL;Yahoo;NYSE
+Apple Inc.;Stock;AAPL;Yahoo;NewYork
 

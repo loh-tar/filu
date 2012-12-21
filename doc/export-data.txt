@@ -37,7 +37,7 @@ listed <GroupPath>
   Is one of PerformerF groups createt by the user.
 
 market <Market>
-  e.g. 'NYSE'.
+  e.g. 'NewYork'.
 
 noBars
   Don't export eodBar data, useful with '--all'.

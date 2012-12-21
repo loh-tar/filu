@@ -68,7 +68,7 @@ bool CmdAdd::exec(CmdHelper* ch)
 
     mCmd->printComment(tr("See also doc/importer-file-format.txt for background info."));
     mCmd->printNote(tr("The quality of added data is always considered as Platinum."));
-    mCmd->printForInst("fi \"Apple Inc.\" Stock AAPL NYSE Yahoo US0378331005 NoMarket ISIN");
+    mCmd->printForInst("fi \"Apple Inc.\" Stock AAPL NewYork Yahoo US0378331005 NoMarket ISIN");
     mCmd->aided();
     return !hasError();
   }
@@ -159,8 +159,8 @@ void CmdAdd::addEodBar()
     if(mCmd->printThisWay("<Date> <RefSymbol> <Market> <BarData>"
                           "[~~vol] [~~oi]")) return;
 
-    mCmd->printForInst("2010-04-01 AAPL NYSE --close 237.41 --vol 21540900");
-    mCmd->printForInst("2010-04-01 AAPL NYSE --ohlc 237.41 238.73 232.75 235.97");
+    mCmd->printForInst("2010-04-01 AAPL NewYork --close 237.41 --vol 21540900");
+    mCmd->printForInst("2010-04-01 AAPL NewYork --ohlc 237.41 238.73 232.75 235.97");
     mCmd->aided();
     return;
   }
@@ -228,7 +228,7 @@ void CmdAdd::addFi()
     if(mCmd->printThisWay("<Name> <Type> <Symbol> <Market> <Provider> \\ "
                           "[<Symbol> <Market> <Provider>]..")) return;
 
-    mCmd->printForInst("\"Apple Inc.\" Stock AAPL NYSE Yahoo US0378331005 NoMarket ISIN");
+    mCmd->printForInst("\"Apple Inc.\" Stock AAPL NewYork Yahoo US0378331005 NoMarket ISIN");
     mCmd->aided();
     return;
   }
@@ -253,7 +253,7 @@ void CmdAdd::addMarket()
 
     if(mCmd->printThisWay("<MarketSymbol> <CurrencySymbol> [~~curr]")) return;
 
-    mCmd->printForInst("NYSE USD --curr \"US Dollar\"");
+    mCmd->printForInst("NewYork USD --curr \"US Dollar\"");
     mCmd->aided();
     return;
   }
@@ -330,7 +330,7 @@ void CmdAdd::addOrder()
     if(mCmd->printThisWay("<ODate> <VDate> <RefSymbol> <Market> <Pieces> <Limit> <Type> "
                           "<Status> <Note> \\ <Depot>")) return;
 
-    mCmd->printForInst("2010-09-01 2010-09-01 AAPL NYSE 10 Best Buy "
+    mCmd->printForInst("2010-09-01 2010-09-01 AAPL NewYork 10 Best Buy "
                        "Active \"It looks so good\" --dp SlowHand Me");
     mCmd->aided();
     return;
@@ -374,7 +374,7 @@ void CmdAdd::addDepotPos()
     if(mCmd->printThisWay("<PDate> <RefSymbol> <Market> <Pieces> <Price> <Note> \\ "
                           "<Depot>")) return;
 
-    mCmd->printForInst("2010-09-01 AAPL NYSE 10 247.47 \"It looked so good\" --dp SlowHand Me");
+    mCmd->printForInst("2010-09-01 AAPL NewYork 10 247.47 \"It looked so good\" --dp SlowHand Me");
     mCmd->aided();
     return;
   }

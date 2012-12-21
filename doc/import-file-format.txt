@@ -101,7 +101,7 @@ MarketName FIXME: not handled
   e.g. "London Stock Exchange"
 
 MarketSymbol
-  e.g. "LSE". See Appendix B
+  e.g. "London". See Appendix B
 
 OpenTime (optional) FIXME: not handled
 CloseTime (optional) FIXME: not handled
@@ -264,7 +264,7 @@ ArgV (optional)
 
 Here a full data set as example:
 
-AAPL;NYSE;2010-01-19;Main;Line;ExtendLeft=true/nAnchorValue=199.011771653543/nWatchDog=true/nHorizontal=true/nLeftValue=199.011771653543/nLeftDate=2009-12-28/nColor=#ffffff/nRightDate=2010-02-09/nRightValue=199.011771653543/nWatchRef=CLOSE/nExtendRight=true
+AAPL;NewYork;2010-01-19;Main;Line;ExtendLeft=true/nAnchorValue=199.011771653543/nWatchDog=true/nHorizontal=true/nLeftValue=199.011771653543/nLeftDate=2009-12-28/nColor=#ffffff/nRightDate=2010-02-09/nRightValue=199.011771653543/nWatchRef=CLOSE/nExtendRight=true
 
 
 Broker
@@ -368,7 +368,7 @@ Example 3
 ===========
 Add a new market using AgentF's 'add' command.
 
-  [lot@N110 ~/FiluSource]$ agentf add market NYSE USD --curr "US Dollar"
+  [lot@N110 ~/FiluSource]$ agentf add market NewYork USD --curr "US Dollar"
   [Line:    2      56B][  1/1  ] Markets...................Ok
   AgentF: Done.
 
@@ -393,30 +393,36 @@ Tin, 3
 Appendix B - Standardized Market Symbols
 =========================================
 When you add new markets to your database should you choose one of these names.
-If you want to use a different name for a here listed market should you also
-change the name in the existing provider scripts, e.g. Yahoo.pm.
+As you may notice are these only in rare cases other names than the city where
+the exchange is located. If you want to use a different name for a here listed
+market should you also change the name in the existing provider
+scripts, e.g. Yahoo.pm.
 
 Barcelona
 Berlin
 Bilbao
 Brussels
-CDNX
+Calgary
 Copenhagen
 Dusseldorf
 Eurex
-Euronext
+Paris         Euronext
 Frankfurt
-HKSE
 Hamburg
 Hanover
+HongKong
 London
 Madrid
 Milan
 Munich
-NYSE          Yahoo can't distinguish between NYSE/NASDAQ, so always NYSE
+NewYork       Yahoo can't distinguish between NYSE/NASDAQ, so always NewYork
 Oslo
+Shanghai
+Shenzhen
 Stockholm
 Stuttgart
+Sydney
+Tokyo
 Toronto
 Valence
 Vienna

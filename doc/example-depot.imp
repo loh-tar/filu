@@ -20,13 +20,13 @@ SimpleRule;MyBank
 * Positions
 *
 [Header]PDate;RefSymbol;Market;Pieces;Price;Note
-2009-03-19;AAPL;NYSE;10;101.60;Sadly only here fake data
+2009-03-19;AAPL;NewYork;10;101.60;Sadly only here fake data
 
 *
 * Order
 *
 [Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note
-2011-02-28;2011-12-31;AAPL;NYSE;10;500;Sell;Active;Will we see 500$?
+2011-02-28;2011-12-31;AAPL;NewYork;10;500;Sell;Active;Will we see 500$?
 
 *
 * Account
