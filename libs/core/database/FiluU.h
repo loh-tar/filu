@@ -60,9 +60,6 @@ class FiluU : public Filu
       ePostFee     = 5
     };
 
-    void        openDB();
-    void        createUserFunc(const QString& sql) { executeSql("user/functions/", sql); }
-
     QSqlQuery*  getGroups(int motherId = -1); // -1 returns all groups
     QSqlQuery*  getGMembers(int groupId);
     int         getGroupId(const QString& path);
@@ -123,9 +120,12 @@ class FiluU : public Filu
     int         accPostingType(const QString& type);
     QString     accPostingType(int type);
 
+    void        openDB();
+    void        createUserFunctions();
+    void        createUserFunc(const QString& sql) { executeSql("user/functions/", sql); }
+
   private:
     void        createUserTables();
-    void        createUserFunctions();
 };
 
 #endif

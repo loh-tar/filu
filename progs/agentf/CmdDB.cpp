@@ -57,12 +57,12 @@ bool CmdDB::exec(CmdHelper* ch)
   if(mCmd->wantHelp())
   {
     mCmd->inSubBrief("patch", tr("Apply a patch to the database"));
-    mCmd->inSubBrief("remake", tr("Create or update a database function or view"));
+    mCmd->inSubBrief("remake", tr("Create or update one or all database functions and views"));
     mCmd->inSubBrief("ls", tr("List database tables and creation SQLs"));
 //     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
 
     mCmd->inOptBrief("user", ""
-                   , "Interpred <Type> as user SQL");
+                   , "Work on user schema instead of Filu schema");
   }
 
   if(mCmd->needHelp(2))
@@ -90,13 +90,51 @@ bool CmdDB::exec(CmdHelper* ch)
 
 void CmdDB::remake()
 {
-  if(mCmd->isMissingParms(2))
+  mCmd->regStdOpts("all both");
+
+  int parmsNeeded = mCmd->has("all") ? 0 : 2;
+
+  if(mCmd->isMissingParms(parmsNeeded))
   {
-    if(mCmd->printThisWay("<SqlType> <SqlName>")) return;
+    mCmd->inOptBrief("all", ""
+                   , "Recreate all functions and views of the schema but no(t yet) misc stuff");
+    mCmd->inOptBrief("both", ""
+                   , "Recreate all functions and views of user and Filu schema. "
+                     "Take only effect with --all");
+
+    if(mCmd->printThisWay("[<SqlType> <SqlName>]|[--all]")) return;
 
     mCmd->printNote(tr("<SqlType> must be one of: %1").arg(mTypes.join(" ")));
     mCmd->printForInst("func account_insert --user");
+    mCmd->printForInst("--all --user");
     mCmd->aided();
+    return;
+  }
+
+  // FIXME Incomment after Filu has setDebugLevel()
+  //if(mCmd->has("verbose")) mFilu->setVerboseLevel(verboseLevel());
+
+  if(mCmd->has("all"))
+  {
+    if(mCmd->has("both") and mCmd->has("user"))
+    {
+      error(FUNC, tr("Option '--both' is not allowed with '--user'"));
+      return;
+    }
+
+    if(mCmd->has("both") or !mCmd->has("user"))
+    {
+      mFilu->createFunctions();
+      mFilu->createViews();
+      //mFilu->();
+    }
+
+    if(mCmd->has("both") or mCmd->has("user"))
+    {
+      mFilu->createUserFunctions();
+      //mFilu->();
+    }
+
     return;
   }
 

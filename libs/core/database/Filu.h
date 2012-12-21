@@ -209,6 +209,8 @@ class Filu : public Newswire
     QString     serverVersion();
     QString     devilInfoText();
 
+    void        createFunctions();
+    void        createViews();
     void        createFunc(const QString& sql) { executeSql("filu/functions/", sql); }
     void        createView(const QString& sql) { executeSql("filu/views/", sql); }
     void        createMisc(const QString& sql) { executeSql("filu/misc/", sql); }
@@ -218,8 +220,6 @@ class Filu : public Newswire
     bool        executeSqls(const QString& path);
     void        createSchema();
     void        createTables();
-    void        createFunctions();
-    void        createViews();
 
     int         getNextId(const QString& schema, const QString& table);
     bool        initQuery(const QString& name);
