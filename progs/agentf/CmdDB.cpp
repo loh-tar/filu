@@ -23,6 +23,7 @@
 
 #include "CmdHelper.h"
 #include "FiluU.h"
+#include "FTool.h"
 #include "RcFile.h"
 
 CmdDB::CmdDB(FClass* parent)
@@ -57,11 +58,11 @@ bool CmdDB::exec(CmdHelper* ch)
   {
     mCmd->inSubBrief("patch", tr("Apply a patch to the database"));
     mCmd->inSubBrief("remake", tr("Create or update a database function or view"));
-    mCmd->inSubBrief("ls", tr("List database creation SQLs"));
+    mCmd->inSubBrief("ls", tr("List database tables and creation SQLs"));
 //     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
 
     mCmd->inOptBrief("user", ""
-                   , "Interpred <SqlType> as user SQL");
+                   , "Interpred <Type> as user SQL");
   }
 
   if(mCmd->needHelp(2))
@@ -102,7 +103,7 @@ void CmdDB::remake()
   QString type   = mCmd->strParm(1);
   if(!mTypes.contains(type))
   {
-    error(FUNC, tr("SQL-Type must be one of: %1").arg(mTypes.join(" ")));
+    error(FUNC, tr("SqlType must be one of: %1").arg(mTypes.join(" ")));
     return;
   }
 
@@ -120,13 +121,18 @@ void CmdDB::remake()
 
 void CmdDB::list()
 {
-  mTypes  << "patch";
+  mTypes  << "patch" << "tables";
+
+  mCmd->regStdOpts("oneCol");
 
   if(mCmd->isMissingParms(1))
   {
-    if(mCmd->printThisWay("<SqlType>")) return;
+    mCmd->inOptBrief("oneCol", ""
+                   , "Print a single column instead of a table");
 
-    mCmd->printNote(tr("<SqlType> must be one of: %1").arg(mTypes.join(" ")));
+    if(mCmd->printThisWay("<Type>")) return;
+
+    mCmd->printNote(tr("<Type> must be one of: %1").arg(mTypes.join(" ")));
     mCmd->printForInst("func --user");
     mCmd->aided();
     return;
@@ -135,16 +141,42 @@ void CmdDB::list()
   QString type   = mCmd->strParm(1);
   if(!mTypes.contains(type))
   {
-    error(FUNC, tr("SQL-Type must be one of: %1").arg(mTypes.join(" ")));
+    error(FUNC, tr("Type must be one of: %1").arg(mTypes.join(" ")));
     return;
   }
 
-  if("func" == type) type = "functions";
-  QString schema = mCmd->has("user") ? "user/" : "filu/";
+  QString schema = mCmd->has("user") ? "user" : "filu";
+  QStringList resultLst;
 
-  QDir dir(mRcFile->getST("SqlPath") + schema + type, "*.sql");
-  QStringList files = dir.entryList(QDir::Files, QDir::Name);
-  foreach(QString sql, files) print(sql.left(sql.size() - 4));
+  if("tables" == type)
+  {
+    resultLst = mFilu->getTables(schema);
+  }
+  else
+  {
+    if("func" == type) type = "functions";
+    schema.append("/");
+    QDir dir(mRcFile->getST("SqlPath") + schema + type, "*.sql");
+    resultLst = dir.entryList(QDir::Files, QDir::Name);
+    resultLst.replaceInStrings(".sql", "");
+  }
+
+  if(mCmd->has("oneCol"))
+  {
+    foreach(QString result, resultLst) print(result);
+  }
+  else
+  {
+    // FIXME Obtain the true terminal width instead of fixed 80
+    int width  = 80;
+    int indent = 2;
+    QString tmplate = QString(" ").repeated(indent);
+    tmplate.append("%1");
+    foreach(QString row, FTool::formatToTable(resultLst, width - indent))
+    {
+      print(tmplate.arg(row));
+    }
+  }
 }
 
 void CmdDB::patch()

@@ -1823,3 +1823,31 @@ void Filu::printSettings()
   print(txt.arg("SqlPath", width).arg(mSqlPath));
   print("");
 }
+
+QStringList Filu::getTables(const QString& schema)
+{
+  QStringList tableLst;
+
+  if(schema != "filu" and schema != "user")
+  {
+    fatal(FUNC, QString("'schema' must be 'filu' or 'user' and not: ").arg(schema));
+    return tableLst;
+  }
+
+  QString sql = "SELECT table_name "
+                "  FROM information_schema.tables "
+                "  WHERE table_schema = ':schema'"
+                "  ORDER BY table_schema,table_name";
+
+  // Can't use here setStaticSqlParm(":schema", ":" + schema);
+  sql.replace(":schema", ":" + schema);
+
+  if(execute("_GetTables", sql) < eData) return tableLst;
+
+  while(mLastQuery->next())
+  {
+    tableLst.append(mLastQuery->value(0).toString());
+  }
+
+  return tableLst;
+}

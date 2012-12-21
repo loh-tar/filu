@@ -205,6 +205,7 @@ class Filu : public Newswire
     int         result(const QString& func, QSqlQuery* query);
     int         lastResult() { return mLastResult; };
     QString     dbFuncErrText(int errorCode);
+    QStringList getTables(const QString& schema);
     QString     serverVersion();
     QString     devilInfoText();
 
