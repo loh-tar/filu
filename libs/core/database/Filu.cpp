@@ -1828,20 +1828,50 @@ QStringList Filu::getTables(const Schema type/* = eFilu*/)
 {
   QStringList tableLst;
 
-  const QString sql = QString("SELECT table_name "
-                              "  FROM information_schema.tables "
-                              "  WHERE table_schema = '%1'"
-                              "  ORDER BY table_name"
-                             ).arg(schema(type));
+  static const QString sql("SELECT table_name "
+                           "  FROM information_schema.tables "
+                           "  WHERE table_schema = :schema"
+                           "  ORDER BY table_name");
 
-  if(execute("_GetTables", sql) < eData) return tableLst;
+  if(!initQuery("_GetTables", sql)) return tableLst;
 
-  while(mLastQuery->next())
-  {
-    tableLst.append(mLastQuery->value(0).toString());
-  }
+  QSqlQuery* query = mSQLs.value("_GetTables");
+
+  query->bindValue(":schema", schema(type));
+
+  if(execute(query) < eData) return tableLst;
+
+  while(query->next()) tableLst.append(query->value(0).toString());
 
   return tableLst;
+}
+
+QStringList Filu::getTableColumns(const QString& table, const Schema type/* = eFilu*/)
+{
+  QStringList columnLst;
+
+  if(!getTables(type).contains(table))
+  {
+    error(FUNC, tr("Schema '%1' has no table '%2'").arg(schema(type), table));
+    return columnLst;
+  }
+
+  static const QString sql("SELECT column_name "
+                           "  FROM information_schema.columns "
+                           "  WHERE table_schema = :schema and table_name = :table ");
+
+  if(!initQuery("_GetTableColumns", sql)) return columnLst;
+
+  QSqlQuery* query = mSQLs.value("_GetTableColumns");
+
+  query->bindValue(":schema", schema(type));
+  query->bindValue(":table", table);
+
+  if(execute(query) < eData) return columnLst;
+
+  while(query->next()) columnLst.append(query->value(0).toString());
+
+  return columnLst;
 }
 
 QString Filu::schema(const Schema type)

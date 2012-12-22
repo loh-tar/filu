@@ -49,7 +49,7 @@ bool CmdDB::exec(CmdHelper* ch)
 
   mTypes << "func" << "misc" << "views";
 
-  mCmd->regSubCmds("remake ls patch");
+  mCmd->regSubCmds("remake ls patch tinker");
   mCmd->regStdOpts("user");
 
   if(mCmd->subCmdLooksBad()) return false;
@@ -59,6 +59,7 @@ bool CmdDB::exec(CmdHelper* ch)
     mCmd->inSubBrief("patch", tr("Apply a patch to the database"));
     mCmd->inSubBrief("remake", tr("Create or update one or all database functions and views"));
     mCmd->inSubBrief("ls", tr("List database tables and creation SQLs"));
+    mCmd->inSubBrief("tinker", tr("Change one value of any table"));
 //     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
 
     mCmd->inOptBrief("user", ""
@@ -77,6 +78,7 @@ bool CmdDB::exec(CmdHelper* ch)
   if(mCmd->hasSubCmd("remake"))         remake();
   else if(mCmd->hasSubCmd("ls"))        list();
   else if(mCmd->hasSubCmd("patch"))     patch();
+  else if(mCmd->hasSubCmd("tinker"))    tinker();
 //   else if(mCmd->hasSubCmd(""))          ();
   else
   {
@@ -220,18 +222,49 @@ void CmdDB::list()
 
 void CmdDB::patch()
 {
-    if(mCmd->isMissingParms(1))
-    {
-      mCmd->inOptBrief("user", ""
-                     , "Interpred <PatchSql> as user SQL");
+  if(mCmd->isMissingParms(1))
+  {
+//       mCmd->inOptBrief("", ""
+//                      , "");
 
-      if(mCmd->printThisWay("<PatchSql>")) return;
+    if(mCmd->printThisWay("<PatchSql>")) return;
 
-      mCmd->aided();
-      return;
-    }
+    mCmd->aided();
+    return;
+  }
 
-    verbose(FUNC, "Not yet implemented.");
+  verbose(FUNC, "Not yet implemented.");
 //     if(mCmd->has("user")) mFilu->applyPatch(mCmd->strParm(1), eUser);
 //     else mFilu->applyPatch(mCmd->strParm(1), eFilu);
+}
+
+void CmdDB::tinker()
+{
+  if(mCmd->isMissingParms(4))
+  {
+//       mCmd->inOptBrief("", ""
+//                      , "");
+
+    if(mCmd->printThisWay("<RecordId> <TableName> <FieldName> <NewValue>")) return;
+
+    mCmd->aided();
+    return;
+  }
+
+  int     id          = mCmd->parmInt(1);
+  QString table       = mCmd->parmStr(2);
+  QString field       = mCmd->parmStr(3);
+  QString newValue    = mCmd->parmStr(4);
+  Filu::Schema schema = mCmd->has("user") ? Filu::eUser : Filu::eFilu;
+
+  if(mCmd->hasError()) return;
+
+  if(!mFilu->getTableColumns(table, schema).contains(field))
+  {
+    if(check4FiluError(FUNC)) return; // Fail if table was not found
+    error(FUNC, tr("Table '%1' has no field '%2'").arg(table, field));
+    return;
+  }
+
+  mFilu->updateField(field, newValue, table, id, schema);
 }

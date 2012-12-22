@@ -218,6 +218,7 @@ class Filu : public Newswire
     int         lastResult() { return mLastResult; };
     QString     dbFuncErrText(int errorCode);
     QStringList getTables(const Schema type = eFilu);
+    QStringList getTableColumns(const QString& table, const Schema type = eFilu);
     QString     serverVersion();
     QString     devilInfoText();
 

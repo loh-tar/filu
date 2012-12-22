@@ -41,6 +41,7 @@ class CmdDB : public CmdClass
     void          remake();
     void          list();
     void          patch();
+    void          tinker();
 //     void          ();
 
     QStringList   mTypes;
