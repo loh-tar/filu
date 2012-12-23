@@ -1,3 +1,34 @@
+2012-12-23
+============
+Button/IndiSet/LaunchPad
+--------------------------
+- Add a DummyButton when last button was removed to keep the ButtonPad useable
+- Add tool tips to edit dialog widgets
+- Add confirm dialog at important deletion
+- IndiSetPad: Protect sets 'Default' and 'ZoomWidget' for deletion
+- LaunchPad: Only call command once if 'Symbol Type' is empty
+
+Import-File-Format
+--------------------
+- Review standardized market symbols, change e.g. 'NYSE' to 'NewYork'
+  These affect all parts of Filu. To update your existing Filu I suggest to
+  change 'NYSE' to 'NewYork', see 'agentf db tinker -h' and 'db show -h'
+- Fix at 'Order Status' typo 'Experied' to 'Expired'
+- Change at market insert key 'Market' to 'MarketSymbol' and
+  add key 'MarketName'
+
+Sundries
+----------
+- AgentF: Replace command 'filu' with 'db'
+- AddFiPage: Quick and dirty hack to import markets too. Choose 'Filu' as
+  provider to get some markets. Looks overall not nice but...works
+- Yahoo Script: Add conversion DJI -> NYSE
+- RcFile: Fix, ensure keys will properly read at fresh install
+- DB: Fix symbol_insert, Don't test only if caption is found. To update your
+  existing Filu run 'agentf db remake func symbol_insert'
+- Importer: Fix addSymbol() to handle US Yahoo and Reuters at the same time
+
+
 2012-12-15
 ============
 Sundries
