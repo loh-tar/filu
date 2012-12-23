@@ -869,7 +869,7 @@ bool CmdHelper::printThisWay(const QString& s)
   return false;
 }
 
-void CmdHelper::printForInst(const QString& s)
+void CmdHelper::printForInst(const QString& s, const QString& c/* = ""*/)
 {
   if(s.isEmpty()) return;
 
@@ -881,9 +881,15 @@ void CmdHelper::printForInst(const QString& s)
   }
 
   print(mTheWay + " " + s);
+
+  if(!c.isEmpty())
+  {
+    printComment(c, 4);
+    print("");
+  }
 }
 
-void CmdHelper::prin4Comment(const QString& s)
+void CmdHelper::prin4Comment(const QString& s, int indent/* = 0*/)
 {
   if(s.isEmpty()) return;
 
@@ -894,7 +900,7 @@ void CmdHelper::prin4Comment(const QString& s)
     return;
   }
 
-  printComment(s);
+  printComment(s, indent);
 }
 
 void CmdHelper::printCommandBrief()
@@ -923,14 +929,17 @@ void CmdHelper::printCommandBrief()
   }
 }
 
-void CmdHelper::printComment(const QString& s)
+void CmdHelper::printComment(const QString& s, int indent/* = 0*/)
 {
   if(s.isEmpty()) return;
 
-  QStringList wrap = FTool::wrapText(s, mScreenWidth);
+  QStringList wrap = FTool::wrapText(s, mScreenWidth - indent);
+  QString tmplate  = QString(" ").repeated(indent);
+  tmplate.append("%1");
+
   foreach(QString s, wrap)
   {
-    print(s);
+    print(tmplate.arg(s));
   }
 }
 

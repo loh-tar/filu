@@ -207,9 +207,9 @@ class CmdHelper : public Newswire
 
     // Printing stuff
     bool          printThisWay(const QString& s);
-    void          printForInst(const QString& s);
-    void          printComment(const QString& s);
-    void          prin4Comment(const QString& s);  // Only print if --help+. The 4 looks like t :-)
+    void          printForInst(const QString& s, const QString& c = "");
+    void          printComment(const QString& s, int indent = 0);
+    void          prin4Comment(const QString& s, int indent = 0);  // Only print if --help+. The 4 looks like t :-)
     void          printNote(const QString& s);
     void          prin4Note(const QString& s);     // Only print if --help+. The 4 looks like t :-)
 
