@@ -62,7 +62,7 @@ bool CmdDB::exec(CmdHelper* ch)
     mCmd->inSubBrief("remake", tr("Create or update one or all database functions and views"));
     mCmd->inSubBrief("ls", tr("List database tables and creation SQLs"));
     mCmd->inSubBrief("tinker", tr("Change one value of any table"));
-    mCmd->inSubBrief("show", tr("Show table enties"));
+    mCmd->inSubBrief("show", tr("Show table entries"));
 //     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
 
     mCmd->inOptBrief("user", "Work on user schema instead of Filu schema");
@@ -244,6 +244,16 @@ void CmdDB::tinker()
 
     if(mCmd->printThisWay("<RecordId> <TableName> <FieldName> <NewValue>")) return;
 
+    mCmd->printComment(tr("There will made no checks if the change may cause trouble,"
+                          "so use it with care. To obtain the needed parameter use 'ls' and 'show'"));
+    mCmd->printForInst("3 market caption NYSE",
+                       tr("Well, you rename most likely 'NewYork' but now does it not fit with the market name "
+                          "shipped by the scripts"));
+    mCmd->printForInst("1234 eodbar qclose 45.67",
+                       tr("No check is made if close > high or close < low and no update is made for "
+                          "the 'quality' field. Therefore may at any time later the close price again "
+                          "replaced with the same wrong value by a script. Sure, you can tinker the "
+                          "quality field too"));
     mCmd->aided();
     return;
   }
@@ -287,9 +297,10 @@ void CmdDB::show()
 
     mCmd->printForInst("fi caption=ll \"ftype_id>2\" --ticket");
     mCmd->printForInst("eodbar quality=3");
-
-    mCmd->printComment("The first example list FIs with 'll' in name but no currencies "
-                       "and the second list bad bars");
+    mCmd->printForInst("eodbar market");
+    mCmd->printComment(" ");
+    mCmd->printComment("The first example list FIs with 'll' in name but no currencies, "
+                       "the second list bad bars and the latter all markets");
     mCmd->aided();
     return;
   }
