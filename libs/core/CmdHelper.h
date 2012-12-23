@@ -150,6 +150,7 @@ class CmdHelper : public Newswire
     void          inLabel(const QString& alias, const QString& txt);
     void          inCmdBrief(const QString& cmd, const QString& brief) { inBrief(cmd, brief, mCmds); }
     void          inOptBrief(const QString& opt, const QString& parms, const QString& brief);
+    void          inOptBrief(const QString& opt, const QString& brief) { inOptBrief(opt, "", brief); }
     void          inOptGroup(const QString& alias, const QString& txt, const QString& opts);
     void          groupOpts(const QString& alias, const QString& opts);
 

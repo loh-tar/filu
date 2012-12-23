@@ -277,8 +277,8 @@ bool Exporter::exec(CmdHelper* ch)
     mCmd->inOptBrief("from", "<Date>", tr("Should be given as YYYY-MM-DD"));
     mCmd->inOptBrief("listed", "<GroupPath>", tr("Only FIs in this PerformerF group createt by the user"));
     mCmd->inOptBrief("market", "<Market>", tr("Only this market, e.g. 'NewYork'"));
-    mCmd->inOptBrief("noBars", "", tr("Don't export eodBar data"));
-    mCmd->inOptBrief("noUser", "", tr("Don't export user data"));
+    mCmd->inOptBrief("noBars", tr("Don't export eodBar data"));
+    mCmd->inOptBrief("noUser", tr("Don't export user data"));
     mCmd->inOptBrief("to", "<Date>", tr("Should be given as YYYY-MM-DD"));
 
     mCmd->inOptBrief("symbols", "<Type>.."
@@ -288,8 +288,8 @@ bool Exporter::exec(CmdHelper* ch)
 
     mCmd->inOptBrief("owner", "<Name>", tr("Only depots by named owner"));
     mCmd->inOptBrief("dpid", "<Id>", tr("Only this depot"));
-    mCmd->inOptBrief("withSim", "", tr("Don't suppress Simulator depots"));
-    //mCmd->inOptBrief("reset", "", "Only used by ");
+    mCmd->inOptBrief("withSim", tr("Don't suppress Simulator depots"));
+    //mCmd->inOptBrief("reset", "Only used by ");
     //mCmd->inOptBrief("", "", "");
 
     mCmd->inLabel("DataSet", tr("data sets"));

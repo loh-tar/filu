@@ -75,8 +75,8 @@ bool Scanner::exec(CmdHelper* ch)
 
   if(mCmd->isMissingParms())
   {
-//     mCmd->inOptBrief("reset", "", "Only used by ");
-    mCmd->inOptBrief("force", "", tr("Forces '--auto' to scan anyway if needed or not"));
+//     mCmd->inOptBrief("reset", "Only used by ");
+    mCmd->inOptBrief("force", tr("Forces '--auto' to scan anyway if needed or not"));
 
     mCmd->inOptBrief("timeFrame", "<Name>|<Number>"
                     , tr("The time frame to be scanned. Overwrite the ScanFreq Key "
@@ -95,7 +95,7 @@ bool Scanner::exec(CmdHelper* ch)
                          "any existing <Path> will ignored. Without '--group' is nothing scanned"));
 
     mCmd->inOptBrief("this", "<Symbol> <Market>", tr("Scan only this FI"));
-    mCmd->inOptBrief("mark", "", tr("Save the scan date in the settings file ~/.config/Filu.conf"));
+    mCmd->inOptBrief("mark", tr("Save the scan date in the settings file ~/.config/Filu.conf"));
 
     mCmd->inOptGroup("FiSet", "FI sets", "group this");
     mCmd->inOptGroup("Scanner", "scanners", "auto indi");

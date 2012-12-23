@@ -65,7 +65,7 @@ bool CmdDB::exec(CmdHelper* ch)
     mCmd->inSubBrief("show", tr("Show table enties"));
 //     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
 
-    mCmd->inOptBrief("user", "", "Work on user schema instead of Filu schema");
+    mCmd->inOptBrief("user", "Work on user schema instead of Filu schema");
   }
 
   if(mCmd->needHelp(2))
@@ -100,9 +100,9 @@ void CmdDB::remake()
 
   if(mCmd->isMissingParms(parmsNeeded))
   {
-    mCmd->inOptBrief("all", "", "Recreate all functions and views of the schema but no(t yet) misc stuff");
-    mCmd->inOptBrief("both", "", "Recreate all functions and views of user and Filu schema. "
-                                 "Take only effect with --all");
+    mCmd->inOptBrief("all", "Recreate all functions and views of the schema but no(t yet) misc stuff");
+    mCmd->inOptBrief("both", "Recreate all functions and views of user and Filu schema. "
+                             "Take only effect with --all");
 
     if(mCmd->printThisWay("[<SqlType> <SqlName>]|[--all]")) return;
 
@@ -167,7 +167,7 @@ void CmdDB::list()
 
   if(mCmd->isMissingParms(1))
   {
-    mCmd->inOptBrief("oneCol", "", "Print a single column instead of a table");
+    mCmd->inOptBrief("oneCol", "Print a single column instead of a table");
 
     if(mCmd->printThisWay("<Type>")) return;
 
@@ -272,9 +272,9 @@ void CmdDB::show()
 
   if(mCmd->isMissingParms(1))
   {
-    mCmd->inOptBrief("noPager", "", "Don't interrupt result printing");
-    mCmd->inOptBrief("machine", "", "Print result as csv table");
-    mCmd->inOptBrief("ticket", "", "Print result as...ticket");
+    mCmd->inOptBrief("noPager", "Don't interrupt result printing");
+    mCmd->inOptBrief("machine", "Print result as csv table");
+    mCmd->inOptBrief("ticket", "Print result as...ticket");
 
     if(mCmd->printThisWay("<Table> [<Field><Operator><Value>..]")) return;
 
