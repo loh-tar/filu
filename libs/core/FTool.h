@@ -86,5 +86,17 @@ maxSizeOfStrings(const QStringList& sl);
 QString
 makeValidWord(const QString& s);
 
+/***********************************************************************
+*
+*   Ask User Functions
+*
+************************************************************************/
+// Retruns true if awnser is 'No' or ENTER
+bool
+askUserNoYes(const QString& question);
+
+// Retruns true if awnser is 'Yes' or ENTER
+bool
+askUserYesNo(const QString& question);
 }
 #endif

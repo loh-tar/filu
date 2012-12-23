@@ -206,6 +206,7 @@ class Filu : public Newswire
 
     bool        hasTable(const QString& table, const Schema type = eFilu);
     bool        hasTableColumn(const QString& column, const QString& table, const Schema type = eFilu);
+    QSqlQuery*  searchRows(const QString& table, const QStringList& fieldValueLst, const Schema type = eFilu);
     int         searchCaption(const QString& table, const QString& caption, const Schema type = eFilu);
     void        deleteRecord(const QString& table, int id, const Schema type = eFilu);
     int         updateField(const QString& field, const QVariant& newValue

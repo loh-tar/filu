@@ -18,6 +18,8 @@
 //
 
 #include <QDir>
+#include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "CmdDB.h"
 
@@ -49,7 +51,7 @@ bool CmdDB::exec(CmdHelper* ch)
 
   mTypes << "func" << "misc" << "views";
 
-  mCmd->regSubCmds("remake ls patch tinker");
+  mCmd->regSubCmds("remake ls patch tinker show");
   mCmd->regStdOpts("user");
 
   if(mCmd->subCmdLooksBad()) return false;
@@ -60,6 +62,7 @@ bool CmdDB::exec(CmdHelper* ch)
     mCmd->inSubBrief("remake", tr("Create or update one or all database functions and views"));
     mCmd->inSubBrief("ls", tr("List database tables and creation SQLs"));
     mCmd->inSubBrief("tinker", tr("Change one value of any table"));
+    mCmd->inSubBrief("show", tr("Show table enties"));
 //     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
 
     mCmd->inOptBrief("user", ""
@@ -79,7 +82,7 @@ bool CmdDB::exec(CmdHelper* ch)
   else if(mCmd->hasSubCmd("ls"))        list();
   else if(mCmd->hasSubCmd("patch"))     patch();
   else if(mCmd->hasSubCmd("tinker"))    tinker();
-//   else if(mCmd->hasSubCmd(""))          ();
+  else if(mCmd->hasSubCmd("show"))      show();
   else
   {
     fatal(FUNC, QString("Unsupported command: %1").arg(mCmd->cmd()));
@@ -267,4 +270,172 @@ void CmdDB::tinker()
   }
 
   mFilu->updateField(field, newValue, table, id, schema);
+}
+
+void CmdDB::show()
+{
+  mCmd->regStdOpts("noPager machine ticket");
+
+  if(mCmd->isMissingParms(1))
+  {
+    mCmd->inOptBrief("noPager", "", "Don't interrupt result printing");
+    mCmd->inOptBrief("machine", "", "Print result as csv table");
+    mCmd->inOptBrief("ticket", "", "Print result as...ticket");
+
+    if(mCmd->printThisWay("<Table> [<Field><Operator><Value>..]")) return;
+
+    mCmd->printComment("The Operator can be = > < whereas you have to enclose the whole parameter in "
+                       "(double)quotes if operator is < or >. "
+                       "The search is pretty smart. If Field is 'caption' there will be searched fuzzy "
+                       "anyway what kind of operator is used.");
+
+    mCmd->printNote(tr("There must not spaces between Field/Value and Operator"));
+
+    mCmd->printForInst("fi caption=ll \"ftype_id>2\" --ticket");
+    mCmd->printForInst("eodbar quality=3");
+
+    mCmd->printComment("The first example list FIs with 'll' in name but no currencies "
+                       "and the second list bad bars");
+    mCmd->aided();
+    return;
+  }
+
+  QString table       = mCmd->parmStr(1);
+  Filu::Schema schema = mCmd->has("user") ? Filu::eUser : Filu::eFilu;
+  QStringList  fvList = mCmd->parmList(); // Field Value List
+  fvList.removeAt(0); // Remove 'Table'
+
+  if(mCmd->hasError()) return;
+
+  QSqlQuery* query = mFilu->searchRows(table, fvList, schema);
+  if(!query) return;
+
+  verbose(FUNC, tr("Found %1 matching records.").arg(query->size()));
+
+  if(mCmd->has("ticket"))
+  {
+    showPrintTicket(query);
+    return;
+  }
+
+  showPrintTable(query);
+}
+
+void CmdDB::showPrintTable(QSqlQuery* query)
+{
+  QSqlRecord rec = query->record();
+
+  // Print Header
+  QString header;
+  QList<int> colWidth;
+  QString separator(" ");
+  for(int i = 0; i < rec.count(); ++i)
+  {
+    QString fn = rec.fieldName(i);
+
+    // Try to determine a useful column width
+    int                               width =    8;
+    if(fn.endsWith("_id"))            width =    5;
+    else if(fn.endsWith("date"))      width =   10;
+    else if(fn.endsWith("text"))      width =  -30;
+    else if(fn.endsWith("note"))      width =  -30;
+    else if("qvol" == fn)             width =   10;
+    else if("quality" == fn)          width =    1;
+    else if("caption" == fn)          width =  -20;
+
+    if(width < 0)
+    {
+      if(-width < fn.size()) width = -fn.size();
+    }
+    else
+    {
+      if( width < fn.size()) width =  fn.size();
+    }
+
+    if(mCmd->has("machine"))
+    {
+      width = 0;
+      separator = ";";
+    }
+
+    colWidth.append(width);
+    header.append(QString("%1").arg(fn, width));
+    header.append(separator);
+  }
+
+  header.chop(1); // Remove last separator
+  print(header);
+
+  // Print Data
+  int   printed = 1;             // Count printed lines
+  int   toPrint = query->size(); // Count down records
+  bool  pager   = mCmd->has("noPager") ? false : true;
+  while(query->next())
+  {
+    QString data;
+    for(int i = 0; i < rec.count(); ++i)
+    {
+      QString value = query->value(i).toString();
+      if(    colWidth.at(i) // Don't change if --machine was given
+         and value.size() > abs(colWidth.at(i)))
+      {
+        value = value.left(abs(colWidth.at(i)) - 1);
+        value.append("~");
+      }
+
+      data.append(QString("%1").arg(value, colWidth.at(i)));
+      data.append(separator);
+    }
+
+    data.chop(1); // Remove last separator
+    print(data);
+    --toPrint;
+    ++printed;
+
+    if(pager and printed > 25) // FIXME Determine the real terminal hight
+    {
+      if(!FTool::askUserNoYes(tr("%1 records left. Show more?").arg(toPrint))) break;
+
+      print(header);
+      printed = 1;
+    }
+  }
+}
+
+void CmdDB::showPrintTicket(QSqlQuery* query)
+{
+  QSqlRecord rec = query->record();
+
+  // Determine the longest field name
+  int fieldNameSize = 0;
+  for(int i = 0; i < rec.count(); ++i)
+  {
+    fieldNameSize = qMax(fieldNameSize, rec.fieldName(i).size());
+  }
+
+  // Print Data
+  QString tmplate("%1 : %2");
+  int     printed = 0;             // Count printed lines
+  int     toPrint = query->size(); // Count down records
+  bool    pager   = mCmd->has("noPager") ? false : true;
+  while(query->next())
+  {
+    for(int i = 0; i < rec.count(); ++i)
+    {
+      print(tmplate.arg(rec.fieldName(i), -fieldNameSize)
+                   .arg(query->value(i).toString()));
+      ++printed;
+    }
+
+    print("");
+    ++printed;
+    --toPrint;
+
+    if(pager and printed > 25) // FIXME Determine the real terminal hight
+    {
+      if(!FTool::askUserNoYes(tr("%1 records left. Show more?").arg(toPrint))) break;
+
+      printed = 0;
+    }
+  }
 }

@@ -42,7 +42,10 @@ class CmdDB : public CmdClass
     void          list();
     void          patch();
     void          tinker();
-//     void          ();
+    void          show();
+
+    void          showPrintTable(QSqlQuery* query);
+    void          showPrintTicket(QSqlQuery* query);
 
     QStringList   mTypes;
 private:

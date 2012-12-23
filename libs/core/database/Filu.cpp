@@ -674,6 +674,53 @@ QSqlQuery* Filu::searchFi(const QString& name, const QString& type
   return query;
 }
 
+QSqlQuery* Filu::searchRows(const QString& table, const QStringList& fieldValueLst
+                          , const Schema type/* = eFilu*/)
+{
+  QStringList columns = getTableColumns(table, type);
+  if(hasError()) return 0;
+
+  QString sql = QString("SELECT * FROM %1.%2 WHERE ").arg(schema(type), table);
+  QString fieldValue("%1 %3 '%2' and ");
+  QString caption("lower(caption) LIKE '%'|| lower('%1') ||'%' and ");
+
+  QRegExp splitter("[<>=]");
+  foreach(QString fv, fieldValueLst)
+  {
+    splitter.indexIn(fv, 0);
+    QString oprator = splitter.cap(0);
+
+    QStringList fvp = fv.split(splitter, QString::SkipEmptyParts); // Field Value Pair
+    if(fvp.size() < 2)
+    {
+      error(FUNC, tr("Bad Field/Value Pair: %1").arg(fv));
+      return 0;
+    }
+
+    if(!columns.contains(fvp.at(0)))
+    {
+      error(FUNC, tr("Table '%1' has no field '%2'").arg(table, fvp.at(0)));
+      return 0;
+    }
+
+    if("caption" == fvp.at(0))
+    {
+      sql.append(caption.arg(fvp.at(1)));
+    }
+    else
+    {
+      sql.append(fieldValue.arg(fvp.at(0), fvp.at(1), oprator));
+    }
+  }
+
+  if(!fieldValueLst.size()) sql.append("true"); // Accept also no filter settings
+  else sql.chop(5); // Remove last added ' and '
+
+  if(execute("_SearchRows", sql) < eNoData) return 0;
+
+  return mLastQuery;
+}
+
 int Filu::searchCaption(const QString& table, const QString& caption, const Schema type/* = eFilu*/)
 {
   const QString sql("SELECT * FROM :filu.id_from_caption(:table, :caption)");

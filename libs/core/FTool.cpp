@@ -316,3 +316,58 @@ FTool::makeValidWord(const QString& s)
   if(w.contains(QRegExp("^\\d"))) w.prepend("_"); // Don't start with a digit
   return w;
 }
+
+/***********************************************************************
+*   Ask User Function Stuff
+*
+*   Quick hacked. I'm sure it could be done more elegant e.g. by using
+*   QFLags as function parameter so that there is no need to have
+*   different functions for each use case but only one
+*
+************************************************************************/
+#include <QTextStream>
+
+const QString cYes  = QObject::tr("Yes");
+const QString cNo   = QObject::tr("No");
+
+QString
+askUser(const QString& question) // No FTool is private like
+{
+  QTextStream out(stdout);
+  out << question << flush;
+
+  QTextStream in(stdin);
+  QString answer;
+  answer = in.readLine(10);
+
+  return answer;
+}
+
+bool
+FTool::askUserNoYes(const QString& question)
+{
+  QString text = QString("%1 %2/[%3]").arg(question).arg(cNo, cYes);
+
+  QString answer = askUser(text);
+
+  if(answer.isEmpty()) return true;
+  if(cNo.startsWith(answer, Qt::CaseInsensitive)) return false;
+
+  return true;
+}
+
+bool
+FTool::askUserYesNo(const QString& question)
+{
+  QString text = QString("%1 %2/[%3]").arg(question).arg(cYes, cNo);
+
+  QString answer = askUser(text);
+
+  if(answer.isEmpty()) return true;
+  if(cYes.startsWith(answer, Qt::CaseInsensitive)) return false;
+
+  return true;
+}
+/***********************************************************************
+*   End Of Ask User Function Stuff
+************************************************************************/
