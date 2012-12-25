@@ -319,6 +319,8 @@ bool Exporter::exec(CmdHelper* ch)
     return false;
   }
 
+  if(mCmd->wantHelp()) return true;
+
   return exxport();
 }
 
