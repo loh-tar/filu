@@ -24,10 +24,11 @@
 class QProcess;
 
 #include "FCoreApp.h"
-class Script;
-class Importer;
+class CmdClass;
 class Exporter;
+class Importer;
 class Scanner;
+class Script;
 
 /***********************************************************************
 *
@@ -76,6 +77,8 @@ class AgentF : public FCoreApp
     void check4MasterCMD();
     void addEODBarData(const QString& symbol, const QString& market, const QString& provider
                      , const QDate& fromDate, const QDate& toDate, int fiId, int marketId);
+
+    QHash<QString, CmdClass*>   mCmds; // Hold all used commands FIXME Rename later to mCommands
 
     Script*            mScript;
     Exporter*          mExporter;

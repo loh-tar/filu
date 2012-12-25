@@ -65,6 +65,8 @@ AgentF::AgentF(QCoreApplication& app)
 
 AgentF::~AgentF()
 {
+  foreach(CmdClass* cmd, mCmds) delete cmd;
+
   if(mScript)   delete mScript;
   if(mExporter) delete mExporter;
   if(mScanner)  delete mScanner;
@@ -447,12 +449,20 @@ void AgentF::depots()
 
 void AgentF::cmdExec(const QString& cmd)
 {
-  CmdClass* cmdClass = CmdClass::createNew(cmd, this);
+  CmdClass* cmdClass;
+
+  if(mCmds.contains(cmd))
+  {
+    cmdClass = mCmds.value(cmd);
+  }
+  else
+  {
+    cmdClass = CmdClass::createNew(cmd, this);
+    mCmds.insert(cmd, cmdClass);
+  }
 
   cmdClass->exec(mCmd);
   addErrors(cmdClass->errors());
-
-  delete cmdClass;
 }
 
 void AgentF::deleteBars()
