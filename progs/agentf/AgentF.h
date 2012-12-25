@@ -62,7 +62,6 @@ class AgentF : public FCoreApp
     bool lineToCommand(const QString& line, QStringList& cmd);
     void cmdRcf();
     void beEvil();
-    void import();
     void exxport();
     void scan();
     void depots();
@@ -79,7 +78,6 @@ class AgentF : public FCoreApp
                      , const QDate& fromDate, const QDate& toDate, int fiId, int marketId);
 
     Script*            mScript;
-    Importer*          mImporter;
     Exporter*          mExporter;
     Scanner*           mScanner;
     QList<QProcess*>   mClones;

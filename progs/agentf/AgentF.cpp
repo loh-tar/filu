@@ -34,7 +34,6 @@
 #include "Exporter.h"
 #include "FiluU.h"
 #include "FTool.h"
-#include "Importer.h"
 #include "RcFile.h"
 #include "Scanner.h"
 #include "Script.h"
@@ -44,7 +43,6 @@
 AgentF::AgentF(QCoreApplication& app)
       : FCoreApp("AgentF", app)
       , mScript(0)
-      , mImporter(0)
       , mExporter(0)
       , mScanner(0)
       , mQuit(true)
@@ -68,7 +66,6 @@ AgentF::AgentF(QCoreApplication& app)
 AgentF::~AgentF()
 {
   if(mScript)   delete mScript;
-  if(mImporter) delete mImporter;
   if(mExporter) delete mExporter;
   if(mScanner)  delete mScanner;
 
@@ -413,58 +410,6 @@ void AgentF::beEvil()
   }
 
   mQuit = true;
-}
-
-void AgentF::import()
-{
-  // Command looks like
-  // agentf imp [<FileName>]
-
-  if(mCmd->isMissingParms())
-  {
-    if(mCmd->printThisWay("[<FileName>]")) return;
-
-    mCmd->printComment(tr("Without <FileName> will read from stdin (Ctrl-D to quit)."));
-    mCmd->aided();
-    return;
-  }
-
-  QTextStream* in;
-  QFile* file = 0;
-
-  if(!mCmd->argStr(1).isEmpty())
-  {
-    file = new QFile(mCmd->argStr(1));
-    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-      error(FUNC, tr("Can't open file: %1").arg(mCmd->argStr(1)));
-      return;
-    }
-
-    in = new QTextStream(file);
-  }
-  else
-  {
-    in = new QTextStream(stdin);
-  }
-
-  if(!mImporter) mImporter = new Importer(this);
-
-  while (!in->atEnd())
-  {
-    QString line = in->readLine();
-    if(!mImporter->import(line)) break;
-  }
-
-  mImporter->import("[EOF]");
-
-  if(file)
-  {
-    file->close();
-    delete file;
-  }
-
-  delete in;
 }
 
 void AgentF::exxport()
@@ -881,7 +826,6 @@ void AgentF::exec(const QStringList& parm)
     mCmd->inCmdBrief("this", tr("Download eod bars of one defined FI"));
     mCmd->inCmdBrief("full", tr("Download eod bars of all FIs"));
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
-    mCmd->inCmdBrief("imp", tr("Imports an (surprise!) import file. See doc/import-file-format.txt"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
@@ -922,7 +866,7 @@ void AgentF::exec(const QStringList& parm)
   if(mCmd->hasCmd("this"))               addEODBarData();
   else if(mCmd->hasCmd("full"))          updateAllBars();
   else if(mCmd->hasCmd("rcf"))           cmdRcf();
-  else if(mCmd->hasCmd("imp"))           import();
+  else if(mCmd->hasCmd("imp"))           cmdExec("Imp");
   else if(mCmd->hasCmd("exp"))           exxport();
   else if(mCmd->hasCmd("scan"))          scan();
   else if(mCmd->hasCmd("depots"))        depots();

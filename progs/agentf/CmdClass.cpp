@@ -24,6 +24,7 @@
 // List here all sub classes
 #include "CmdAdd.h"
 #include "CmdDB.h"
+#include "CmdImp.h"
 
 CmdClass::CmdClass(FClass* parent, const QString& func)
       : FClass(parent, func)
@@ -38,6 +39,7 @@ CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
   // Append these command list when you add a new sub classe
   if("Add" == type)         return new CmdAdd(parent);
   else if("DB" == type)     return new CmdDB(parent);
+  else if("Imp" == type)    return new CmdImp(parent);
 //   else if("" == type)       return new Cmd(parent, func);
 
   // FIXME Not possible because this here is a static function
@@ -51,6 +53,7 @@ void CmdClass::allBriefIn(CmdHelper* ch)
   // Append these command list when you add a new sub classe
   CmdAdd::briefIn(ch);
   CmdDB::briefIn(ch);
+  CmdImp::briefIn(ch);
 }
 
 void CmdClass::briefIn(CmdHelper* cmd)

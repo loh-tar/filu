@@ -13,6 +13,7 @@ set(agentf_SRC
     CmdClass.cpp
     CmdAdd.cpp
     CmdDB.cpp
+    CmdImp.cpp
     AgentF.cpp
     main.cpp
 )
