@@ -36,6 +36,11 @@ CmdSummon::CmdSummon(FClass* parent)
 CmdSummon::~CmdSummon()
 {}
 
+bool CmdSummon::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdSummon::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

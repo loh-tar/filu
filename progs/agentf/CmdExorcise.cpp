@@ -36,6 +36,11 @@ CmdExorcise::CmdExorcise(FClass* parent)
 CmdExorcise::~CmdExorcise()
 {}
 
+bool CmdExorcise::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdExorcise::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

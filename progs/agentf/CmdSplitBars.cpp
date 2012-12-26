@@ -35,6 +35,11 @@ CmdSplitBars::CmdSplitBars(FClass* parent)
 CmdSplitBars::~CmdSplitBars()
 {}
 
+bool CmdSplitBars::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdSplitBars::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

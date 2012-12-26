@@ -38,6 +38,11 @@ CmdDB::CmdDB(FClass* parent)
 CmdDB::~CmdDB()
 {}
 
+bool CmdDB::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdDB::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

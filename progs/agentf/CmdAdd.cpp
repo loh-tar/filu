@@ -36,6 +36,11 @@ CmdAdd::~CmdAdd()
   delete mImporter;
 }
 
+bool CmdAdd::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdAdd::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

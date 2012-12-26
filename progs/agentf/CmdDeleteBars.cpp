@@ -35,6 +35,11 @@ CmdDeleteBars::CmdDeleteBars(FClass* parent)
 CmdDeleteBars::~CmdDeleteBars()
 {}
 
+bool CmdDeleteBars::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdDeleteBars::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

@@ -40,6 +40,11 @@ CmdImp::~CmdImp()
   if(mImporter) delete mImporter;
 }
 
+bool CmdImp::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdImp::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

@@ -32,6 +32,11 @@ CmdSet::CmdSet(FClass* parent)
 CmdSet::~CmdSet()
 {}
 
+bool CmdSet::isCmd(const QString& cmd)
+{
+  return cCmd1 == cmd;
+}
+
 void CmdSet::regCmd(CmdHelper* ch)
 {
   if(!ch) return;

@@ -24,7 +24,7 @@
 
 /***********************************************************************
 *
-*   Yes, represent the '' command of AgentF.
+*   Yes, represent the 'splitBars' command of AgentF.
 *
 ************************************************************************/
 
@@ -34,6 +34,7 @@ class CmdSplitBars : public CmdClass
                   CmdSplitBars(FClass* parent);
     virtual      ~CmdSplitBars();
 
+    static bool   isCmd(const QString& cmd);
     static void   regCmd(CmdHelper* ch);
     static void   briefIn(CmdHelper* ch);
     bool          exec(CmdHelper* ch);

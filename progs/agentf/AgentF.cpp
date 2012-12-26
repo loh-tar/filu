@@ -573,18 +573,18 @@ void AgentF::exec(const QStringList& parm)
   if(mCmd->hasCmd("this"))               addEODBarData();
   else if(mCmd->hasCmd("full"))          updateAllBars();
   else if(mCmd->hasCmd("rcf"))           cmdRcf();
-  else if(mCmd->hasCmd("imp"))           cmdExec("Imp");
+  else if(mCmd->hasCmd("imp"))           cmdExec("imp");
   else if(mCmd->hasCmd("exp"))           exxport();
   else if(mCmd->hasCmd("scan"))          scan();
   else if(mCmd->hasCmd("depots"))        depots();
-  else if(mCmd->hasCmd("add"))           cmdExec("Add");
+  else if(mCmd->hasCmd("add"))           cmdExec("add");
   else if(mCmd->hasCmd("daemon"))        beEvil();
-  else if(mCmd->hasCmd("db"))            cmdExec("DB");
-  else if(mCmd->hasCmd("deleteBars"))    cmdExec("DeleteBars");
-  else if(mCmd->hasCmd("splitBars"))     cmdExec("SplitBars");
-  else if(mCmd->hasCmd("sum"))           cmdExec("Summon");
-  else if(mCmd->hasCmd("exo"))           cmdExec("Exorcise");
-  else if(mCmd->hasCmd("set"))           cmdExec("Set");
+  else if(mCmd->hasCmd("db"))            cmdExec("db");
+  else if(mCmd->hasCmd("deleteBars"))    cmdExec("deleteBars");
+  else if(mCmd->hasCmd("splitBars"))     cmdExec("splitBars");
+  else if(mCmd->hasCmd("sum"))           cmdExec("sum");
+  else if(mCmd->hasCmd("exo"))           cmdExec("exo");
+  else if(mCmd->hasCmd("set"))           cmdExec("set");
   else if(mCmd->hasCmd("fetch"))         cmdFetch();
   else if(mCmd->hasCmd("info"))
   {

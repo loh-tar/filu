@@ -34,6 +34,7 @@ class CmdDeleteBars : public CmdClass
                   CmdDeleteBars(FClass* parent);
     virtual      ~CmdDeleteBars();
 
+    static bool   isCmd(const QString& cmd);
     static void   regCmd(CmdHelper* ch);
     static void   briefIn(CmdHelper* ch);
     bool          exec(CmdHelper* ch);
