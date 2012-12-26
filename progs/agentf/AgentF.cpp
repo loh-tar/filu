@@ -52,7 +52,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
-  mCmd->regCmds("this full rcf exp scan daemon sum exo "
+  mCmd->regCmds("this full rcf exp scan daemon exo "
                 "deleteBars splitBars info depots set fetch");
 
   CmdClass::allRegCmds(mCmd);
@@ -564,56 +564,6 @@ void AgentF::splitBars()
   else verbose(FUNC, tr("%1 bars adjusted.").arg(nra));
 }
 
-void AgentF::summon()
-{
-  if(mCmd->isMissingParms(1))
-  {
-    if(mCmd->printThisWay("<Devil>")) return;
-
-    mCmd->printComment(tr("Switch to (or create new) development schemata for the current user. "
-                          "The name should only contain 'valid' word characters, otherwise will "
-                          "they replaced by underscroes."));
-    mCmd->printNote(tr("The config key 'SqlPath' is set to 'FiluSource/database/sqls/' in the user "
-                       "settings file if you run AgentF from your 'FiluSource/[build/]' directory. "
-                       "In fact is that test poor. It's only tested if '[../build/]database/sqls/' exist."
-                       "These applies correspondingly to 'ProviderPath'."));
-    mCmd->printNote(tr("To list existing development schemata use the 'exo' command."));
-    mCmd->printForInst("newidea");
-    mCmd->aided();
-    return;
-  }
-
-  QString devil = FTool::makeValidWord(mCmd->parmStr(1));
-  if(FTool::makeValidWord(mRcFile->getST("Devil")) == devil)
-  {
-    verbose(FUNC, tr("I'm already '%1' devilish").arg(devil));
-    return;
-  }
-
-  verbose(FUNC, tr("I summon the devil '%1'").arg(devil));
-  mRcFile->set("Devil", devil);
-  QString devilPath(getenv("PWD"));
-  devilPath.remove(QRegExp("/build$"));
-  devilPath.append("/database/sqls/");
-  if(QFile::exists(devilPath))
-  {
-    verbose(FUNC, tr("Change SqlPath to: %1").arg(devilPath));
-    mRcFile->set("SqlPath", devilPath);
-
-    devilPath.remove(QRegExp("/database/sqls/$"));
-    devilPath.append("/scripts/provider/");
-    verbose(FUNC, tr("Change ProviderPath to: %1").arg(devilPath));
-    mRcFile->set("ProviderPath", devilPath);
-  }
-  else
-  {
-    verbose(FUNC, tr("Let SqlPath untouched: %1").arg(mRcFile->getST("SqlPath")));
-    verbose(FUNC, tr("Let ProviderPath untouched: %1").arg(mRcFile->getST("ProviderPath")));
-  }
-  mFilu->closeDB();
-  mFilu->openDB();
-}
-
 void AgentF::exorcise()
 {
   if(mCmd->isMissingParms())
@@ -842,7 +792,6 @@ void AgentF::exec(const QStringList& parm)
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
-    mCmd->inCmdBrief("sum", tr("Summon the devil"));
     mCmd->inCmdBrief("exo", tr("Exorcise the devil"));
     mCmd->inCmdBrief("set", tr("Set config file values"));
     mCmd->inCmdBrief("fetch", tr("To fetch data (currently only eodBars) from providers"));
@@ -887,7 +836,7 @@ void AgentF::exec(const QStringList& parm)
   else if(mCmd->hasCmd("db"))            cmdExec("DB");
   else if(mCmd->hasCmd("deleteBars"))    deleteBars();
   else if(mCmd->hasCmd("splitBars"))     splitBars();
-  else if(mCmd->hasCmd("sum"))           summon();
+  else if(mCmd->hasCmd("sum"))           cmdExec("Summon");
   else if(mCmd->hasCmd("exo"))           exorcise();
   else if(mCmd->hasCmd("set"))           cmdSet();
   else if(mCmd->hasCmd("fetch"))         cmdFetch();

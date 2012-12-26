@@ -25,6 +25,7 @@
 #include "CmdAdd.h"
 #include "CmdDB.h"
 #include "CmdImp.h"
+#include "CmdSummon.h"
 
 static const QString cCmd1 = "CmdClass";
 static const QString cCmd1Brief = QObject::tr("You should never read this. "
@@ -44,7 +45,8 @@ CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
   if("Add" == type)         return new CmdAdd(parent);
   else if("DB" == type)     return new CmdDB(parent);
   else if("Imp" == type)    return new CmdImp(parent);
-//   else if("" == type)       return new Cmd(parent, func);
+  else if("Summon" == type) return new CmdSummon(parent);
+//   else if("" == type)       return new Cmd(parent);
 
   // FIXME Not possible because this here is a static function
   //   fatal(FUNC, QString("Unknown CmdClass type: '%1'").arg(type));
@@ -58,6 +60,7 @@ void CmdClass::allRegCmds(CmdHelper* ch)
   CmdAdd::regCmd(ch);
   CmdDB::regCmd(ch);
   CmdImp::regCmd(ch);
+  CmdSummon::regCmd(ch);
 }
 
 void CmdClass::allBriefIn(CmdHelper* ch)
@@ -66,6 +69,7 @@ void CmdClass::allBriefIn(CmdHelper* ch)
   CmdAdd::briefIn(ch);
   CmdDB::briefIn(ch);
   CmdImp::briefIn(ch);
+  CmdSummon::briefIn(ch);
 }
 
 void CmdClass::briefIn(CmdHelper* cmd)
