@@ -18,6 +18,7 @@ set(agentf_SRC
     CmdExorcise.cpp
     CmdSet.cpp
     CmdSplitBars.cpp
+    CmdDeleteBars.cpp
     AgentF.cpp
     main.cpp
 )

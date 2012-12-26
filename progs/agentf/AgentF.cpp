@@ -53,7 +53,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
   mCmd->regCmds("this full rcf exp scan daemon "
-                "deleteBars info depots fetch");
+                "info depots fetch");
 
   CmdClass::allRegCmds(mCmd);
 
@@ -467,42 +467,6 @@ void AgentF::cmdExec(const QString& cmd)
   addErrors(cmdClass->errors());
 }
 
-void AgentF::deleteBars()
-{
-  // Command looks like
-  // agentf deleteBars <Symbol> <Market> <FromDate> [<ToDate>]
-
-  if(mCmd->isMissingParms(3))
-  {
-    if(mCmd->printThisWay("<Symbol> <Market> <FromDate> [<ToDate>]")) return;
-
-    mCmd->printComment(tr("Use dot-dot '..' for most old/new date. "
-                          "Without <ToDate> only one bar will delete."));
-
-    mCmd->printForInst("AAPL NewYork 2012-01-01 2012-06-01");
-    mCmd->printForInst("AAPL NewYork 2012-01-01 ..");
-    mCmd->aided();
-    return;
-  }
-
-  QDate fromDate = mCmd->argDate(3, QDate(1000, 1, 1));
-  QDate toDate   = mCmd->argDate(4, fromDate, QDate(3000, 1, 1));
-
-  if(mCmd->hasError()) return;
-
-  mFilu->setSqlParm(":symbol",   mCmd->argStr(1));
-  mFilu->setSqlParm(":market",   mCmd->argStr(2));
-  mFilu->setSqlParm(":fromDate", fromDate.toString(Qt::ISODate));
-  mFilu->setSqlParm(":toDate",   toDate.toString(Qt::ISODate));
-
-  QSqlQuery* query = mFilu->execSql("DeleteBars");
-  if(check4FiluError(FUNC)) return;
-
-  int nra = query->numRowsAffected();
-  if(!nra) warning(FUNC, tr("NO bars deleted!"));
-  else verbose(FUNC, tr("%1 bars deleted.").arg(nra));
-}
-
 void AgentF::cmdFetch()
 {
   if(mCmd->isMissingParms(1))
@@ -575,7 +539,6 @@ void AgentF::exec(const QStringList& parm)
     mCmd->inCmdBrief("full", tr("Download eod bars of all FIs"));
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
-    mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
     mCmd->inCmdBrief("fetch", tr("To fetch data (currently only eodBars) from providers"));
 
@@ -617,7 +580,7 @@ void AgentF::exec(const QStringList& parm)
   else if(mCmd->hasCmd("add"))           cmdExec("Add");
   else if(mCmd->hasCmd("daemon"))        beEvil();
   else if(mCmd->hasCmd("db"))            cmdExec("DB");
-  else if(mCmd->hasCmd("deleteBars"))    deleteBars();
+  else if(mCmd->hasCmd("deleteBars"))    cmdExec("DeleteBars");
   else if(mCmd->hasCmd("splitBars"))     cmdExec("SplitBars");
   else if(mCmd->hasCmd("sum"))           cmdExec("Summon");
   else if(mCmd->hasCmd("exo"))           cmdExec("Exorcise");
