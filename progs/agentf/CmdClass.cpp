@@ -28,6 +28,7 @@
 #include "CmdSummon.h"
 #include "CmdExorcise.h"
 #include "CmdSet.h"
+#include "CmdSplitBars.h"
 
 static const QString cCmd1 = "CmdClass";
 static const QString cCmd1Brief = QObject::tr("You should never read this. "
@@ -50,6 +51,7 @@ CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
   else if("Summon" == type)     return new CmdSummon(parent);
   else if("Exorcise" == type)   return new CmdExorcise(parent);
   else if("Set" == type)        return new CmdSet(parent);
+  else if("SplitBars" == type)  return new CmdSplitBars(parent);
 //   else if("" == type)           return new Cmd(parent);
 
   // FIXME Not possible because this here is a static function
@@ -67,6 +69,7 @@ void CmdClass::allRegCmds(CmdHelper* ch)
   CmdSummon::regCmd(ch);
   CmdExorcise::regCmd(ch);
   CmdSet::regCmd(ch);
+  CmdSplitBars::regCmd(ch);
 }
 
 void CmdClass::allBriefIn(CmdHelper* ch)
@@ -77,6 +80,7 @@ void CmdClass::allBriefIn(CmdHelper* ch)
   CmdImp::briefIn(ch);
   CmdSummon::briefIn(ch);
   CmdSet::briefIn(ch);
+  CmdSplitBars::briefIn(ch);
 }
 
 void CmdClass::briefIn(CmdHelper* cmd)

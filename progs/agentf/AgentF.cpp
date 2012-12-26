@@ -53,7 +53,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
   mCmd->regCmds("this full rcf exp scan daemon "
-                "deleteBars splitBars info depots fetch");
+                "deleteBars info depots fetch");
 
   CmdClass::allRegCmds(mCmd);
 
@@ -503,67 +503,6 @@ void AgentF::deleteBars()
   else verbose(FUNC, tr("%1 bars deleted.").arg(nra));
 }
 
-void AgentF::splitBars()
-{
-  // Command looks like
-  // agentf splitBars <Symbol> <Market> <FromDate> <ToDate> <SplitPre:Post>
-
-  if(mCmd->isMissingParms(5))
-  {
-    if(mCmd->printThisWay("<Symbol> <Market> <FromDate> <ToDate> <SplitPre:Post>")) return;
-
-    mCmd->printNote(tr("To accomplish a split event use the 'add split' command."));
-    mCmd->printForInst("KO NewYork 2011-06-01 2012-08-13 1:2");
-    mCmd->aided();
-    return;
-  }
-
-  double  pre;
-  double  post;
-  double  ratio;
-  bool    ok;
-
-  QStringList sl = mCmd->argStr(5).split(":");
-  if(sl.size() < 2)
-  {
-    error(FUNC, "Ratio must be <SplitPre:Post>.");
-    return;
-  }
-
-  pre = sl[0].toDouble(&ok);
-  if(pre == 0.0)
-  {
-    error(FUNC, "<SplitPre:Post>, Pre must not 0.");
-    return;
-  };
-
-  post = sl[1].toDouble(&ok);
-  if(post == 0.0)
-  {
-    error(FUNC, "<SplitPre:Post>, Post must not 0.");
-    return;
-  };
-
-  ratio = pre / post;
-
-  mFilu->setSqlParm(":fromDate", mCmd->argDate(3).toString(Qt::ISODate));
-  mFilu->setSqlParm(":toDate",   mCmd->argDate(4).toString(Qt::ISODate));
-
-  if(mCmd->hasError()) return;
-
-  mFilu->setSqlParm(":symbol",   mCmd->argStr(1));
-  mFilu->setSqlParm(":market",   mCmd->argStr(2));
-  mFilu->setSqlParm(":ratio",    ratio);
-  mFilu->setSqlParm(":quality",  0);
-
-  QSqlQuery* query = mFilu->execSql("SplitBars");
-  if(check4FiluError(FUNC)) return;
-
-  int nra = query->numRowsAffected();
-  if(!nra) warning(FUNC, tr("NO bars adjusted!"));
-  else verbose(FUNC, tr("%1 bars adjusted.").arg(nra));
-}
-
 void AgentF::cmdFetch()
 {
   if(mCmd->isMissingParms(1))
@@ -637,7 +576,6 @@ void AgentF::exec(const QStringList& parm)
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
-    mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
     mCmd->inCmdBrief("fetch", tr("To fetch data (currently only eodBars) from providers"));
 
@@ -680,7 +618,7 @@ void AgentF::exec(const QStringList& parm)
   else if(mCmd->hasCmd("daemon"))        beEvil();
   else if(mCmd->hasCmd("db"))            cmdExec("DB");
   else if(mCmd->hasCmd("deleteBars"))    deleteBars();
-  else if(mCmd->hasCmd("splitBars"))     splitBars();
+  else if(mCmd->hasCmd("splitBars"))     cmdExec("SplitBars");
   else if(mCmd->hasCmd("sum"))           cmdExec("Summon");
   else if(mCmd->hasCmd("exo"))           cmdExec("Exorcise");
   else if(mCmd->hasCmd("set"))           cmdExec("Set");
