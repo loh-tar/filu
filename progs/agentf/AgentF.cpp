@@ -52,7 +52,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
-  mCmd->regCmds("this full rcf exp scan daemon exo "
+  mCmd->regCmds("this full rcf exp scan daemon "
                 "deleteBars splitBars info depots set fetch");
 
   CmdClass::allRegCmds(mCmd);
@@ -564,125 +564,6 @@ void AgentF::splitBars()
   else verbose(FUNC, tr("%1 bars adjusted.").arg(nra));
 }
 
-void AgentF::exorcise()
-{
-  if(mCmd->isMissingParms())
-  {
-    if(mCmd->printThisWay("[<Devil>]")) return;
-
-    mCmd->printComment(tr("Switch in any case back to the productive version and delete "
-                          "(if given) the development schemata."));
-    mCmd->printNote(tr("The config keys 'SqlPath' and 'ProviderPath' will removed from "
-                       "the user settings file."));
-
-    mCmd->printForInst("mylastidea");
-    mCmd->aided();
-    return;
-  }
-
-  QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));
-
-  if(!devil.isEmpty())
-  {
-    verbose(FUNC, tr("I renunciate the devil '%1'").arg(devil));
-    mRcFile->remove("Devil");
-    mRcFile->remove("SqlPath");
-    mRcFile->remove("ProviderPath");
-    verbose(FUNC, tr("SqlPath is now: %1").arg(mRcFile->getST("SqlPath")));
-    verbose(FUNC, tr("ProviderPath is now: %1").arg(mRcFile->getST("ProviderPath")));
-    mFilu->closeDB();
-    mFilu->openDB();
-  }
-
-  QString user = qgetenv("USER");
-
-  mFilu->setSqlParm(":username", user);
-  QSqlQuery* query = mFilu->execSql("GetDevils");
-
-  QSet<QString> devils;
-  const QString devilPrefix = QString("user_%1_").arg(user);
-  while(query->next())
-  {
-    QString devil = query->value(0).toString();
-    devil.remove(devilPrefix);
-    devils.insert(devil);
-  }
-
-  const QString killDevil = FTool::makeValidWord(mCmd->argStr(1, ""));
-  const QString filuDevil = "%1_%2_%3";
-  const QString userDevil = "user_%1_%2";
-
-//   Out commentetd because I run in my own trap.
-//   It is not possible to execute a SQL more than one time with static
-//   parameters. What we need is a "execute once" function wich release the SQL
-//   after executen, or a "release <sql>" function, or a "execStatic" function
-//   wich works with normal setSqlParm() but does not use query-bind() but
-//   replace the paramater by his own
-//   if("+++" == killDevil) // Exorcise all devils
-//   {
-//     foreach(QString d, devils)
-//     {
-//       verbose(FUNC, tr("Devil '%1'.").arg(d));
-//       mFilu->setStaticSqlParm(":filuDevil", filuDevil.arg(mRcFile->getST("FiluSchema"), user, d));
-//       mFilu->setStaticSqlParm(":userDevil", userDevil.arg(user, d));
-//       mFilu->execSql("BackToHell");
-//
-// //       devils.remove(d);
-//
-//       if(!mFilu->hasError())
-//       {
-//         verbose(FUNC, tr("Devil '%1' is banned back to hell.").arg(d));
-//       }
-//       else
-//       {
-//         return;
-//       }
-//     }
-//
-//     devils.clear();
-//   }
-//   else
-
-  if(!killDevil.isEmpty())
-  {
-    if(devils.contains(killDevil))
-    {
-      mFilu->setStaticSqlParm(":filuDevil", filuDevil.arg("filu", user, killDevil));
-      mFilu->setStaticSqlParm(":userDevil", userDevil.arg(user, killDevil));
-      mFilu->execSql("BackToHell");
-
-      devils.remove(killDevil);
-
-      if(!mFilu->hasError())
-      {
-        verbose(FUNC, tr("Devil '%1' is banned back to hell.").arg(killDevil));
-      }
-    }
-    else
-    {
-      error(FUNC, tr("No devil '%1' is amongst us.").arg(killDevil));
-    }
-  }
-
-  if(verboseLevel(eInfo))
-  {
-    if(!devils.size())
-    {
-      verbose(FUNC, tr("No devils out of hell."));
-    }
-    else if(devils.size() == 1)
-    {
-      verbose(FUNC, tr("The Devil is still amongst us:"));
-      verbose(FUNC, QString("  %1").arg(devils.toList().at(0)));
-    }
-    else
-    {
-      verbose(FUNC, tr("These Devils are still amongst us:"));
-      foreach(QString d, devils) verbose(FUNC, QString("  %1").arg(d));
-    }
-  }
-}
-
 void AgentF::cmdSet()
 {
   if(mCmd->isMissingParms())
@@ -792,7 +673,6 @@ void AgentF::exec(const QStringList& parm)
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
-    mCmd->inCmdBrief("exo", tr("Exorcise the devil"));
     mCmd->inCmdBrief("set", tr("Set config file values"));
     mCmd->inCmdBrief("fetch", tr("To fetch data (currently only eodBars) from providers"));
 
@@ -837,7 +717,7 @@ void AgentF::exec(const QStringList& parm)
   else if(mCmd->hasCmd("deleteBars"))    deleteBars();
   else if(mCmd->hasCmd("splitBars"))     splitBars();
   else if(mCmd->hasCmd("sum"))           cmdExec("Summon");
-  else if(mCmd->hasCmd("exo"))           exorcise();
+  else if(mCmd->hasCmd("exo"))           cmdExec("Exorcise");
   else if(mCmd->hasCmd("set"))           cmdSet();
   else if(mCmd->hasCmd("fetch"))         cmdFetch();
   else if(mCmd->hasCmd("info"))

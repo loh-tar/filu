@@ -15,6 +15,7 @@ set(agentf_SRC
     CmdDB.cpp
     CmdImp.cpp
     CmdSummon.cpp
+    CmdExorcise.cpp
     AgentF.cpp
     main.cpp
 )

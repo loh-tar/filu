@@ -26,6 +26,7 @@
 #include "CmdDB.h"
 #include "CmdImp.h"
 #include "CmdSummon.h"
+#include "CmdExorcise.h"
 
 static const QString cCmd1 = "CmdClass";
 static const QString cCmd1Brief = QObject::tr("You should never read this. "
@@ -42,11 +43,12 @@ CmdClass::~CmdClass()
 CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
 {
   // Append these command list when you add a new sub classe
-  if("Add" == type)         return new CmdAdd(parent);
-  else if("DB" == type)     return new CmdDB(parent);
-  else if("Imp" == type)    return new CmdImp(parent);
-  else if("Summon" == type) return new CmdSummon(parent);
-//   else if("" == type)       return new Cmd(parent);
+  if("Add" == type)             return new CmdAdd(parent);
+  else if("DB" == type)         return new CmdDB(parent);
+  else if("Imp" == type)        return new CmdImp(parent);
+  else if("Summon" == type)     return new CmdSummon(parent);
+  else if("Exorcise" == type)   return new CmdExorcise(parent);
+//   else if("" == type)           return new Cmd(parent);
 
   // FIXME Not possible because this here is a static function
   //   fatal(FUNC, QString("Unknown CmdClass type: '%1'").arg(type));
@@ -61,6 +63,7 @@ void CmdClass::allRegCmds(CmdHelper* ch)
   CmdDB::regCmd(ch);
   CmdImp::regCmd(ch);
   CmdSummon::regCmd(ch);
+  CmdExorcise::regCmd(ch);
 }
 
 void CmdClass::allBriefIn(CmdHelper* ch)
@@ -70,6 +73,7 @@ void CmdClass::allBriefIn(CmdHelper* ch)
   CmdDB::briefIn(ch);
   CmdImp::briefIn(ch);
   CmdSummon::briefIn(ch);
+  CmdExorcise::briefIn(ch);
 }
 
 void CmdClass::briefIn(CmdHelper* cmd)
