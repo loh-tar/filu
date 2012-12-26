@@ -52,8 +52,10 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
-  mCmd->regCmds("this full rcf imp exp scan add daemon sum exo "
-                "db deleteBars splitBars info depots set fetch");
+  mCmd->regCmds("this full rcf exp scan daemon sum exo "
+                "deleteBars splitBars info depots set fetch");
+
+  CmdClass::allRegCmds(mCmd);
 
   mCmd->regStdOpts("verbose");
   mCmd->inGreeter("AgentF is part of Filu. Visit http://filu.sourceforge.net");

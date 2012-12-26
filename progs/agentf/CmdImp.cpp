@@ -26,6 +26,10 @@
 #include "FiluU.h"
 #include "Importer.h"
 
+static const QString cCmd1 = "imp";
+static const QString cCmd1Brief = QObject::tr("Imports an (surprise!) import file. "
+                                              "See doc/import-file-format.txt");
+
 CmdImp::CmdImp(FClass* parent)
       : CmdClass(parent, FUNC)
       , mImporter(0)
@@ -36,12 +40,16 @@ CmdImp::~CmdImp()
   if(mImporter) delete mImporter;
 }
 
-void CmdImp::briefIn(CmdHelper* ch)
+void CmdImp::regCmd(CmdHelper* ch)
 {
   if(!ch) return;
 
-  static const QString cCmd1 = "imp";
-  static const QString cCmd1Brief = tr("Imports an (surprise!) import file. See doc/import-file-format.txt");
+  ch->regCmds(cCmd1);
+}
+
+void CmdImp::briefIn(CmdHelper* ch)
+{
+  if(!ch) return;
 
   ch->inCmdBrief(cCmd1, cCmd1Brief);
 }

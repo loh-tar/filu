@@ -26,6 +26,10 @@
 #include "CmdDB.h"
 #include "CmdImp.h"
 
+static const QString cCmd1 = "CmdClass";
+static const QString cCmd1Brief = QObject::tr("You should never read this. "
+                                              "Hey hacker: Derived class need 'briefIn' function.");
+
 CmdClass::CmdClass(FClass* parent, const QString& func)
       : FClass(parent, func)
       , mCmd(0)
@@ -48,6 +52,14 @@ CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
   return 0;
 }
 
+void CmdClass::allRegCmds(CmdHelper* ch)
+{
+  // Append these command list when you add a new sub classe
+  CmdAdd::regCmd(ch);
+  CmdDB::regCmd(ch);
+  CmdImp::regCmd(ch);
+}
+
 void CmdClass::allBriefIn(CmdHelper* ch)
 {
   // Append these command list when you add a new sub classe
@@ -59,10 +71,6 @@ void CmdClass::allBriefIn(CmdHelper* ch)
 void CmdClass::briefIn(CmdHelper* cmd)
 {
   if(!cmd) return;
-
-  static const QString cCmd1 = "CmdClass";
-  static const QString cCmd1Brief = tr("You should never read this. "
-                                       "Hey hacker: Derived class need 'briefIn' function.");
 
   cmd->inCmdBrief(cCmd1, cCmd1Brief);
 }

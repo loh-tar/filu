@@ -38,6 +38,7 @@ class CmdClass : public FClass
     virtual              ~CmdClass();
 
     static  CmdClass*     createNew(const QString& type, FClass* parent);
+    static void           allRegCmds(CmdHelper* ch);
     static void           allBriefIn(CmdHelper* ch);
 
     static void           briefIn(CmdHelper* ch);

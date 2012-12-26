@@ -28,6 +28,9 @@
 #include "FTool.h"
 #include "RcFile.h"
 
+static const QString cCmd1 = "db";
+static const QString cCmd1Brief = QObject::tr("Maintain the database");
+
 CmdDB::CmdDB(FClass* parent)
       : CmdClass(parent, FUNC)
 {}
@@ -35,12 +38,16 @@ CmdDB::CmdDB(FClass* parent)
 CmdDB::~CmdDB()
 {}
 
-void CmdDB::briefIn(CmdHelper* ch)
+void CmdDB::regCmd(CmdHelper* ch)
 {
   if(!ch) return;
 
-  static const QString cCmd1 = "db";
-  static const QString cCmd1Brief = tr("Maintain the database");
+  ch->regCmds(cCmd1);
+}
+
+void CmdDB::briefIn(CmdHelper* ch)
+{
+  if(!ch) return;
 
   ch->inCmdBrief(cCmd1, cCmd1Brief);
 }

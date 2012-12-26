@@ -22,6 +22,10 @@
 #include "CmdHelper.h"
 #include "Importer.h"
 
+static const QString cCmd1 = "add";
+static const QString cCmd1Brief = QObject::tr("Allows you add a single dataset to "
+                                              "the database by using Importer");
+
 CmdAdd::CmdAdd(FClass* parent)
       : CmdClass(parent, FUNC)
       , mImporter(new Importer(this))
@@ -32,12 +36,16 @@ CmdAdd::~CmdAdd()
   delete mImporter;
 }
 
-void CmdAdd::briefIn(CmdHelper* ch)
+void CmdAdd::regCmd(CmdHelper* ch)
 {
   if(!ch) return;
 
-  static const QString cCmd1 = "add";
-  static const QString cCmd1Brief = tr("Allows you add a single dataset to the database by using Importer");
+  ch->regCmds(cCmd1);
+}
+
+void CmdAdd::briefIn(CmdHelper* ch)
+{
+  if(!ch) return;
 
   ch->inCmdBrief(cCmd1, cCmd1Brief);
 }

@@ -39,6 +39,7 @@ class CmdAdd : public CmdClass
                   CmdAdd(FClass* parent);
     virtual      ~CmdAdd();
 
+    static void   regCmd(CmdHelper* ch);
     static void   briefIn(CmdHelper* ch);
     bool          exec(CmdHelper* ch);
 
