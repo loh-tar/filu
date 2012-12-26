@@ -53,7 +53,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
   mCmd->regCmds("this full rcf exp scan daemon "
-                "deleteBars splitBars info depots set fetch");
+                "deleteBars splitBars info depots fetch");
 
   CmdClass::allRegCmds(mCmd);
 
@@ -564,40 +564,6 @@ void AgentF::splitBars()
   else verbose(FUNC, tr("%1 bars adjusted.").arg(nra));
 }
 
-void AgentF::cmdSet()
-{
-  if(mCmd->isMissingParms())
-  {
-    mCmd->regOpts("config");
-    mCmd->inOptBrief("config", "<Key>=<Value> [<Key>=<Value>].."
-                   , "Key is any config file key and value ...yes. There are no checks done if "
-                     "Key is known or value is valid");
-
-    mCmd->groupOpts("Options", ""); // Don't show <Options>
-    if(mCmd->printThisWay("~~config")) return;
-
-    mCmd->printComment(tr("As you may know take the --config option each Filu program to use temporary "
-                          "different settings. With the set command will these settings written "
-                          "into the config file."));
-    mCmd->prin4Comment(tr("But because all this is not truly done by AgentF you may notice a differend "
-                          "behavior of the set command from other commands of AgentF. The point is: "
-                          "--help does not prevent from writing into the config file."));
-
-    mCmd->printForInst("--config SqlDebug=Ample Verbose=Ample");
-    mCmd->printForInst("--config Devil=-");
-    mCmd->printComment(tr("Use the hyphens to disable *temporary* an existing Devil=foo setting"));
-    mCmd->aided();
-    return;
-  }
-
-  if(mIamEvil)
-  {
-    warning(FUNC, tr("The set command has no effect in batch or daemon mode."));
-  }
-
-  // Nothing todo, all done by RcFile
-}
-
 void AgentF::cmdFetch()
 {
   if(mCmd->isMissingParms(1))
@@ -673,7 +639,6 @@ void AgentF::exec(const QStringList& parm)
     mCmd->inCmdBrief("deleteBars", tr("Delete one or a range of eod bars of one FI"));
     mCmd->inCmdBrief("splitBars", tr("To correct faulty data of the provider"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
-    mCmd->inCmdBrief("set", tr("Set config file values"));
     mCmd->inCmdBrief("fetch", tr("To fetch data (currently only eodBars) from providers"));
 
     CmdClass::allBriefIn(mCmd);
@@ -718,7 +683,7 @@ void AgentF::exec(const QStringList& parm)
   else if(mCmd->hasCmd("splitBars"))     splitBars();
   else if(mCmd->hasCmd("sum"))           cmdExec("Summon");
   else if(mCmd->hasCmd("exo"))           cmdExec("Exorcise");
-  else if(mCmd->hasCmd("set"))           cmdSet();
+  else if(mCmd->hasCmd("set"))           cmdExec("Set");
   else if(mCmd->hasCmd("fetch"))         cmdFetch();
   else if(mCmd->hasCmd("info"))
   {

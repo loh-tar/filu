@@ -68,7 +68,6 @@ class AgentF : public FCoreApp
     void depots();
     void deleteBars();
     void splitBars();
-    void cmdSet();
 
     void printSettings();
     void printError(const QString message);
