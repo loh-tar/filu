@@ -235,6 +235,8 @@ bool CmdHelper::cmdLineLooksBad(const QStringList& cmdLine)
     }
   }
   mOptions.insert(opt.name, opt);
+  mInqCmd = mOptions.named(cmd);
+  mInqOpt = mInqCmd;
 
   return false;
 }
