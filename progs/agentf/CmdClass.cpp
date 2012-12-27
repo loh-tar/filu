@@ -61,17 +61,21 @@ CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
   return 0;
 }
 
-void CmdClass::allRegCmds(CmdHelper* ch)
+QSet<QString> CmdClass::allRegCmds(CmdHelper* ch)
 {
   // Append these command list when you add a new sub classe
-  CmdAdd::regCmd(ch);
-  CmdDB::regCmd(ch);
-  CmdImp::regCmd(ch);
-  CmdSummon::regCmd(ch);
-  CmdExorcise::regCmd(ch);
-  CmdSet::regCmd(ch);
-  CmdSplitBars::regCmd(ch);
-  CmdDeleteBars::regCmd(ch);
+  QSet<QString> cmds;
+
+  cmds.insert(CmdAdd::regCmd(ch));
+  cmds.insert(CmdDB::regCmd(ch));
+  cmds.insert(CmdImp::regCmd(ch));
+  cmds.insert(CmdSummon::regCmd(ch));
+  cmds.insert(CmdExorcise::regCmd(ch));
+  cmds.insert(CmdSet::regCmd(ch));
+  cmds.insert(CmdSplitBars::regCmd(ch));
+  cmds.insert(CmdDeleteBars::regCmd(ch));
+
+  return cmds;
 }
 
 void CmdClass::allBriefIn(CmdHelper* ch)

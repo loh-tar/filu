@@ -20,6 +20,8 @@
 #ifndef CMDCLASS_HPP
 #define CMDCLASS_HPP
 
+#include <QSet>
+
 #include "FClass.h"
 
 class CmdHelper;
@@ -38,7 +40,7 @@ class CmdClass : public FClass
     virtual              ~CmdClass();
 
     static  CmdClass*     createNew(const QString& type, FClass* parent);
-    static void           allRegCmds(CmdHelper* ch);
+    static QSet<QString>  allRegCmds(CmdHelper* ch);
     static void           allBriefIn(CmdHelper* ch);
 
     static void           briefIn(CmdHelper* ch);

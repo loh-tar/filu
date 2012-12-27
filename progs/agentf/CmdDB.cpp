@@ -43,11 +43,13 @@ bool CmdDB::isCmd(const QString& cmd)
   return cCmd1 == cmd;
 }
 
-void CmdDB::regCmd(CmdHelper* ch)
+QString CmdDB::regCmd(CmdHelper* ch)
 {
-  if(!ch) return;
+  if(!ch) return "";
 
   ch->regCmds(cCmd1);
+
+  return cCmd1;
 }
 
 void CmdDB::briefIn(CmdHelper* ch)

@@ -40,11 +40,13 @@ bool CmdSplitBars::isCmd(const QString& cmd)
   return cCmd1 == cmd;
 }
 
-void CmdSplitBars::regCmd(CmdHelper* ch)
+QString CmdSplitBars::regCmd(CmdHelper* ch)
 {
-  if(!ch) return;
+  if(!ch) return "";
 
   ch->regCmds(cCmd1);
+
+  return cCmd1;
 }
 
 void CmdSplitBars::briefIn(CmdHelper* ch)

@@ -55,7 +55,7 @@ AgentF::AgentF(QCoreApplication& app)
   mCmd->regCmds("this full rcf exp scan daemon "
                 "info depots fetch");
 
-  CmdClass::allRegCmds(mCmd);
+  mKnownCmds = CmdClass::allRegCmds(mCmd);
 
   mCmd->regStdOpts("verbose");
   mCmd->inGreeter("AgentF is part of Filu. Visit http://filu.sourceforge.net");
@@ -531,7 +531,7 @@ void AgentF::exec(const QStringList& parm)
 
   if(mCmd->cmdLineLooksBad(parm)) return;
 
-  if(mCmd->hasOpt("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
+  if(mCmd->has("verbose")) setVerboseLevel(FUNC, mCmd->cmdLine());
 
   if(mCmd->wantHelp())
   {
@@ -570,21 +570,14 @@ void AgentF::exec(const QStringList& parm)
   }
 
   // Look for each known command and call the related function
-  if(mCmd->hasCmd("this"))               addEODBarData();
+  if(mKnownCmds.contains(mCmd->cmd()))   cmdExec(mCmd->cmd());
+  else if(mCmd->hasCmd("this"))          addEODBarData();
   else if(mCmd->hasCmd("full"))          updateAllBars();
   else if(mCmd->hasCmd("rcf"))           cmdRcf();
-  else if(mCmd->hasCmd("imp"))           cmdExec("imp");
   else if(mCmd->hasCmd("exp"))           exxport();
   else if(mCmd->hasCmd("scan"))          scan();
   else if(mCmd->hasCmd("depots"))        depots();
-  else if(mCmd->hasCmd("add"))           cmdExec("add");
   else if(mCmd->hasCmd("daemon"))        beEvil();
-  else if(mCmd->hasCmd("db"))            cmdExec("db");
-  else if(mCmd->hasCmd("deleteBars"))    cmdExec("deleteBars");
-  else if(mCmd->hasCmd("splitBars"))     cmdExec("splitBars");
-  else if(mCmd->hasCmd("sum"))           cmdExec("sum");
-  else if(mCmd->hasCmd("exo"))           cmdExec("exo");
-  else if(mCmd->hasCmd("set"))           cmdExec("set");
   else if(mCmd->hasCmd("fetch"))         cmdFetch();
   else if(mCmd->hasCmd("info"))
   {

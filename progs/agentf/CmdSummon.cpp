@@ -41,11 +41,13 @@ bool CmdSummon::isCmd(const QString& cmd)
   return cCmd1 == cmd;
 }
 
-void CmdSummon::regCmd(CmdHelper* ch)
+QString CmdSummon::regCmd(CmdHelper* ch)
 {
-  if(!ch) return;
+  if(!ch) return "";
 
   ch->regCmds(cCmd1);
+
+  return cCmd1;
 }
 
 void CmdSummon::briefIn(CmdHelper* ch)

@@ -34,10 +34,10 @@ class CmdSummon : public CmdClass
                   CmdSummon(FClass* parent);
     virtual      ~CmdSummon();
 
-    static bool   isCmd(const QString& cmd);
-    static void   regCmd(CmdHelper* ch);
-    static void   briefIn(CmdHelper* ch);
-    bool          exec(CmdHelper* ch);
+    static bool       isCmd(const QString& cmd);
+    static QString    regCmd(CmdHelper* ch);
+    static void       briefIn(CmdHelper* ch);
+    bool              exec(CmdHelper* ch);
 
   protected:
 

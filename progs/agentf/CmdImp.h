@@ -36,10 +36,10 @@ class CmdImp : public CmdClass
                   CmdImp(FClass* parent);
     virtual      ~CmdImp();
 
-    static bool   isCmd(const QString& cmd);
-    static void   regCmd(CmdHelper* ch);
-    static void   briefIn(CmdHelper* ch);
-    bool          exec(CmdHelper* ch);
+    static bool       isCmd(const QString& cmd);
+    static QString    regCmd(CmdHelper* ch);
+    static void       briefIn(CmdHelper* ch);
+    bool              exec(CmdHelper* ch);
 
   protected:
     Importer*          mImporter;

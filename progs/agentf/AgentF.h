@@ -20,6 +20,7 @@
 #ifndef AGENTF_HPP
 #define AGENTF_HPP
 
+#include <QSet>
 #include <QTextStream>
 class QProcess;
 
@@ -73,7 +74,8 @@ class AgentF : public FCoreApp
     void addEODBarData(const QString& symbol, const QString& market, const QString& provider
                      , const QDate& fromDate, const QDate& toDate, int fiId, int marketId);
 
-    QHash<QString, CmdClass*>   mCmds; // Hold all used commands FIXME Rename later to mCommands
+    QHash<QString, CmdClass*>   mCmds;        // Hold all used commands FIXME Rename later to mCommands
+    QSet<QString>               mKnownCmds;   // Hold all known commands by CmdClass
 
     Script*            mScript;
     Exporter*          mExporter;

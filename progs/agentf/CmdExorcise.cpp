@@ -41,11 +41,13 @@ bool CmdExorcise::isCmd(const QString& cmd)
   return cCmd1 == cmd;
 }
 
-void CmdExorcise::regCmd(CmdHelper* ch)
+QString CmdExorcise::regCmd(CmdHelper* ch)
 {
-  if(!ch) return;
+  if(!ch) return "";
 
   ch->regCmds(cCmd1);
+
+  return cCmd1;
 }
 
 void CmdExorcise::briefIn(CmdHelper* ch)
