@@ -20,6 +20,7 @@ set(agentf_SRC
     CmdSplitBars.cpp
     CmdDeleteBars.cpp
     CmdThis.cpp
+    CmdFetch.cpp
     AgentF.cpp
     main.cpp
 )

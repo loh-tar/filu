@@ -49,8 +49,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
-  mCmd->regCmds("full rcf exp scan daemon "
-                "info depots fetch");
+  mCmd->regCmds("full rcf exp scan daemon info depots");
 
   mKnownCmds = CmdClass::allRegCmds(mCmd);
 
@@ -348,61 +347,6 @@ void AgentF::cmdExec(const QString& cmd)
   addErrors(cmdClass->errors());
 }
 
-void AgentF::cmdFetch()
-{
-  if(mCmd->isMissingParms(1))
-  {
-    if(mCmd->printThisWay("<FuzzyString> [<FromDate> [<ToDate>]]")) return;
-
-    mCmd->printComment(tr("The FuzzyString can be part of the FI name or symbol. All matching FIs will updated. "
-                          "Without a given date, or if dot-dot '..', AgentF take a look at the database "
-                          "which bars could be missing."));
-
-    mCmd->printForInst("apple");
-    mCmd->printForInst("aapl 2007-04-01");
-    mCmd->aided();
-    return;
-  }
-
-  QDate fromDate = mCmd->argDate(2, QDate(1000, 1, 1));
-  QDate toDate   = mCmd->argDate(3, QDate::currentDate());
-
-  if(mCmd->hasError()) return;
-
-  QSqlQuery* query = mFilu->searchFi(mCmd->argStr(1), ""); // The empty string "" says: All kind of fType
-
-  if(!query)
-  {
-    check4FiluError(FUNC);
-    return;
-  }
-
-  if(!query->size())
-  {
-    verbose(FUNC, tr("No FIs match '%1'.").arg(mCmd->argStr(1)));
-    return;
-  }
-
-  if(query->size() > 1)
-  {
-    verbose(FUNC, tr("Found %1 provider symbol(s) to use for eodBar update.").arg(query->size()));
-  }
-
-  while(query->next())
-  {
-    verbose(FUNC, tr("Update bars of %1 for %2").arg(query->value(6).toString()     // Market
-                                                   , query->value(3).toString()));  // FiName
-
-//     addEODBarData(query->value(5).toString()  // Symbol
-//                 , query->value(6).toString()  // Market
-//                 , query->value(7).toString()  // Provider
-//                 , fromDate
-//                 , toDate
-//                 , query->value(0).toInt()     // FiId
-//                 , query->value(1).toInt());   // MarketId
-  }
-}
-
 void AgentF::exec(const QStringList& parm)
 {
   if(mFilu->hasError()) return;
@@ -420,7 +364,6 @@ void AgentF::exec(const QStringList& parm)
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
-    mCmd->inCmdBrief("fetch", tr("To fetch data (currently only eodBars) from providers"));
 
     CmdClass::allBriefIn(mCmd);
 
@@ -457,7 +400,6 @@ void AgentF::exec(const QStringList& parm)
   else if(mCmd->hasCmd("scan"))          scan();
   else if(mCmd->hasCmd("depots"))        depots();
   else if(mCmd->hasCmd("daemon"))        beEvil();
-  else if(mCmd->hasCmd("fetch"))         cmdFetch();
   else if(mCmd->hasCmd("info"))
   {
     if(verboseLevel(eMax)) return; // Already printed, don't print twice

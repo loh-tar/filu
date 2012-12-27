@@ -57,7 +57,6 @@ class AgentF : public FCoreApp
     void readSettings();
 
     void cmdExec(const QString& cmd);
-    void cmdFetch();
     void updateAllBars();
     bool lineToCommand(const QString& line, QStringList& cmd);
     void cmdRcf();
