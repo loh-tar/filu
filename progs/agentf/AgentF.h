@@ -60,9 +60,6 @@ class AgentF : public FCoreApp
 
     void cmdExec(const QString& cmd);
     void updateAllBars();
-    bool lineToCommand(const QString& line, QStringList& cmd);
-    void cmdRcf();
-    void beEvil();
     void exxport();
     void scan();
     void depots();
@@ -80,7 +77,6 @@ class AgentF : public FCoreApp
     QStringList        mCloneNames;
 
     bool               mQuit;
-    bool               mIamEvil;   // True if in deamon mode, avoid recursive calls
 
     QList<QStringList> mCommands;  // Holds all prepared commands for assigning to clones
 

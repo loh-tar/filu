@@ -17,11 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QFile>
 #include <QProcess>
 #include <QSqlRecord>
 #include <QSqlQuery>
-#include <QTextStream>
 #include <QTimer>
 
 #include "AgentF.h"
@@ -40,13 +38,12 @@ AgentF::AgentF(QCoreApplication& app)
       , mExporter(0)
       , mScanner(0)
       , mQuit(true)
-      , mIamEvil(false)
 {
   readSettings();
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
-  mCmd->regCmds("full rcf exp scan daemon info depots");
+  mCmd->regCmds("full exp scan info depots");
 
   mKnownCmds = CmdClass::allRegCmds(mCmd);
 
@@ -162,137 +159,6 @@ void AgentF::updateAllBars()
   mQuit = false; // Don't quit after all, enter main event loop
 }
 
-bool AgentF::lineToCommand(const QString& line, QStringList& cmd)
-{
-  if(line.startsWith("*")) return false; // Ignore remarks
-  if(line.isEmpty()) return false;
-
-  cmd = line.split(" ", QString::SkipEmptyParts);
-
-  // Concat splitted parts if there was quotation marks
-  int size = cmd.size();
-  for(int i = 0; i < size; ++i)
-  {
-    if(cmd.at(i).startsWith("\""))
-    {
-      QString help = cmd.at(i);
-      for(int j = i; j < size; )
-      {
-        help.append(" " + cmd.at(j));
-        cmd.removeAt(j);
-        --size;
-        if(help.endsWith("\"")) break;
-      }
-      help.remove("\"");
-      cmd[i] = help;
-    }
-  }
-
-  return true;
-}
-
-void AgentF::cmdRcf()
-{
-  // Command looks like
-  // agentf rcf mycommands.txt
-
-  if(mCmd->isMissingParms(1))
-  {
-    if(mCmd->printThisWay("<FileName>")) return;
-
-    mCmd->printComment(tr("Lines begin with an asterisk are ignored."));
-    mCmd->aided();
-    return;
-  }
-
-  // Don't execute some commands which could make trouble
-  bool saveIamEvil = mIamEvil;
-  mIamEvil = true;
-
-  QString fileName = mCmd->argStr(1);
-
-  QFile file(fileName);
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    error(FUNC, tr("Can't open file: %1").arg(fileName));
-    return;
-  }
-
-  // Read the commands from file
-  QTextStream in(&file);
-  int lnNo = 0;
-  while (!in.atEnd())
-  {
-    QString line = in.readLine();
-    ++lnNo;
-    QStringList cmd;
-
-    if(!lineToCommand(line, cmd)) continue;
-
-    cmd.prepend("RCF"); // Add the "caller", normaly is here "agentf" placed
-    exec(cmd);
-    if(hasError())
-    {
-      error(FUNC, tr("Error after executing line %1 of file %2").arg(lnNo).arg(fileName));
-      break;
-    }
-  }
-
-  file.close();
-  mIamEvil = saveIamEvil;
-}
-
-void AgentF::beEvil()
-{
-  if(mIamEvil) return; // Don't do stupid things
-
-  mIamEvil = true;
-
-  // Command looks like
-  // agentf daemon [<Name>]
-
-  if(mCmd->isMissingParms())
-  {
-    if(mCmd->printThisWay("[<Name>]")) return;
-
-    mCmd->printComment(tr("The optional name is only used at message logging."));
-    mCmd->aided();
-    return;
-  }
-
-  if(verboseLevel(eMax))
-  {
-    setMsgTargetFormat(eVerbose, QString("%D %T %C %1: %F %x").arg(mCmd->argStr(1)));
-    setMsgTargetFormat(eConsLog, QString("%D %T %C %1: *** %t *** %F %x").arg(mCmd->argStr(1)));
-    setMsgTargetFormat(eRecord,  QString("%D %T %C %1: %F %x").arg(mCmd->argStr(1)));
-  }
-  else
-  {
-    setMsgTargetFormat(eVerbose, QString("%D %T %C %1: %x").arg(mCmd->argStr(1)));
-    setMsgTargetFormat(eConsLog, QString("%D %T %C %1: *** %t *** %x").arg(mCmd->argStr(1)));
-    setMsgTargetFormat(eRecord,  QString("%D %T %C %1: %x").arg(mCmd->argStr(1)));
-  }
-
-  setNoFileLogging();
-  mFilu->setNoErrorLogging();
-
-  QTextStream console(stdout);
-  QTextStream in(stdin);
-  while (!in.atEnd())
-  {
-    console << "[READY] (Ctrl+D or \"quit\" for quit)" << endl;
-    QString line = in.readLine();
-    QStringList cmd;
-    if(!lineToCommand(line, cmd)) continue;
-    if(cmd.at(0) == "quit") break;
-
-    cmd.prepend("DAEMON"); // Add the "caller", normaly is here "agentf" placed
-    exec(cmd);
-  }
-
-  mQuit = true;
-}
-
 void AgentF::exxport()
 {
   if(!mExporter) mExporter = new Exporter(this);
@@ -358,8 +224,6 @@ void AgentF::exec(const QStringList& parm)
   if(mCmd->wantHelp())
   {
     mCmd->inCmdBrief("full", tr("Download eod bars of all FIs"));
-    mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
-    mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
     mCmd->inCmdBrief("info", tr("Print some settings and more"));
 
     CmdClass::allBriefIn(mCmd);
@@ -392,11 +256,9 @@ void AgentF::exec(const QStringList& parm)
   // Look for each known command and call the related function
   if(mKnownCmds.contains(mCmd->cmd()))   cmdExec(mCmd->cmd());
   else if(mCmd->hasCmd("full"))          updateAllBars();
-  else if(mCmd->hasCmd("rcf"))           cmdRcf();
   else if(mCmd->hasCmd("exp"))           exxport();
   else if(mCmd->hasCmd("scan"))          scan();
   else if(mCmd->hasCmd("depots"))        depots();
-  else if(mCmd->hasCmd("daemon"))        beEvil();
   else if(mCmd->hasCmd("info"))
   {
     if(verboseLevel(eMax)) return; // Already printed, don't print twice
@@ -450,7 +312,10 @@ void AgentF::startClones()
     connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
 
     mCloneNames.append(QString::number(i + 1));
-    QString cmd = QString("%1 %2 %3").arg(QCoreApplication::applicationFilePath(), "daemon").arg(mCloneNames.at(i));
+    QString cmd = QString("%1 %2 %3")
+                    .arg(QCoreApplication::applicationFilePath(), "do --stdin")
+                    .arg(mCloneNames.at(i));
+
     if(mCmd->hasOpt("verbose")) cmd.append(" --verbose " + mCmd->optStr("verbose"));
     if(mConfigParms.size()) cmd.append(" --config " + mConfigParms.join(" "));
     clone->start(cmd);

@@ -21,6 +21,7 @@ set(agentf_SRC
     CmdDeleteBars.cpp
     CmdThis.cpp
     CmdFetch.cpp
+    CmdDo.cpp
     AgentF.cpp
     main.cpp
 )
