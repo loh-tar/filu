@@ -168,7 +168,7 @@ void AgentF::addEODBarData(const QString& symbol, const QString& market, const Q
   mScanner->scanThis(fiId, marketId);
 }
 
-void AgentF::addEODBarData()
+void AgentF::cmdThis()
 {
   if(mCmd->isMissingParms(5))
   {
@@ -251,7 +251,7 @@ void AgentF::updateAllBars()
 
   record(FUNC, tr("\n*\n* Update bar data of all %1 FIs.\n*").arg(query->size()));
 
-  // Build the parameter list needed by addEODBarData()
+  // Build the parameter list needed by cmdThis()
   // <Caller> -this <Symbol> <Market> <Provider> [<FromDate> [<ToDate>]]
   QStringList parameters;
   // No parameters.append("<Caller>"); done later by beEvil()
@@ -273,7 +273,7 @@ void AgentF::updateAllBars()
     parameters[6] = r.value("FiId").toString();
     parameters[7] = r.value("MarketId").toString();
 
-    // Save the now completed parameter list needed by addEODBarData()
+    // Save the now completed parameter list needed by cmdThis()
     mCommands.append(parameters);
   }
 
@@ -571,7 +571,7 @@ void AgentF::exec(const QStringList& parm)
 
   // Look for each known command and call the related function
   if(mKnownCmds.contains(mCmd->cmd()))   cmdExec(mCmd->cmd());
-  else if(mCmd->hasCmd("this"))          addEODBarData();
+  else if(mCmd->hasCmd("this"))          cmdThis();
   else if(mCmd->hasCmd("full"))          updateAllBars();
   else if(mCmd->hasCmd("rcf"))           cmdRcf();
   else if(mCmd->hasCmd("exp"))           exxport();

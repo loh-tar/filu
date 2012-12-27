@@ -59,7 +59,7 @@ class AgentF : public FCoreApp
 
     void cmdExec(const QString& cmd);
     void cmdFetch();
-    void addEODBarData();
+    void cmdThis();
     void updateAllBars();
     bool lineToCommand(const QString& line, QStringList& cmd);
     void cmdRcf();
