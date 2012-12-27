@@ -29,7 +29,6 @@ class CmdClass;
 class Exporter;
 class Importer;
 class Scanner;
-class Script;
 
 /***********************************************************************
 *
@@ -59,7 +58,6 @@ class AgentF : public FCoreApp
 
     void cmdExec(const QString& cmd);
     void cmdFetch();
-    void cmdThis();
     void updateAllBars();
     bool lineToCommand(const QString& line, QStringList& cmd);
     void cmdRcf();
@@ -71,13 +69,10 @@ class AgentF : public FCoreApp
     void printSettings();
     void printError(const QString message);
     void check4MasterCMD();
-    void addEODBarData(const QString& symbol, const QString& market, const QString& provider
-                     , const QDate& fromDate, const QDate& toDate, int fiId, int marketId);
 
     QHash<QString, CmdClass*>   mCmds;        // Hold all used commands FIXME Rename later to mCommands
     QSet<QString>               mKnownCmds;   // Hold all known commands by CmdClass
 
-    Script*            mScript;
     Exporter*          mExporter;
     Scanner*           mScanner;
     QList<QProcess*>   mClones;

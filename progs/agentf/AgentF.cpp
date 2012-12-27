@@ -36,13 +36,10 @@
 #include "FTool.h"
 #include "RcFile.h"
 #include "Scanner.h"
-#include "Script.h"
-#include "SymbolTuple.h"
 #include "muParser.h"
 
 AgentF::AgentF(QCoreApplication& app)
       : FCoreApp("AgentF", app)
-      , mScript(0)
       , mExporter(0)
       , mScanner(0)
       , mQuit(true)
@@ -52,7 +49,7 @@ AgentF::AgentF(QCoreApplication& app)
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
 
-  mCmd->regCmds("this full rcf exp scan daemon "
+  mCmd->regCmds("full rcf exp scan daemon "
                 "info depots fetch");
 
   mKnownCmds = CmdClass::allRegCmds(mCmd);
@@ -69,7 +66,6 @@ AgentF::~AgentF()
 {
   foreach(CmdClass* cmd, mCmds) delete cmd;
 
-  if(mScript)   delete mScript;
   if(mExporter) delete mExporter;
   if(mScanner)  delete mScanner;
 
@@ -97,121 +93,6 @@ void AgentF::quit()
 void AgentF::readSettings()
 {
   if(verboseLevel(eMax)) printSettings();
-}
-
-void AgentF::addEODBarData(const QString& symbol, const QString& market, const QString& provider
-                         , const QDate& fromDate, const QDate& toDate, int fiId, int marketId)
-{
-  DateRange dateRange;
-  mFilu->getEODBarDateRange(dateRange, fiId, marketId, Filu::eBronze);
-  // FIXME: To find out if anything is todo we have to check more smarter.
-  //        We have to use the 'offday' table, but its not implemented yet.
-
-  QDate from = fromDate;
-  QDate to   = toDate;
-
-  // Avoid 'holes' in the data table
-  if(from > dateRange.value("last")) from = dateRange.value("last").addDays(1);
-  else if(from == QDate(1000, 1, 1)) from = dateRange.value("last").addDays(1);
-
-  if(from.dayOfWeek() == Qt::Saturday) from = from.addDays(2);
-  else if(from.dayOfWeek() == Qt::Sunday) from = from.addDays(1);
-
-  if(from > QDate::currentDate())
-  {
-    verbose(FUNC, tr("Nothing todo, last bar is up to date: %1 %2")
-                    .arg(mCmd->argStr(1), mCmd->argStr(2)), eAmple);
-    return;
-  }
-
-  // Once more, avoid 'holes' in the data table
-  if(to < dateRange.value("first")) to = dateRange.value("first").addDays(-1);
-  else if(to == QDate(3000, 1, 1)) to = QDate::currentDate();
-
-  // Could happens if you update bars on weekend but there is nothing todo
-  if(from > to) return;
-
-  // Build the parameter list needed by the script
-  QStringList scriptParms;
-  scriptParms.append(from.toString(Qt::ISODate));
-  scriptParms.append(to.toString(Qt::ISODate));
-  scriptParms.append(symbol);
-  scriptParms.append(market);
-
-  if(!mScript) mScript = new Script(this);
-
-  QStringList* data = mScript->askProvider(provider, "fetchBar", scriptParms);
-
-  if(!data)
-  {
-    fatal(FUNC, "Got no 'QStringList* data'.");
-    return;
-  }
-
-  if(data->size() < 2)
-  {
-    warning(FUNC, tr("No data from script: %1 - %2").arg(provider, scriptParms.join(" ")));
-    return;
-  }
-
-  // Here is the beef...
-  mFilu->addEODBarData(fiId, marketId, data);
-  delete data; // No longer needed
-  if(check4FiluError(FUNC)) return;
-  // ...and as dessert check for events
-  if(!mScanner)
-  {
-    mScanner = new Scanner(this);
-    mScanner->autoSetup();
-  }
-
-  mScanner->scanThis(fiId, marketId);
-}
-
-void AgentF::cmdThis()
-{
-  if(mCmd->isMissingParms(5))
-  {
-    if(mCmd->printThisWay("<Symbol> <Market> <Provider> <FromDate> <ToDate> [<FiId> <MarketId>]")) return;
-
-    mCmd->printComment(tr("It's used by 'full'. You should use 'fetch' instead, "
-                          "because the time is coming where it will removed."));
-
-    mCmd->aided();
-    return;
-  }
-
-  QDate fromDate   = mCmd->argDate(4, QDate(1000, 1, 1));
-  QDate toDate     = mCmd->argDate(5, QDate::currentDate());
-  int fiId         = mCmd->argInt(6);
-  int marketId     = mCmd->argInt(7);
-
-  if(mCmd->hasError()) return;
-
-  if(!fiId or !marketId)
-  {
-    SymbolTuple* st = mFilu->getSymbol(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3));
-    if(!st)
-    {
-      error(FUNC, tr("Symbol not found: %1-%2-%3").arg(mCmd->argStr(1), mCmd->argStr(2), mCmd->argStr(3)));
-      return;
-    }
-
-    st->next();
-
-    fiId     = st->fiId();
-    marketId = st->marketId();
-
-    delete st;
-  }
-
-  addEODBarData(mCmd->argStr(1)
-              , mCmd->argStr(2)
-              , mCmd->argStr(3)
-              , fromDate
-              , toDate
-              , fiId
-              , marketId);
 }
 
 void AgentF::updateAllBars()
@@ -512,13 +393,13 @@ void AgentF::cmdFetch()
     verbose(FUNC, tr("Update bars of %1 for %2").arg(query->value(6).toString()     // Market
                                                    , query->value(3).toString()));  // FiName
 
-    addEODBarData(query->value(5).toString()  // Symbol
-                , query->value(6).toString()  // Market
-                , query->value(7).toString()  // Provider
-                , fromDate
-                , toDate
-                , query->value(0).toInt()     // FiId
-                , query->value(1).toInt());   // MarketId
+//     addEODBarData(query->value(5).toString()  // Symbol
+//                 , query->value(6).toString()  // Market
+//                 , query->value(7).toString()  // Provider
+//                 , fromDate
+//                 , toDate
+//                 , query->value(0).toInt()     // FiId
+//                 , query->value(1).toInt());   // MarketId
   }
 }
 
@@ -535,7 +416,6 @@ void AgentF::exec(const QStringList& parm)
 
   if(mCmd->wantHelp())
   {
-    mCmd->inCmdBrief("this", tr("Download eod bars of one defined FI"));
     mCmd->inCmdBrief("full", tr("Download eod bars of all FIs"));
     mCmd->inCmdBrief("rcf", tr("Read Command File. The file can contain each command supported by AgentF"));
     mCmd->inCmdBrief("daemon", tr("Is not a daemon as typical known. It is very similar to rcf"));
@@ -571,7 +451,6 @@ void AgentF::exec(const QStringList& parm)
 
   // Look for each known command and call the related function
   if(mKnownCmds.contains(mCmd->cmd()))   cmdExec(mCmd->cmd());
-  else if(mCmd->hasCmd("this"))          cmdThis();
   else if(mCmd->hasCmd("full"))          updateAllBars();
   else if(mCmd->hasCmd("rcf"))           cmdRcf();
   else if(mCmd->hasCmd("exp"))           exxport();

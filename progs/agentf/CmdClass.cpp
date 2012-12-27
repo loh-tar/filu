@@ -30,6 +30,7 @@
 #include "CmdSet.h"
 #include "CmdSplitBars.h"
 #include "CmdDeleteBars.h"
+#include "CmdThis.h"
 
 static const QString cCmd1 = "CmdClass";
 static const QString cCmd1Brief = "You should never read this. "
@@ -54,6 +55,7 @@ CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
   if(CmdSet::isCmd(type))           return new CmdSet(parent);
   if(CmdSplitBars::isCmd(type))     return new CmdSplitBars(parent);
   if(CmdDeleteBars::isCmd(type))    return new CmdDeleteBars(parent);
+  if(CmdThis::isCmd(type))          return new CmdThis(parent);
 
   // FIXME Not possible because this here is a static function
   //   fatal(FUNC, QString("Unknown CmdClass type: '%1'").arg(type));
@@ -74,6 +76,7 @@ QSet<QString> CmdClass::allRegCmds(CmdHelper* ch)
   cmds.insert(CmdSet::regCmd(ch));
   cmds.insert(CmdSplitBars::regCmd(ch));
   cmds.insert(CmdDeleteBars::regCmd(ch));
+  cmds.insert(CmdThis::regCmd(ch));
 
   return cmds;
 }
@@ -89,6 +92,7 @@ void CmdClass::allBriefIn(CmdHelper* ch)
   CmdSet::briefIn(ch);
   CmdSplitBars::briefIn(ch);
   CmdDeleteBars::briefIn(ch);
+  CmdThis::briefIn(ch);
 }
 
 void CmdClass::briefIn(CmdHelper* cmd)
