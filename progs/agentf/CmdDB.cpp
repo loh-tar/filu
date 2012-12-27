@@ -31,8 +31,8 @@
 static const QString cCmd1 = "db";
 static const QString cCmd1Brief = QObject::tr("Maintain the database");
 
-CmdDB::CmdDB(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdDB::CmdDB(AgentF* agent)
+     : CmdClass(agent, FUNC)
 {}
 
 CmdDB::~CmdDB()

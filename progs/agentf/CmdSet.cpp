@@ -25,8 +25,8 @@
 static const QString cCmd1 = "set";
 static const QString cCmd1Brief = QObject::tr("Set config file values");
 
-CmdSet::CmdSet(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdSet::CmdSet(AgentF* agent)
+      : CmdClass(agent, FUNC)
 {}
 
 CmdSet::~CmdSet()

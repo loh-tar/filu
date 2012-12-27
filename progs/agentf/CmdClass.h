@@ -24,6 +24,7 @@
 
 #include "FClass.h"
 
+class AgentF;
 class CmdHelper;
 
 /***********************************************************************
@@ -36,10 +37,10 @@ class CmdHelper;
 class CmdClass : public FClass
 {
   public:
-                          CmdClass(FClass* parent, const QString& func);
+                          CmdClass(AgentF* agent, const QString& func);
     virtual              ~CmdClass();
 
-    static  CmdClass*     createNew(const QString& type, FClass* parent);
+    static CmdClass*      createNew(const QString& type, AgentF* agent);
     static QSet<QString>  allRegCmds(CmdHelper* ch);
     static void           allBriefIn(CmdHelper* ch);
 
@@ -49,6 +50,7 @@ class CmdClass : public FClass
   protected:
     bool                  init(CmdHelper* ch);
 
+    AgentF*               mAgent;
     CmdHelper*            mCmd;
 
   private:

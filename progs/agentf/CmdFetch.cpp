@@ -22,14 +22,15 @@
 
 #include "CmdFetch.h"
 
+#include "AgentF.h"
 #include "CmdHelper.h"
 #include "FiluU.h"
 
 static const QString cCmd1 = "fetch";
 static const QString cCmd1Brief = QObject::tr("To fetch data (currently only eodBars) from providers");
 
-CmdFetch::CmdFetch(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdFetch::CmdFetch(AgentF* agent)
+        : CmdClass(agent, FUNC)
 {}
 
 CmdFetch::~CmdFetch()
@@ -103,13 +104,18 @@ bool CmdFetch::exec(CmdHelper* ch)
     verbose(FUNC, tr("Update bars of %1 for %2").arg(query->value(6).toString()     // Market
                                                    , query->value(3).toString()));  // FiName
 
-//     addEODBarData(query->value(5).toString()  // Symbol
-//                 , query->value(6).toString()  // Market
-//                 , query->value(7).toString()  // Provider
-//                 , fromDate
-//                 , toDate
-//                 , query->value(0).toInt()     // FiId
-//                 , query->value(1).toInt());   // MarketId
+    QStringList cmd;
+    cmd.append("foo");
+    cmd.append("this");
+    cmd.append(query->value(5).toString());
+    cmd.append(query->value(6).toString());
+    cmd.append(query->value(7).toString());
+    cmd.append(fromDate.toString(Qt::ISODate));
+    cmd.append(toDate.toString(Qt::ISODate));
+    cmd.append(query->value(0).toString());
+    cmd.append(query->value(1).toString());
+
+    mAgent->exec(cmd);
   }
 
   return !hasError();

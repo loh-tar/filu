@@ -28,8 +28,8 @@
 static const QString cCmd1 = "deleteBars";
 static const QString cCmd1Brief = QObject::tr("Delete one or a range of eod bars of one FI");
 
-CmdDeleteBars::CmdDeleteBars(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdDeleteBars::CmdDeleteBars(AgentF* agent)
+             : CmdClass(agent, FUNC)
 {}
 
 CmdDeleteBars::~CmdDeleteBars()

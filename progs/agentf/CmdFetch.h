@@ -31,8 +31,8 @@
 class CmdFetch : public CmdClass
 {
   public:
-                  CmdFetch(FClass* parent);
-    virtual      ~CmdFetch();
+                      CmdFetch(AgentF* agent);
+    virtual          ~CmdFetch();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

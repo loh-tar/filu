@@ -30,10 +30,10 @@
 static const QString cCmd1 = "this";
 static const QString cCmd1Brief = QObject::tr("Download eod bars of one defined FI");
 
-CmdThis::CmdThis(FClass* parent)
-      : CmdClass(parent, FUNC)
-      , mScanner(0)
-      , mScript(0)
+CmdThis::CmdThis(AgentF* agent)
+       : CmdClass(agent, FUNC)
+       , mScanner(0)
+       , mScript(0)
 {}
 
 CmdThis::~CmdThis()

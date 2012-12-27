@@ -31,8 +31,8 @@
 class CmdSummon : public CmdClass
 {
   public:
-                  CmdSummon(FClass* parent);
-    virtual      ~CmdSummon();
+                      CmdSummon(AgentF* agent);
+    virtual          ~CmdSummon();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

@@ -46,6 +46,8 @@ class AgentF : public FCoreApp
 
     void  exec(const QStringList& parm);
 
+    friend class  CmdClass;
+
   protected slots:
     void run();
     void quit();

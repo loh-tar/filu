@@ -31,8 +31,8 @@
 class CmdDB : public CmdClass
 {
   public:
-                  CmdDB(FClass* parent);
-    virtual      ~CmdDB();
+                      CmdDB(AgentF* agent);
+    virtual          ~CmdDB();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

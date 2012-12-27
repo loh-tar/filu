@@ -30,8 +30,8 @@ static const QString cCmd1 = "imp";
 static const QString cCmd1Brief = QObject::tr("Imports an (surprise!) import file. "
                                               "See doc/import-file-format.txt");
 
-CmdImp::CmdImp(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdImp::CmdImp(AgentF* agent)
+      : CmdClass(agent, FUNC)
       , mImporter(0)
 {}
 

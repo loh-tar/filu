@@ -29,8 +29,8 @@
 static const QString cCmd1 = "sum";
 static const QString cCmd1Brief = QObject::tr("Summon the devil");
 
-CmdSummon::CmdSummon(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdSummon::CmdSummon(AgentF* agent)
+         : CmdClass(agent, FUNC)
 {}
 
 CmdSummon::~CmdSummon()

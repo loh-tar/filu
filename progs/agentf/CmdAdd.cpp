@@ -26,8 +26,8 @@ static const QString cCmd1 = "add";
 static const QString cCmd1Brief = QObject::tr("Allows you add a single dataset to "
                                               "the database by using Importer");
 
-CmdAdd::CmdAdd(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdAdd::CmdAdd(AgentF* agent)
+      : CmdClass(agent, FUNC)
       , mImporter(new Importer(this))
 {}
 

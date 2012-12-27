@@ -28,8 +28,8 @@
 static const QString cCmd1 = "splitBars";
 static const QString cCmd1Brief = QObject::tr("To correct faulty data of the provider");
 
-CmdSplitBars::CmdSplitBars(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdSplitBars::CmdSplitBars(AgentF* agent)
+            : CmdClass(agent, FUNC)
 {}
 
 CmdSplitBars::~CmdSplitBars()

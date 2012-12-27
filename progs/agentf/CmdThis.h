@@ -34,8 +34,8 @@ class Script;
 class CmdThis : public CmdClass
 {
   public:
-                  CmdThis(FClass* parent);
-    virtual      ~CmdThis();
+                      CmdThis(AgentF* agent);
+    virtual          ~CmdThis();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

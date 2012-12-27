@@ -29,8 +29,8 @@
 static const QString cCmd1 = "exo";
 static const QString cCmd1Brief = QObject::tr("Exorcise the devil");
 
-CmdExorcise::CmdExorcise(FClass* parent)
-      : CmdClass(parent, FUNC)
+CmdExorcise::CmdExorcise(AgentF* agent)
+           : CmdClass(agent, FUNC)
 {}
 
 CmdExorcise::~CmdExorcise()

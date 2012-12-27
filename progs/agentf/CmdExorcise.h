@@ -31,8 +31,8 @@
 class CmdExorcise : public CmdClass
 {
   public:
-                  CmdExorcise(FClass* parent);
-    virtual      ~CmdExorcise();
+                      CmdExorcise(AgentF* agent);
+    virtual          ~CmdExorcise();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

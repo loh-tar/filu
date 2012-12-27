@@ -31,8 +31,8 @@
 class CmdSplitBars : public CmdClass
 {
   public:
-                  CmdSplitBars(FClass* parent);
-    virtual      ~CmdSplitBars();
+                      CmdSplitBars(AgentF* agent);
+    virtual          ~CmdSplitBars();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

@@ -31,8 +31,8 @@
 class CmdDeleteBars : public CmdClass
 {
   public:
-                  CmdDeleteBars(FClass* parent);
-    virtual      ~CmdDeleteBars();
+                      CmdDeleteBars(AgentF* agent);
+    virtual          ~CmdDeleteBars();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

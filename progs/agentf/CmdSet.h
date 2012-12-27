@@ -31,8 +31,8 @@
 class CmdSet : public CmdClass
 {
   public:
-                  CmdSet(FClass* parent);
-    virtual      ~CmdSet();
+                      CmdSet(AgentF* agent);
+    virtual          ~CmdSet();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

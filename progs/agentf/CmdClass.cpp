@@ -20,6 +20,7 @@
 #include "CmdClass.h"
 
 #include "CmdHelper.h"
+#include "AgentF.h"
 
 // List here all sub classes
 #include "CmdAdd.h"
@@ -37,27 +38,28 @@ static const QString cCmd1 = "CmdClass";
 static const QString cCmd1Brief = "You should never read this. "
                                   "Hey hacker: Derived class need 'briefIn' function.";
 
-CmdClass::CmdClass(FClass* parent, const QString& func)
-      : FClass(parent, func)
-      , mCmd(0)
+CmdClass::CmdClass(AgentF* agent, const QString& func)
+        : FClass(agent, func)
+        , mAgent(agent)
+        , mCmd(0)
 {}
 
 CmdClass::~CmdClass()
 {}
 
-CmdClass* CmdClass::createNew(const QString& type, FClass* parent)
+CmdClass* CmdClass::createNew(const QString& type, AgentF* agent)
 {
   // Append these command list when you add a new sub classe
-  if(CmdAdd::isCmd(type))           return new CmdAdd(parent);
-  if(CmdDB::isCmd(type))            return new CmdDB(parent);
-  if(CmdImp::isCmd(type))           return new CmdImp(parent);
-  if(CmdSummon::isCmd(type))        return new CmdSummon(parent);
-  if(CmdExorcise::isCmd(type))      return new CmdExorcise(parent);
-  if(CmdSet::isCmd(type))           return new CmdSet(parent);
-  if(CmdSplitBars::isCmd(type))     return new CmdSplitBars(parent);
-  if(CmdDeleteBars::isCmd(type))    return new CmdDeleteBars(parent);
-  if(CmdThis::isCmd(type))          return new CmdThis(parent);
-  if(CmdFetch::isCmd(type))          return new CmdFetch(parent);
+  if(CmdAdd::isCmd(type))           return new CmdAdd(agent);
+  if(CmdDB::isCmd(type))            return new CmdDB(agent);
+  if(CmdImp::isCmd(type))           return new CmdImp(agent);
+  if(CmdSummon::isCmd(type))        return new CmdSummon(agent);
+  if(CmdExorcise::isCmd(type))      return new CmdExorcise(agent);
+  if(CmdSet::isCmd(type))           return new CmdSet(agent);
+  if(CmdSplitBars::isCmd(type))     return new CmdSplitBars(agent);
+  if(CmdDeleteBars::isCmd(type))    return new CmdDeleteBars(agent);
+  if(CmdThis::isCmd(type))          return new CmdThis(agent);
+  if(CmdFetch::isCmd(type))         return new CmdFetch(agent);
 
   // FIXME Not possible because this here is a static function
   //   fatal(FUNC, QString("Unknown CmdClass type: '%1'").arg(type));

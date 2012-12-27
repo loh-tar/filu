@@ -36,8 +36,8 @@ class Importer;
 class CmdAdd : public CmdClass
 {
   public:
-                  CmdAdd(FClass* parent);
-    virtual      ~CmdAdd();
+                      CmdAdd(AgentF* agent);
+    virtual          ~CmdAdd();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);

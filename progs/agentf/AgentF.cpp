@@ -17,11 +17,9 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QDir>
 #include <QFile>
 #include <QProcess>
 #include <QSqlRecord>
-#include <QRegExp>
 #include <QSqlQuery>
 #include <QTextStream>
 #include <QTimer>
@@ -33,7 +31,6 @@
 #include "Depots.h"
 #include "Exporter.h"
 #include "FiluU.h"
-#include "FTool.h"
 #include "RcFile.h"
 #include "Scanner.h"
 #include "muParser.h"
