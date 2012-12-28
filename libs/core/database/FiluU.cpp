@@ -572,7 +572,7 @@ int FiluU::orderType(const QString& type)
     if(otl == orderType(eBuyOrder).toLower())  return eBuyOrder;
   }
 
-  error(FUNC, tr("Order type number '%1' is unknown.").arg(type));
+  error(FUNC, tr("Order type '%1' is unknown.").arg(type));
 
   return eError;
 }
@@ -586,7 +586,7 @@ QString FiluU::orderType(int type)
     default:         break;
   }
 
-  error(FUNC, tr("Order type '%1' is unknown.").arg(type));
+  error(FUNC, tr("Order type number '%1' is unknown.").arg(type));
 
   return "Unknown"; // No tr()
 }
