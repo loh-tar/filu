@@ -50,6 +50,7 @@ set(FiluCore_SRC ${FiluCore_SRC}
     FObject.cpp
     FCoreApp.cpp
     CmdHelper.cpp
+    Validator.cpp
     DataTuple.cpp
     DataTupleSet.cpp
     Depots.cpp
@@ -65,6 +66,8 @@ set(FiluCore_MOCH ${FiluCore_MOCH}
     #FClass.h
     #FObject.h
     #FCoreApp.h
+    #CmdHelper.h
+    #Validator.h
     #DataTuple.h
     #DataTupleSet.h
     #Depots.h
