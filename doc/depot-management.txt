@@ -60,12 +60,12 @@ portion.
 ================================
 Create the depot:
 
-agentf add broker MyBank "5.95 + OV * 0.001"
+agentf add broker MyBank USD "5.95 + OV * 0.001"
 agentf add depot TestDepot Me SimpleRule MyBank
 
 Add an existing position to the depot:
 
-  agentf add depotPos 2009-03-19 AAPL NYSE 10 101.60 "Sadly only fake data" --dp TestDepot Me
+  agentf add depotPos 2009-03-19 AAPL NewYork 10 101.60 "Sadly only fake data" --dp TestDepot Me
 
 Transfer money to the depot account:
 
@@ -73,7 +73,7 @@ Transfer money to the depot account:
 
 Place an order:
 
-  agentf add order 2011-02-28 2011-12-31 AAPL NYSE 10 500 Sell Active "Will we see 500$?" --dp TestDepot Me
+  agentf add order 2011-02-28 2012-03-31 AAPL NewYork 10 500 Sell Active "Will we see 500$?" --dp TestDepot Me
 
 
 3- Create a depot by import file
@@ -109,10 +109,11 @@ correct.
 
 Try these commands to become an impression.
 
+  agentf sum tour1
   agentf imp doc/example-some-us-stocks.imp
   agentf full 2008-01-01
 
-  agentf depots simtrade SimpleRule MyBanK 2009-01-01 2011-01-01 \
+  agentf depots simtrade SimpleRule MyBank 2009-01-01 2011-01-01 \
                 --checkDay Wed --weekly 4 --verbose 0
 
 As you can see I suggest '--weekly 4' which is to reduce the runtime and

@@ -26,7 +26,7 @@ SimpleRule;MyBank
 * Order
 *
 [Header]ODate;VDate;RefSymbol;Market;Pieces;Limit;Type;Status;Note
-2011-02-28;2011-12-31;AAPL;NewYork;10;500;Sell;Active;Will we see 500$?
+2011-02-28;2012-03-31;AAPL;NewYork;10;500;Sell;Active;Will we see 500$?
 
 *
 * Account

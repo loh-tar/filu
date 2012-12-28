@@ -165,7 +165,7 @@ void Depots::simtrade()
     mCmd->printComment(tr("Creates a new depot owned by 'Simulator' with a auto generated name "
                           "and a fix start cash of 10,000.00"));
 
-    mCmd->printForInst("SimpleRule MyBanK 2009-01-01 2011-01-01 --checkDay Wed --weekly 4 --verbose 0");
+    mCmd->printForInst("SimpleRule MyBank 2009-01-01 2011-01-01 --checkDay Wed --weekly 4 --verbose 0");
     mCmd->aided();
     return;
   }
@@ -181,14 +181,14 @@ void Depots::simtrade()
 
   checking << 1; // Check each day
 
-  if(mCmd->hasOpt("weekly"))
+  if(mCmd->has("weekly"))
   {
     depotName.append("Weekly");
     checking << 5; // Add checkDay=Friday
 
     checking[0] = 7 * mCmd->optInt("weekly", 1);
 
-    if(mCmd->hasOpt("checkDay"))
+    if(mCmd->has("checkDay"))
     {
       QStringList dayNames;
       dayNames << "Mon" << "Tue" << "Wed" << "Thu" << "Fri";
@@ -214,10 +214,11 @@ void Depots::simtrade()
   // Test if depotName is unique
   QSqlQuery* depot = getDepots("Simulator");
   QStringList names;
-  while(depot->next())
+  if(depot)
   {
-    names << depot->value(1).toString();
+    while(depot->next()) names << depot->value(1).toString();
   }
+
   QString tryName = depotName;
   for(int i = 1;;++i)
   {
@@ -274,6 +275,7 @@ void Depots::simtrade()
         {
           // No, we haven't. Kill that order
           mFilu->updateField("status", FiluU::eOrderCanceled, "order", advices->value(0).toInt(), Filu::eUser);
+          mFilu->updateField("note", "No money left", "order", advices->value(0).toInt(), Filu::eUser);
         }
       }
       else
