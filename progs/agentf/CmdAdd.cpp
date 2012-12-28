@@ -192,7 +192,7 @@ void CmdAdd::addEodBar()
     mData   << mCmd->strParmDouble(1) << mCmd->strParmDouble(1)
             << mCmd->strParmDouble(1) << mCmd->strParmDouble(1);
   }
-  else //if(mCmd->has("ohlc"))
+  else if(mCmd->hasOpt("ohlc"))
   {
     mData   << mCmd->strParmDouble(1) << mCmd->strParmDouble(2)
             << mCmd->strParmDouble(3) << mCmd->strParmDouble(4);
