@@ -28,6 +28,7 @@
 #include "RcFile.h"
 #include "SymbolTuple.h"
 #include "SymbolTypeTuple.h"
+#include "Validator.h"
 
 using namespace std;
 
@@ -44,6 +45,7 @@ Importer::Importer(FClass* parent)
         : FClass(parent, FUNC)
         , mSymbol(0)
         , mConsole(stderr)
+        , mValid(new Validator(this))
 {
   reset();
 }
@@ -78,6 +80,8 @@ Importer::~Importer()
   }
 
   if(mSymbol) delete mSymbol;
+
+  delete mValid;
 
   verbose(FUNC, "I'm dead.", eMax);
 }
@@ -1055,16 +1059,17 @@ bool Importer::setDepotId(const QString faultTxt/* = ""*/)
 
 bool Importer::setQualityId()
 {
-  QString quality = mData.value("Quality", "Gold"); // If no quality set, use Gold
+  QString quality = mValid->sQuality(mData.value("Quality", "Gold")); // If no quality set, use Gold
 
   if(quality == mData.value("_LastQuality")) return true;  // We are up to date
 
   mData.insert("_LastQuality", quality); // Save now, anyway if good or not
 
-  mFilu->quality(quality);
-  if(mFilu->lastResult() > Filu::eError) // Looks good?
+  int q = mValid->iQuality(quality);
+
+  if(q > Filu::eError) // Looks good?
   {
-    mId.insert("Quality", mFilu->lastResult());
+    mId.insert("Quality", q);
     return true;
   }
 
@@ -1432,59 +1437,41 @@ void Importer::addEODBar()
 void Importer::addSplit()
 {
   QString comment;
-  double  pre;
-  double  post = 0.0;
-  double  ratio;
   bool    ok = true;
+  double  ratio;
 
   if(mData.contains("SplitPre:Post"))
   {
     comment = mData.value("SplitPre:Post");
-    QStringList sl = comment.split(":");
-    if(sl.size() < 2) ok = false;
-
-    if(ok) pre  = sl[0].toDouble(&ok);
-    if(ok) post = sl[1].toDouble(&ok);
-
+    ratio   = mValid->dSplitPrePost(comment);
   }
   else if(mData.contains("SplitPost:Pre"))
   {
     comment = mData.value("SplitPost:Pre");
-    QStringList sl = comment.split(":");
-    if(sl.size() < 2) ok = false;
-
-    if(ok) pre  = sl[1].toDouble(&ok);
-    if(ok) post = sl[0].toDouble(&ok);
-
-  }
-  else
-  {
-    ok = false;
-  }
-
-  if(post == 0) ok = false; //FIXME: add error message division 0
-
-  if(ok)
-  {
-    if(pre < post) comment.prepend("Split ");
-    else comment.prepend("Reverse Split ");
-
-    ratio = pre / post;
+    ratio   = mValid->dSplitPostPre(comment);
   }
   else if(mData.contains("SplitRatio"))
   {
+    bool ok;
     ratio = mData.value("SplitRatio").toDouble(&ok);
-
-    if(mData.contains("SplitComment")) comment = mData.value("SplitComment");
-    else comment = "";
+    if(!ok)
+    {
+      printStatus(eEffectFault, QString("SplitRatio not valid, skip: %1, %2")
+                                    .arg(mData.value("SplitDate"), mSymbol->caption()));
+      return;
+    }
   }
 
-  if(!ok)
+  if(mValid->hasError())
   {
-    printStatus(eEffectFault, QString("Data not valid, skip: %1, %1")
-                                  .arg(mData.value("SplitDate"), mSymbol->caption()));
+    printStatus(eEffectFault, QString("%1, skip: %2, %3")
+                                .arg(mValid->formatMessages("%x")
+                                   , mData.value("SplitDate"), mSymbol->caption()));
     return;
   }
+
+  if(ratio < 1.0) comment.prepend("Split ");
+  else comment.prepend("Reverse Split ");
 
   if(!setFiIdByAnySymbol("FI not found")) return;
 

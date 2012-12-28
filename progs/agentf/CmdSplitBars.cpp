@@ -24,16 +24,20 @@
 
 #include "CmdHelper.h"
 #include "FiluU.h"
+#include "Validator.h"
 
 static const QString cCmd1 = "splitBars";
 static const QString cCmd1Brief = QObject::tr("To correct faulty data of the provider");
 
 CmdSplitBars::CmdSplitBars(AgentF* agent)
             : CmdClass(agent, FUNC)
+            , mValid(new Validator(this))
 {}
 
 CmdSplitBars::~CmdSplitBars()
-{}
+{
+  delete mValid;
+}
 
 bool CmdSplitBars::isCmd(const QString& cmd)
 {
@@ -64,39 +68,19 @@ bool CmdSplitBars::exec(CmdHelper* ch)
   {
     if(mCmd->printThisWay("<Symbol> <Market> <FromDate> <ToDate> <SplitPre:Post>")) return true;
 
+    mCmd->printComment(tr("The quality of adjusted data is set to Platinum."));
     mCmd->printNote(tr("To accomplish a split event use the 'add split' command."));
     mCmd->printForInst("KO NewYork 2011-06-01 2012-08-13 1:2");
     mCmd->aided();
     return true;
   }
 
-  double  pre;
-  double  post;
-  double  ratio;
-  bool    ok;
-
-  QStringList sl = mCmd->argStr(5).split(":");
-  if(sl.size() < 2)
+  double ratio = mValid->dSplitPrePost(mCmd->argStr(5));
+  if(0.0 == ratio)
   {
-    error(FUNC, "Ratio must be <SplitPre:Post>.");
+    addErrors(mValid->errors());
     return false;
   }
-
-  pre = sl[0].toDouble(&ok);
-  if(pre == 0.0)
-  {
-    error(FUNC, "<SplitPre:Post>, Pre must not 0.");
-    return false;
-  };
-
-  post = sl[1].toDouble(&ok);
-  if(post == 0.0)
-  {
-    error(FUNC, "<SplitPre:Post>, Post must not 0.");
-    return false;
-  };
-
-  ratio = pre / post;
 
   mFilu->setSqlParm(":fromDate", mCmd->argDate(3).toString(Qt::ISODate));
   mFilu->setSqlParm(":toDate",   mCmd->argDate(4).toString(Qt::ISODate));
@@ -106,7 +90,7 @@ bool CmdSplitBars::exec(CmdHelper* ch)
   mFilu->setSqlParm(":symbol",   mCmd->argStr(1));
   mFilu->setSqlParm(":market",   mCmd->argStr(2));
   mFilu->setSqlParm(":ratio",    ratio);
-  mFilu->setSqlParm(":quality",  0);
+  mFilu->setSqlParm(":quality",  Filu::ePlatinum);
 
   QSqlQuery* query = mFilu->execSql("SplitBars");
   if(check4FiluError(FUNC)) return false;

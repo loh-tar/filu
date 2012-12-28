@@ -21,6 +21,7 @@
 
 #include "CmdHelper.h"
 #include "Importer.h"
+#include "Validator.h"
 
 static const QString cCmd1 = "add";
 static const QString cCmd1Brief = QObject::tr("Allows you add a single dataset to "
@@ -28,11 +29,13 @@ static const QString cCmd1Brief = QObject::tr("Allows you add a single dataset t
 
 CmdAdd::CmdAdd(AgentF* agent)
       : CmdClass(agent, FUNC)
+      , mValid(new Validator(this))
       , mImporter(new Importer(this))
 {}
 
 CmdAdd::~CmdAdd()
 {
+  delete mValid;
   delete mImporter;
 }
 
@@ -110,32 +113,11 @@ bool CmdAdd::exec(CmdHelper* ch)
 
   return !hasError();
 }
-/*
-void CmdAdd::printDataTypes()
-{
-  QStringList cmds;
-  cmds << "broker"<< "depot" << "depotPos" << "eodBar" << "fi" << "market"
-       << "order" << "post" << "split" << "symbol" << "symbolType"
-       << "underlying";
-
-  print(tr("\nPossible data types are:\n"));
-  int cols = 3;
-  for(int i = 0; i < cmds.size(); i += cols)
-  {
-    QString line;
-    for(int j = 0; (j < cols) and ((i + j) < cmds.size()); ++j)
-    {
-      line.append(QString("%1").arg(cmds.at(i + j), -20));
-    }
-    print(QString("  %1").arg(line));
-  }
-
-  print("");
-}*/
 
 void CmdAdd::import()
 {
   addErrors(mCmd->errors());
+  addErrors(mValid->errors());
 
   mHeader << "Quality";
   mData   << "Platinum";
@@ -297,7 +279,8 @@ void CmdAdd::addSplit()
   }
 
   mHeader << "[Header]RefSymbol;SplitDate;SplitPre:Post";
-  mData   << mCmd->parmList(); // FIXME check split
+  mData   << mCmd->strParm(1) << mCmd->strParmDate(2)
+          << mValid->sSplitPrePost(mCmd->strParm(3));
 
   import();
 }
@@ -355,8 +338,9 @@ void CmdAdd::addOrder()
   mData   << mCmd->strParmDate(1) << mCmd->strParmDate(2) << mCmd->strParm(3) << mCmd->strParm(4);
 
   mHeader << "Pieces" << "Limit" << "Type" << "Status" << "Note";
-  mData   << mCmd->strParmInt(5) << mCmd->strParmDouble(6) << mCmd->strParm(7)
-          << mCmd->strParm(8) << mCmd->strParm(9);
+  mData   << mCmd->strParmInt(5) << mValid->sOrderLimit(mCmd->strParm(6))
+          << mValid->sOrderType(mCmd->strParm(7))
+          << mValid->sOrderStatus(mCmd->strParm(8)) << mCmd->strParm(9);
 
   takeDepotOptions();
 
@@ -419,7 +403,8 @@ void CmdAdd::addAccPosting()
   }
 
   mHeader << "[Header]APDate" << "APType" << "Text" << "Value";
-  mData   << mCmd->strParmDate(1) << mCmd->strParm(2) << mCmd->strParm(3) << mCmd->strParmDouble(4);
+  mData   << mCmd->strParmDate(1) << mValid->sAccPostType(mCmd->strParm(2))
+          << mCmd->strParm(3) << mCmd->strParmDouble(4);
 
   takeDepotOptions();
 

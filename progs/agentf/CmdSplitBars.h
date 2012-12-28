@@ -22,6 +22,8 @@
 
 #include "CmdClass.h"
 
+class Validator;
+
 /***********************************************************************
 *
 *   Yes, represent the 'splitBars' command of AgentF.
@@ -40,6 +42,7 @@ class CmdSplitBars : public CmdClass
     bool              exec(CmdHelper* ch);
 
   protected:
+    Validator*        mValid;
 
   private:
 

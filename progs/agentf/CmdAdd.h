@@ -23,6 +23,7 @@
 #include "CmdClass.h"
 
 class Importer;
+class Validator;
 
 /***********************************************************************
 *
@@ -62,6 +63,7 @@ class CmdAdd : public CmdClass
 
     void          takeDepotOptions();
 
+    Validator*        mValid;
     Importer*         mImporter;
     QStringList       mHeader;
     QStringList       mData;

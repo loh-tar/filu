@@ -28,6 +28,7 @@
 #include "FClass.h"
 class FiTuple;
 class SymbolTuple;
+class Validator;
 
 /***********************************************************************
 *
@@ -130,6 +131,8 @@ class Importer : public FClass
     int           mDataW;               // Data Written
     QString       mImportData;
     QStringList   mHint;
+
+    Validator*    mValid;
 
   private:
 
