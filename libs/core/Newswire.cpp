@@ -166,6 +166,7 @@ QString Newswire::formatMessages(const QString& format/* = ""*/)
   }
 
   msgs.chop(1); // Remove last newline
+  clearMessages();
   return msgs;
 }
 
@@ -336,4 +337,11 @@ void Newswire::print(const QString& txt)
 void Newswire::record(const QString& func, const QString& txt)
 {
   if(mLogFile) *mLogFile << formatMessage(makeMessage(func, txt, eInfoMsg), mFormat.value(eRecord)) << endl;
+}
+
+Newswire::MessageLst Newswire::errors()
+{
+  MessageLst msgl = mMessages;
+  clearMessages();
+  return msgl;
 }

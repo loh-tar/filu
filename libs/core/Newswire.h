@@ -101,8 +101,8 @@ class Newswire
     bool            hasError() const { return mHasError; }              // True if error or fatal
     bool            hasFatal() const { return mHasFatal; }              // Only true if fatal
 
-    const MessageLst& errors() const { return mMessages; }
-    const MessageLst& messages() const { return mMessages; }
+    MessageLst      errors();
+    MessageLst      messages() { return errors(); }
 
     friend class RcFile;
 
