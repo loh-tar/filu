@@ -1281,19 +1281,35 @@ void Filu::openDB()
     return;
   }
 
-  // Test for min PostgreSQL version
+  // Test for PostgreSQL version
   QString dbVersion = serverVersion();
-  // QRegExp rx("PostgreSQL 9.[1-9]");  // FIXME Could be improved to match also version 10.0
-                                        //       but not 9.0
-  QRegExp rx("PostgreSQL 8.4");
-  if(rx.indexIn(dbVersion, 0) < 0)
+  QRegExp rx("PostgreSQL (\\d+)\\.(\\d+)");
+  if(rx.indexIn(dbVersion) > -1)
   {
-    error(FUNC, tr("PostgreSQL version is to old. Min required is 8.4, sorry."));
-    rx.setPattern("PostgreSQL \\d+\\.\\d+");
-    rx.indexIn(dbVersion, 0);
-    errInfo(FUNC, tr("Running server is: %1").arg(rx.cap(0)));
+    int major = rx.cap(1).toInt();
+    int minor = rx.cap(2).toInt();
+    if(major < 9)
+    {
+      if(major < 8 or minor < 4)
+      {
+        error(FUNC, tr("PostgreSQL version is to old. Min required is 8.4, sorry."));
+        errInfo(FUNC, tr("Running server is: %1.%2").arg(major).arg(minor));
+      }
+    }
+    else if(major > 9)
+    {
+      verbose(FUNC, tr("PostgreSQL version %1.%2 is newer than expected 9.x. "
+                       "I hope that everything goes well. ").arg(major).arg(minor)
+             , eAmple);
+    }
+  }
+  else
+  {
+    fatal(FUNC, "Can't determine Postgres version.");
+    errInfo(FUNC, tr("Running server is: %1").arg(dbVersion));
     return;
   }
+
 
   // Test if the driver works properly
   setSqlParm(":foo", 123);
