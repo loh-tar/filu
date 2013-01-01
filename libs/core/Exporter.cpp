@@ -624,14 +624,14 @@ bool Exporter::expMarkets()
   mOLine << "*";
   mOLine << "* All markets with currency and currency symbol";
   mOLine << "*";
-  mOLine << "[Header]MarketSymol;OpenTime;CloseTime;CurrencySymbol;Currency";
+  mOLine << "[Header]MarketSymbol;OpenTime;CloseTime;CurrencySymbol;Currency";
   mOLine << NewLine;
 
   writeToFile();
   while(query->next())
   {
     QSqlRecord m = query->record();
-    mDLine << m.value("Market").toString();
+    mDLine << m.value("MarketSymbol").toString();
     mDLine << m.value("OpenTime").toTime().toString(Qt::ISODate);
     mDLine << m.value("CloseTime").toTime().toString(Qt::ISODate);
     mDLine << m.value("CurrencySymbol").toString();
