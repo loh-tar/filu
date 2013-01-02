@@ -146,7 +146,7 @@ bool CmdDo::fromStdIn()
     mAgent->setMsgTargetFormat(eRecord,  QString("%D %T %C %1: %x").arg(mCmd->argStr(1)));
   }
 
-  setNoFileLogging();
+  mAgent->setNoFileLogging();
   mFilu->setNoErrorLogging();
 
   QTextStream console(stdout);
