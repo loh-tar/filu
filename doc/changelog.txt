@@ -1,3 +1,18 @@
+2013-01-04
+============
+Sundries
+----------
+- Filu: Fix Postgres version check, Don't reject newer than 8.4
+- Renew Qt PSQL driver to use source of Qt 4.8.4, There is a patch to not print
+  a warning with Postgres 9.x
+
+New Snapshot
+--------------
+With less old bugs and hopefully not too much new bugs.
+
+Happy New Year!
+
+
 2012-12-28
 ============
 Sundries
