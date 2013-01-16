@@ -1,7 +1,7 @@
 --
 --   This file is part of Filu.
 --
---   Copyright (C) 2007, 2010, 2011, 2012  loh.tar@googlemail.com
+--   Copyright (C) 2007, 2010, 2011, 2012, 2013 loh.tar@googlemail.com
 --
 --   Filu is free software: you can redistribute it and/or modify
 --   it under the terms of the GNU General Public License as published by

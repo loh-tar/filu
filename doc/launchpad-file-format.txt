@@ -1,4 +1,4 @@
-This file is part of Filu (C) 2007, 2010, 2011, 2012 loh.tar@googlemail.com
+This file is part of Filu (C) 2007, 2010-2013 loh.tar@googlemail.com
 
 
 The launch pad configuration files are typical config files in *.ini format
