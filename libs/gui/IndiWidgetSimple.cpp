@@ -106,18 +106,13 @@ void IndiWidgetSimple::sync()
 
 void IndiWidgetSimple::useIndicator(const QString& file)
 {
-  mSheet->useIndicator(file);
+  mUsedIndiFile = file;
+  mSheet->useIndicator(mUsedIndiFile);
+  watchIndicator();
+
   QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
   settings.beginGroup(mName);
-  settings.setValue("Indicator", file);
-
-  if(mUsedIndiFile != file)
-  {
-    QString path = mRcFile->getST("IndicatorPath");
-    mIndiWatcher->removePath(path + mUsedIndiFile);
-    mUsedIndiFile = file;
-    mIndiWatcher->addPath(path + mUsedIndiFile);
-  }
+  settings.setValue("Indicator", mUsedIndiFile);
 }
 
 void IndiWidgetSimple::showBarData(BarTuple* bars)
@@ -161,6 +156,8 @@ void IndiWidgetSimple::readSettings()
   mSheet->showGrid(settings.value("ShowGrid", true).toBool());
   mSheet->showXScale(settings.value("ShowXScale", true).toBool());
   mSheet->mPainter->mScaleToScreen = settings.value("ScaleToScreen", 10).toInt();
+
+  watchIndicator();
 }
 
 void IndiWidgetSimple::saveSettings()
@@ -197,4 +194,14 @@ void IndiWidgetSimple::contextMenuEvent(QContextMenuEvent* event)
 void IndiWidgetSimple::indiFileChanged()
 {
   mSheet->useIndicator(mUsedIndiFile);
+}
+
+void IndiWidgetSimple::watchIndicator()
+{
+  foreach(const QString indi, mIndiWatcher->files())
+  {
+    mIndiWatcher->removePath(indi);
+  }
+
+  mIndiWatcher->addPath(mRcFile->getST("IndicatorPath") + mUsedIndiFile);
 }

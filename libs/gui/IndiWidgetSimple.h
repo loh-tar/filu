@@ -67,6 +67,7 @@ class IndiWidgetSimple : public FWidget
     virtual void  readSettings(const QString& setName, int number);
     virtual void  saveSettings();
             void  contextMenuEvent(QContextMenuEvent* event);
+            void  watchIndicator();
 
     PlotSheet*    mSheet;
     QString       mName;
