@@ -11,7 +11,7 @@ Index
 
 1- Installation
 =================
-To become Filu working follow these steps recursive from top to down.
+To become Filu working follow these steps from top to down.
 
 If you want to update your existing Filu installation to a new snapshot take a
 look at doc/changelog.txt for things which must be considered. In general it is
@@ -24,34 +24,35 @@ that's all. And *don't* touch your database except the changelog says
 something else.
 
 The following infos apply to Ubuntu and Arch Linux. If you use a different OS
-you may need to do something deviating. But please report in that case what do
-you had to do to got it running.
+you may need to do something deviating.
 
-Take a look at the Ubuntu directions for possibly additional hints.
+*Please* report in any case if you come in trouble while the installation or
+later by using Filu. Without feedback I can't fix it!
 
 
 1-1- Needed Dependencies
 ==========================
 Ubuntu
 --------
-Note: These infos are a bit getting outdated. It was tested with Lucid Lynx.
-      So please report if you run in trouble with Precise Pangolin or newer.
+The last (very poor) test was with Raring Ringtail.
 
 To compile the programs you need the .deb packages:
   build-essential
   cmake
+  libqt4-dev           Minimum required Qt version is 4.6.
   libqt4-sql
   libqt4-sql-psql
-  libqt4-dev
-Minimum required Qt version is 4.6.
+  libmuparser-dev      Recommended muParser version is 2.2.3,
+                       older versions like 1.34 works only partial.
 
 The perl scripts needs the .dep packages:
   libwww-perl
   libdate-simple-perl
   libtimedate-perl
 
-Install TALib from: http://ta-lib.org/
-Last tested version is 0.4.0.
+Install TALib from: http://ta-lib.org/. Last tested version is 0.4.0.
+Sadly take compile from source some time, so you could also try to use the .deb
+package by Marco van Zwetselaar, but I haven't it tested.
   download ta-lib-0.4.0-src.tar.gz
   unzip the file
   cd into the extracted source directory
@@ -59,28 +60,35 @@ Last tested version is 0.4.0.
   make
   sudo make install
 
-Install muParser from: http://sourceforge.net/projects/muparser/
-Last tested version is v132
-  download v132.tar.gz
-  unzip the file
-  cd into the extracted source directory
-  ./configure --enable-samples=no
-  make
-  sudo make install
-
 The database package is:
-  postgresql-8.4   At least 8.4. Version 9.x is NOT tested.
+  postgresql       At least version 8.4
   pgadmin3         Not required but useful if you like to edit some data where
                    is not yet a tool at Filu to do the job. Use it with care.
 
-After the install view your /etc/postgresql/.../pg_hba.conf file
+After the install of postgres view your /etc/postgresql/.../pg_hba.conf file
 and search for:
-  # "local" is for Unix domain socket connections only
-  local   all         all                               trust
+  # Database administrative login by Unix domain socket
+  #local   all             postgres                                peer
 
-Make sure there is "trust" and not "ident sameuser" or something else. Otherwise
-edit the file to be right and reload postgres:
-  sudo /etc/init.d/postgresql-8.4 reload
+Comment out these line (if present) by adding a hash # at the beginning
+
+  # "local" is for Unix domain socket connections only
+  local   all             all                                     trust
+  # IPv4 local connections:
+  host    all             all             127.0.0.1/32            trust
+  # IPv6 local connections:
+  host    all             all             ::1/128                 trust
+
+Make sure there is "trust" and not "md5 ident sameuser" or something else.
+
+Edit the file to be right and reload postgres:
+  sudo /etc/init.d/postgresql reload
+
+Note: These changes looks not very nice but they are currently sadly needed
+      until someone send me a patch to do it right. So long you use Filu only
+on your local box should there not truly a security risk.
+
+Note: If you are a champ you write and send me a patch to build a .deb package.
 
 
 Arch
@@ -88,7 +96,8 @@ Arch
 To compile the programs you need:
   base-devel
   cmake
-  qt
+  qt4
+  muparser
 
 The perl scripts needs the packages:
   perl-libwww
@@ -97,18 +106,17 @@ The perl scripts needs the packages:
 One more package available in AUR:
   perl-date-simple
 
-To install TALib and muParser you could follow the Ubuntu instructions or use
-packages from AUR:
-  muparser
+To install TALib you could follow the Ubuntu instructions or use the
+package from AUR:
   ta-lib
 
 The database:
   postgresql
 
-After install of the server ensure that the server is running, now
-and in the future.
+After install of the server edit your /var/lib/postgres/data/pg_hba.conf file as
+Ubuntu. Restart the server and ensure that the server is running in the future.
 
-Note: If you are a champ, you write, and send me, a PKGBUILD.
+Note: If you are a champ you write and send me a PKGBUILD.
 
 
 1-2- Compilation
