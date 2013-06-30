@@ -38,6 +38,10 @@ bool CalcMuParser::prepare(CalcParms& parms)
   checkOutputCount(1);
 
   QString exp = mIns.join(" ");
+  // If we have the formula sin(a) looks exp "sin ( a )" and muParser
+  // throw an error because he take "sin" as a variable and not as his built-in
+  // function. We have to remove the space between sin and the left parenthesis
+  exp.replace(QRegExp("(\\w+)\\s(\\()"), "\\1\\2");
 
   if(!mParser->setExp(exp))
   {
