@@ -12,6 +12,6 @@ ll = REF(LOW, 1)
 splitUp   = MUP(LOW  > lh * ratio)
 splitDown = MUP(HIGH < ll / ratio)
 
-SCAN4 = MUP(splitUp or splitDown)
+SCAN4 = MUP(splitUp OR splitDown)
 
 PLOT(HISTOGRAMBAR, SCAN4)

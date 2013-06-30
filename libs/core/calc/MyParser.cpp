@@ -24,6 +24,16 @@ mu::value_type MyAndFunc(mu::value_type a, mu::value_type b)
   return (a and b);
 }
 
+mu::value_type MyOrFunc(mu::value_type a, mu::value_type b)
+{
+  return (a or b);
+}
+
+mu::value_type MyXorFunc(mu::value_type a, mu::value_type b)
+{
+  return (a and !b) or (!a and b);
+}
+
 static mu::value_type* MyAddVariable(const mu::char_type */*a_szName*/, void * /*a_pUserData*/)
 {
   static double dummy = 1.0;
@@ -36,7 +46,9 @@ static mu::value_type* MyAddVariable(const mu::char_type */*a_szName*/, void * /
 MyParser::MyParser(Newswire* parent)
         : Newswire(parent, FUNC)
 {
-  mParser.DefineOprt("&", &MyAndFunc, 0);
+  mParser.DefineOprt("AND", &MyAndFunc, 0);
+  mParser.DefineOprt("OR", &MyOrFunc, 0);
+  mParser.DefineOprt("XOR", &MyXorFunc, 0);
 
   // Define the dummy variable factory
   mParser.SetVarFactory(&MyAddVariable, &mParser);
@@ -67,7 +79,7 @@ bool MyParser::setExp(const QString& expr)
     errInfo(FUNC, tr("Formula: %1").arg(e.GetExpr().data()));
     errInfo(FUNC, tr("Token: %1").arg(e.GetToken().data()));
     errInfo(FUNC, tr("Position: %1").arg(e.GetPos()));
-    errInfo(FUNC, tr("ErrCode: %1").arg(e.GetCode()));
+    //errInfo(FUNC, tr("ErrCode: %1").arg(e.GetCode()));
 
     return false;
   }

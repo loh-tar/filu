@@ -247,10 +247,14 @@ FILU(<Function>[, <Parameter>...])
 
 MUP(<Expression>)
   <Expression> could be a full complex math or bool expression. For details
-  of supported operators and functions see the documentation of muParser.
+  of supported operators and functions see the documentation of muParser. The
+  newest version online is http://muparser.beltoforion.de/mup_features.html,
+  but take care that these matches with your used version.
 
     midPrice = MUP((HIGH + LOW ) / 2)
-    signal = MUP((foo1 < foo2) and (foo3 xor (foo4 > foo5)))
+    signal = MUP((foo1 < foo2) AND (foo3 XOR (foo4 > foo5)))
+
+  Besides the built-in muParser operators you have logical "AND OR XOR".
 
 -PERF(<EntTrig>, <EntVal>, <EntDelay>, <ExitTrig>, <ExitVal>, <ExitDelay>)
   Calculate the performance
