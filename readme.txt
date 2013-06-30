@@ -84,11 +84,11 @@ Make sure there is "trust" and not "md5 ident sameuser" or something else.
 Edit the file to be right and reload postgres:
   sudo /etc/init.d/postgresql reload
 
-Note: These changes looks not very nice but they are currently sadly needed
+NOTE: These changes looks not very nice but they are currently sadly needed
       until someone send me a patch to do it right. So long you use Filu only
 on your local box should there not truly a security risk.
 
-Note: If you are a champ you write and send me a patch to build a .deb package.
+NOTE: If you are a champ you write and send me a patch to build a .deb package.
 
 
 Arch
@@ -116,7 +116,7 @@ The database:
 After install of the server edit your /var/lib/postgres/data/pg_hba.conf file as
 Ubuntu. Restart the server and ensure that the server is running in the future.
 
-Note: If you are a champ you write and send me a PKGBUILD.
+NOTE: If you are a champ you write and send me a PKGBUILD.
 
 
 1-2- Compilation

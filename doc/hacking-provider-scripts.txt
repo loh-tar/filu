@@ -63,7 +63,7 @@ RefSymbol
 
 <SymbolType>
   When known will it be installed.
-  Note: As in doc/import-file-format.txt explained should it here named
+  NOTE: As in doc/import-file-format.txt explained should it here named
   KnownSymbolType, but that would be confusing. The sript can't know
   what Filu knows.
 

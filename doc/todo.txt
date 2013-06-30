@@ -43,7 +43,7 @@ H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
 M: add NOTIFY/LISTEN support. db.driver()->subscribeToNotification()
    e.g. if table eodbar updated -> performerf "ah, reload chart"
-   Note: Because of a Qt driver limitation is the 'payload' not supported.
+   NOTE: Because of a Qt driver limitation is the 'payload' not supported.
          I suggest to use a (temporary?) 'message table' where notifycations
     are inserted and only to listen on that table. Earliest Qt5 could fix it.
 M: Add a holyday table where special market closes are listed

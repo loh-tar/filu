@@ -1349,7 +1349,7 @@ void Filu::createSchema()
 {
   execute("_Psst!", "SET client_min_messages TO WARNING");
 
-  // Note: In PostgreSQL 9.0 and later, PL/pgSQL is pre-installed by default.
+  // NOTE: In PostgreSQL 9.0 and later, PL/pgSQL is pre-installed by default.
   if(eData == execute("_Test4Language", "SELECT 1 FROM pg_language WHERE lanname='plpgsql'"))
   {
     verbose(FUNC, "Language plpgsql exist, skip creation.");

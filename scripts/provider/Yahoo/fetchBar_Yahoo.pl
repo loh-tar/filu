@@ -76,7 +76,7 @@ if($toDate eq Date::Simple->today() ) {
 
   # Because Yahoo make trouble in July of 2011 I try to
   # fix it with repeated download of todays data.
-  # Note: They ship garbage data with date in the 1970th
+  # NOTE: They ship garbage data with date in the 1970th
   for(my $i = 0; $i < 5; $i++)
   {
     $quoteData = get($yahoo_today);
