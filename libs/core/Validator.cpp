@@ -143,7 +143,15 @@ double Validator::dSplitPrePost(const QString& split)
   {
     error(FUNC, "SplitPre:Post, Post must not 0.");
     return ratio;
-  };
+  }
+
+  ratio = pre / post;
+
+  if(ratio < 0)
+  {
+    error(FUNC, "Ratio must not negative.");
+    return 0.0;
+  }
 
   ratio = pre / post;
   return ratio;
@@ -185,6 +193,13 @@ double Validator::dSplitPostPre(const QString& split)
   };
 
   ratio = pre / post;
+
+  if(ratio < 0)
+  {
+    error(FUNC, "Ratio must not negative.");
+    return 0.0;
+  }
+
   return ratio;
 }
 
