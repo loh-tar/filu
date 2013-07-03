@@ -1501,7 +1501,8 @@ void Importer::addBroker()
 {
   mFilu->addBroker(mData.value("BrokerName"), mData.value("CurrencySymbol"), mData.value("FeeFormula"), mId.value("Quality"));
 
-  if(notAdded(mData.value("BrokerName"))) return;
+  mHint << mData.value("BrokerName") << mData.value("CurrencySymbol");
+  if(notAdded()) return;
 
   if(verboseLevel(eAmple))
   {
