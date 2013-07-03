@@ -47,6 +47,7 @@ Importer::Importer(FClass* parent)
         , mConsole(stderr)
         , mValid(new Validator(this))
 {
+  mValid->setNoErrorLogging();
   reset();
 }
 
@@ -1059,7 +1060,7 @@ bool Importer::setDepotId(const QString faultTxt/* = ""*/)
 
 bool Importer::setQualityId()
 {
-  QString quality = mValid->sQuality(mData.value("Quality", "Gold")); // If no quality set, use Gold
+  QString quality = mData.value("Quality", "Gold"); // If no quality set, use Gold
 
   if(quality == mData.value("_LastQuality")) return true;  // We are up to date
 
@@ -1074,6 +1075,7 @@ bool Importer::setQualityId()
   }
 
   warning(FUNC, tr("Quality '%1' is unknown, I will use Gold.").arg(quality));
+  mValid->errors(); // Clear error
 
   mId.insert("Quality", Filu::eGold);
   return false;
