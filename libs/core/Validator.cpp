@@ -21,6 +21,11 @@
 
 #include "FiluU.h"
 
+const QString cRatioNotNeg       = QObject::tr("Ratio must not negative.");
+const QString cPreNotNull        = QObject::tr("Pre must not 0.");
+const QString cPostNotNull       = QObject::tr("Post must not 0.");
+const QString cRatioColon        = QObject::tr("Ratio must have colon.");
+
 Validator::Validator(FClass* parent)
          : FClass(parent, FUNC)
 {}
@@ -50,7 +55,7 @@ double Validator::dOrderLimit(const QString& limitTxt)
   {
     if(limitTxt.compare("Best", Qt::CaseInsensitive) == 0) return 0.0;
 
-    error(FUNC, tr("Order limit '%1' is not valid").arg(limitTxt));
+    error(FUNC, tr("Order limit '%1' is not valid.").arg(limitTxt));
   }
 
   return -1.0; // Not valid
@@ -127,21 +132,21 @@ double Validator::dSplitPrePost(const QString& split)
   QStringList sl = split.split(":", QString::SkipEmptyParts);
   if(sl.size() < 2)
   {
-    error(FUNC, "Ratio must be SplitPre:Post.");
+    error(FUNC, cRatioColon);
     return ratio;
   }
 
   pre = sl[0].toDouble(&ok);
   if(pre == 0.0)
   {
-    error(FUNC, "SplitPre:Post, Pre must not 0.");
+    error(FUNC, cPreNotNull);
     return ratio;
   };
 
   post = sl[1].toDouble(&ok);
   if(post == 0.0)
   {
-    error(FUNC, "SplitPre:Post, Post must not 0.");
+    error(FUNC, cPostNotNull);
     return ratio;
   }
 
@@ -149,7 +154,7 @@ double Validator::dSplitPrePost(const QString& split)
 
   if(ratio < 0)
   {
-    error(FUNC, "Ratio must not negative.");
+    error(FUNC, cRatioNotNeg);
     return 0.0;
   }
 
@@ -174,21 +179,21 @@ double Validator::dSplitPostPre(const QString& split)
   QStringList sl = split.split(":", QString::SkipEmptyParts);
   if(sl.size() < 2)
   {
-    error(FUNC, "Ratio must be SplitPost:Pre.");
+    error(FUNC, cRatioColon);
     return ratio;
   }
 
   pre = sl[0].toDouble(&ok);
   if(pre == 0.0)
   {
-    error(FUNC, "SplitPost:Pre, Post must not 0.");
+    error(FUNC, cPostNotNull);
     return ratio;
   };
 
   post = sl[1].toDouble(&ok);
   if(post == 0.0)
   {
-    error(FUNC, "SplitPost:Pre, Pre must not 0.");
+    error(FUNC, cPreNotNull);
     return ratio;
   };
 
@@ -196,7 +201,7 @@ double Validator::dSplitPostPre(const QString& split)
 
   if(ratio < 0)
   {
-    error(FUNC, "Ratio must not negative.");
+    error(FUNC, cRatioNotNeg);
     return 0.0;
   }
 
