@@ -87,7 +87,6 @@ class IndicatorPainter : public FWidget
     QList<PlotType*> mPlotCommands;      // Rehashed plot statements, now objects
     QStringList      mPlotDataKeys;      // Holds all names of plotted variables
     QString          mPrimaryValue;
-    bool             mPrepareError;
 
     QSet<COType*>    mCObjects;          // Holds all chart objects
     COType*          mCOInProcess;       // User is editing this

@@ -128,6 +128,7 @@ class Newswire
     bool            isRoot() { return mRoot; }
     void            clearMessages();
     void            clearErrors() { clearMessages(); }
+    void            setNoAutoClearMessages(bool noAutoClear = true) { mNoAutoClearMessages = noAutoClear; }
 
   private:
                         // P for private
@@ -147,6 +148,7 @@ class Newswire
     QTextStream*    mLogFile;
     bool            mNoErrorLogging;
     bool            mNoFileLogging;
+    bool            mNoAutoClearMessages;
 
     QHash<MsgTarget, QString> mFormat;
 };

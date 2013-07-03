@@ -38,6 +38,7 @@ Newswire::Newswire(const QString& connectionName)
         , mLogFile(0)
         , mNoErrorLogging(false)
         , mNoFileLogging(false)
+        , mNoAutoClearMessages(false)
 {
   setVerboseLevel(mVerboseLevel); // Is called to set mFormat
 }
@@ -54,6 +55,7 @@ Newswire::Newswire(Newswire* parent, const QString& className)
         , mLogFile(parent->mLogFile)
         , mNoErrorLogging(parent->mNoErrorLogging)
         , mNoFileLogging(parent->mNoFileLogging)
+        , mNoAutoClearMessages(false) // or ? (parent->mNoAutoClearMessages)
         , mFormat(parent->mFormat)
 {}
 
@@ -166,7 +168,7 @@ QString Newswire::formatMessages(const QString& format/* = ""*/)
   }
 
   msgs.chop(1); // Remove last newline
-  clearMessages();
+  if(!mNoAutoClearMessages) clearMessages();
   return msgs;
 }
 
@@ -342,6 +344,6 @@ void Newswire::record(const QString& func, const QString& txt)
 Newswire::MessageLst Newswire::errors()
 {
   MessageLst msgl = mMessages;
-  clearMessages();
+  if(!mNoAutoClearMessages) clearMessages();
   return msgl;
 }

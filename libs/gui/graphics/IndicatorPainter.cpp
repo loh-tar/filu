@@ -39,7 +39,6 @@
 IndicatorPainter::IndicatorPainter(PlotSheet* parent)
                 : FWidget(parent, FUNC)
                 , mIndicator(0)
-                , mPrepareError(false)
                 , mCOInProcess(0)
                 , mBars(0)
                 , mData(0)
@@ -63,6 +62,8 @@ IndicatorPainter::IndicatorPainter(PlotSheet* parent)
   mScaler    = new Scaler(this);
   mIndicator = new Indicator(this);
   mIndicator->ignorePlot(false);
+
+  setNoAutoClearMessages();
 
   readSettings();
 }
@@ -173,15 +174,7 @@ bool IndicatorPainter::prepare(QStringList* indiFile)
     error(FUNC, tr("PRIMARY '%1' not found.").arg(mPrimaryValue));
   }
 
-  if(hasError())
-  {
-    mPrepareError = true;
-    return false;
-  }
-
-  mPrepareError = false;
-
-  return true;
+  return !hasError();
 }
 
 bool IndicatorPainter::useIndicator(QStringList &/*indicator*/)
@@ -227,9 +220,7 @@ bool IndicatorPainter::calculate()
   mCOInProcess = 0;
 
   if(!mBars) return false;
-  if(mPrepareError) return false;
-
-  clearErrors();
+  if(hasError()) return false;
 
   mData = mIndicator->calculate(mBars);
 
