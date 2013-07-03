@@ -806,7 +806,10 @@ void Importer::prepare()
     mToDo.insert("addEODBar");
   }
 
-  if(mData.contains("SplitDate"))
+  if(mData.contains("SplitDate") and
+      (   mData.contains("SplitPre:Post")
+       or mData.contains("SplitPost:Pre")
+       or mData.contains("SplitRatio")    ) )
   {
     importData << "Splits";
     mToDo.insert("addSplit");
@@ -1442,26 +1445,34 @@ void Importer::addSplit()
   bool    ok = true;
   double  ratio;
 
-  if(mData.contains("SplitPre:Post"))
-  {
-    comment = mData.value("SplitPre:Post");
-    ratio   = mValid->dSplitPrePost(comment);
-  }
-  else if(mData.contains("SplitPost:Pre"))
-  {
-    comment = mData.value("SplitPost:Pre");
-    ratio   = mValid->dSplitPostPre(comment);
-  }
-  else if(mData.contains("SplitRatio"))
+  if(mData.contains("SplitRatio"))
   {
     bool ok;
     ratio = mData.value("SplitRatio").toDouble(&ok);
-    if(!ok)
+    if(!ok or ratio < 0)
     {
       printStatus(eEffectFault, QString("SplitRatio not valid, skip: %1, %2")
                                     .arg(mData.value("SplitDate"), mSymbol->caption()));
       return;
     }
+
+    comment = mData.value("SplitComment");
+    if(comment.isEmpty()) comment = "Split " + mData.value("SplitRatio");
+  }
+  else
+  {
+    if(mData.contains("SplitPre:Post"))
+    {
+      comment = mData.value("SplitPre:Post");
+      ratio   = mValid->dSplitPrePost(comment);
+    }
+    else //if(mData.contains("SplitPost:Pre"))
+    {
+      comment = mData.value("SplitPost:Pre");
+      ratio   = mValid->dSplitPostPre(comment);
+    }
+
+    comment.prepend(ratio < 1.0 ? "Split " : "Reverse Split ");
   }
 
   if(mValid->hasError())
@@ -1471,9 +1482,6 @@ void Importer::addSplit()
                                    , mData.value("SplitDate"), mSymbol->caption()));
     return;
   }
-
-  if(ratio < 1.0) comment.prepend("Split ");
-  else comment.prepend("Reverse Split ");
 
   if(!setFiIdByAnySymbol("FI not found")) return;
 
