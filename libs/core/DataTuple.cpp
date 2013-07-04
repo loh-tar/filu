@@ -18,6 +18,7 @@
 //
 
 #include <float.h>
+#include <math.h>
 
 #include <QColor>
 #include <QDate>
@@ -120,7 +121,14 @@ bool DataTuple::getValue(double& value)
   if( (*Index < firstValid) or (countValid == 0) ) return false;
 
   value = Value[*Index - firstValid];
-  return true;
+
+  // PlotSheet can hang up with NaN/inf values, so we have to check here
+  // I'm not sure if it is a Qt bug
+  // http://www.gnu.org/savannah-checkouts/gnu/libc/manual/html_node/Infinity-and-NaN.html
+  // http://stackoverflow.com/questions/2249110/how-do-i-make-a-portable-isnan-isinf-function?lq=1
+  bool bad = isnan(value) or (INFINITY == value) or (-INFINITY == value);
+
+  return !bad;
 }
 
 void DataTuple::setValue(const double& value)
