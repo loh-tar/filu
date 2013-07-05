@@ -1,3 +1,15 @@
+2013-07-05
+============
+Sundries
+----------
+- Add a 64Bit precompiled Qt PSQL driver to the source tree
+- Fix PlotSheet not to hang up whith NaN/inf values
+- Oops! Fix IndicatorPainter not to crash if indicator is bad
+- Fix import SplitComment if SplitRatio was given
+- Oops! Fix not detected muParser functions like sin(x)
+- Change to muParser 2.2.3. Remove "&" and add "AND OR XOR"
+
+
 2013-01-04
 ============
 Sundries
