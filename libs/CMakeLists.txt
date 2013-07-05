@@ -12,9 +12,18 @@ install(FILES ${LDCONFIG_FILES}
 # Install fixed SQL driver
 # The permissions seems not be needed. It has also worked without
 # these special settings. But any other lib has these permissions.
-install(FILES ./libqsqlpsql.so
+#
+# Check if we have 32 or 64 bit machine
+# http://www.cmake.org/pipermail/cmake/2011-June/045086.html
+set(PSQLDRIVER ./libqsqlpsql.so-32)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(PSQLDRIVER ./libqsqlpsql.so-64)
+endif()
+
+install(FILES ${PSQLDRIVER}
         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu/sqldrivers/
         PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE
                     GROUP_EXECUTE GROUP_READ
                     WORLD_EXECUTE WORLD_READ
+                    RENAME libqsqlpsql.so
 )
