@@ -112,8 +112,8 @@ download anything.
 
 As consequence of that naming convention is 'Reuters' a symbol type but not a
 provider because we have no Reuters-Script to download anything from Reuters.
-Currently we have less than a handful provider usable at Filu. Yahoo, oander
-(currently broken, sorry) and Filu. 'Filu?'. Um...yes, there are some simple
+Currently we have less than a handful provider usable at Filu. Yahoo and Filu.
+'Filu?'. Um...yes, there are some simple
 shell scripts they are usable at ManagerF's 'AddFi-Page'. These data come not
 out of the database or from the internet but rather out of some *.csv files
 located at the Filu install directory.
