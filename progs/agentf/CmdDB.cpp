@@ -311,7 +311,7 @@ void CmdDB::show()
 
     mCmd->printForInst("fi caption=ll \"ftype_id>2\" --ticket");
     mCmd->printForInst("eodbar quality=3");
-    mCmd->printForInst("eodbar market");
+    mCmd->printForInst("market");
     mCmd->printComment(" ");
     mCmd->printComment("The first example list FIs with 'll' in name but no currencies, "
                        "the second list bad bars and the latter all markets");
