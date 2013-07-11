@@ -883,8 +883,8 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
     v = (iOI == -1) ? "" : values.at(iOI);
     query->bindValue(":oi", v.isEmpty() ? NULL : v);
 
-    v = (iQ == -1) ? "1" : values.at(iQ); // If not exist we assume the data are final
-    query->bindValue(":status", v.isEmpty() ? NULL : v);
+    v = (iQ == -1) ? "Gold" : values.at(iQ); // If not exist we assume the data are final
+    query->bindValue(":status", v.isEmpty() ? NULL : quality(v));
 
     ++sqlExecCounter;
 
