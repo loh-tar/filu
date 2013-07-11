@@ -196,9 +196,10 @@ sub info()
   print "Date:    2012\n";
   print "Author:  Christian Kindler, loh.tar\n";
   print "Purpose: To fetch EOD Bar data to a FI in a given time frame\n";
-  print "Input:   FromDate ToDate Symbol Market";
+  print "Input:   FromDate ToDate Symbol Market\n";
   print "Output:  Date Open High Low Close Volume OpenInterest Quality\n";
-  print "Comment: Sadly delivers Yahoo sometimes buggy historical data\n";
+  print "Comment: Sadly delivers Yahoo sometimes buggy historical stock data, " .
+                 "and all the time unusable currency data.\n";
 
   exit 0; #exit good
 }
