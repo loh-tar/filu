@@ -4,8 +4,8 @@ This file is part of Filu (C) 2007, 2010-2013 loh.tar@googlemail.com
 Index
 =======
 1- Installation
-2- Customizing
-3- Further Readings
+2- Further Readings
+3- Customizing
 4- Uninstall
 
 
@@ -88,7 +88,7 @@ NOTE: These changes looks not very nice but they are currently sadly needed
       until someone send me a patch to do it right. So long you use Filu only
 on your local box should there not truly a security risk.
 
-NOTE: If you are a champ you write and send me a patch to build a .deb package.
+NOTE: If you are a champ you write a patch to build a .deb package.
 
 
 Arch
@@ -116,7 +116,7 @@ The database:
 After install of the server edit your /var/lib/postgres/data/pg_hba.conf file as
 Ubuntu. Restart the server and ensure that the server is running in the future.
 
-NOTE: If you are a champ you write and send me a PKGBUILD.
+NOTE: If you are a champ you write patch for a PKGBUILD.
 
 
 1-2- Compilation
@@ -146,7 +146,13 @@ you have the programs:
 Which you should find at your application menu below 'Office'.
 
 
-2- Customizing
+2- Further Readings
+=====================
+More information you will find at doc directory. It may a good idea to start
+with first-steps.txt.
+
+
+3- Customizing
 ================
 If you prefer different names for the database and/or database user you can at
 the cmake config step above the switch -D use and run:
@@ -159,13 +165,9 @@ options. So you can these also run direct.
   createuser -e -D -R -S -U postgres anyUserName
   createdb -e -T template1 -U postgres -O anyUserName anyDBName "Info Text"
 
-For more tunings see doc/config-file.txt.
-
-
-3- Further Readings
-=====================
-More information you will find at doc directory. It may a good idea to start
-with first-steps.txt.
+For more tunings see:
+  doc/config-file.txt
+  database/sqls/filu/misc/table_entries.sql
 
 
 4- Uninstall
