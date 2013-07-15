@@ -31,7 +31,7 @@ DECLARE
   mSQuote       :filu.eodbar.qclose%TYPE; -- Source quote
   mDQuote       :filu.eodbar.qclose%TYPE; -- Destination quote
   mDMoney       :filu.eodbar.qclose%TYPE; -- Destination aMoney
-  mUSDollar     CONSTANT int := 2;        -- US Dollar has always ID 2
+  mBaseCurr     CONSTANT int := 2;        -- Base currency has always ID 2
 
 BEGIN
   --
@@ -40,7 +40,7 @@ BEGIN
 
   IF aSCurr = aDCurr THEN RETURN aMoney; END IF; -- Nice, nothing todo
 
-  IF aSCurr = mUSDollar
+  IF aSCurr = mBaseCurr
     THEN mSQuote = 1.0;
     ELSE SELECT qclose INTO mSQuote
            FROM :filu.eodbar
@@ -50,7 +50,7 @@ BEGIN
           IF mSQuote IS NULL THEN RETURN -aMoney; END IF; -- Currency or date not found, shit happens
   END IF;
 
-  IF aDCurr = mUSDollar
+  IF aDCurr = mBaseCurr
     THEN mDQuote = 1.0;
     ELSE SELECT qclose INTO mDQuote
            FROM :filu.eodbar
