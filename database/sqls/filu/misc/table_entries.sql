@@ -43,9 +43,20 @@ INSERT INTO :filu.ftype(caption) VALUES('Index');
 --INSERT INTO :filu.ftype(caption) VALUES('CRS');
 --
 --
+-- Provider Symbol Types
+--
+-- The very first entry *must* be the currency quote provider.
+-- Symbols taken by market_insert() are treated as symbol of the
+-- currency provider and expected to have stype_id=1
+INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('ECB', 100, true);
+--
+INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('Yahoo', 200, true);
+--INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('futuresguide', 1100, true);
+--
+--
 -- Non Provider Symbol Types
 --
--- Don't remove Reuters, it's a must have!
+-- Don't remove Reuters, it's a must have! Expected e.g. by market_insert()
 INSERT INTO :filu.stype(caption, seq) VALUES('Reuters', 100);
 --
 INSERT INTO :filu.stype(caption, seq) VALUES('ISIN', 1100);
@@ -54,17 +65,16 @@ INSERT INTO :filu.stype(caption, seq) VALUES('ISIN', 1100);
 --INSERT INTO :filu.stype(caption, seq) VALUES('Generic', 500);
 --
 --
--- Provider Symbol Types
---
-INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('Yahoo', 200, true);
---INSERT INTO :filu.stype(caption, seq, isprovider) VALUES('futuresguide', 1100, true);
---
---
 -- Markets
 --
--- Don't remove Forex or change the symbol USD, it's a must have!
-SELECT :filu.market_insert('Forex', 'US Dollar', 'USD', -1); -- "-1" Says "That's the NoMarket insert"
+-- Don't remove the first entry, it's a must have! But you can adjust it to your neeeds.
+--   The given currency is the base currency which is used to represent other currencys.
+--   Our currency qoute provider, the European Central Bank, use the euro as base.
+--   See also: http://en.wikipedia.org/wiki/Currency_pair
+SELECT :filu.market_insert('Forex', 'Euro', 'EUR', -1);        -- "-1" Says "That's the NoMarket insert"
+--SELECT :filu.market_insert('Forex', 'US Dollar', 'USD', -1); -- "-1" Says "That's the NoMarket insert"
 --
---SELECT :filu.market_insert('NewYork', '', 'USD'); -- No need to give name, USD already exist
+--
+--SELECT :filu.market_insert('NewYork', 'US Dollar', 'USD');
 --SELECT :filu.market_insert('Xetra', 'Euro', 'EUR');
 --

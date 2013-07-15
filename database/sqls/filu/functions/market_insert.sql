@@ -25,7 +25,7 @@ CREATE OR REPLACE FUNCTION :filu.market_insert
 (
   aMarket   :filu.market.caption%TYPE, -- like "Nyse"
   aCurrency :filu.fi.caption%TYPE,     -- like "US Dollar"
-  aReuters  :filu.symbol.caption%TYPE, -- Reuters currency symbol like "USD"
+  aSymbol   :filu.symbol.caption%TYPE, -- Symbol of the currency provider, like "USD"
   aMarketId :filu.market.market_id%TYPE = 0
 )
 RETURNS :filu.market.market_id%TYPE AS
@@ -35,11 +35,13 @@ DECLARE
   mFiId      :filu.fi.fi_id%TYPE;
   mMId       :filu.market.market_id%TYPE; -- Market ID
   mNoMId     int := 1;                    -- NoMarket has always ID 1
+  mForexId   int := 2;                    -- Forex has always ID 2
+  mCpId      int := 1;                    -- CurrencyProviderId has always ID 1
   mNumRows   int;
 
 BEGIN
 
-  mFiId := :filu.fiid_from_symbolcaption(aReuters);
+  mFiId := :filu.fiid_from_symbolcaption(aSymbol);
   IF mFiId < 1 THEN mFiId := :filu.id_from_caption('fi', aCurrency); END IF;
 
   IF aMarketId > 0 THEN
@@ -75,6 +77,9 @@ BEGIN
       -- we have to add all dummy stuff
       mFiId  := nextval(':filu.fi_fi_id_seq');
       mNoMId := nextval(':filu.market_market_id_seq');
+      -- Change the symbol type, it is pointless to try to download data for the base currency
+      mCpId    := :filu.id_from_caption('stype', 'Reuters');
+      mForexId := mNoMId;
 
       INSERT  INTO :filu.fi(fi_id, caption, ftype_id)
               VALUES(mFiId, 'No Currency', :filu.id_from_caption('ftype', 'Currency'));
@@ -84,7 +89,7 @@ BEGIN
 
       INSERT  INTO :filu.symbol(fi_id, caption, stype_id, market_id)
               VALUES(mFiId, 'NoCurry'
-                    , :filu.id_from_caption('stype', 'Reuters')
+                    , mCpId   -- The variable is here abused
                     , mNoMId);
 
       --RAISE INFO 'Dummy stuff NoMarket and NoCurrency had been created.';
@@ -100,13 +105,11 @@ BEGIN
     INSERT  INTO :filu.fi(fi_id, caption, ftype_id)
             VALUES(mFiId, aCurrency, :filu.id_from_caption('ftype', 'Currency'));
 
-    INSERT  INTO :filu.symbol(fi_id, caption, stype_id, market_id)
-            VALUES(mFiId, aReuters
-                      , :filu.id_from_caption('stype', 'Reuters')
-                      , mNoMId); -- always to NoMarket
-
     INSERT  INTO :filu.market(market_id, caption, currency_fi_id)
             VALUES(mMId, aMarket, mFiId);
+
+    INSERT  INTO :filu.symbol(fi_id, caption, stype_id, market_id)
+            VALUES(mFiId, aSymbol, mCpId, mForexId);
 
   END IF;
 

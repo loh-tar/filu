@@ -29,38 +29,35 @@ RETURNS SETOF :filu.fbar AS
 $BODY$
 DECLARE
   mRecord       record;
-  mCurryMarket  CONSTANT int := 1;
-  mUSDollar     CONSTANT int := 2;           -- US Dollar has always ID 2
-  mSCurrId      :filu.fi.fi_id%TYPE;
-  mDCurrId      :filu.fi.fi_id%TYPE;
-  mSymbol       :filu.symbol.caption%TYPE;
+  mBaseCurr     CONSTANT int := 2;           -- Base currency (of our Forex market) has always ID 2
+  mCurr1        :filu.fi.fi_id%TYPE;         -- see also fetchBar_ECB.pl
+  mCurr2        :filu.fi.fi_id%TYPE;
   mHelp         TEXT[];
   mResult       :filu.fbar;
 
 BEGIN
   --
   -- Fetch both currencys...
-  -- The symbols at the begining of the FI caption e.g. "USD/EUR"
+  -- The symbols at the begining of the FI caption e.g. GBP/USD => mCurr1/mCurr2
   --
   SELECT caption INTO mRecord FROM :filu.fi WHERE fi_id = aFiId;
   IF mRecord IS NULL THEN RETURN; END IF;
 
   mHelp := regexp_split_to_array(mRecord.caption, E'\\/');
-  mDCurrId := :filu.fiid_from_symbolcaption(mHelp[1]);
-  IF mDCurrId < 1 THEN RETURN; END IF;
+  mCurr1 := :filu.fiid_from_symbolcaption(mHelp[1]);
+  IF mCurr1 < 1 THEN RETURN; END IF;
 
   mHelp := regexp_split_to_array(mHelp[2], E'\\s');
-  mSCurrId := :filu.fiid_from_symbolcaption(mHelp[1]);
-  IF mSCurrId < 1 THEN RETURN; END IF;
+  mCurr2 := :filu.fiid_from_symbolcaption(mHelp[1]);
+  IF mCurr2 < 1 THEN RETURN; END IF;
 
-  IF mSCurrId = mUSDollar THEN
-    RETURN QUERY SELECT * FROM :filu.gfi_rawdata_eodbar(mDCurrId, aMarketId, aFDate, aTDate, aLimit);
+  IF mCurr2 = mBaseCurr THEN -- GBP/EUR
+    RETURN QUERY SELECT * FROM :filu.gfi_rawdata_eodbar(mCurr1, aMarketId, aFDate, aTDate, aLimit);
   END IF;
 
-
-  IF mDCurrId = mUSDollar THEN
+  IF mCurr1 = mBaseCurr THEN -- EUR/GBP
     FOR mRecord IN
-        SELECT * FROM :filu.gfi_rawdata_eodbar(mSCurrId, aMarketId, aFDate, aTDate, aLimit)
+        SELECT * FROM :filu.gfi_rawdata_eodbar(mCurr2, aMarketId, aFDate, aTDate, aLimit)
     LOOP
       mResult.fdate  := mRecord.fdate;
       mResult.ftime  := mRecord.ftime;
@@ -69,17 +66,40 @@ BEGIN
       mResult.fhigh  := 1.0 / mRecord.fhigh;
       mResult.flow   := 1.0 / mRecord.flow;
       mResult.fclose := 1.0 / mRecord.fclose;
-      mResult.fvol   := 0.0;
 
+      mResult.fvol   := 0.0;
       mResult.foi    := 0.0;
 
       RETURN NEXT mResult;
     END LOOP;
   END IF;
 
+    --  GBP/USD
+    FOR mRecord IN
+        SELECT fdate, ftime, c1.fclose AS close1, c2.fclose AS close2
+          FROM :filu.gfi_rawdata_eodbar(mCurr1, aMarketId, aFDate, aTDate, aLimit) AS c1
+          JOIN :filu.gfi_rawdata_eodbar(mCurr2, aMarketId, aFDate, aTDate, aLimit) AS c2
+          USING (fdate, ftime)
 
---  mDMoney := mDQuote * aMoney/mSQuote;
+    LOOP
+      mResult.fdate  := mRecord.fdate;
+      mResult.ftime  := mRecord.ftime;
 
+      -- Not only because ECB delivers no bars but a single quote, we set all to the same value.
+      -- Would it be right to calc open,high,low if we had bars? I'm in doubt
+      --
+      -- Unlike in fetchBar_ECB.pl we have not to calc close2/close1 because
+      -- the quotes in the DB are inverted from the original data by the ECB
+      mResult.fopen  := mRecord.close1 / mRecord.close2;
+      mResult.fhigh  := mRecord.close1 / mRecord.close2;
+      mResult.flow   := mRecord.close1 / mRecord.close2;
+      mResult.fclose := mRecord.close1 / mRecord.close2;
+
+      mResult.fvol   := 0.0;
+      mResult.foi    := 0.0;
+
+      RETURN NEXT mResult;
+    END LOOP;
 
 END
 $BODY$

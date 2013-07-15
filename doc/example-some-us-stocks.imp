@@ -39,7 +39,7 @@ NewYork;00:00:00;23:59:59;US Dollar;USD;
 * FiType: Currency
 *
 [Type]Currency
-US Dollar;3000-01-01;USD;Reuters;Forex;1000-01-01;3000-01-01;
+US Dollar;3000-01-01;USD;ECB;Forex;1000-01-01;3000-01-01;
 *
 * FiType: Stock
 *

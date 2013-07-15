@@ -38,7 +38,6 @@ H: Add a 'Settings' table to store several info like version, creation date,
    last 'full' run etc
 H: Add version to the DB, and auto detect updates
 H: Handle issue date and mariture date at select for eodbar update
-H: gfi_xcurrency_eodbar, it seems I have it not finished.
 H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
 M: add NOTIFY/LISTEN support. db.driver()->subscribeToNotification()
@@ -87,6 +86,8 @@ L: Add (a) header file(s) with useful typedefs like 'QHash<QString, QString> Has
 L: FiTable field deletedate: I guess it was intended to short living FIs like options.
    It is currently not used. Could it removed or replaced by an entry in upcoming
    'jobs' table?
+L: Add something to change Forex currency and provider. Could now be done by
+   'agentf db tinker' but that's a crook
 
 
 AgentF
@@ -155,6 +156,8 @@ H: Make a own class for the symbol edit area so that it can easy
 M: Rename to 'AddToDbPage' and improve all so that can be any kind of
    data fetched by a script editet and added to the db
 M: Save/Restore splitter
+M: When searched a market and clicked, the PSMGrp is hardcoded to ECB/Forex but
+   should set to stype_id=1/market_id=2
 
 Sundries
 ----------
@@ -313,7 +316,7 @@ Exporter
 M: Think about exported order: Currencys, Markets, Other FIs
    Currently the order is: Markets, FIs
    Because markets needs currencys we include now the currency in the market export.
-   Then we can export with only a currency symbol
+   Then we can export with only a currency symbol which is always ECB/Forex
 
 
 Importer

@@ -46,9 +46,12 @@ To compile the programs you need the .deb packages:
                        older versions like 1.34 works only partial.
 
 The perl scripts needs the .dep packages:
-  libwww-perl
+  libcache-cache-perl
   libdate-simple-perl
+  libio-html-perl
   libtimedate-perl
+  libwww-perl
+  libxml-libxml-simple-perl
 
 Install TALib from: http://ta-lib.org/. Last tested version is 0.4.0.
 Sadly take compile from source some time, so you could also try to use the .deb
@@ -100,11 +103,14 @@ To compile the programs you need:
   muparser
 
 The perl scripts needs the packages:
+  perl-io-html
   perl-libwww
   perl-timedate
 
-One more package available in AUR:
+Some more packages available in AUR:
+  perl-cache-cache
   perl-date-simple
+  perl-xml-libxml-simple
 
 To install TALib you could follow the Ubuntu instructions or use the
 package from AUR:

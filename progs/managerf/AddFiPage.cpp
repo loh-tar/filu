@@ -349,9 +349,9 @@ void AddFiPage::selectResultRow(int row, int /*column*/)
     }
 
     mPSMGrp.symbol(0)->setText(mPreparedHeaderData.value("CurrencySymbol"));
-    idx = mPSMGrp.market(0)->findText("NoMarket");
+    idx = mPSMGrp.market(0)->findText("Forex");
     mPSMGrp.market(0)->setCurrentIndex(idx);
-    idx = mPSMGrp.provider(0)->findText("Reuters");
+    idx = mPSMGrp.provider(0)->findText("ECB");
     mPSMGrp.provider(0)->setCurrentIndex(idx);
     return;
   }

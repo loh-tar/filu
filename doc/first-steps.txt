@@ -88,14 +88,17 @@ What have we done? 'cat doc/example-apple.imp' shows the content of the import
 file. As you can see there are only two Header and two data lines included, the
 rest is comment which explain what kind of data we have imported. The second
 command 'agentf full' forces an update of all eodBars of all FIs stored in the
-database. We have three FIs in the database. 'Three?' Yes! Of cause 'Apple Inc.'
-as stock but also 'US Dollar' as currency and one more dummy
-currency 'No Currency'.
+database. We have four FIs in the database. "Four?" Yes! If you like run:
+  agentf db show fi
+  agentf db show market
 
-But because we have only one provider symbol installed there will only be
-eodBars for one FI downloaded. This point is important to understand.
+There is of cause 'Apple Inc.'as stock but also 'US Dollar' and 'Euro' as
+currency and one more dummy currency 'No Currency'.
 
-The dummy currency and the dummy market 'NoMarket' that you can see at
+But because we have only two provider symbol installed there will only be
+eodBars for two FI downloaded. This point is important to understand.
+
+The dummy currency and the dummy market 'NoMarket' that you can see also at
 ManagerF's 'FI Details' page are needed. The reason is a little complicated.
 Symbols are used to download price (or other) data by a market with a provider
 script. Therefore a symbol *must* always have a market. But a market *must*
@@ -112,11 +115,28 @@ download anything.
 
 As consequence of that naming convention is 'Reuters' a symbol type but not a
 provider because we have no Reuters-Script to download anything from Reuters.
-Currently we have less than a handful provider usable at Filu. Yahoo and Filu.
-'Filu?'. Um...yes, there are some simple
-shell scripts they are usable at ManagerF's 'AddFi-Page'. These data come not
-out of the database or from the internet but rather out of some *.csv files
-located at the Filu install directory.
+Currently we have less than a handful provider usable at Filu. Yahoo, ECB and
+Filu. "Filu?". Um...yes, there are some simple shell scripts they are usable at
+ManagerF's 'AddFi-Page'. These data come not out of the database or from the
+internet but rather out of some *.csv files located at the Filu install
+directory.
+
+If you been really attentive you ask now, "And where is Euro and Forex come
+from?". Both are inserted at creation time of the DB. I'm not sure if Forex is
+the best fitting name or not, but in the real world is it the currency market.
+Filu use currency reference quotes by the ECB, the European Central Bank, and
+they use, of cause, the Euro as base currency. Filu stores these quotes
+reciprocal so that we can say e.g.: "One US dollar cost 0.76 Euro". Therefore
+is EUR the currency of our Forex market. When you add a new market will the
+CurrencySymbol interpreted as ECB provider symbol. Run 'agentf add market -h' or
+look above at the import file regarding 'CurrencySymbol'.
+
+The only execption is the symbol EUR at Forex. These is stored as Reuters symbol
+because it would be pointless to try to download EUR/EUR quotes ;-)
+
+NOTE: Besides that it is possible, you should not install cross currencies as
+      native Currency FI, e.g. USD/JPY. Install USD and JPY as Currency and
+install USD/JPY as XCurrency and symbol type Reuters.
 
 The most important things you do know now. In the doc directory you find more
 information about the Filu parts but not a typical user manual. Because of that
@@ -176,8 +196,8 @@ your search string in the middle. Hit Return or click 'Search' to fetch the data
 from the provider. The results will are listed in the center table. Clicking one
 row will copy the FI into the below area.
 
-you can also enter by hand the FI data into the fields, without using a previous
-search. Click 'Add to DB' right from the Type ComboBox to store this one FI. you
+You can also enter by hand the FI data into the fields, without using a previous
+search. Click 'Add to DB' right from the Type ComboBox to store this one FI. You
 can also add more symbols to existing FIs by filling the new symbol data and
 give an already known symbol in the RefSymbol field, Name and Type could leave
 blank in that case.

@@ -110,7 +110,8 @@ Currency (optional)
   Only needed if currency is not already known
 
 CurrencySymbol
-  Must be a Reuters symbol, or rather is as such interpreted.
+  Must be a Forex provider (which is ECB by default) symbol, or rather is as
+  such interpreted.
 
 
 Symbol Types / Provider
