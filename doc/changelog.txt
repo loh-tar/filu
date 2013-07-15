@@ -1,3 +1,24 @@
+2013-07-15
+============
+Provider Scripts
+------------------
+- Remove oanda. The script is pretty outdated and I can't find a notice that it
+  is free for personal use, but there is a registration offer.
+- Add ECB. The European Central Bank delivers only euro foreign exchange
+  reference rates of the most important currencies. But there is a build in
+  converter so e.g. USD/JPY can fetched too. The rates are usually updated
+  by 3pm CET. Needs some more Perl packages, review the readme.
+
+Database
+----------
+- The very first entry in stype table *must* be the currency quote provider
+- market_insert.sql treats the symbol no longer as Reuters but as currency
+  quote provider
+- By default Forex use now the euro as base currency because of our new
+ 'Forex provider' ECB. You should export/delete/import your DB
+- Fix/Finished gfi_xcurrency_eodbar.sql
+
+
 2013-07-05
 ============
 Sundries
