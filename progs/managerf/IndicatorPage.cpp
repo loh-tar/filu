@@ -59,7 +59,7 @@ void IndicatorPage::createPage()
   mIcon = QIcon(":/icons/indicator.png");
   mIconText = tr("Indicators");
 
-  QGroupBox* pageGroup = new QGroupBox(tr("Indicators"));
+  mMainBox = new QGroupBox(tr("Indicators"));
 
   mEditor = new IndicatorEditor(this);
 
@@ -74,10 +74,10 @@ void IndicatorPage::createPage()
   QHBoxLayout* layout = new QHBoxLayout;
   layout->addWidget(mSplitter);
 
-  pageGroup->setLayout(layout);
+  mMainBox->setLayout(layout);
 
   QHBoxLayout* dummyLayout = new QHBoxLayout;
-  dummyLayout->addWidget(pageGroup);
+  dummyLayout->addWidget(mMainBox);
 
   setLayout(dummyLayout);
 }

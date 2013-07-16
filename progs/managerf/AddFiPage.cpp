@@ -229,11 +229,11 @@ void AddFiPage::createPage()
   QVBoxLayout* groupBoxLayout = new QVBoxLayout;
   groupBoxLayout->addWidget(splitter);
 
-  QGroupBox* groupBox = new QGroupBox(tr("Add a new FI to the Data Base"));
-  groupBox->setLayout(groupBoxLayout);
+  mMainBox = new QGroupBox(tr("Add a new FI to the Data Base"));
+  mMainBox->setLayout(groupBoxLayout);
 
   QVBoxLayout* mainLayout = new QVBoxLayout;
-  mainLayout->addWidget(groupBox);
+  mainLayout->addWidget(mMainBox);
   setLayout(mainLayout);
 }
 

@@ -49,15 +49,15 @@ void LogBookPage::createPage()
   mTab->addTab(&mLogBook, tr("LogBook"));
   mTab->addTab(&mLogFile, tr("LogFile"));
 
-  QGroupBox* pageGroup = new QGroupBox(tr("Log Book Overview"));
+  mMainBox = new QGroupBox(tr("Log Book Overview"));
 
   QHBoxLayout* layout = new QHBoxLayout;
   layout->addWidget(mTab);
 
-  pageGroup->setLayout(layout);
+  mMainBox->setLayout(layout);
 
   QHBoxLayout* dummyLayout = new QHBoxLayout;
-  dummyLayout->addWidget(pageGroup);
+  dummyLayout->addWidget(mMainBox);
 
   setLayout(dummyLayout);
 

@@ -20,6 +20,7 @@
 #ifndef MANAGERPAGE_H
 #define MANAGERPAGE_H
 
+class QGroupBox;
 class QListWidgetItem;
 
 #include "FWidget.h"
@@ -49,6 +50,7 @@ class ManagerPage : public FWidget
   protected:
     QIcon           mIcon;
     QString         mIconText;
+    QGroupBox*      mMainBox;
 };
 
 #endif
