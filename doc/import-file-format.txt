@@ -86,7 +86,7 @@ with '(either or...)'.
 <SymbolKey> is a must have but could be Symbol, RefSymbol or <KnownSymbolType>.
 
 <KnownSymbolType> depend on your database entries. Typically known types are
-Reuters and Yahoo.
+Reuters, Yahoo and ECB.
 
 Almost all data take also an optional 'Quality' field. It is not listed special
 because of laziness. Can be given as number or its name, see Appendix A.
@@ -176,12 +176,6 @@ Adding more symbols to existing FIs.
 Provider
 Symbol
 Market
-
-IDate (optional) FIXME: not implemented
-  Issue date, of the symbol.
-
-MDate (optional) FIXME: not implemented
- Maturity date, of the symbol.
 
 
 Underlying

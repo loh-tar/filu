@@ -655,7 +655,7 @@ bool Exporter::expFiNames()
   mOLine << "*";
   mOLine << "* FI names with full lovely symbol set as reference";
   mOLine << "*";
-  mOLine << "[Header]Name;DDate;Symbol;Provider;Market;IDate;MDate";
+  mOLine << "[Header]Name;DDate;Symbol;Provider;Market";
   writeToFile();
 
   QString type;
@@ -680,8 +680,6 @@ bool Exporter::expFiNames()
     mDLine << fi.value("Symbol").toString();
     mDLine << fi.value("Provider").toString();
     mDLine << fi.value("Market").toString();
-    mDLine << fi.value("IDate").toDate().toString(Qt::ISODate);
-    mDLine << fi.value("MDate").toDate().toString(Qt::ISODate);
     writeToFile();
   }
 
@@ -726,7 +724,7 @@ bool Exporter::expUnderlyings()
     mOLine << "*";
     mOLine << "* " + mfi.value("Name").toString();
     mOLine << "*";
-    mOLine << "[Header]Type;Name;DDate;Symbol;Provider;Market;IDate;MDate";
+    mOLine << "[Header]Type;Name;DDate;Symbol;Provider;Market";
     mOLine << NewLine;
 
     mDLine << mfi.value("Type").toString();
@@ -735,8 +733,6 @@ bool Exporter::expUnderlyings()
     mDLine << mfi.value("Symbol").toString();
     mDLine << mfi.value("Provider").toString();
     mDLine << mfi.value("Market").toString();
-    mDLine << mfi.value("IDate").toDate().toString(Qt::ISODate);
-    mDLine << mfi.value("MDate").toDate().toString(Qt::ISODate);
     writeToFile();
 
     mOLine << NewLine;
@@ -783,18 +779,18 @@ bool Exporter::expSymbols()
   if(noData("Info"))  return true;
 
   // The query result has the format
-  // RefSymbol, FiType, Symbol, Provider, Market, IDate, MDate
+  // RefSymbol, FiType, Symbol, Provider, Market
   // See also GetAllSymbols.sql
 
   mOLine << "***";
   mOLine << "*";
   mOLine << "* All symbols with leading lovely symbol as reference";
   mOLine << "*";
-  mOLine << "[Header]RefSymbol;Symbol;IDate;MDate";
+  mOLine << "[Header]RefSymbol;Symbol";
   // One NewLine less...
   writeToFile();
 
-  QString refSymbol, type, symbol, provider, market, idate, mdate;
+  QString refSymbol, type, symbol, provider, market;
 
   bool separator = false;
 
@@ -814,8 +810,6 @@ bool Exporter::expSymbols()
     symbol    = query->value(i++).toString();
     provider  = query->value(i++).toString();
     market    = query->value(i++).toString();
-    idate     = query->value(i++).toDate().toString(Qt::ISODate);
-    mdate     = query->value(i++).toDate().toString(Qt::ISODate);
 
     if(separator)
     {
@@ -831,7 +825,7 @@ bool Exporter::expSymbols()
       separator = false;
     }
 
-    mDLine << refSymbol << symbol << idate << mdate;
+    mDLine << refSymbol << symbol;
     writeToFile();
   }
 

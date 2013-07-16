@@ -20,9 +20,7 @@ SELECT
   ft.caption      AS "Type",
   s.caption       AS "Symbol",
   st.caption      AS "Provider",
-  m.caption       AS "Market",
-  s.issuedate     AS "IDate",
-  s.maturitydate  AS "MDate"
+  m.caption       AS "Market"
 
 FROM
   :filu.fi f

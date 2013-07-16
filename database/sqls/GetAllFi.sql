@@ -21,8 +21,6 @@ SELECT
   ls.symbol       AS "Symbol",
   st.caption      AS "Provider",
   m.caption       AS "Market",
-  s.issuedate     AS "IDate",
-  s.maturitydate  AS "MDate",
   f.fi_id         AS "FiId"
 
 FROM

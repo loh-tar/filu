@@ -103,8 +103,6 @@ BEGIN
         stype_id     = mSTypeId,
         caption      = mSymbol,
         fi_id        = aFiId
-        --issuedate    = issuedate,
-        --maturitydate = maturitydate
       WHERE
         symbol_id = mSymbolId;
         --and quality >= aQuality;

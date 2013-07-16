@@ -108,8 +108,6 @@ CREATE TABLE :filu.symbol(
   stype_id         int4         NOT NULL,
   fi_id            int4         NOT NULL,
   caption          varchar(30)  NOT NULL,
-  issuedate        date         NOT NULL DEFAULT '1000-01-01',
-  maturitydate     date         NOT NULL DEFAULT '3000-01-01',
   quality          int2         NOT NULL DEFAULT 2, -- bronze, as tempo classified data
 
   FOREIGN KEY(fi_id) REFERENCES :filu.fi(fi_id) ON DELETE CASCADE,

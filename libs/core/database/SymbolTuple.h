@@ -20,7 +20,6 @@
 #ifndef SYMBOLTUPLE_HPP
 #define SYMBOLTUPLE_HPP
 
-class QDate;
 class QString;
 
 #include "Tuple.h"
@@ -37,12 +36,8 @@ class SymbolTuple : public Tuple
     const QString&  caption()       const { return mCaption[mIndex]; }
     const QString&  market()        const { return mMarket[mIndex]; }
     const QString&  owner()         const { return mOwner[mIndex]; }
-    const QDate&    issueDate()     const;
-    const QDate&    maturityDate()  const;
 
-    void        set(const QString& s, const QString& m, const QString& o
-                  , const QDate* idate = 0 /*QDate(1000, 1, 1)*/
-                  , const QDate* mdate = 0 /*QDate(3000, 1, 1)*/);
+    void        set(const QString& s, const QString& m, const QString& o);
 
     friend class Filu;
     friend class SymbolTableModel;
@@ -55,8 +50,6 @@ class SymbolTuple : public Tuple
     QString*    mCaption;
     QString*    mMarket;
     QString*    mOwner;
-    QDate*      mIssueDate;
-    QDate*      mMaturityDate;
 };
 
 #endif
