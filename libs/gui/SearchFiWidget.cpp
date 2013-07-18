@@ -55,17 +55,15 @@ void SearchFiWidget::init()
   mTypeSelBtn->setToolTip(tr("Choose FiType to search"));
   connect(mTypeSelBtn, SIGNAL(selectionChanged()), this, SLOT(search()));
 
-  mView = new SqlTableView(this);
-  mView->setDragEnabled(true);
-  mView->setDropIndicatorShown(true);
-  //mView->setAcceptDrops(true);
-  //mView->setSelectionMode(QAbstractItemView::SingleSelection);
+  mView  = new SqlTableView(this);
   mModel = new QSqlQueryModel(this);
   mView->setModel(mModel);
+  mView->setDragEnabled(true);
+  mView->setDropIndicatorShown(true);
   mView->horizontalHeader()->hide();
   mView->verticalHeader()->hide();
-  //mView->setSelectionBehavior(QAbstractItemView::SelectRows);
   mView->setGridStyle(Qt::NoPen);
+
   connect(mView, SIGNAL(newSelection(const QModelIndex &))
           , this, SLOT(clicked(const QModelIndex &)));
 
@@ -96,7 +94,8 @@ void SearchFiWidget::search()
   if(!query) query = mFilu->lastQuery();
   mModel->setQuery(*query);
 
-  mView->resizeColumnsToContents();
+  mView->horizontalHeader()->setResizeMode(3, QHeaderView::Stretch);
+  mView->horizontalHeader()->setResizeMode(4, QHeaderView::ResizeToContents);
   mView->resizeRowsToContents();
   mView->hideColumn(0);
   mView->hideColumn(1);
@@ -104,7 +103,6 @@ void SearchFiWidget::search()
   mView->hideColumn(5);
   mView->hideColumn(6);
   mView->hideColumn(7);
-  //resize(mView->columnWidth(2) + mView->columnWidth(3) + mView->columnWidth(4) + mView->columnWidth(5) + 10, height());
 
   mCurrentRow = -1;
 
