@@ -10,12 +10,11 @@
  *     TypeId
  *     Name
  *     Type
- *     IssueDate (controversial)
- *     MaturityDate (controversial)
+ *     ExpiryDate
  */
 
 -- GetFi.sql
-SELECT f.fi_id, f.ftype_id, f.caption, t.caption
+SELECT f.fi_id, f.ftype_id, f.caption, t.caption, f.expirydate
   FROM :filu.fi f
   JOIN :filu.ftype t USING(ftype_id)
   WHERE  f.fi_id = :fiId

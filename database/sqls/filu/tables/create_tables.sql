@@ -58,7 +58,7 @@ CREATE UNIQUE INDEX stype_unique_caption ON :filu.stype(
 CREATE TABLE :filu.fi(
   fi_id         serial4         PRIMARY KEY,
   caption       varchar(100)    NOT NULL,
-  deletedate    date            NOT NULL DEFAULT '3000-01-01',
+  expirydate    date            NOT NULL DEFAULT '3000-01-01',
   ftype_id      int4            NOT NULL,
   quality       int2            NOT NULL DEFAULT 2, -- bronze, as tempo classified data
 

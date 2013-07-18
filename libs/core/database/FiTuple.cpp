@@ -28,6 +28,7 @@ FiTuple::FiTuple(int size)
        , mTypeId(new int[size])
        , mType(new QString[size])
        , mName(new QString[size])
+       , mExpiryDate(new QDate[size])
        , mSymbol(new SymbolTuple*[size])
 
 {}
@@ -37,11 +38,15 @@ FiTuple::~FiTuple()
   delete []mTypeId;
   delete []mType;
   delete []mName;
+  delete []mExpiryDate;
   // Clean up Symbols
   for (int i = 0; i < mMaxIndex ; i++) delete []mSymbol[i] ;
   delete []mSymbol;
-  //delete []mIssueDate;
-  //delete []mMaturityDate;
+}
+
+const QDate& FiTuple::expiryDate() const
+{
+  return mExpiryDate[mIndex];
 }
 
 void FiTuple::set(const QString& name, const QString& type, SymbolTuple* symbol)

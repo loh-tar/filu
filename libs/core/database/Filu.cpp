@@ -1462,13 +1462,12 @@ FiTuple* Filu::fillFiTuple(QSqlQuery* query)
     query->next();
 
     int i = fi->mIndex;
-    fi->mId[i]     = query->value(0).toInt();
-    fi->mTypeId[i] = query->value(1).toInt();
-    fi->mName[i]   = query->value(2).toString();
-    fi->mType[i]   = query->value(3).toString();
-    fi->mSymbol[i] = 0;
-    //    fi->IssueDate[i] = query->value(3).toString();
-    //    fi->MaturityDate[i] = query->value(3).toString();
+    fi->mId[i]         = query->value(0).toInt();
+    fi->mTypeId[i]     = query->value(1).toInt();
+    fi->mName[i]       = query->value(2).toString();
+    fi->mType[i]       = query->value(3).toString();
+    fi->mExpiryDate[i] = query->value(4).toDate();
+    fi->mSymbol[i]     = 0;
   }
 
   fi->rewind();

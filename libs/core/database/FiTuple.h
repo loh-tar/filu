@@ -21,6 +21,7 @@
 #define FITUPLE_HPP
 
 class QString;
+class QDate;
 
 #include "Tuple.h"
 
@@ -35,6 +36,7 @@ class FiTuple : public Tuple
     int             typeId()  const { return mTypeId[mIndex]; }
     const QString&  type()    const { return mType[mIndex]; }
     const QString&  name()    const { return mName[mIndex]; }
+    const QDate&    expiryDate() const;
     SymbolTuple*    symbol()  const { return mSymbol[mIndex]; }
 
     void          set(const QString& name, const QString& type, SymbolTuple* symbol);
@@ -47,6 +49,7 @@ class FiTuple : public Tuple
     int*          mTypeId;
     QString*      mType;
     QString*      mName;
+    QDate*        mExpiryDate;
     SymbolTuple** mSymbol;
 };
 
