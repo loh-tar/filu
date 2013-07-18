@@ -1225,16 +1225,16 @@ void Filu::deleteRecord(const QString& table, int id /*= -1*/, const Schema type
   }
   else
   {
-    execute("_DelOneRec", QString("DELETE FROM %1.%2 WHERE %2_id = %3").arg(schema(type), table).arg(id));
+    execute("_DelOneRec", QString("DELETE FROM %1.%2 WHERE %2_id = %3")
+                                 .arg(schema(type), table).arg(id));
   }
 }
 
 int Filu::updateField(const QString& field, const QVariant& newValue
                     , const QString& table, int id, const Schema type/* = eFilu*/)
 {
-  execute("_DelOneRec", QString("UPDATE %1.%2  SET %3 = '%4'  WHERE %2_id = %5")
-                           .arg(schema(type), table, field, newValue.toString()).arg(id));
-
+  execute("_UpdateField", QString("UPDATE %1.%2  SET %3 = '%4'  WHERE %2_id = %5")
+                                 .arg(schema(type), table, field, newValue.toString()).arg(id));
 }
 
 QString Filu::dbFuncErrText(int errorCode)
