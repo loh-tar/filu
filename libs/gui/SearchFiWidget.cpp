@@ -174,15 +174,14 @@ FiTypeSelBtn::FiTypeSelBtn(FClass* parent)
              , FClass(parent, FUNC)
              , mType("")
 {
-  QStringList types;
-  mFilu->getFiTypes(types);
-
   QMenu* menu = new QMenu(this);
 
   QActionGroup* actGroup = new QActionGroup(this);
   QAction* action = actGroup->addAction("All");
   action->setCheckable(true);
   action->setChecked(true);
+
+  QStringList types = mFilu->getFiTypeNames();
   for(int i = 0; i < types.size(); ++i)
   {
     action = actGroup->addAction(types.at(i));

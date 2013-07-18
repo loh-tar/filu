@@ -147,9 +147,7 @@ void AddFiPage::createPage()
   mName->setMinimumWidth(w * 40);
 
   mType = new QComboBox;
-  QStringList types;
-  mFilu->getFiTypes(types);
-  mType->addItems(types);
+  mType->addItems(mFilu->getFiTypeNames());
 
   // Build The Edit Area Layout
   QGridLayout* editNameLO = new QGridLayout;
@@ -174,7 +172,7 @@ void AddFiPage::createPage()
     check4FiluError(FUNC, tr("No SymbolTypes found"));
   }
 
-  QStringList marketList = getMarkets();
+  QStringList marketList = mFilu->getMarketNames();
 
   for(int i = 0; i < 3; ++i)
   {
@@ -235,26 +233,6 @@ void AddFiPage::createPage()
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addWidget(mMainBox);
   setLayout(mainLayout);
-}
-
-QStringList AddFiPage::getMarkets()
-{
-  QStringList marketList;
-
-  // Read all markets out of the DB
-  MarketTuple* markets = mFilu->getMarkets();
-  if(markets)
-  {
-    while(markets->next()) marketList.append(markets->name());
-    marketList.sort();
-    delete markets;
-  }
-  else
-  {
-    check4FiluError(FUNC, tr("No Markets found"));
-  }
-
-  return marketList;
 }
 
 void AddFiPage::providerChanged(const QString& provider)
@@ -815,7 +793,7 @@ void AddFiPage::addMarketToDB()
 
   // Looks good, clear the edit fields
   // and reload markets
-  QStringList marketList = getMarkets();
+  QStringList marketList = mFilu->getMarketNames();
   mRefSymbol->setText("");
   mName->setText("");
   for(int i = 0; i < mPSMGrp.size(); ++i)
@@ -880,7 +858,7 @@ void AddFiPage::addAllToDB()
   else if("Market" == mDisplayType)
   {
     // Looks good, reload markets
-    QStringList marketList = getMarkets();
+    QStringList marketList = mFilu->getMarketNames();
     for(int i = 0; i < mPSMGrp.size(); ++i)
     {
       mPSMGrp.market(i)->clear();

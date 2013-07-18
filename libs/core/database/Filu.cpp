@@ -317,30 +317,6 @@ FiTuple* Filu::getFiBySymbol(const QString& symbol)
   return getFi(getFiIdBySymbol(symbol));
 }
 
-int Filu::getFiTypes(QStringList& type)
-{
-  type.clear();
-
-  if(!initQuery("GetAllFiTypes")) return eInitError;
-
-  QSqlQuery* query = mSQLs.value("GetAllFiTypes");
-
-  int result = execute(query);
-  if(result <= eError)  return eExecError;
-  if(result == eNoData)
-  {
-    error(FUNC, tr("No FiTypes found."));
-    return eNoData;
-  }
-
-  while(query->next())
-  {
-    type.append(query->value(0).toString());
-  }
-
-  return eData;
-}
-
 int Filu::getEODBarDateRange(DateRange& dateRange
                            , int fiId, int marketId, int quality)
 {
@@ -487,6 +463,57 @@ int Filu::getIndicatorInfo(KeyVal* info, const QString& name)
 // qDebug() << info->keys();
 // qDebug() << info->values();
   return eData;
+}
+
+QStringList Filu::getFiTypeNames()
+{
+  QStringList types;
+
+  if(!initQuery("GetAllFiTypes")) return types;
+
+  QSqlQuery* query = mSQLs.value("GetAllFiTypes");
+
+  int result = execute(query);
+  if(result <= eError)  return types;
+
+  while(query->next())
+  {
+    types.append(query->value(0).toString());
+  }
+
+//   types.sort();
+
+  return types;
+}
+
+QStringList Filu::getMarketNames()
+{
+  QStringList markets;
+
+  MarketTuple* mt = getMarkets();
+  if(mt)
+  {
+    while(mt->next()) markets.append(mt->name());
+    delete mt;
+    markets.sort();
+  }
+
+  return markets;
+}
+
+QStringList Filu::getSymbolTypeNames()
+{
+  QStringList stypes;
+
+  SymbolTypeTuple* stt = getSymbolTypes(Filu::eAllTypes);
+  if(stt)
+  {
+    while(stt->next()) stypes.append(stt->caption());
+    delete stt;
+    stypes.sort();
+  }
+
+  return stypes;
 }
 
 int Filu::prepareIndicator(const QString& name, const QString& call /* = "" */)

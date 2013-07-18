@@ -126,12 +126,17 @@ class Filu : public Newswire
 
     SymbolTypeTuple* getSymbolTypes(int filter = eAllTypes/* FIXME, bool orderBySeq = true*/);
 
-    int          getFiTypes(QStringList& type);
 
     int          getEODBarDateRange(DateRange& dateRange
                                   , int fiId, int marketId, int quality);
 
     BrokerTuple* getBroker(int brokerId = 0);
+
+    // Get convenience Functions
+    QStringList  getFiTypeNames();
+    QStringList  getMarketNames();
+    QStringList  getSymbolTypeNames();
+
 
     // Add Functions
     int          addFiType(const QString& type, int id = 0);
