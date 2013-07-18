@@ -44,3 +44,13 @@ int Tuple::rewind(int start /* = -1*/)
 
   return status;
 }
+
+int Tuple::rewindToId(int id)
+{
+  for(mIndex = 0; mIndex < mMaxIndex + 1; ++mIndex)
+  {
+    if(id == mId[mIndex]) break;
+  }
+
+  return mIndex > mMaxIndex ? eNotValid : eInRange;
+}

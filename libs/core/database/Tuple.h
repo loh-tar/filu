@@ -51,6 +51,7 @@ class Tuple
 
     bool        next();
     int         rewind(int start = -1);
+    int         rewindToId(int id);
     int         count()     const { return  mMaxIndex + 1; }
     int         size()      const { return  mMaxIndex + 1; }
     bool        isInvalid() const;
