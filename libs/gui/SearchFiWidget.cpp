@@ -47,10 +47,12 @@ SearchFiWidget::~SearchFiWidget()
 void SearchFiWidget::init()
 {
   mSearchField = new SearchField(this);
+  mSearchField->setToolTip(tr("Enter pattern to search"));
   connect(mSearchField, SIGNAL(textChanged()), this, SLOT(search()));
   setFocusProxy(mSearchField);
 
   mTypeSelBtn = new FiTypeSelBtn(this);
+  mTypeSelBtn->setToolTip(tr("Choose FiType to search"));
   connect(mTypeSelBtn, SIGNAL(selectionChanged()), this, SLOT(search()));
 
   mView = new SqlTableView(this);
