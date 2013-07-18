@@ -111,7 +111,7 @@ class Filu : public Newswire
                        , int limit, const QString& toDate = "3000-01-01");
 
     MarketTuple* getMarkets(const QString& name = "");
-    MarketTuple* getMarket(int marketId);
+    MarketTuple* getMarkets(int marketId, const QString& name = "");
     int          getMarketId(const QString& name);        // Returns marketId or < eError
 
     FiTuple*     getFi(int fiId);

@@ -267,32 +267,24 @@ SymbolTypeTuple* Filu::getSymbolTypes(int filter/* = eAllTypes FIXME, bool order
 
 MarketTuple* Filu::getMarkets(const QString& name/* = ""*/)
 {
-  if(!initQuery("GetMarket")) return 0;
 
-  QSqlQuery* query = mSQLs.value("GetMarket");
-
-  query->bindValue(":market", name);
-  query->bindValue(":marketId", 0);  // Don't use id
-
-  if(execute(query) < eNoData) return 0;
-
-  return fillMarketTuple(query);
+  return getMarkets(0, name); // Don't use marketId
 }
 
-MarketTuple* Filu::getMarket(int marketId)
+MarketTuple* Filu::getMarkets(int marketId, const QString& name/* = ""*/)
 {
   if(!initQuery("GetMarket")) return 0;
 
   QSqlQuery* query = mSQLs.value("GetMarket");
 
-  query->bindValue(":market", "");  // Don't use name
+  query->bindValue(":market", name);
   query->bindValue(":marketId", marketId);
 
   if(execute(query) < eNoData) return 0;
 
   MarketTuple* market = fillMarketTuple(query);
 
-  if(market) market->next();
+  if(market and marketId) market->next();
 
   return market;
 }

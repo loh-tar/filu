@@ -492,7 +492,7 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
     if(verboseLevel(eAmple))
     {
       FiTuple* fi = mFilu->getFi(bars->fiId());
-      MarketTuple* market = mFilu->getMarket(bars->marketId());
+      MarketTuple* market = mFilu->getMarkets(bars->marketId());
       QString limitTxt = o.at(4);
       if(limit) limitTxt.append(" " + market->currSymbol());
 
@@ -912,7 +912,7 @@ bool Trader::initVariables()
   QString curr = mSettings.value(QString("MarketCurrency%1").arg(marketId));
   if(curr.isEmpty())
   {
-    MarketTuple* market = mFilu->getMarket(marketId);
+    MarketTuple* market = mFilu->getMarkets(marketId);
     curr = QString::number(market->currId());
     mSettings.insert(QString("MarketCurrency%1").arg(marketId), curr);
     mSettings.insert("FiCurrencyId", curr);
