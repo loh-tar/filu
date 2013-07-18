@@ -55,6 +55,7 @@ class SymbolTableView : public QTableView
     virtual    ~SymbolTableView();
 
     void        setContent(SymbolTuple* symbols);
+    void        selectSymbol(int id);
     QSize       sizeHint() const;
 
   private:

@@ -17,6 +17,8 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QHeaderView>
+
 #include "SymbolTableView.h"
 
 #include "SymbolTuple.h"
@@ -36,7 +38,7 @@ int SymbolTableModel::rowCount(const QModelIndex& parent) const
 
 int SymbolTableModel::columnCount(const QModelIndex& parent) const
 {
-  return 5;
+  return 6;
 }
 
 QVariant SymbolTableModel::data(const QModelIndex& index, int role) const
@@ -44,7 +46,7 @@ QVariant SymbolTableModel::data(const QModelIndex& index, int role) const
   if (!index.isValid())
     return QVariant();
 
-  if (index.column() >= 5 or index.row() >= mSymbols->count())
+  if (index.column() > 5 or index.row() >= mSymbols->count())
       return QVariant();
 
   if (role == Qt::DisplayRole)
@@ -52,15 +54,17 @@ QVariant SymbolTableModel::data(const QModelIndex& index, int role) const
     switch(index.column())
       {
       case 0:
-        return mSymbols->mFiId[index.row()];
-      case 1:
-        return mSymbols->mMarketId[index.row()];
-      case 2:
         return mSymbols->mCaption[index.row()];
-      case 3:
+      case 1:
         return mSymbols->mMarket[index.row()];
-      case 4:
+      case 2:
         return mSymbols->mOwner[index.row()];
+      case 3:
+        return mSymbols->mFiId[index.row()];
+      case 4:
+        return mSymbols->mMarketId[index.row()];
+      case 5:
+        return mSymbols->mId[index.row()];
     }
   }
 
@@ -80,15 +84,17 @@ QVariant SymbolTableModel::headerData(
     switch(section)
       {
       case 0:
-        return "FI-ID";
-      case 1:
-        return "Market-ID";
-      case 2:
         return "Caption";
-      case 3:
+      case 1:
         return "Market";
-      case 4:
+      case 2:
         return "Owner";
+      case 3:
+        return "FiId";
+      case 4:
+        return "MarketId";
+      case 5:
+        return "SymbolId";
     }
   else
       return QString("%1").arg(section);
@@ -118,19 +124,43 @@ void SymbolTableView::setContent(SymbolTuple* symbols)
   if(mSymbolTableModel) delete mSymbolTableModel;
   mSymbolTableModel = new SymbolTableModel(symbols, this);
   setModel(mSymbolTableModel);
-  setColumnHidden(0, true);
-  setColumnHidden(1, true);
-  //resizeColumnsToContents();
+  horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+  setColumnHidden(3, true);
+  setColumnHidden(4, true);
+  setColumnHidden(5, true);
+  verticalHeader()->hide();
+//   resizeColumnsToContents();
+  resizeRowsToContents();
   setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
   setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-  setColumnWidth(0,200);
-  setColumnWidth(1,300);
+  setColumnWidth(0,110);
+  setColumnWidth(1,110);
   setColumnWidth(2,110);
-  setColumnWidth(3,110);
-  setColumnWidth(4,110);
+//   setColumnWidth(3,110);
+//   setColumnWidth(4,110);
+//   setColumnWidth(5,110);
+  setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 QSize SymbolTableView::sizeHint() const
 {
   return QSize(380,200);
+}
+
+void SymbolTableView::selectSymbol(int id)
+{
+  // Select the row containing the given SymbolId
+  QAbstractItemModel* m = model();
+  int r = 0; // Row
+  int c = 5; // Column (with symbol id)
+  while(m->hasIndex(r, c))
+  {
+    if(id == m->data(m->index(r, c)).toInt())
+    {
+      selectRow(r);
+      emit clicked(m->index(r, c));
+      break;
+    }
+    ++r;
+  }
 }
