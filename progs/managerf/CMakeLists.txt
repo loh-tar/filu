@@ -13,23 +13,23 @@ include_directories(${FiluCore_SOURCE_DIR}/database)
 include_directories(${FiluGui_SOURCE_DIR})
 
 set(managerf_SRC
+    ManagerPage.cpp
     AddFiPage.cpp
     #ConfigPage.cpp
     FiPage.cpp
     IndicatorPage.cpp
-    main.cpp
-    ManagerF.cpp
-    ManagerPage.cpp
     LogBookPage.cpp
+    ManagerF.cpp
+    main.cpp
 )
 
 set(managerf_MOCH
+    ManagerPage.h
     AddFiPage.h
     FiPage.h
     IndicatorPage.h
-    ManagerF.h
-    ManagerPage.h
     LogBookPage.h
+    ManagerF.h
 )
 
 QT4_ADD_RESOURCES(managerf_MOCQRC icons.qrc)
