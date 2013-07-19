@@ -20,7 +20,11 @@
 #ifndef FIPAGE_H
 #define FIPAGE_H
 
+class QComboBox;
+class QLineEdit;
 class QModelIndex;
+class QTabWidget;
+class QToolButton;
 
 #include "ManagerPage.h"
 
@@ -36,20 +40,48 @@ class FiPage : public ManagerPage
                      FiPage(FClass* parent);
     virtual         ~FiPage();
 
-  protected:
-    void             createPage();
-    void             showEvent(QShowEvent* /*event*/);
-
-    SearchFiWidget*  mLookUp;
-    SymbolTuple*     mSymbols;
-    SymbolTableView* mSymbolView;
-    FiTuple*         mFi;
-    IndicatorWidget* mPlotSheet;
-    BarTuple*        mBars;
-
   protected slots:
     void            fiClicked(int fiId, int marketId);
     void            symbolClicked(const QModelIndex&);
+    void            lockFi();
+    void            saveSymbol();
+    void            deleteSymbol();
+    void            saveFi();
+    void            deleteFi();
+
+  protected:
+    void            createPage();
+
+    // General Stuff
+    QTabWidget*       mTab;
+    FiTuple*          mFi;
+    BarTuple*         mBars;
+    SymbolTuple*      mSymbols;
+    IndicatorWidget*  mPlotSheet;
+
+    // Main Tab Stuff
+    QWidget*          makeMainTab();
+    void              setSymbolTable();
+
+    SearchFiWidget*   mLookUp;
+    int               mSymbolId;
+    QComboBox*        mProvider;
+    QLineEdit*        mSymbol;
+    QComboBox*        mMarket;
+    SymbolTableView*  mSymbolView;
+    QLineEdit*        mFiName;
+    QComboBox*        mFiType;
+    QLineEdit*        mExpiryDate;
+    QToolButton*      mLockBtn;
+
+    // Split Tab Stuff
+    QWidget*          makeSplitTab();
+
+    // EODBar Tab Stuff
+    QWidget*          makeBarTab();
+
+    // Chart Object Tab Stuff
+    QWidget*          makeCoTab();
 };
 
 #endif
