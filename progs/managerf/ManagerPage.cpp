@@ -23,6 +23,7 @@
 
 ManagerPage::ManagerPage(FClass* parent, const QString& className)
            : FWidget(parent, className)
+           , mFocusWidget(0)
 {
   //createPage();
 }
@@ -55,4 +56,14 @@ void ManagerPage::setPageIcon(QListWidgetItem* button)
   button->setTextAlignment(Qt::AlignHCenter);
   button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
   button->setSizeHint(QSize(100, 70));
+}
+
+void ManagerPage::hideEvent(QHideEvent* /*event*/)
+{
+  mFocusWidget = focusWidget();
+}
+
+void ManagerPage::showEvent(QShowEvent* /*event*/)
+{
+  if(mFocusWidget) mFocusWidget->setFocus();
 }

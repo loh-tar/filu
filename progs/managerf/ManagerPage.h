@@ -48,6 +48,10 @@ class ManagerPage : public FWidget
     void            message(const Message& message);
 
   protected:
+    void            hideEvent(QHideEvent* /*event*/);
+    void            showEvent(QShowEvent* /*event*/);
+
+    QWidget*        mFocusWidget;
     QIcon           mIcon;
     QString         mIconText;
     QGroupBox*      mMainBox;
