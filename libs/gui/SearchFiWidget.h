@@ -20,8 +20,8 @@
 #ifndef SEARCHFIWIDGET_HPP
 #define SEARCHFIWIDGET_HPP
 
+#include <QAbstractItemModel>
 #include <QPoint>
-#include <QSqlQueryModel>
 #include <QToolButton>
 
 #include "FWidget.h"
@@ -85,9 +85,7 @@ class SearchFiWidget : public FWidget
     //void mouseMoveEvent(QMouseEvent* event);
     //bool eventFilter(QObject* pFilterObj, QEvent* pEvent);
 
-    //QTableView*   mView;
     SqlTableView*   mView;
-    QSqlQueryModel* mModel;
     SearchField*    mSearchField;
     FiTypeSelBtn*   mTypeSelBtn;
     QPoint          mDragStartPosition;

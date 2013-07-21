@@ -22,20 +22,46 @@
 
 #include "SqlTableView.h"
 
-SqlTableView::SqlTableView(QWidget* parent) : QTableView(parent)
+SqlTableView::SqlTableView(QWidget* parent)
+            : QTableView(parent)
+            , mModel(new QSqlQueryModel)
+            , mCurrentRow(-1)
 {
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setHorizontalScrollMode(ScrollPerPixel);
   setVerticalScrollMode(ScrollPerPixel);
+  setModel(mModel);
 
   connect(this, SIGNAL(clicked(const QModelIndex &)),
           this, SLOT(click(const QModelIndex &)));
-
-  mCurrentRow = -1;
 }
 
 SqlTableView::~SqlTableView()
-{}
+{
+  delete mModel;
+}
+
+void SqlTableView::setQuery(QSqlQuery* q)
+{
+  mModel->setQuery(*q);
+  mCurrentRow = -1;
+}
+
+void SqlTableView::selectRowWithValue(const QVariant& val, int column)
+{
+  // Select the row containing the given value
+  int r = 0; // Row
+  while(mModel->hasIndex(r, column))
+  {
+    if(val == mModel->data(mModel->index(r, column)))
+    {
+      selectRow(r);
+      emit clicked(mModel->index(r, column));
+      break;
+    }
+    ++r;
+  }
+}
 
 void SqlTableView::mousePressEvent(QMouseEvent* event)
 {
@@ -103,18 +129,17 @@ void SqlTableView::currentChanged(const QModelIndex& current,
   //qDebug() << "SqlTableView::currentChanged()" << current.row() << previous.row();
 
   if(current.row() == mCurrentRow) return;
-
   if(current.row() == -1) return;
 
   mCurrentRow = current.row();
   emit newSelection(current);
 
   scrollTo(current);
-
 }
 
 void SqlTableView::click(const QModelIndex& current)
 {
+  if(current.row() == mCurrentRow) return;
   mCurrentRow = current.row();
   emit newSelection(current);
 }

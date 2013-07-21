@@ -56,8 +56,6 @@ void SearchFiWidget::init()
   connect(mTypeSelBtn, SIGNAL(selectionChanged()), this, SLOT(search()));
 
   mView  = new SqlTableView(this);
-  mModel = new QSqlQueryModel(this);
-  mView->setModel(mModel);
   mView->setDragEnabled(true);
   mView->setDropIndicatorShown(true);
   mView->horizontalHeader()->hide();
@@ -92,7 +90,7 @@ void SearchFiWidget::search()
                                    , mHideNoMarket);
 
   if(!query) query = mFilu->lastQuery();
-  mModel->setQuery(*query);
+  mView->setQuery(query);
 
   mView->horizontalHeader()->setResizeMode(3, QHeaderView::Stretch);
   mView->horizontalHeader()->setResizeMode(4, QHeaderView::ResizeToContents);
@@ -117,12 +115,12 @@ void SearchFiWidget::clicked(const QModelIndex& index)
   mCurrentRow = row;
 
   // Symbol, Market
-  emit selected(mModel->index(row, 5).data().toString()
-              , mModel->index(row, 6).data().toString());
+  emit selected(mView->model()->index(row, 5).data().toString()
+              , mView->model()->index(row, 6).data().toString());
 
   // FiId, MarketId
-  emit selected(mModel->index(row, 0).data().toInt()
-              , mModel->index(row, 1).data().toInt());
+  emit selected(mView->model()->index(row, 0).data().toInt()
+              , mView->model()->index(row, 1).data().toInt());
 
   mSearchField->setFocus();
 }

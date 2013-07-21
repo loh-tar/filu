@@ -21,6 +21,7 @@
 #define SQLTABLEVIEW_HPP
 
 #include <QTableView>
+#include <QSqlQueryModel>
 
 /***********************************************************************
 *
@@ -33,8 +34,12 @@ class SqlTableView : public QTableView
   Q_OBJECT
 
   public:
-                SqlTableView(QWidget* parent = 0);
-    virtual    ~SqlTableView();
+                      SqlTableView(QWidget* parent = 0);
+    virtual          ~SqlTableView();
+
+    void              setQuery(QSqlQuery* q);
+    QSqlQueryModel*   model() { return mModel; }
+    void              selectRowWithValue(const QVariant& val, int column);
 
   signals:
     void        newSelection(const QModelIndex&);
@@ -48,7 +53,8 @@ class SqlTableView : public QTableView
     void        startDrag();
     QPoint      mDragStartPosition;
 
-    int         mCurrentRow;
+    QSqlQueryModel* mModel;
+    int             mCurrentRow;
 
   protected slots:
     void        currentChanged(const QModelIndex& current, const QModelIndex& previous);
