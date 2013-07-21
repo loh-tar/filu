@@ -44,6 +44,9 @@ class SqlTableView : public QTableView
   signals:
     void        newSelection(const QModelIndex&);
 
+  public slots:
+    void        clearSelection();
+
   protected:
     void        mousePressEvent(QMouseEvent* pEvent);
     void        mouseMoveEvent(QMouseEvent* pEvent);

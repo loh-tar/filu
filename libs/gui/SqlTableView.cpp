@@ -63,6 +63,12 @@ void SqlTableView::selectRowWithValue(const QVariant& val, int column)
   }
 }
 
+void SqlTableView::clearSelection()
+{
+  QTableView::clearSelection();
+  mCurrentRow = -1;
+}
+
 void SqlTableView::mousePressEvent(QMouseEvent* event)
 {
   if(event->button() == Qt::LeftButton)
