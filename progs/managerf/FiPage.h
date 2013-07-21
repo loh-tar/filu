@@ -51,10 +51,12 @@ class FiPage : public ManagerPage
 
   protected:
     void            createPage();
+    void            loadBars();
 
     // General Stuff
     QTabWidget*       mTab;
     FiTuple*          mFi;
+    int               mMarketId;
     BarTuple*         mBars;
     SymbolTuple*      mSymbols;
     IndicatorWidget*  mPlotSheet;

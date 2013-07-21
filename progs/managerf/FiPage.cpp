@@ -227,6 +227,13 @@ QWidget* FiPage::makeCoTab()
   return new QWidget;
 }
 
+void FiPage::loadBars()
+{
+  if(mBars) delete mBars;
+  mBars = mFilu->getBars(mFi->id(), mMarketId);
+  mPlotSheet->showBarData(mBars);
+}
+
 void FiPage::fiClicked(int fiId, int /* marketId */)
 {
   if(mFi) delete mFi;
@@ -279,12 +286,8 @@ void FiPage::setSymbolTable()
 
 void FiPage::symbolClicked(const QModelIndex& index)
 {
-  static int oldFiId = -1;
-  static int oldMarketId = -1;
-
-  int fiId     = index.sibling(index.row(), 3).data().toInt();
-  int marketId = index.sibling(index.row(), 4).data().toInt();
-  mSymbolId    = index.sibling(index.row(), 5).data().toInt();
+  mMarketId = index.sibling(index.row(), 4).data().toInt();
+  mSymbolId = index.sibling(index.row(), 5).data().toInt();
 
   mProvider->clear();
   mProvider->addItems(mFilu->getSymbolTypeNames());
@@ -296,14 +299,7 @@ void FiPage::symbolClicked(const QModelIndex& index)
   mMarket->addItems(mFilu->getMarketNames());
   mMarket->setCurrentIndex(mMarket->findText(index.sibling(index.row(), 1).data().toString()));
 
-  if(oldFiId == fiId and oldMarketId == marketId) return;
-
-  oldFiId = fiId;
-  oldMarketId = marketId;
-
-  if(mBars) delete mBars;
-  mBars = mFilu->getBars(fiId, marketId);
-  mPlotSheet->showBarData(mBars);
+  loadBars();
 }
 
 void FiPage::lockFi()
