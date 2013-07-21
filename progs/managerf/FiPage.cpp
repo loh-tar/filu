@@ -18,9 +18,11 @@
 //
 
 #include <QComboBox>
+#include <QFormLayout>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
@@ -38,9 +40,11 @@
 #include "IndicatorWidget.h"
 #include "MarketTuple.h"
 #include "SearchFiWidget.h"
+#include "SqlTableView.h"
 #include "SymbolTableView.h"
 #include "SymbolTuple.h"
 #include "SymbolTypeTuple.h"
+#include "Validator.h"
 
 FiPage::FiPage(FClass* parent)
       : ManagerPage(parent, FUNC)
@@ -213,8 +217,76 @@ QWidget* FiPage::makeMainTab()
 
 QWidget* FiPage::makeSplitTab()
 {
+  QFormLayout* flay = new QFormLayout;  // Build edit area
+  flay->addRow(tr("Date"),      mSplitDate = new QLineEdit);
+  flay->addRow(tr("Ratio"),     mRatio = new QLineEdit);
+  flay->addRow(tr("Comment"),   mSplitComment = new QLineEdit);
 
-  return new QWidget;
+  // Add an "empty" line
+  int charWidth = QFontMetrics(font()).averageCharWidth();
+  QWidget* widget = new QWidget;
+  widget->setMinimumHeight(charWidth * 2);
+  flay->addRow(widget);
+
+  flay->addRow(tr("Pre:Post"),  mPrePost = new QLineEdit);
+
+  mSplitDate->setMaximumWidth(charWidth * 15);
+  mSplitDate->setInputMask("D999-9D-9D");
+  connect(mPrePost, SIGNAL(editingFinished()), this, SLOT(prePostEdited()));
+  mPrePost->setMaximumWidth(charWidth * 10);
+  mPrePost->setInputMask("dD:Dd");
+  mSplitComment->setMinimumWidth(charWidth * 30);
+
+  QHBoxLayout* hbox = new QHBoxLayout;  // Build button line
+  hbox->setMargin(0);
+
+  QToolButton* btn = new QToolButton;
+  hbox->addWidget(btn);
+  btn->setToolTip(tr("Save Split Changes"));
+  btn->setAutoRaise(true);
+  btn->setIcon(QIcon::fromTheme("document-save"));
+//   btn->setShortcut(QKeySequence(QKeySequence::Save));
+  connect(btn, SIGNAL(clicked()), this, SLOT(saveSplit()));
+
+  btn = new QToolButton;
+  hbox->addWidget(btn);
+  btn->setToolTip(tr("Add Split"));
+  btn->setAutoRaise(true);
+  btn->setIcon(QIcon::fromTheme("list-add"));
+//   btn->setShortcut(QKeySequence(QKeySequence::Save));
+  connect(btn, SIGNAL(clicked()), this, SLOT(newSplit()));
+
+  hbox->addStretch();
+
+  btn = new QToolButton;
+  hbox->addWidget(btn);
+  btn->setToolTip(tr("Delete Split"));
+  btn->setAutoRaise(true);
+  btn->setIcon(QIcon::fromTheme("edit-delete"));
+//   btn->setShortcut(QKeySequence(QKeySequence::Save));
+  connect(btn, SIGNAL(clicked()), this, SLOT(deleteSplit()));
+
+  flay->addRow("", hbox);               // Complete edit area..
+
+  hbox = new QHBoxLayout;               // ..but add a stretch to the right
+  hbox->setMargin(0);
+  hbox->addLayout(flay);
+  hbox->addStretch(1);
+//   hbox->setStretch(0, 2);
+
+  widget = new QWidget;
+  widget->setLayout(hbox);
+
+  mSplitView = new SqlTableView;
+  mSplitView->verticalHeader()->hide();
+  connect(mSplitView, SIGNAL(newSelection(const QModelIndex &))
+          , this, SLOT(splitClicked(const QModelIndex &)));
+
+  QSplitter* splitter = new QSplitter(Qt::Horizontal);
+  splitter->addWidget(mSplitView);
+  splitter->addWidget(widget);
+
+  return splitter;
 }
 
 QWidget* FiPage::makeBarTab()
@@ -248,6 +320,7 @@ void FiPage::fiClicked(int fiId, int /* marketId */)
   mExpiryDate->setText(mFi->expiryDate().toString(Qt::ISODate));
 
   setSymbolTable();
+  setSplitTable();
 }
 
 void FiPage::setSymbolTable()
@@ -387,9 +460,18 @@ void FiPage::saveFi()
   mFilu->addFi(mFiName->text(), mFiType->currentText(), mFi->id());
   mFilu->updateField("expirydate", mExpiryDate->text(), "fi", mFi->id());
 
-  mLookUp->search();
+  QString msg = tr("FI updated: Id=%1\n"
+                   "\tFrom: Name=%2 Type=%3 ExpiryDate=%4\n"
+                   "\tTo:   Name=%5 Type=%6 ExpiryDate=%7")
+                .arg(mFi->id())
+                .arg(mFi->name(), mFi->type(), mFi->expiryDate().toString(Qt::ISODate))
+                .arg(mFiName->text(), mFiType->currentText(), mExpiryDate->text());
 
-  emitMessage(FUNC, tr("FI updated: Id=%1 Name=%2").arg(mFi->id()).arg(mFiName->text()));
+  emitMessage(FUNC, msg);
+  record(FUNC, msg);
+
+  fiClicked(mFi->id());
+  mLookUp->search();
 }
 
 void FiPage::deleteFi()
@@ -423,4 +505,164 @@ void FiPage::deleteFi()
   setSymbolTable();
   mLookUp->setFocus();
   mLookUp->search();
+}
+
+void FiPage::setSplitTable()
+{
+  mSplitId = -1;
+  mSplitDate->clear();
+  mRatio->clear();
+  mPrePost->clear();
+  mSplitComment->clear();
+  mFilu->setSqlParm(":fiId", mFi->id());
+  mFilu->setSqlParm(":fromDate", "1000-01-01");
+  mFilu->setSqlParm(":toDate", "3000-01-01");
+  mSplitView->setQuery(mFilu->execSql("GetSplits"));
+  mSplitView->hideColumn(3);
+  mSplitView->hideColumn(4);
+  mSplitView->hideColumn(5);
+  mSplitView->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
+  mSplitView->horizontalHeader()->setResizeMode(1, QHeaderView::ResizeToContents);
+  mSplitView->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
+  mSplitView->resizeRowsToContents();
+  mSplitView->selectRow(0);
+}
+
+void FiPage::splitClicked(const QModelIndex & index)
+{
+  mSplitId = index.sibling(index.row(), 3).data().toInt();
+  mSplitDate->setText(index.sibling(index.row(), 0).data().toString());
+  mRatio->setText(QString::number(index.sibling(index.row(), 1).data().toDouble()));
+  mSplitComment->setText(index.sibling(index.row(), 2).data().toString());
+  // Cool! That works because of setInputMask() on mPrePost
+  mPrePost->setText(index.sibling(index.row(), 2).data().toString());
+}
+
+void FiPage::prePostEdited()
+{
+  Validator v(this);
+
+  mRatio->setText(QString::number(v.dSplitPrePost(mPrePost->text())));
+
+  // No tr() here. I think its pointless to translate
+  QString cmt = QString("Split %1").arg(mPrePost->text());
+
+  if(v.dSplitPrePost(mPrePost->text()) > 1) cmt.prepend("Reverse ");
+
+  mSplitComment->setText(cmt);
+}
+
+void FiPage::newSplit()
+{
+  mSplitId = 0;
+  mSplitDate->setText("1000-01-01");
+  mRatio->setText("");
+  mSplitComment->setText("");
+  mPrePost->setText(" 1:1 ");
+  mPrePost->setFocus();
+  mSplitView->clearSelection();
+
+  if(!mBars) return;
+
+  // Examine data to find a possible split
+  mBars->rewind(0);           // Set on first data set
+  double ratio = 1.3;         // Which gap will we take as split
+  double yh = mBars->high();  // Yesterday High
+  double yl = mBars->low();   //           Low
+  while(mBars->next())
+  {
+    bool splitUp   = mBars->high() > yh * ratio ? true : false;
+    bool splitDown = mBars->low()  < yl / ratio ? true : false;
+    if(splitUp or splitDown)
+    {
+      mSplitDate->setText(mBars->date().toString(Qt::ISODate));
+      int split = static_cast<int>(0.5 + yh / mBars->high());
+      int merge = static_cast<int>(0.5 + mBars->high() / yh);
+      //qDebug() << "ratio" << yh / mBars->high() << mBars->high() / yh <<  split << merge;
+      if(split)
+      {
+        mPrePost->setText(QString(" 1:%1 ").arg(QString::number(split)));
+      }
+      else
+      {
+        mPrePost->setText(QString(" %1:1 ").arg(QString::number(merge)));
+      }
+
+      prePostEdited(); // Will fill the other fields
+      break;
+    }
+
+    yh = mBars->high();
+    yl = mBars->low();
+  }
+}
+
+void FiPage::saveSplit()
+{
+  QString msg = "Split %5: Id=%1 Date=%2 Comment=%3 FI=%4";
+
+  if(mSplitId > 0)
+  {
+    // FIXME Right now we have no fitting addSplit() function
+    mFilu->updateField("sdate", mSplitDate->text(), "split", mSplitId);
+    mFilu->updateField("sratio", mRatio->text(), "split", mSplitId);
+    mFilu->updateField("scomment", mSplitComment->text(), "split", mSplitId);
+    mFilu->updateField("quality", Filu::ePlatinum, "split", mSplitId);
+
+    msg = msg.arg(mSplitId)
+             .arg(mSplitDate->text())
+             .arg(mSplitComment->text())
+             .arg(mFi->name())
+             .arg(tr("updated"));
+  }
+  else
+  {
+    mSplitId = mFilu->addSplit(mSymbol->text()
+                             , mSplitDate->text()
+                             , mRatio->text().toDouble()
+                             , mSplitComment->text()
+                             , Filu::ePlatinum);
+
+    msg = msg.arg(mSplitId)
+             .arg(mSplitDate->text())
+             .arg(mSplitComment->text())
+             .arg(mFi->name())
+             .arg(tr("added"));
+  }
+
+  emitMessage(FUNC, msg);
+  record(FUNC, msg);
+
+  int id = mSplitId; // setSplitTable() will change mSplitId
+  setSplitTable();
+  mSplitView->selectRowWithValue(id, 3);
+  loadBars();
+}
+
+void FiPage::deleteSplit()
+{
+  if(mSplitId < 1) return;
+
+  int ret = QMessageBox::warning(this, tr("FI Page")
+            , tr("\nDelete Split '%1 (%2)'?\t").arg(mSplitDate->text(), mSplitComment->text())
+            , QMessageBox::Yes | QMessageBox::Cancel
+            , QMessageBox::Cancel);
+
+  if(ret != QMessageBox::Yes) return;
+
+  mFilu->deleteRecord("split", mSplitId);
+  // FIXME Add check if success/error after delete
+
+  QString msg = QString("Split %5: Id=%1 Date=%2 Comment=%3 FI=%4")
+                       .arg(mSplitId)
+                       .arg(mSplitDate->text())
+                       .arg(mSplitComment->text())
+                       .arg(mFi->name())
+                       .arg(tr("deleted"));
+
+  emitMessage(FUNC, msg);
+  record(FUNC, msg);
+
+  setSplitTable();
+  loadBars();
 }

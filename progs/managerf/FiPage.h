@@ -30,6 +30,7 @@ class QToolButton;
 
 class IndicatorWidget;
 class SearchFiWidget;
+class SqlTableView;
 class SymbolTableView;
 
 class FiPage : public ManagerPage
@@ -41,13 +42,18 @@ class FiPage : public ManagerPage
     virtual         ~FiPage();
 
   protected slots:
-    void            fiClicked(int fiId, int marketId);
-    void            symbolClicked(const QModelIndex&);
+    void            fiClicked(int fiId, int marketId = 0);
+    void            symbolClicked(const QModelIndex& index);
     void            lockFi();
     void            saveSymbol();
     void            deleteSymbol();
     void            saveFi();
     void            deleteFi();
+    void            splitClicked(const QModelIndex & index);
+    void            prePostEdited();
+    void            newSplit();
+    void            saveSplit();
+    void            deleteSplit();
 
   protected:
     void            createPage();
@@ -78,6 +84,14 @@ class FiPage : public ManagerPage
 
     // Split Tab Stuff
     QWidget*          makeSplitTab();
+    void              setSplitTable();
+
+    SqlTableView*     mSplitView;
+    QLineEdit*        mSplitDate;
+    QLineEdit*        mRatio;
+    QLineEdit*        mPrePost;
+    QLineEdit*        mSplitComment;
+    int               mSplitId;
 
     // EODBar Tab Stuff
     QWidget*          makeBarTab();
