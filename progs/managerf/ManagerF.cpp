@@ -161,7 +161,7 @@ void ManagerF::changePage(QListWidgetItem* current, QListWidgetItem* previous)
 
 void ManagerF::messageBox(const Message& message)
 {
-  QString msg = formatMessage(message, "%F %x");
+  QString msg = formatMessage(message, "%c: %x");
 
   mMsgLabel->setMessage(msg, message.type);
   mLogBookPage->addToLog(msg, message.type);
