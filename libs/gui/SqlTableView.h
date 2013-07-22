@@ -62,6 +62,7 @@ class SqlTableView : public QTableView
   protected slots:
     void        currentChanged(const QModelIndex& current, const QModelIndex& previous);
     void        click(const QModelIndex& current);
+    void        doubleClick(const QModelIndex& current);
 };
 
 #endif

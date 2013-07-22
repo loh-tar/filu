@@ -34,7 +34,10 @@ SqlTableView::SqlTableView(QWidget* parent)
 
   connect(this, SIGNAL(clicked(const QModelIndex &)),
           this, SLOT(click(const QModelIndex &)));
-}
+
+  connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
+          this, SLOT(doubleClick(const QModelIndex &)));
+  }
 
 SqlTableView::~SqlTableView()
 {
@@ -146,6 +149,11 @@ void SqlTableView::currentChanged(const QModelIndex& current,
 void SqlTableView::click(const QModelIndex& current)
 {
   if(current.row() == mCurrentRow) return;
+  doubleClick(current);
+}
+
+void SqlTableView::doubleClick(const QModelIndex& current)
+{
   mCurrentRow = current.row();
   emit newSelection(current);
 }

@@ -102,17 +102,12 @@ void SearchFiWidget::search()
   mView->hideColumn(6);
   mView->hideColumn(7);
 
-  mCurrentRow = -1;
-
   show();
 }
 
 void SearchFiWidget::clicked(const QModelIndex& index)
 {
   int row = index.row();
-
-  if(row == mCurrentRow) return;
-  mCurrentRow = row;
 
   // Symbol, Market
   emit selected(mView->model()->index(row, 5).data().toString()

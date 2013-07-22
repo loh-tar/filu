@@ -89,7 +89,6 @@ class SearchFiWidget : public FWidget
     SearchField*    mSearchField;
     FiTypeSelBtn*   mTypeSelBtn;
     QPoint          mDragStartPosition;
-    int             mCurrentRow;
     bool            mHideNoMarket;
 };
 
