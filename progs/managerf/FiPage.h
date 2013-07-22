@@ -45,6 +45,7 @@ class FiPage : public ManagerPage
     void            fiClicked(int fiId, int marketId = 0);
     void            symbolClicked(const QModelIndex& index);
     void            lockFi();
+    void            newSymbol();
     void            saveSymbol();
     void            deleteSymbol();
     void            saveFi();
@@ -69,7 +70,7 @@ class FiPage : public ManagerPage
 
     // Main Tab Stuff
     QWidget*          makeMainTab();
-    void              setSymbolTable();
+    void              setSymbolTable(int symbolId = 0);
 
     SearchFiWidget*   mLookUp;
     int               mSymbolId;

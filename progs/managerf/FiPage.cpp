@@ -102,16 +102,21 @@ QWidget* FiPage::makeMainTab()
   mMarket = new QComboBox;
   mMarket->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
-  QToolButton*  saveBtn;
-  saveBtn = new QToolButton;
+  QToolButton* saveBtn = new QToolButton;
   saveBtn->setToolTip(tr("Save Symbol Changes"));
   saveBtn->setAutoRaise(true);
   saveBtn->setIcon(QIcon::fromTheme("document-save"));
 //   saveBtn->setShortcut(QKeySequence(QKeySequence::Save));
   connect(saveBtn, SIGNAL(clicked()), this, SLOT(saveSymbol()));
 
-  QToolButton*  delBtn;
-  delBtn = new QToolButton;
+  QToolButton* newBtn = new QToolButton;
+  newBtn->setToolTip(tr("Add New Symbol"));
+  newBtn->setAutoRaise(true);
+  newBtn->setIcon(QIcon::fromTheme("list-add"));
+//   newBtn->setShortcut(QKeySequence(QKeySequence::Save));
+  connect(newBtn, SIGNAL(clicked()), this, SLOT(newSymbol()));
+
+  QToolButton* delBtn = new QToolButton;
   delBtn->setToolTip(tr("Delete Symbol"));
   delBtn->setAutoRaise(true);
   delBtn->setIcon(QIcon::fromTheme("edit-delete"));
@@ -121,6 +126,7 @@ QWidget* FiPage::makeMainTab()
   QHBoxLayout* hbox = new QHBoxLayout; // Symbol Edit Line
   hbox->setMargin(0);
   hbox->addWidget(saveBtn);
+  hbox->addWidget(newBtn);
   hbox->addWidget(mSymbol);
   hbox->addWidget(mMarket);
   hbox->addWidget(mProvider);
@@ -323,7 +329,7 @@ void FiPage::fiClicked(int fiId, int /* marketId */)
   setSplitTable();
 }
 
-void FiPage::setSymbolTable()
+void FiPage::setSymbolTable(int symbolId/* = 0*/)
 {
   if(mSymbols) delete mSymbols;
   mSymbols = 0;
@@ -334,6 +340,12 @@ void FiPage::setSymbolTable()
   mSymbolView->setContent(mSymbols);
 
   if(!mSymbols) return; // Should never happens, but anyway
+
+  if(symbolId)
+  {
+    mSymbolView->selectSymbol(symbolId);
+    return;
+  }
 
   // Search a symbol with a market != NoMarket
   mSymbols->rewind();
@@ -362,6 +374,8 @@ void FiPage::symbolClicked(const QModelIndex& index)
   mMarketId = index.sibling(index.row(), 4).data().toInt();
   mSymbolId = index.sibling(index.row(), 5).data().toInt();
 
+  mSymbols->rewindToId(mSymbolId);
+
   mProvider->clear();
   mProvider->addItems(mFilu->getSymbolTypeNames());
   mProvider->setCurrentIndex(mProvider->findText(index.sibling(index.row(), 2).data().toString()));
@@ -389,30 +403,63 @@ void FiPage::lockFi()
   }
 }
 
+void FiPage::newSymbol()
+{
+  mSymbolId = 0;
+  mSymbol->setText("");
+  mSymbol->setFocus();
+  mSymbolView->clearSelection();
+}
+
 void FiPage::saveSymbol()
 {
   if(!mSymbols) return;
 
-  mFilu->addSymbol(mSymbol->text(), mMarket->currentText(), mProvider->currentText()
-                 , mFi->id(), mSymbolId);
+  if(mSymbolId)
+  {
+    if(mSymbols->caption() == mSymbol->text()          and
+       mSymbols->market()  == mMarket->currentText()   and
+       mSymbols->owner()   == mProvider->currentText()     )
+    {
+      emitMessage(FUNC, tr("No changes to save"));
+      return;
+    }
+  }
 
-  mSymbols->rewindToId(mSymbolId);
+  int ret = mFilu->addSymbol(mSymbol->text(), mMarket->currentText(), mProvider->currentText()
+                             , mFi->id(), mSymbolId);
 
-  QString msg = tr("Symbol updated: Id=%1\n"
-                   "\tFrom: Caption=%2 Market=%3 Owner=%4\n"
-                   "\tTo:   Caption=%5 Market=%6 Owner=%7")
-                  .arg(mSymbolId)
-                  .arg(mSymbols->caption())
-                  .arg(mSymbols->market())
-                  .arg(mSymbols->owner())
-                  .arg(mSymbol->text())
-                  .arg(mMarket->currentText())
-                  .arg(mProvider->currentText());
+  if(sadFilu(FUNC, tr("Fail to save symbol"), eWarning)) return;
+
+  QString msg;
+  if(mSymbolId)
+  {
+    msg = tr("Symbol updated: Id=%1\n"
+                "\tFrom: Caption=%2 Market=%3 Owner=%4\n"
+                "\tTo:   Caption=%5 Market=%6 Owner=%7")
+                .arg(mSymbolId)
+                .arg(mSymbols->caption())
+                .arg(mSymbols->market())
+                .arg(mSymbols->owner())
+                .arg(mSymbol->text())
+                .arg(mMarket->currentText())
+                .arg(mProvider->currentText());
+  }
+  else
+  {
+    mSymbolId = ret;
+    msg = tr("Symbol added: Id=%1 Caption=%2 Market=%3 Owner=%4 FI=%5")
+            .arg(mSymbolId)
+            .arg(mSymbol->text())
+            .arg(mMarket->currentText())
+            .arg(mProvider->currentText())
+            .arg(mFi->name());
+  }
 
   emitMessage(FUNC, msg);
   record(FUNC, msg);
 
-  setSymbolTable();
+  setSymbolTable(mSymbolId);
 }
 
 void FiPage::deleteSymbol()
@@ -424,8 +471,6 @@ void FiPage::deleteSymbol()
     emitMessage(FUNC, tr("I will not delete the one and only symbol"), eWarning);
     return;
   }
-
-  mSymbols->rewindToId(mSymbolId);
 
   int ret = QMessageBox::warning(this, tr("FI Page")
             , tr("\nDelete Symbol '%1 %2 %3'?\t")
