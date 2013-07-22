@@ -16,7 +16,7 @@ But you could of cause chose any other, not here listed, issue if you like.
 
 Sundries
 ==========
-H: Add provider/scripts for split data, currency quotes
+H: Add provider/scripts for split data
 M: Think about Key Statistics, like
    http://finance.yahoo.com/q/ks?s=AAPL
    There are also devidend and split but sadly (almost only) for US stocks
@@ -37,7 +37,7 @@ H: Change market table to have timezone column and lunch
 H: Add a 'Settings' table to store several info like version, creation date,
    last 'full' run etc
 H: Add version to the DB, and auto detect updates
-H: Handle issue date and mariture date at select for eodbar update
+H: Handle expiry date at select for eodbar update
 H: Handle "quality" field in trigger and/or insert functions.
 H: adjust the eodBar data on the fly from dividends
 M: add NOTIFY/LISTEN support. db.driver()->subscribeToNotification()
@@ -161,13 +161,17 @@ M: When searched a market and clicked, the PSMGrp is hardcoded to ECB/Forex but
 
 Sundries
 ----------
-H: Make data at FI page editable. Add missing tables: split, devidend,
-   eodbar, underlying and from user schema co
 H: Add edit pages for missing data types: broker, ftype, market, offday,
    stype
 H: Add page(s) for depot management
 H: Add page(s) for edit config file settings and 'Devil' sum/exo
+M: FiDetail page: Add missing tables co, eodbar, underlying, dividend
 M: add the possibility to edit jobs, see above
+L: Change at ManagerF::messageBox()
+   mMsgLabel->setMessage(..) and mLogBookPage->addToLog(..)
+   to take 'const Message& message'
+L: Think about an own QTableView to eleminate the redundance
+   at SymbolTableView and SqlTableView
 L: add left from the editor a IndicatorPicker and above of him a list of last
    saved files. Both tilled by a horizontal splitter.
 L: Add a simple 'version control system' to the editor page. Means, copy each
