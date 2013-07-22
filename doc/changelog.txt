@@ -1,3 +1,21 @@
+2013-07-22
+============
+ManagerF
+----------
+- FiPage awakened to life. FIs, Symbols and Splits are now editable
+
+SearchFiWidget
+----------------
+- Emit signal on double click
+- Optimize column space usage
+- Add tool tips
+
+Database
+----------
+- Remove issue and maturity date from symbol table
+- Change (unused) deletedate to expirydate of table fi
+
+
 2013-07-15
 ============
 Provider Scripts
