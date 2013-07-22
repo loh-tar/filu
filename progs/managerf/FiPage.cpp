@@ -297,12 +297,14 @@ QWidget* FiPage::makeSplitTab()
 
 QWidget* FiPage::makeBarTab()
 {
-  return new QWidget;
+  QLabel* l = new QLabel("Sorry, not yet implemented");
+  l->setAlignment(Qt::AlignCenter);
+  return l;
 }
 
 QWidget* FiPage::makeCoTab()
 {
-  return new QWidget;
+  return makeBarTab();
 }
 
 void FiPage::loadBars()
