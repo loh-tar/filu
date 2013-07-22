@@ -84,7 +84,7 @@ set(FiluGui_MOCH ${FiluGui_MOCH}
     SearchFiWidget.h
     SqlTableView.h
     StrategyEditor.h
-    #SymbolTableView.h
+    SymbolTableView.h
 )
 include_directories(".")
 

@@ -48,7 +48,7 @@ class SymbolTableModel : public QAbstractTableModel
 
 class SymbolTableView : public QTableView
 {
-  //Q_OBJECT
+  Q_OBJECT
 
   public:
                 SymbolTableView(SymbolTuple* symbols, QWidget* parent = 0);
@@ -58,8 +58,19 @@ class SymbolTableView : public QTableView
     void        selectSymbol(int id);
     QSize       sizeHint() const;
 
-  private:
+  signals:
+    void        newSelection(const QModelIndex&);
+
+  public slots:
+    void        clearSelection();
+
+  protected:
     SymbolTableModel* mSymbolTableModel;
+    int               mCurrentRow;
+
+  protected slots:
+    void        currentChanged(const QModelIndex& current, const QModelIndex& previous);
+    void        click(const QModelIndex& current);
 };
 
 #endif

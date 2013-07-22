@@ -134,7 +134,7 @@ QWidget* FiPage::makeMainTab()
   hbox->addStretch(1);
 
   mSymbolView = new SymbolTableView(mSymbols);
-  connect(mSymbolView, SIGNAL(clicked(const QModelIndex &)),
+  connect(mSymbolView, SIGNAL(newSelection(const QModelIndex &)),
           this, SLOT(symbolClicked(const QModelIndex &)));
 
   QVBoxLayout* vbox = new QVBoxLayout; // That's all with the symbols..

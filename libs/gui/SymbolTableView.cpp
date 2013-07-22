@@ -110,7 +110,12 @@ QVariant SymbolTableModel::headerData(
 SymbolTableView::SymbolTableView(SymbolTuple* symbols, QWidget* parent)
                : QTableView(parent)
                , mSymbolTableModel(0)
+               , mCurrentRow(-1)
 {
+
+  connect(this, SIGNAL(clicked(const QModelIndex &)),
+          this, SLOT(click(const QModelIndex &)));
+
   setContent(symbols);
 }
 
@@ -140,6 +145,7 @@ void SymbolTableView::setContent(SymbolTuple* symbols)
 //   setColumnWidth(4,110);
 //   setColumnWidth(5,110);
   setSelectionBehavior(QAbstractItemView::SelectRows);
+  mCurrentRow = -1;
 }
 
 QSize SymbolTableView::sizeHint() const
@@ -163,4 +169,29 @@ void SymbolTableView::selectSymbol(int id)
     }
     ++r;
   }
+}
+
+void SymbolTableView::clearSelection()
+{
+  QTableView::clearSelection();
+  mCurrentRow = -1;
+}
+
+void SymbolTableView::currentChanged(const QModelIndex& current,
+                                   const QModelIndex &/*previous*/)
+{
+  if(current.row() == mCurrentRow) return;
+  if(current.row() == -1) return;
+
+  mCurrentRow = current.row();
+  emit newSelection(current);
+
+  scrollTo(current);
+}
+
+void SymbolTableView::click(const QModelIndex& current)
+{
+  if(current.row() == mCurrentRow) return;
+  mCurrentRow = current.row();
+  emit newSelection(current);
 }
