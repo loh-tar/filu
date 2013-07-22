@@ -48,9 +48,9 @@ class ManagerPage : public FWidget
     void            message(const Message& message);
 
   protected:
+    bool            sadFilu(const QString& func, const QString& txt = "", const MsgType type = eError);
     void            hideEvent(QHideEvent* /*event*/);
     void            showEvent(QShowEvent* /*event*/);
-
     QWidget*        mFocusWidget;
     QIcon           mIcon;
     QString         mIconText;

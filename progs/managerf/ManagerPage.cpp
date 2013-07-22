@@ -58,6 +58,17 @@ void ManagerPage::setPageIcon(QListWidgetItem* button)
   button->setSizeHint(QSize(100, 70));
 }
 
+bool ManagerPage::sadFilu(const QString& func, const QString& txt/* = ""*/, const MsgType type/* = eError*/)
+{
+  if(check4FiluError(func, txt, type))
+  {
+    emitMessage(func, txt + "\n" + tr("For details see LogFile"), type);
+    return true;
+  }
+
+  return false;
+}
+
 void ManagerPage::hideEvent(QHideEvent* /*event*/)
 {
   mFocusWidget = focusWidget();
