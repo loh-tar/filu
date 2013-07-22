@@ -183,11 +183,25 @@ All commands have more or less build in help text. So ckeck it out.
 
 ManagerF
 ==========
-Is one of the oldest part of Filu and is far away from his projected features.
+Is one of the oldest part of Filu and miss still many of his projected features.
 
 FI Details Page
 -----------------
-IS the oldest part of Filu and is nearly useless.
+Is separated into an upper part with a tab widget and a lower part with a plot
+sheet.
+
+On the Main tab you can edit, add and delete symbols. You can also edit the FI
+name, type and expiry date. You can delete the FI but you can't add a FI. By
+hit the lock button, the expiry date is set to the last available EODBar date.
+A locked FI will not select to download more bars at 'agentf full'.
+
+On the Splits tab you can add, edit and delete splits. By hit the add button the
+loaded bars will scanned for a possible split and the edit fields filled with
+the guessed data. When the cursor leave the PrePost field the Ratio and Comment
+fields will updated, but you can edit they afterwards manually.
+
+In any case the edited data will written to the DB after hitting the appropriate
+save button.
 
 Add FI Page
 -------------
