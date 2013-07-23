@@ -300,7 +300,7 @@ void Newswire::addMessage(const Message& msg)
 
 void Newswire::logMessage(Message& msg)
 {
-  if(mNoErrorLogging) return;
+  if(mNoErrorLogging and !mHasFatal) return;
 
   if(msg.type == eErrInfo and !mHasError) return; // Don't log infos without an error
 
@@ -311,7 +311,7 @@ void Newswire::logMessage(Message& msg)
   }
 
   if(msg.fileLogged) return;
-  if(mNoFileLogging) return;
+  if(mNoFileLogging and !mHasFatal) return;
 
   if(mLogFile) *mLogFile << formatMessage(msg, mFormat.value(eFileLog)) << endl;
   msg.fileLogged = true;
