@@ -47,7 +47,7 @@ SearchFiWidget::~SearchFiWidget()
 void SearchFiWidget::init()
 {
   mSearchField = new SearchField(this);
-  mSearchField->setToolTip(tr("Enter pattern to search"));
+  mSearchField->setToolTip(tr("Enter pattern or FiId to search"));
   connect(mSearchField, SIGNAL(textChanged()), this, SLOT(search()));
   setFocusProxy(mSearchField);
 

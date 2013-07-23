@@ -38,10 +38,13 @@ SELECT DISTINCT ON (f.fi_id)
 
   WHERE
     CASE WHEN :hideNoMarket  THEN s.market_id > 1 ELSE true END -- Don't list NoMarket
-    and (lower(f.caption) LIKE '%'|| lower(:name) ||'%'
-        or  EXISTS ( select s2.fi_id from :filu.symbol s2
-                       where lower(s2.caption) LIKE '%'|| lower(:name) ||'%'
-                         and s2.fi_id = s.fi_id
-                   )
-        )
-    and lower(t.caption) LIKE '%'|| lower(:type)||'%'
+    and CASE WHEN :name ~ '^([1-9]+[0-9]*)$' -- Match integers
+             THEN CAST(f.fi_id AS TEXT) = :name
+             ELSE (lower(f.caption) LIKE '%'|| lower(:name) ||'%'
+                  or  EXISTS ( select s2.fi_id from :filu.symbol s2
+                                where lower(s2.caption) LIKE '%'|| lower(:name) ||'%'
+                                  and s2.fi_id = s.fi_id
+                            )
+                  )
+                  and lower(t.caption) LIKE '%'|| lower(:type)||'%'
+        END

@@ -63,9 +63,9 @@ bool CmdFetch::exec(CmdHelper* ch)
 
   if(mCmd->isMissingParms(1))
   {
-    if(mCmd->printThisWay("<FuzzyString> [<FromDate> [<ToDate>]]")) return true;
+    if(mCmd->printThisWay("<Pattern>|<FiId> [<FromDate> [<ToDate>]]")) return true;
 
-    mCmd->printComment(tr("The FuzzyString can be part of the FI name or symbol. All matching FIs will updated. "
+    mCmd->printComment(tr("The Pattern can be part of the FI name or symbol. All matching FIs will updated. "
                           "Without a given date, or if dot-dot '..', AgentF take a look at the database "
                           "which bars could be missing."));
 
