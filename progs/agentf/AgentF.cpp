@@ -107,8 +107,7 @@ void AgentF::updateAllBars()
 
   verbose(FUNC, tr("Processing..."), eInfo);
 
-  // The empty strings "" says: Any caption and all kind of fType
-  QSqlQuery* query = mFilu->searchFi("", "");
+  QSqlQuery* query = mFilu->execSql("GetActiveFIs");
 
   if(!query)
   {
@@ -123,7 +122,7 @@ void AgentF::updateAllBars()
     return;
   }
 
-  record(FUNC, tr("\n*\n* Update bar data of all %1 FIs.\n*").arg(query->size()));
+  record(FUNC, tr("\n*\n* Update bar data of %1 FI/Market relations.\n*").arg(query->size()));
 
   // Build the parameter list needed by cmdThis()
   // <Caller> -this <Symbol> <Market> <Provider> [<FromDate> [<ToDate>]]
