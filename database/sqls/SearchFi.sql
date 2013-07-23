@@ -30,12 +30,14 @@ SELECT DISTINCT ON (f.fi_id)
     , m.caption   as "Market"
     , p.caption   as "Provider"
 
-  FROM :filu.fi f, :filu.ftype t, :filu.symbol s, :filu.market m, :filu.stype p
-  WHERE f.ftype_id = t.ftype_id
-    and f.fi_id = s.fi_id
-    and s.stype_id = p.stype_id
-    and s.market_id = m.market_id
-    and CASE WHEN :hideNoMarket  THEN s.market_id > 1 ELSE true END -- Don't list NoMarket
+  FROM :filu.fi f
+    JOIN :filu.ftype t  USING (ftype_id)
+    JOIN :filu.symbol s USING (fi_id)
+    JOIN :filu.market m USING (market_id)
+    JOIN :filu.stype p  USING (stype_id)
+
+  WHERE
+    CASE WHEN :hideNoMarket  THEN s.market_id > 1 ELSE true END -- Don't list NoMarket
     and (lower(f.caption) LIKE '%'|| lower(:name) ||'%'
         or  EXISTS ( select s2.fi_id from :filu.symbol s2
                        where lower(s2.caption) LIKE '%'|| lower(:name) ||'%'
