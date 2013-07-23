@@ -379,6 +379,12 @@ void Scanner::scan(BarTuple* bars)
 {
   if(hasError() or !bars) return;
 
+  if(bars->size() < mBarsToLoad)
+  {
+    warning(FUNC, tr("Got not enough bars to scan FI: %1").arg(bars->fiId()));
+    return;
+  }
+
   for(int i = 0; i < mIndicators.size(); ++i)
   {
     DataTupleSet* data = mIndicators.at(i)->calculate(bars);
