@@ -33,7 +33,7 @@ NewYork;00:00:00;23:59:59;US Dollar;USD;
 *
 * FI names with full lovely symbol set as reference.
 *
-[Header]Name;DDate;Symbol;Provider;Market
+[Header]Name;EDate;Symbol;Provider;Market
 
 *
 * FiType: Currency

@@ -655,7 +655,7 @@ bool Exporter::expFiNames()
   mOLine << "*";
   mOLine << "* FI names with full lovely symbol set as reference";
   mOLine << "*";
-  mOLine << "[Header]Name;DDate;Symbol;Provider;Market";
+  mOLine << "[Header]Name;Symbol;Provider;Market;EDate";
   writeToFile();
 
   QString type;
@@ -676,10 +676,10 @@ bool Exporter::expFiNames()
     }
 
     mDLine << fi.value("Name").toString();
-    mDLine << fi.value("DDate").toDate().toString(Qt::ISODate);
     mDLine << fi.value("Symbol").toString();
     mDLine << fi.value("Provider").toString();
     mDLine << fi.value("Market").toString();
+    mDLine << fi.value("EDate").toDate().toString(Qt::ISODate);
     writeToFile();
   }
 
@@ -724,15 +724,15 @@ bool Exporter::expUnderlyings()
     mOLine << "*";
     mOLine << "* " + mfi.value("Name").toString();
     mOLine << "*";
-    mOLine << "[Header]Type;Name;DDate;Symbol;Provider;Market";
+    mOLine << "[Header]Type;Name;Symbol;Provider;Market;EDate";
     mOLine << NewLine;
 
     mDLine << mfi.value("Type").toString();
     mDLine << mfi.value("Name").toString();
-    mDLine << mfi.value("DDate").toDate().toString(Qt::ISODate);
     mDLine << mfi.value("Symbol").toString();
     mDLine << mfi.value("Provider").toString();
     mDLine << mfi.value("Market").toString();
+    mDLine << mfi.value("EDate").toDate().toString(Qt::ISODate);
     writeToFile();
 
     mOLine << NewLine;

@@ -17,7 +17,7 @@
 SELECT
   f.caption       AS "Name",
   ft.caption      AS "Type",
-  f.deletedate    AS "DDate",
+  f.expirydate    AS "EDate",
   ls.symbol       AS "Symbol",
   st.caption      AS "Provider",
   m.caption       AS "Market",

@@ -134,8 +134,8 @@ Name
 Type
   The FI type, e.g 'Stock', 'Currency', 'Index'
 
-DDate (optional)
-  Delete date, of the FI
+EDate (optional)
+  Expiry date of the FI
 
 Provider
 Symbol

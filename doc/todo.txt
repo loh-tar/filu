@@ -317,6 +317,7 @@ M: Print a progressbar while checking, force Trader to print nothing in that cas
 
 Exporter
 ==========
+H: Export "quality" field
 M: Think about exported order: Currencys, Markets, Other FIs
    Currently the order is: Markets, FIs
    Because markets needs currencys we include now the currency in the market export.
@@ -325,6 +326,8 @@ M: Think about exported order: Currencys, Markets, Other FIs
 
 Importer
 ==========
+H: Handle "quality" field, see above at filu
+H: Handle "EDate" at FIs
 H: add [Include]
 M: add [Skip], follow data will ignored until [UnSkip] or [Piks] ?
 M: add [Ignore]foo=bar, will ignore all data where key 'foo' has value 'bar'
