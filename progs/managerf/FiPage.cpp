@@ -433,6 +433,8 @@ void FiPage::saveSymbol()
 
   if(sadFilu(FUNC, tr("Fail to save symbol"), eWarning)) return;
 
+  mFilu->updateField("quality", Filu::ePlatinum, "symbol", ret);
+
   QString msg;
   if(mSymbolId)
   {
@@ -506,6 +508,7 @@ void FiPage::saveFi()
   // FIXME Right now we have no fitting addFi() function
   mFilu->addFi(mFiName->text(), mFiType->currentText(), mFi->id());
   mFilu->updateField("expirydate", mExpiryDate->text(), "fi", mFi->id());
+  mFilu->updateField("quality", Filu::ePlatinum, "fi", mFi->id());
 
   QString msg = tr("FI updated: Id=%1\n"
                    "\tFrom: Name=%2 Type=%3 ExpiryDate=%4\n"
