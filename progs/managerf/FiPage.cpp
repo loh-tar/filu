@@ -318,7 +318,8 @@ void FiPage::fiClicked(int fiId, int /* marketId */)
 {
   if(mFi) delete mFi;
   mFi = mFilu->getFi(fiId);
-  mMainBox->setTitle(QString("%1 (%2)").arg(mFi->name(), mFi->type()));
+  mMainBox->setTitle(QString("%1 (%2 FiId:%3)").arg(mFi->name(), mFi->type())
+                                               .arg(mFi->id()));
 
   mFiType->clear();
   mFiType->addItems(mFilu->getFiTypeNames());
