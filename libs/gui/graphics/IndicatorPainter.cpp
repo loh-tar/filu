@@ -522,7 +522,11 @@ void IndicatorPainter::paintXScale()
   mXSTicker->prepare();
   while(mXSTicker->nextTick())
   {
+    if(mXSTicker->paint10YearTick(x, y)) painter.drawLine(x, 0, x, y);
+    if(mXSTicker->paint5YearTick(x, y)) painter.drawLine(x, 0, x, y);
+    if(mXSTicker->paint2YearTick(x, y)) painter.drawLine(x, 0, x, y);
     if(mXSTicker->paintYearTick(x, y)) painter.drawLine(x, 0, x, y);
+    if(mXSTicker->paintHalfYTick(x, y)) painter.drawLine(x, 0, x, y);
     if(mXSTicker->paintQuarterTick(x, y)) painter.drawLine(x, 0, x, y);
     if(mXSTicker->paintMonthTick(x, y)) painter.drawLine(x, 0, x, y);
     if(mXSTicker->paintWeekTick(x, y)) painter.drawLine(x, 0, x, y);

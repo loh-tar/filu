@@ -39,7 +39,11 @@ class XScaleTicker
     eWeek,
     eMonth,
     eQuarter,
-    eYear
+    eHalfYear,
+    eYear,
+    e2Year,
+    e5Year,
+    e10Year
   };
 
   enum TickTreshold
@@ -47,17 +51,44 @@ class XScaleTicker
     eDayTick     = 900,
     eDayGrid     = 5000,
     eDayText     = 2800,
+
     eWeekTick    = 250,
-    eWeekGrid    = 1200,
+    eWeekGrid    = 1800,
     eWeekText    = 820,
+
     eMonthTick   = 55,
     eMonthGrid   = 400,
-    eMonthText   = 220,
-    eQuarterTick = 5,
+    eMonthText   = 180,
+
+    eQuarterTick = 20,
     eQuarterGrid = 150,
     eQuarterText = 75,
-    eYearTick    = 0,
-    eYearGrid    = 20
+
+    eHalfYTick   = 5,
+    eHalfYGrid   = 50,
+    eHalfYText   = 30,
+
+    eYearTick    = 2,
+    eYearGrid    = 16,
+    eYearText    = 16,
+
+    e2YearTick   = 2,
+    e2YearGrid   = 8,
+    e2YearText   = 8,
+
+    e5YearTick   = 1,
+    e5YearGrid   = 4,
+    e5YearText   = 4,
+
+    e10YearTick  = 1,
+    e10YearGrid  = 2,
+    e10YearText  = 2
+  };
+
+  enum TickLength
+  {
+    eNormalTick  = 4,
+    eTextTick    = 6
   };
 
   public:
@@ -71,7 +102,12 @@ class XScaleTicker
     bool        paintWeekTick(int& x, int& y);
     bool        paintMonthTick(int& x, int& y);
     bool        paintQuarterTick(int& x, int& y);
+    bool        paintHalfYTick(int& x, int& y);
     bool        paintYearTick(int& x, int& y);
+    bool        paint2YearTick(int& x, int& y);
+    bool        paint5YearTick(int& x, int& y);
+    bool        paint10YearTick(int& x, int& y);
+
     bool        paintTickText(QString& text);
     bool        paintGrid(int& x, int& y);
 
@@ -84,7 +120,11 @@ class XScaleTicker
     float       mDensity;
     int         mFontSpace;
 
+    int         mLast10Year;
+    int         mLast5Year;
+    int         mLast2Year;
     int         mLastYear;
+    int         mLastHalfYear;
     int         mLastQuarter;
     int         mLastMonth;
     int         mLastWeek;
