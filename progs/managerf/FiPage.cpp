@@ -240,7 +240,7 @@ QWidget* FiPage::makeSplitTab()
   mSplitDate->setInputMask("D999-9D-9D");
   connect(mPrePost, SIGNAL(editingFinished()), this, SLOT(prePostEdited()));
   mPrePost->setMaximumWidth(charWidth * 10);
-  mPrePost->setInputMask("dD:Dd");
+  mPrePost->setInputMask("D0:D0");
   mSplitComment->setMinimumWidth(charWidth * 30);
 
   QHBoxLayout* hbox = new QHBoxLayout;  // Build button line
@@ -256,7 +256,7 @@ QWidget* FiPage::makeSplitTab()
 
   btn = new QToolButton;
   hbox->addWidget(btn);
-  btn->setToolTip(tr("Add Split"));
+  btn->setToolTip(tr("Add Split (Search for Split)"));
   btn->setAutoRaise(true);
   btn->setIcon(QIcon::fromTheme("list-add"));
 //   btn->setShortcut(QKeySequence(QKeySequence::Save));
@@ -585,8 +585,11 @@ void FiPage::splitClicked(const QModelIndex & index)
   mSplitDate->setText(index.sibling(index.row(), 0).data().toString());
   mRatio->setText(QString::number(index.sibling(index.row(), 1).data().toDouble()));
   mSplitComment->setText(index.sibling(index.row(), 2).data().toString());
-  // Cool! That works because of setInputMask() on mPrePost
-  mPrePost->setText(index.sibling(index.row(), 2).data().toString());
+
+  QRegExp rx("\\b(\\d+:\\d+)\\b");
+  rx.indexIn(index.sibling(index.row(), 2).data().toString());
+  QString pp = rx.cap(1);
+  mPrePost->setText(pp);
 }
 
 void FiPage::prePostEdited()
@@ -605,47 +608,58 @@ void FiPage::prePostEdited()
 
 void FiPage::newSplit()
 {
-  mSplitId = 0;
-  mSplitDate->setText("1000-01-01");
+  if(mSplitId != 0)
+  {
+    mSplitId = 0;
+    if(mBars) mBars->rewind(0);         // Set on first data set
+  }
+
   mRatio->setText("");
-  mSplitComment->setText("");
-  mPrePost->setText(" 1:1 ");
+  mSplitComment->setText(tr("No Split found"));
+  mPrePost->setText("1:1");
   mPrePost->setFocus();
   mSplitView->clearSelection();
 
   if(!mBars) return;
 
   // Examine data to find a possible split
-  mBars->rewind(0);           // Set on first data set
-  double ratio = 1.3;         // Which gap will we take as split
   double yh = mBars->high();  // Yesterday High
   double yl = mBars->low();   //           Low
+  double ratio = 1.3;         // Which gap will we take as split
+  bool   found = false;
   while(mBars->next())
   {
     bool splitUp   = mBars->high() > yh * ratio ? true : false;
     bool splitDown = mBars->low()  < yl / ratio ? true : false;
     if(splitUp or splitDown)
     {
-      mSplitDate->setText(mBars->date().toString(Qt::ISODate));
       int split = static_cast<int>(0.5 + yh / mBars->high());
       int merge = static_cast<int>(0.5 + mBars->high() / yh);
-      //qDebug() << "ratio" << yh / mBars->high() << mBars->high() / yh <<  split << merge;
-      if(split)
+      //qDebug() << "ratio" << mBars->date().toString(Qt::ISODate) << yh / mBars->high() << mBars->high() / yh <<  split << merge;
+      if(split > 1)
       {
         mPrePost->setText(QString(" 1:%1 ").arg(QString::number(split)));
       }
+      else if(merge > 1)
+      {
+        mPrePost->setText(QString("%1:1").arg(QString::number(merge)));
+      }
       else
       {
-        mPrePost->setText(QString(" %1:1 ").arg(QString::number(merge)));
+        continue;
       }
 
+      mSplitDate->setText(mBars->date().toString(Qt::ISODate));
       prePostEdited(); // Will fill the other fields
+      found = true;
       break;
     }
 
     yh = mBars->high();
     yl = mBars->low();
   }
+
+  if(!found) mSplitDate->setText(QDate::currentDate().toString(Qt::ISODate));
 }
 
 void FiPage::saveSplit()

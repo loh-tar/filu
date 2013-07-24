@@ -195,10 +195,13 @@ name, type and expiry date. You can delete the FI but you can't add a FI. By
 hit the lock button, the expiry date is set to the last available EODBar date.
 A locked FI will not select to download more bars at 'agentf full'.
 
-On the Splits tab you can add, edit and delete splits. By hit the add button the
-loaded bars will scanned for a possible split and the edit fields filled with
-the guessed data. When the cursor leave the PrePost field the Ratio and Comment
-fields will updated, but you can edit they afterwards manually.
+On the Splits tab you can add, edit and delete splits. By hit the add button
+the loaded bars will scanned for a possible split and the edit fields filled
+with the guessed data. Click again to continue the search. When the cursor
+leave the PrePost field the Ratio and Comment fields will updated, but you can
+edit they afterwards manually. The PrePost field is limited to accept natural
+fractions, splits like 1:1.234 are not possible. Calc and enter in such a case
+the ratio manually.
 
 In any case the edited data will written to the DB after hitting the appropriate
 save button.
