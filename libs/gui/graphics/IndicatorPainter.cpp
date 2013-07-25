@@ -522,15 +522,7 @@ void IndicatorPainter::paintXScale()
   mXSTicker->prepare();
   while(mXSTicker->nextTick())
   {
-    if(mXSTicker->paint10YearTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paint5YearTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paint2YearTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paintYearTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paintHalfYTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paintQuarterTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paintMonthTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paintWeekTick(x, y)) painter.drawLine(x, 0, x, y);
-    if(mXSTicker->paintDayTick(x, y)) painter.drawLine(x, 0, x, y);
+    if(mXSTicker->paintTick(x, y)) painter.drawLine(x, 0, x, y);
 
     QString text;
     if(mXSTicker->paintTickText(text))
@@ -539,14 +531,6 @@ void IndicatorPainter::paintXScale()
       rect = painter.boundingRect(rect, Qt::AlignCenter, text);
       rect.moveCenter(QPointF(x, 0));
       rect.moveBottom(rect.height() + 8);
-
-      // Clear a piece left from the text
-//       rect.moveLeft(rect.left() - 3);
-//       painter.setPen(mSheetColor);
-//       painter.setBrush(QBrush(mSheetColor));
-//       painter.drawRect(rect);
-//       rect.moveLeft(rect.left() + 3);
-//       painter.setPen(scalePen);
 
       painter.drawText(rect, Qt::AlignCenter, text);
       mXSTicker->setLastTextRightEdge((int)rect.right());

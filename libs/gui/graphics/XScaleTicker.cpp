@@ -25,7 +25,7 @@
 
 XScaleTicker::XScaleTicker(IndicatorPainter* painter)
             : mP(painter)
-            , mPaintText(false)
+            , mPaintTick(false)
             , mPaintGrid(false)
             , mLast10Year(0)
             , mLast5Year(0)
@@ -43,21 +43,11 @@ XScaleTicker::~XScaleTicker()
 
 void XScaleTicker::prepare()
 {
-  mP->mBars->rewind(mP->mFirstBarToShow - 1);
-
   mI = -1;
-  mLast10Year = 0;
-  mLast5Year = 0;
-  mLast2Year = 0;
-  mLastYear = 0;
-  mLastHalfYear = 0;
-  mLastQuarter = 0;
-  mLastMonth = 0;
-  mLastWeek = 0;
-  mLastDay = 0;
-  mLastTextWriter = -1;
+  mP->mBars->rewind(mP->mFirstBarToShow - 1);
   mDensity = mP->mDensity * 100.0;
   mLastTextRightEdge = -1000;
+  mLastTextWriter = -1;
 
   QFontMetrics fm(mP->mPlotFont);
   mFontSpace = fm.width("XX");
@@ -69,14 +59,22 @@ bool XScaleTicker::nextTick()
 
   if(mI > mP->mPlace4Bars) return false;
 
+  mLastWeek     = mP->mBars->date().weekNumber();
+  mLastMonth    = mP->mBars->date().month();
+  mLastQuarter  = (mMonth + 2) / 3;
+  mLastHalfYear = (mMonth + 5) / 6;
+  mLastYear     = mP->mBars->date().year();
+  mLast2Year    = mYear / 2;
+  mLast5Year    = mYear / 5;
+  mLast10Year   = mYear / 10;
+
+  mPaintTick = false;
   mPaintGrid = false;
-
-  QPoint newPoint;
-  // 2nd parameter "1.0" is only a dummy
-  mP->mScaler->valueToPixel(mI, 1.0, newPoint);
-  mX = newPoint.x();
-
   mText.clear();
+
+  QPoint point;
+  mP->mScaler->valueToPixel(mI, 1.0, point); // Parameter "1.0" is only a dummy
+  mX = point.x();
 
   if(mLastTextRightEdge < (mX - mFontSpace))
   {
@@ -91,237 +89,214 @@ void XScaleTicker::setLastTextRightEdge(int x)
   mLastTextRightEdge = x;
 }
 
-bool XScaleTicker::paintDayTick(int& x, int& y)
+bool XScaleTicker::paintTick(int& x, int& y)
 {
-  if(mDensity > eDayTick)
+  mWeek     = mP->mBars->date().weekNumber();
+  mMonth    = mP->mBars->date().month();
+  mQuarter  = (mMonth + 2) / 3;
+  mHalfYear = (mMonth + 5) / 6;
+  mYear     = mP->mBars->date().year();
+  m2Year    = mYear / 2;
+  m5Year    = mYear / 5;
+  m10Year   = mYear / 10;
+  mY        = eNormalTick;
+
+  checkDayTick();
+  checkWeekTick();
+  checkMonthTick();
+  checkQuarterTick();
+  checkHalfYTick();
+  checkYearTick();
+  check2YearTick();
+  check5YearTick();
+  check10YearTick();
+
+  x = mX;
+  y = mY;
+
+  if(mI < 1) return false; // Avoid ugly outer left painting
+  if(mP->mShowXScale) return mPaintTick;
+
+  return false;
+}
+
+void XScaleTicker::checkDayTick()
+{
+  if(mDensity < eDayTick) return;
+
+  mPaintTick = true;
+
+  if(mDensity > eDayText)
   {
-    y = eNormalTick;
-    x = mX;
-    if( (mDensity > eDayText) and (mLastTextWriter <= eDay) )
+    mY = eTextTick;
+    if(mLastTextWriter <= eDay)
     {
       mText = QString::number(mP->mBars->date().day());
       mLastTextWriter = eDay;
-      y = eTextTick;
     }
-
-    if(mDensity > eDayGrid) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if(mDensity > eDayGrid) mPaintGrid = true;
 }
 
-bool XScaleTicker::paintWeekTick(int& x, int& y)
+void XScaleTicker::checkWeekTick()
 {
-  int week  = mP->mBars->date().weekNumber();
+  if((mWeek == mLastWeek) or (mDensity < eWeekTick)) return;
 
-  if((week != mLastWeek) and (mDensity > eWeekTick))
+  mPaintTick = true;
+
+  if(mDensity > eWeekText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastWeek = week;
+    mY = eTextTick;
     int day = mP->mBars->date().day();
-    // "and day < .." to avoid ugly overwrites
-    if( (mDensity > eWeekText) and (mLastTextWriter <= eWeek) and (day < 29) )
+    if((mLastTextWriter <= eWeek) and (day < 29)) // "and day < .." to avoid ugly overwrites
     {
       mText = QString::number(day);
       mLastTextWriter = eWeek;
-      y = eTextTick;
     }
-
-    if( (mDensity > eWeekGrid) and (mDensity < eDayGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if(mDensity > eWeekGrid) mPaintGrid = true;
 }
 
-bool XScaleTicker::paintMonthTick(int& x, int& y)
+void XScaleTicker::checkMonthTick()
 {
-  int month = mP->mBars->date().month();
+  if((mMonth == mLastMonth) or (mDensity < eMonthTick)) return;
 
-  if((month != mLastMonth) and (mDensity > eMonthTick))
+  mPaintTick = true;
+
+  if(mDensity > eMonthText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastMonth = month;
-    if( (mDensity > eMonthText) and (mLastTextWriter <= eMonth) )
+    mY = eTextTick;
+    if(mLastTextWriter <= eMonth)
     {
-      mText = QDate::shortMonthName(month);
+      mText = QDate::shortMonthName(mMonth);
       mLastTextWriter = eMonth;
-      y = eTextTick;
     }
-
-    if( (mDensity > eMonthGrid) and (mDensity < eWeekGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if( (mDensity > eMonthGrid) and (mDensity < eWeekGrid) ) mPaintGrid = true;
 }
 
-bool XScaleTicker::paintQuarterTick(int& x, int& y)
+void XScaleTicker::checkQuarterTick()
 {
-  int month   = mP->mBars->date().month();
-  int quarter = (month + 2) / 3;
+  if((mQuarter == mLastQuarter) or (mDensity < eQuarterTick)) return;
 
-  if((quarter != mLastQuarter) and (mDensity > eQuarterTick))
+  mPaintTick = true;
+
+  if(mDensity > eQuarterText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastQuarter = quarter;
-    if( (mDensity > eQuarterText) and (mLastTextWriter <= eQuarter) )
+    mY = eTextTick;
+    if(mLastTextWriter <= eQuarter)
     {
-      mText = QDate::shortMonthName(month);
+      mText = QDate::shortMonthName(mMonth);
       mLastTextWriter = eQuarter;
-      y = eTextTick;
     }
-
-    if( (mDensity > eQuarterGrid) and (mDensity < eMonthGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if( (mDensity > eQuarterGrid) and (mDensity < eMonthGrid) ) mPaintGrid = true;
 }
 
-bool XScaleTicker::paintHalfYTick(int& x, int& y)
+void XScaleTicker::checkHalfYTick()
 {
-  int month    = mP->mBars->date().month();
-  int halfYear = (month + 5) / 6;
+  if((mHalfYear == mLastHalfYear) or (mDensity < eHalfYTick)) return;
 
-  if((halfYear != mLastHalfYear) and (mDensity > eHalfYTick))
+  mPaintTick = true;
+
+  if(mDensity > eHalfYText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastHalfYear = halfYear;
-    if( (mDensity > eHalfYText) and (mLastTextWriter <= eHalfYear) )
+    mY = eTextTick;
+    if(mLastTextWriter <= eHalfYear)
     {
-      mText = QDate::shortMonthName(month);
+      mText = QDate::shortMonthName(mMonth);
       mLastTextWriter = eHalfYear;
-      y = eTextTick;
     }
-
-    if( (mDensity > eHalfYGrid) and (mDensity < eQuarterGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if( (mDensity > eHalfYGrid) and (mDensity < eQuarterGrid) ) mPaintGrid = true;
 }
 
-bool XScaleTicker::paintYearTick(int& x, int& y)
+void XScaleTicker::checkYearTick()
 {
-  int year = mP->mBars->date().year();
+  if((mYear == mLastYear) or (mDensity < eYearTick)) return;
 
-  if((year != mLastYear) and (mDensity > eYearTick))
+  mPaintTick = true;
+
+  if(mDensity > eYearText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastYear = year;
-    if( (mDensity > eYearText) and (mLastTextWriter <= eYear) )
+    mY = eTextTick;
+    if(mLastTextWriter <= eYear)
     {
-      mText = QString::number(year);
+      mText = QString::number(mYear);
       mLastTextWriter = eYear;
-      y = eTextTick;
     }
-
-    if( (mDensity > eYearGrid) and (mDensity < eHalfYGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if( (mDensity > eYearGrid) and (mDensity < eHalfYGrid) ) mPaintGrid = true;
 }
 
-bool XScaleTicker::paint2YearTick(int& x, int& y)
+void XScaleTicker::check2YearTick()
 {
-  int year  = mP->mBars->date().year();
-  int year2 = year / 2;
+  if((m2Year == mLast2Year) or (mDensity < e2YearTick)) return;
 
-  if((year2 != mLast2Year) and (mDensity > e2YearTick))
+  mPaintTick = true;
+
+  if(mDensity > e2YearText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastYear  = year2;
-    mLast2Year = year2;
-    if( (mDensity > e2YearText) and (mLastTextWriter <= e2Year) )
+    mY = eTextTick;
+    if(mLastTextWriter <= e2Year)
     {
-      mText = QString::number(year);
+      mText = QString::number(mYear);
       mLastTextWriter = e2Year;
-      y = eTextTick;
     }
-
-    if( (mDensity > e2YearGrid) and (mDensity < eYearGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if( (mDensity > e2YearGrid) and (mDensity < eYearGrid) ) mPaintGrid = true;
 }
 
-bool XScaleTicker::paint5YearTick(int& x, int& y)
+void XScaleTicker::check5YearTick()
 {
-  int year  = mP->mBars->date().year();
-  int year5 = year / 5;
+  if((m5Year == mLast5Year) or (mDensity < e5YearTick) or (mDensity > e2YearText)) return;
 
-  if((year5 != mLast5Year) and (mDensity > e5YearTick) and (mDensity < e2YearText))
+  mPaintTick = true;
+
+  if(mDensity > e5YearText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastYear  = year5;
-    mLast2Year = year5;
-    mLast5Year = year5;
-    if( (mDensity > e5YearText) and (mLastTextWriter <= e5Year) )
+    mY = eTextTick;
+    if(mLastTextWriter <= e5Year)
     {
-      mText = QString::number(year);
+      mText = QString::number(mYear);
       mLastTextWriter = e5Year;
-      y = eTextTick;
     }
-
-    if( (mDensity > e5YearGrid) and (mDensity < e2YearGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if( (mDensity > e5YearGrid) and (mDensity < e2YearGrid) ) mPaintGrid = true;
 }
 
-bool XScaleTicker::paint10YearTick(int& x, int& y)
+void XScaleTicker::check10YearTick()
 {
-  int year   = mP->mBars->date().year();
-  int year10 = year / 10;
+  if((m10Year == mLast10Year) or (mDensity < e10YearTick)) return;
 
-  if((year10 != mLast10Year) and (mDensity > e10YearTick))
+  mPaintTick = true;
+
+  if(mDensity > e10YearText)
   {
-    x = mX;
-    y = eNormalTick;
-    mLastYear   = year10;
-    mLast2Year  = year10;
-    mLast5Year  = year10;
-    mLast10Year = year10;
-    if( (mDensity > e10YearText) and (mLastTextWriter <= e10Year) )
+    mY = eTextTick;
+    if(mLastTextWriter <= e10Year)
     {
-      mText = QString::number(year);
+      mText = QString::number(mYear);
       mLastTextWriter = e10Year;
-      y = eTextTick;
     }
-
-    if( (mDensity > e10YearGrid) and (mDensity < e5YearGrid) ) mPaintGrid = true;
-
-    if(mP->mShowXScale) return true;
   }
 
-  return false;
+  if( (mDensity > e10YearGrid) and (mDensity < e5YearGrid) ) mPaintGrid = true;
 }
 
 bool XScaleTicker::paintTickText(QString& text)
 {
   if(!mP->mShowXScale) return false;
   if(mText.isEmpty()) return false;
-  if(mX < 1)  return false;
+  if(mI < 1)  return false;
 
   text = mText;
 
@@ -332,7 +307,7 @@ bool XScaleTicker::paintGrid(int& x, int& y)
 {
   if(!mP->mShowGrid) return false;
   if(!mPaintGrid) return false;
-  if(mX < 1)  return false;
+  if(mI < 1)  return false;
 
   x = mX;
   y = -mP->mChartArea.height();

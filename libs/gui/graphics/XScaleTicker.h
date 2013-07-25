@@ -98,27 +98,37 @@ class XScaleTicker
     void        prepare();
     bool        nextTick();
     void        setLastTextRightEdge(int x);
-    bool        paintDayTick(int& x, int& y);
-    bool        paintWeekTick(int& x, int& y);
-    bool        paintMonthTick(int& x, int& y);
-    bool        paintQuarterTick(int& x, int& y);
-    bool        paintHalfYTick(int& x, int& y);
-    bool        paintYearTick(int& x, int& y);
-    bool        paint2YearTick(int& x, int& y);
-    bool        paint5YearTick(int& x, int& y);
-    bool        paint10YearTick(int& x, int& y);
-
+    bool        paintTick(int& x, int& y);
     bool        paintTickText(QString& text);
     bool        paintGrid(int& x, int& y);
 
   protected:
+    void        checkDayTick();
+    void        checkWeekTick();
+    void        checkMonthTick();
+    void        checkQuarterTick();
+    void        checkHalfYTick();
+    void        checkYearTick();
+    void        check2YearTick();
+    void        check5YearTick();
+    void        check10YearTick();
+
     IndicatorPainter* mP;
 
-    bool        mPaintText;
+    bool        mPaintTick;
     bool        mPaintGrid;
 
     float       mDensity;
     int         mFontSpace;
+
+    int         mWeek;
+    int         mMonth;
+    int         mQuarter;
+    int         mHalfYear;
+    int         mYear;
+    int         m2Year;
+    int         m5Year;
+    int         m10Year;
 
     int         mLast10Year;
     int         mLast5Year;
@@ -132,6 +142,7 @@ class XScaleTicker
 
     int         mI;                   // Index counter
     int         mX;                   // X position in pixel
+    int         mY;                   // Lenght of tick 
     int         mLastTextRightEdge;   // ...in pixel
 
     int         mLastTextWriter;
