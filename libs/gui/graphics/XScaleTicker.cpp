@@ -321,6 +321,7 @@ bool XScaleTicker::paintTickText(QString& text)
 {
   if(!mP->mShowXScale) return false;
   if(mText.isEmpty()) return false;
+  if(mX < 1)  return false;
 
   text = mText;
 
@@ -331,6 +332,7 @@ bool XScaleTicker::paintGrid(int& x, int& y)
 {
   if(!mP->mShowGrid) return false;
   if(!mPaintGrid) return false;
+  if(mX < 1)  return false;
 
   x = mX;
   y = -mP->mChartArea.height();
