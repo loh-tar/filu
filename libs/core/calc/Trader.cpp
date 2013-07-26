@@ -61,6 +61,9 @@ bool Trader::useRuleFile(const QString& fileName)
 {
   clearErrors();
 
+  mSettings.clear();
+  mSettings.insert("RuleFile", fileName);
+
   QFile file(mTradingRulePath + fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
@@ -89,6 +92,7 @@ bool Trader::useRuleFile(const QString& fileName)
 
 bool Trader::useRule(const QStringList& rule)
 {
+  mSettings.clear();
   mOrigRule = rule;
   mAutoLoadIndicator = false;
 
@@ -616,7 +620,6 @@ void Trader::readSettings()
 {
   mOkSettings = true;
 
-  mSettings.clear();
   mSettings.insert("UseIndicator", "");
   mSettings.insert("GainRefLong", "CLOSE");
   mSettings.insert("GainRefShort", "CLOSE");
@@ -718,7 +721,13 @@ void Trader::readRules()
     mRules.append(Rule());                    // Append an empty new rule
     MyParser* parser = new MyParser(this);
     parser->useVariables(&mVariable);
-    parser->setExp(rule.at(0).trimmed());
+    if(!parser->setExp(rule.at(0).trimmed()))
+    {
+      error(FUNC, tr("Error at line %1 in rule %2.")
+                    .arg(mLineNumber).arg(mSettings.value("RuleFile")));
+      addErrors(parser->errors());
+      continue;
+    }
 
     rule[1].replace("(",",");
     rule[1].remove(")");
