@@ -317,6 +317,26 @@ FTool::makeValidWord(const QString& s)
   return w;
 }
 
+QString
+FTool::number(const QString& s)
+{
+  QString n = s;
+  QRegExp rx("\\d+,\\d+$");
+  if(rx.indexIn(n) != -1)
+  {
+    // s looks like "12.345,67"
+    n.remove('.');
+    n.replace(',', '.');
+  }
+  else
+  {
+    // Perhaps s looks like "12,345.67"
+    n.remove(',');
+  }
+
+  return n;
+}
+
 /***********************************************************************
 *   Ask User Function Stuff
 *

@@ -86,6 +86,11 @@ maxSizeOfStrings(const QStringList& sl);
 QString
 makeValidWord(const QString& s);
 
+// A simple string number checker/converter
+// A string number like "12.345,67" is converted to "12345.67"
+QString
+number(const QString& s);
+
 /***********************************************************************
 *
 *   Ask User Functions
