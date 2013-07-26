@@ -75,10 +75,11 @@ bool MyParser::setExp(const QString& expr)
   }
   catch(mu::Parser::exception_type& e)
   {
-    error(FUNC, tr("Message: %1").arg(e.GetMsg().data()));
-    errInfo(FUNC, tr("Formula: %1").arg(e.GetExpr().data()));
-    errInfo(FUNC, tr("Token: %1").arg(e.GetToken().data()));
-    errInfo(FUNC, tr("Position: %1").arg(e.GetPos()));
+    error(FUNC, e.GetMsg().data());
+    //error(FUNC, tr("Message: %1").arg(e.GetMsg().data()));
+    //errInfo(FUNC, tr("Formula: %1").arg(e.GetExpr().data()));
+    //errInfo(FUNC, tr("Token: %1").arg(e.GetToken().data()));
+    //errInfo(FUNC, tr("Position: %1").arg(e.GetPos()));
     //errInfo(FUNC, tr("ErrCode: %1").arg(e.GetCode()));
 
     return false;
@@ -178,11 +179,12 @@ int MyParser::calc(double& result)
   }
   catch(mu::Parser::exception_type& e)
   {
-    error(FUNC, tr("Message: %1").arg(e.GetMsg().data()));
-    errInfo(FUNC, tr("Formula: %1").arg(e.GetExpr().data()));
-    errInfo(FUNC, tr("Token: %1").arg(e.GetToken().data()));
-    errInfo(FUNC, tr("Position: %1").arg(e.GetPos()));
-    errInfo(FUNC, tr("ErrCode: %1").arg(e.GetCode()));
+    error(FUNC, e.GetMsg().data());
+    //error(FUNC, tr("Message: %1").arg(e.GetMsg().data()));
+    //errInfo(FUNC, tr("Formula: %1").arg(e.GetExpr().data()));
+    //errInfo(FUNC, tr("Token: %1").arg(e.GetToken().data()));
+    //errInfo(FUNC, tr("Position: %1").arg(e.GetPos()));
+    //errInfo(FUNC, tr("ErrCode: %1").arg(e.GetCode()));
 
     return 2;
   }
