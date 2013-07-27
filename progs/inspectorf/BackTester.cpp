@@ -18,6 +18,7 @@
 //
 
 #include <QCryptographicHash>
+//#include <QDebug>
 
 #include "BackTester.h"
 
@@ -29,9 +30,6 @@
 BackTester::BackTester()
           : QThread()
           , FClass("BackTester")
-          , mNewJob(false)
-          , mRun(false)
-          , mGoAndDie(false)
           , mTrader(0)
 {
   QStringList parms = QCoreApplication::arguments();
@@ -44,8 +42,8 @@ BackTester::~BackTester()
 {
 //   qDebug() << "~BackTester() go die";
   mMutex.lock();
-  mRun = false;
-  mGoAndDie = true;
+  mStatus.remove(eRun);
+  mStatus.insert(eGoAndDie);;
 //   qDebug() << "~BackTester() call wakeOne";
   mWaitCondition.wakeOne();
   mMutex.unlock();
@@ -76,8 +74,9 @@ void BackTester::prepare(const QString& rule,
   mOrigRule = rule;
   mFromDate = fdate;
   mToDate   = tdate;
-  mNewJob   = true;
-  mRun      = false;
+
+  mStatus.insert(eNewJob);
+  mStatus.remove(eRun);
 
   if(!isRunning())
   {
@@ -102,7 +101,7 @@ void BackTester::calc()
 {
   QMutexLocker locker(&mMutex);
 
-  mRun = true;
+  mStatus.insert(eRun);
 
   if(!isRunning())
   {
@@ -114,6 +113,14 @@ void BackTester::calc()
   }
 }
 
+void BackTester::cancel()
+{
+  QMutexLocker locker(&mMutex);
+//   qDebug() << "BackTester::cancel()";
+  mStatus.remove(eRun);
+//   mWaitCondition.wakeOne();
+}
+
 void BackTester::run()
 {
 //  qDebug() << "BackTester::run: I start";
@@ -122,34 +129,35 @@ void BackTester::run()
   {
     mMutex.lock();
 //    qDebug() << "BackTester::run: nach forever mutex";
-    if(mNewJob)
+    if(mStatus.contains(eNewJob))
     {
-      verbose(FUNC, "Aha, new job.");
+      //verbose(FUNC, "Aha, new job.");
       mMutex.unlock();
       if(!detectConstants())
       {
         emit error();
       }
     }
-    else if(mRun)
+    else if(mStatus.contains(eRun))
     {
-      verbose(FUNC, "I go, do my job.");
+      //verbose(FUNC, "I go, do my job.");
       mMutex.unlock();
       if(!backtest())
       {
         emit error();
       }
     }
-    else if(mGoAndDie)
+    else if(mStatus.contains(eGoAndDie))
     {
+      //verbose(FUNC, "I go die.");
       mMutex.unlock();
       return;
     }
-    else if(!mRun)
+    else if(!mStatus.contains(eRun))
     {
-     verbose(FUNC, "I go sleep.");
+      //verbose(FUNC, "I go sleep.");
       mWaitCondition.wait(&mMutex);
-     verbose(FUNC, "Wake Up.");
+      //verbose(FUNC, "Wake Up.");
       mMutex.unlock();
     }
 
@@ -176,7 +184,11 @@ bool BackTester::backtest()
   {
     mMutex.lock();
 
-    if(!mRun) break;
+    if(!mStatus.contains(eRun))
+    {
+     mMutex.unlock();
+     break;
+    }
 
     buildFiles();
     buildStrategyId();
@@ -206,7 +218,7 @@ bool BackTester::backtest()
     if(fiCount == -1)
     {
       addErrors(mTrader->errors());
-      mRun = false;
+      mStatus.remove(eRun);
       mMutex.unlock();
       return false;
     }
@@ -252,8 +264,10 @@ bool BackTester::backtest()
   }while(mOneMoreLoop.contains(true));
 
   mMutex.lock();
-  mRun = false;
+  mStatus.remove(eRun);
   mMutex.unlock();
+
+  emit finished();
 
   return true;
 }
@@ -261,7 +275,7 @@ bool BackTester::backtest()
 bool BackTester::detectConstants()
 {
   mMutex.lock();
-  mNewJob = false;
+  mStatus.remove(eNewJob);
   mMutex.unlock();
 
   clearErrors();
@@ -346,7 +360,7 @@ bool BackTester::detectConstants()
   emit loopsNeedet(mLoopsNeeded * fiCount);
 
 //   mMutex.lock();
-//   mNewJob = false;
+//   mStatus.remove(eNewJob);
 //   mMutex.unlock();
 
   return true;

@@ -23,6 +23,7 @@
 #include <QComboBox>
 #include <QDateEdit>
 #include <QSqlQueryModel>
+#include <QSet>
 class QProgressBar;
 class QPushButton;
 
@@ -37,10 +38,11 @@ class InspectorF : public FMainApp
 {
   Q_OBJECT
 
-  enum SomeEnums
+  enum Status
   {
-    eRule,
-    eIndicator
+    eEdited,
+    eRunning,
+    eCanceled
   };
 
   public:
@@ -54,9 +56,11 @@ class InspectorF : public FMainApp
     void            edited();
     void            loopsNeedet(int);
     void            loopDone(int);
+    void            testFinished();
     void            newData();
     void            resultSelected(const QModelIndex& index);
     void            backTestError();
+    void            logReport(const QString& txt);
 
   protected:
     void            init();
@@ -80,7 +84,7 @@ class InspectorF : public FMainApp
     StrategyEditor  mEditor;
     StrategyEditor  mDisplay;
     StrategyEditor  mDetailDisplay;
-    bool            mEdited;
+    QSet<Status>    mStatus;
 
     QRegExp         mConstMatcher;
     QRegExp         mEditedMatcher;

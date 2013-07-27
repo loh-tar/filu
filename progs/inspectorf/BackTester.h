@@ -22,6 +22,7 @@
 
 #include <QDate>
 #include <QMutex>
+#include <QSet>
 #include <QThread>
 #include <QWaitCondition>
 
@@ -40,6 +41,13 @@ class BackTester : public QThread, public FClass
     eIndicator
   };
 
+  enum Status
+  {
+    eRun,
+    eNewJob,
+    eGoAndDie
+  };
+
   public:
                     BackTester();
     virtual        ~BackTester();
@@ -50,11 +58,13 @@ class BackTester : public QThread, public FClass
 
     void            setDates(const QDate& fdate, const QDate tdate);
     void            calc();
+    void            cancel();
 
   signals:
     void            loopsNeedet(int);
     void            loopDone(int);
     void            strategyDone();
+    void            finished();
     void            error();
 
   protected slots:
@@ -69,12 +79,9 @@ class BackTester : public QThread, public FClass
     void            buildStrategyId();
     void            buildReport(QList<QStringList>& report);
 
+    QSet<Status>    mStatus;
     QMutex          mMutex;
     QWaitCondition  mWaitCondition;
-
-    bool            mRun;
-    bool            mNewJob;
-    bool            mGoAndDie;
 
     Trader*         mTrader;
     QString         mOrigRule;

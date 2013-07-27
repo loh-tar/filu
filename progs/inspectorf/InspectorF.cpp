@@ -33,6 +33,10 @@
 #include "RcFile.h"
 #include "Trader.h"
 
+const QString cRunTest      = QObject::tr("Run Serial Test");
+const QString cCancelTest   = QObject::tr("Cancel Test");
+const QString cTestStop     = QObject::tr("Test Will Stop...");
+
 InspectorF::InspectorF(QApplication& app)
           : FMainApp("InspectorF", app)
 {
@@ -84,7 +88,6 @@ InspectorF::InspectorF(QApplication& app)
 //   displaySplitter->addWidget(&mRuleDisplay);
 //   displaySplitter->addWidget(&mIndicatorDisplay);
 
-
   testingLayout->addWidget(&mDisplay, ++r, c, 1, 5);
   testingLayout->setColumnStretch(4, 1);
 
@@ -117,6 +120,7 @@ InspectorF::InspectorF(QApplication& app)
   mDetailView.setModel(&mDetail);
 
   mReport.setAccessibleName("Report");
+  mReport.setFontFamily("Monospace");
   mResultsView.setAccessibleName("Last");
   mPerformanceView.setAccessibleName("Performance");
   mScoreView.setAccessibleName("Score");
@@ -135,7 +139,7 @@ InspectorF::InspectorF(QApplication& app)
   mProgessBar = new QProgressBar;
   mProgessBar->setFormat(tr("%v of %m"));
 
-  mTestButton = new QPushButton(tr("Run Serial Test"));
+  mTestButton = new QPushButton(cRunTest);
   connect(mTestButton, SIGNAL(clicked()), this, SLOT(runTest()));
 
   //QPushButton* simButton = new QPushButton(tr("Run Simulation"));
@@ -227,8 +231,17 @@ void InspectorF::init()
   connect(mBackTester, SIGNAL(loopDone(int)), this, SLOT(loopDone(int)));
   connect(mBackTester, SIGNAL(strategyDone()), this, SLOT(newData()));
   connect(mBackTester, SIGNAL(error()), this, SLOT(backTestError()));
+  connect(mBackTester, SIGNAL(finished()), this, SLOT(testFinished()));
 
   edited();
+
+  logReport(tr(
+    "Edit the constants at the Strategy-Tab encapsulated in braces {} in two ways:\n"
+    "   {W}  each of the value is used. No limit of values.\n"
+    "   {10-20 i 2} from 10 to 20 in steps of 2 is used.\n\n"
+    "NOTE: Editing 'UseIndicator' will not take effect. Edit the rule with your favorite\n"
+    "      editor and choose them again at the ComboBox.\n\n"
+    "After edit click the Testing-Tab to become the Run-Button activated."));
 }
 
 void InspectorF::readSettings()
@@ -284,14 +297,10 @@ void InspectorF::loadRule(const QString& fileName)
 
   QFile file(mTradingRulePath + fileName);
 
-  if (!mTrader->useRuleFile(fileName))
+  if(!mTrader->useRuleFile(fileName))
   {
-    QStringList error;
-    error << "FIXME:mTrader->errorText()";
-    QMessageBox::critical(this, tr("Indicator Editor"),
-                         error.join("\n"),
-                         QMessageBox::Close);
-    return;
+//     logReport(mTrader->formatMessages("*** %t *** %x"));
+    logReport(mTrader->formatMessages("%T *** %t *** %c %x"));
   }
 
   //QStringList vl;
@@ -315,7 +324,7 @@ void InspectorF::loadRule(const QString& fileName)
   mEditor.mIndi.insertPlainText(mOrigIndicator.join("\n"));
   mEditor.mIndi.moveCursor(QTextCursor::Start);
 
-  mEdited = true;
+  mStatus.insert(eEdited);
 }
 
 void InspectorF::tabChanged(int/* = 0*/)
@@ -324,8 +333,9 @@ void InspectorF::tabChanged(int/* = 0*/)
 
   if(page == "Testing")
   {
-    if(!mEdited) return;
-    mEdited = false;
+    if(!mStatus.contains(eEdited)) return;
+    mStatus.remove(eEdited);
+    mTestButton->setText(cRunTest);
     mTestButton->setEnabled(true);
 
     // We start with the rule file
@@ -441,18 +451,27 @@ void InspectorF::tabChanged(int/* = 0*/)
 
 void InspectorF::runTest()
 {
-  if(mEdited) return;
+  if(mStatus.contains(eEdited)) return;
 
-  mBackTester->setDates(mFromDate.date(), mToDate.date());
-  mBackTester->calc();
+  if(mStatus.contains(eRunning))
+  {
+    mBackTester->cancel();
+    mStatus.insert(eCanceled);
+    mTestButton->setText(cTestStop);
+  }
+  else if(!mStatus.contains(eCanceled))
+  {
+    mBackTester->setDates(mFromDate.date(), mToDate.date());
+    mBackTester->calc();
+    mStatus.insert(eRunning);
+    mTestButton->setText(cCancelTest);
+  }
 }
 
 void InspectorF::edited()
 {
-  mEdited = true;
-  mTestButton->setEnabled(false); // FIXME: why does not paint button grayed?
-  //mTestButton->update(); does not help
-  //mTestButton->repaint(); does not help
+  mStatus.insert(eEdited);
+  mTestButton->setEnabled(false);
 }
 
 void InspectorF::loopsNeedet(int ln)
@@ -467,6 +486,19 @@ void InspectorF::loopDone(int ld)
 {
   mProgessBar->setValue(ld);
   //qDebug() << "InspectorF::loopDone()" << ld;
+}
+
+void InspectorF::testFinished()
+{
+  mTestButton->setEnabled(false);
+  mStatus.remove(eRunning);
+  if(mStatus.contains(eCanceled))
+  {
+    mStatus.remove(eCanceled);
+    logReport(tr("Test canceled."));
+  }
+
+  logReport(tr("To rerun edit rule or indicator."));
 }
 
 void InspectorF::newData()
@@ -490,10 +522,15 @@ void InspectorF::resultSelected(const QModelIndex& index)
 
 void InspectorF::backTestError()
 {
-  clearErrors();
-  addErrors(mBackTester->errors());
-  mReport.insertPlainText(formatMessages("%T *** %t *** %F %x") + "\n");
+  logReport(mBackTester->formatMessages("%T *** %t *** %c %x")/* + "\n"*/);
+}
+
+void InspectorF::logReport(const QString& txt)
+{
+  mReport.insertPlainText(txt + "\n");
   mReport.moveCursor(QTextCursor::Start);
 
   mTabWidget->setCurrentWidget(&mReport);
+
+  mTestButton->setEnabled(false);
 }
