@@ -161,10 +161,17 @@ InspectorF::InspectorF(QApplication& app)
 
   cw->setLayout(mainLayout);
 
-  setWindowTitle(tr("InspectorF - The Filu Back Tester"));
+  QString devil = mFilu->devilInfoText();
+  if(!devil.isEmpty())
+  {
+    setWindowTitle("InspectorF - " + devil);
+  }
+  else
+  {
+    setWindowTitle("InspectorF - " + tr("The Filu Back Tester"));
+  }
 
   init();
-
  }
 
 InspectorF::~InspectorF()

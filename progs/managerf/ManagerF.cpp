@@ -84,14 +84,13 @@ ManagerF::ManagerF(QApplication& app)
   QString devil = mFilu->devilInfoText();
   if(!devil.isEmpty())
   {
-    setWindowTitle(devil);
+    setWindowTitle("ManagerF - " + devil);
     messageBox(makeMessage(FUNC, devil, eInfoMsg));
   }
   else
   {
-    setWindowTitle(tr("ManagerF - The Filu Manager"));
+    setWindowTitle("ManagerF - " + tr("The Filu Manager"));
   }
-
 
   //
   // Restore all settings

@@ -41,11 +41,11 @@ PerformerF::PerformerF(QApplication& app)
   QString devil = mFilu->devilInfoText();
   if(!devil.isEmpty())
   {
-    mWindowTitel = devil;
+    mWindowTitel = "PerformerF - " + devil;
   }
   else
   {
-    mWindowTitel = tr("PerformerF - The Filu Chart Tool");
+    mWindowTitel = "PerformerF - " + tr("The Filu Chart Tool");
   }
 
   setWindowTitle(mWindowTitel);
