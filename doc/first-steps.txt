@@ -367,8 +367,6 @@ are welcome.
 
 See also doc/trading-rule-file-format.txt.
 
-NOTE: It's recommend to run him from terminal because of possible error hints.
-
 
 4- Further Readings
 =====================
