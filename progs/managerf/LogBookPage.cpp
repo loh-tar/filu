@@ -62,11 +62,11 @@ void LogBookPage::createPage()
   setLayout(dummyLayout);
 
   mLogBook.setReadOnly(true);
-  //mLogBook.setFontFamily("Monospace");
+  mLogBook.setFontFamily("Monospace");
   mLogBook.setLineWrapMode(QTextEdit::NoWrap);
 
   mLogFile.setReadOnly(true);
-  //mLogFile.setFontFamily("Monospace");
+  mLogFile.setFontFamily("Monospace");
   mLogFile.setLineWrapMode(QTextEdit::NoWrap);
 
   mActClearLogFile = new QAction(tr("Clear File"), &mLogFile);
