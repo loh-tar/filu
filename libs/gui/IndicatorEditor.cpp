@@ -54,6 +54,7 @@ IndicatorEditor::IndicatorEditor(FClass* parent)
 
 
   mFileSelector = new QComboBox;
+  mFileSelector->setToolTip(tr("Edit the name to create a new file"));
   mFileSelector->setEditable(true);
   connect(mFileSelector, SIGNAL(activated(const QString&)), this, SLOT(loadFile(const QString&)));
   connect(mFileSelector, SIGNAL(editTextChanged(const QString&)), this, SLOT(fileNameChanged(const QString&)));

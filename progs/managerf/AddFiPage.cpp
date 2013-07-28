@@ -86,12 +86,14 @@ void AddFiPage::createPage()
   //
   // Create the search line widgets and there connections
   mProviderSelector = new QComboBox;
+  mProviderSelector->setToolTip(tr("Choose a provider"));
   mProviderSelector->insertItems(0, mScripter->providerList());
   mProviderSelector->setCurrentIndex(mProviderSelector->findText("Filu"));
   connect(mProviderSelector, SIGNAL(currentIndexChanged(const QString&))
         , this, SLOT(providerChanged(const QString&)));
 
   mProviderFuncSelector = new QComboBox;
+  mProviderFuncSelector->setToolTip(tr("Choose a provider function"));
   connect(mProviderFuncSelector, SIGNAL(currentIndexChanged(const QString&))
         , this, SLOT(providerFuncChanged(const QString&)));
 
