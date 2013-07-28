@@ -69,9 +69,16 @@ bool ManagerPage::sadFilu(const QString& func, const QString& txt/* = ""*/, cons
   return false;
 }
 
+void ManagerPage::setFocusWidget(QWidget* fw)
+{
+  mFocusWidget = fw;
+  if(mFocusWidget) mFocusWidget->setFocus();
+}
+
 void ManagerPage::hideEvent(QHideEvent* /*event*/)
 {
-  mFocusWidget = focusWidget();
+  QWidget* fw = focusWidget();
+  if(fw) mFocusWidget = fw;
 }
 
 void ManagerPage::showEvent(QShowEvent* /*event*/)

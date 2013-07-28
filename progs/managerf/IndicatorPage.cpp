@@ -80,13 +80,9 @@ void IndicatorPage::createPage()
   dummyLayout->addWidget(mMainBox);
 
   setLayout(dummyLayout);
-}
 
-//void IndicatorPage::showEvent(QShowEvent * /*event*/)
-/*{
-  mSF->setFocus();
+  setFocusWidget(mEditor);
 }
-*/
 
 void IndicatorPage::addToIndicator(const QString* txt)
 {

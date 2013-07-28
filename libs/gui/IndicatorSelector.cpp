@@ -95,6 +95,8 @@ void IndicatorSelector::createPage()
   mainLayout->setStretchFactor(mSplitter, 1);
 
   setLayout(mainLayout);
+
+  setFocusProxy(mSF);
 }
 
 void IndicatorSelector::showEvent(QShowEvent * /*event*/)

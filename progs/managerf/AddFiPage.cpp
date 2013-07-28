@@ -233,6 +233,8 @@ void AddFiPage::createPage()
   QVBoxLayout* mainLayout = new QVBoxLayout;
   mainLayout->addWidget(mMainBox);
   setLayout(mainLayout);
+
+  setFocusWidget(mSearchField);
 }
 
 void AddFiPage::providerChanged(const QString& provider)
@@ -292,11 +294,6 @@ void AddFiPage::showProviderFuncInfo()
 
   mNewQuery = true;
   fillResultTable(result);
-}
-
-void AddFiPage::showEvent(QShowEvent * /*event*/)
-{
-  mSearchField->setFocus();
 }
 
 void AddFiPage::selectResultRow(int row, int /*column*/)

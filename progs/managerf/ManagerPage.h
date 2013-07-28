@@ -37,6 +37,7 @@ class ManagerPage : public FWidget
     virtual void    saveSettings();
 
     void            setPageIcon(QListWidgetItem* button);
+    void            setFocusWidget(QWidget* fw);
     const QString&  iconText() { return mIconText; };
 
     void            emitMessage(const QString& func, const QString& txt, const MsgType type = eInfoMsg)
@@ -51,10 +52,13 @@ class ManagerPage : public FWidget
     bool            sadFilu(const QString& func, const QString& txt = "", const MsgType type = eError);
     void            hideEvent(QHideEvent* /*event*/);
     void            showEvent(QShowEvent* /*event*/);
-    QWidget*        mFocusWidget;
     QIcon           mIcon;
     QString         mIconText;
     QGroupBox*      mMainBox;
+
+  private:
+    QWidget*        mFocusWidget;
+
 };
 
 #endif

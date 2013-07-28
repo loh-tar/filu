@@ -116,7 +116,6 @@ class AddFiPage : public ManagerPage
 
   protected:
     void          createPage();
-    void          showEvent(QShowEvent* /*event*/);
 
     void          searchFi();
     void          searchIdx();

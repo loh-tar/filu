@@ -216,7 +216,7 @@ QWidget* FiPage::makeMainTab()
   widget = new QWidget;      // Complete Main Tab Widget
   widget->setLayout(vbox);
 
-  mFocusWidget = mLookUp;
+  setFocusWidget(mLookUp);
 
   return widget;
 }

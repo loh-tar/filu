@@ -76,6 +76,7 @@ IndicatorEditor::IndicatorEditor(FClass* parent)
   mainLayout->addWidget(mEditor);
 
   setLayout(mainLayout);
+  setFocusProxy(mFileSelector);
 
   mIndicatorPath = mRcFile->getST("IndicatorPath");
   readDir();
@@ -95,7 +96,7 @@ void IndicatorEditor::loadSettings()
     cur.setPosition(mRcFile->getIT("CursorPos"));
     mEditor->setTextCursor(cur);
     mEditor->ensureCursorVisible();
-    mEditor->setFocus(); // FIXME:Does not work...
+//     mEditor->setFocus(); // FIXME:Does not work...
     editorLostFocus();   // ...as workaround
   }
 
