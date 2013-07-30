@@ -1,3 +1,37 @@
+2013-07-30
+============
+Hot Summer Snapshot
+---------------------
+Awake ManagerF's FiPage to life, add the European Central Bank as currency
+provider, improve some tiny things to be more user friendly and kill some ugly
+bugs.
+
+Sadly is the DB changed in a way that you have export/delete/import your DB in
+case of an update.
+
+Go on reading the changelog to notice in more detail what's new or may be fixed.
+
+Enjoy the sun and have Fun!
+
+
+2013-07-28
+============
+Sundries
+----------
+- AgentF: Take care of expirydate at 'full'
+- SearchFiWidget: Search for FiId too
+- PlotSheet: Add to xscale plotting 1/2, 2, 5 and 10 years
+- PlotSheet: Fix, don't plot ugly year at the outer left
+- Importer: Convert german string numbers to english style
+
+InspectorF
+------------
+- Add the possibility to cancel a running job
+- Log errors from BackTester on Report-Tab
+- Add some usage hint to Report-Tab on start up
+- Remove debug messages on terminal
+
+
 2013-07-22
 ============
 ManagerF
