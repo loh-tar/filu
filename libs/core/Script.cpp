@@ -34,6 +34,9 @@ Script::Script(FClass* parent)
 Script::~Script()
 {
   if(mProc) delete mProc;
+//   {
+//     mProc->deleteLater();
+//   }
 }
 
 QStringList Script::providerList()
@@ -104,7 +107,7 @@ QHash<QString, QString> Script::functionInfo(const QString& provider, const QStr
   return info;
 }
 
-QStringList * Script::execute(const QString& script, const QStringList& parameters)
+QStringList* Script::execute(const QString& script, const QStringList& parameters)
 {
   clearErrors();
 
@@ -116,7 +119,13 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
     return 0;
   }
 
-  if(mProc) delete mProc;
+  if(mProc)
+  {
+//     connect(mProc, SIGNAL(finished(int,QProcess::ExitStatus)), mProc, SLOT(deleteLater()));
+    mProc->kill();
+    mProc->waitForFinished();
+    delete mProc;
+  }
 
   if(mShowWaitWindow)
   {
@@ -146,6 +155,7 @@ QStringList * Script::execute(const QString& script, const QStringList& paramete
     if(!mProc->waitForStarted())
     {
       fatal(FUNC, QString("Script '%1' not started.").arg(script));
+      mProc->kill();
       return 0;
     }
 
@@ -189,8 +199,6 @@ void Script::stopRunning()
 {
   if(!mProc) return;
   mProc->terminate();
-  delete mProc;
-  mProc = 0;
 }
 
 QString Script::locateProviderScript(const QString& provider, const QString& function)
