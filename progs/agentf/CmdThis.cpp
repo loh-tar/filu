@@ -165,6 +165,8 @@ void CmdThis::addEODBarData(const QString& symbol, const QString& market, const 
   if(data->size() < 2)
   {
     warning(FUNC, tr("No bars from %1 for: %2").arg(provider, scriptParms.join(" ")));
+    int gid = mFilu->addGroup(QString("NoData/%1").arg(QDate::currentDate().toString(Qt::ISODate)));
+    mFilu->addToGroup(gid, fiId);
     return;
   }
 
