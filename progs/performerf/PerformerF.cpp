@@ -50,6 +50,12 @@ PerformerF::PerformerF(QApplication& app)
 
   setWindowTitle(mWindowTitel);
 
+  // Change how the dock widgets take the space
+  setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+  setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
+  setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+  setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+
   // Some needs
   QPixmap       icon(10, 10);
   FToolBar*     tb;
@@ -142,7 +148,6 @@ PerformerF::PerformerF(QApplication& app)
   mZoomWidget = new IndiWidgetSimple("ZoomWidget", this);
   dw = new QDockWidget(tr("Zoom View"), this);
   dw->setObjectName("ZoomView");
-  dw->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   dw->setWidget(mZoomWidget);
   act = dw->toggleViewAction();
   act->setObjectName("Act" + dw->objectName());
