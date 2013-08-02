@@ -824,13 +824,13 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
 
   if(!data)
   {
-    fatal(FUNC, tr("Got no 'data'."));
+    error(FUNC, tr("Got no 'data'."));
     return eError;
   }
 
   if(data->size() < 2)
   {
-    warning(FUNC, tr("No data from script."));
+    warning(FUNC, tr("No bars in 'data'."));
     return eNoData;
   }
 

@@ -158,13 +158,13 @@ void CmdThis::addEODBarData(const QString& symbol, const QString& market, const 
 
   if(!data)
   {
-    fatal(FUNC, "Got no 'QStringList* data'.");
+    addErrors(mScript->errors());
     return;
   }
 
   if(data->size() < 2)
   {
-    warning(FUNC, tr("No data from script: %1 - %2").arg(provider, scriptParms.join(" ")));
+    warning(FUNC, tr("No bars from %1 for: %2").arg(provider, scriptParms.join(" ")));
     return;
   }
 
