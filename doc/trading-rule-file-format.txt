@@ -131,7 +131,7 @@ AvgLostL
   Its the avarage lost in percent per lost long trade
 
 TotalCommission
-  Sum the payed comission over the trading period
+  Sum the payed commission over the trading period
 
 
 Available Variables Related To The Global Scope
