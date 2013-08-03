@@ -72,6 +72,16 @@ MakeNameNice=true
 MaxClones=5
   How many AgentFs will be started to do a big job, e.g at 'full'.
 
+MaxTimeLag=600
+  The time where we become impatient and start one more clone,
+  delay in milliseconds.
+
+MinTimeLag=200
+  Don't ask the provider too rapidly, delay in milliseconds.
+
+MinJobsPerClone=3
+  The minimum count of jobs left per clone to start a new clone.
+
 Verbose=Info
   How many info while running an application will be printed. Possible values
   are Quiet, Info, Ample and Max or 0/1/2/3. The names are not case sensitive.

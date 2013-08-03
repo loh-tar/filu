@@ -20,9 +20,10 @@
 #ifndef AGENTF_HPP
 #define AGENTF_HPP
 
+#include <QProcess>
 #include <QSet>
 #include <QTextStream>
-class QProcess;
+class QElapsedTimer;
 
 #include "FCoreApp.h"
 class CmdClass;
@@ -53,9 +54,10 @@ class AgentF : public FCoreApp
     void quit();
     void cloneIsReady();
     void cloneHasFinished();
+    void cloneHasTrouble(QProcess::ProcessError err);
 
   protected:
-    void startClones();
+    void startClone();
     void readSettings();
 
     void cmdExec(const QString& cmd);
@@ -75,6 +77,7 @@ class AgentF : public FCoreApp
     Scanner*           mScanner;
     QList<QProcess*>   mClones;
     QStringList        mCloneNames;
+    QElapsedTimer*     mRolex;
 
     bool               mQuit;
 

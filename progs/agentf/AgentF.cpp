@@ -17,9 +17,10 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QProcess>
-#include <QSqlRecord>
+#include <QElapsedTimer>
+#include <QQueue>
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QTimer>
 
 #include "AgentF.h"
@@ -28,6 +29,7 @@
 #include "CmdHelper.h"
 #include "Depots.h"
 #include "Exporter.h"
+#include "FTool.h"
 #include "FiluU.h"
 #include "RcFile.h"
 #include "Scanner.h"
@@ -37,6 +39,7 @@ AgentF::AgentF(QCoreApplication& app)
       : FCoreApp("AgentF", app)
       , mExporter(0)
       , mScanner(0)
+      , mRolex(0)
       , mQuit(true)
 {
   readSettings();
@@ -61,6 +64,7 @@ AgentF::~AgentF()
 
   if(mExporter) delete mExporter;
   if(mScanner)  delete mScanner;
+  if(mRolex)    delete mRolex;
 
   if(!hasMessage())   verbose(FUNC, tr("Done."));
   else if(hasFatal()) verbose(FUNC, tr("Houston, we have a problem."));
@@ -73,7 +77,10 @@ void AgentF::run()
   if(mQuit)
   {
     quit();
-    return;
+  }
+  else
+  {
+    startClone();
   }
 }
 
@@ -154,7 +161,6 @@ void AgentF::updateAllBars()
   parameters << "MASTER_CMD" << "MarkScanned";
   mCommands.append(parameters);
 
-  startClones();
   mQuit = false; // Don't quit after all, enter main event loop
 }
 
@@ -282,64 +288,58 @@ void AgentF::printSettings()
 
   print(tr("AgentF Config Keys:"));
   print(txt.arg("MaxClones", width).arg(mRcFile->getIT("MaxClones")));
+  print(txt.arg("MinJobsPerClone", width).arg(mRcFile->getIT("MinJobsPerClone")));
+  print(txt.arg("MaxTimeLag", width).arg(mRcFile->getIT("MaxTimeLag")));
+  print(txt.arg("MinTimeLag", width).arg(mRcFile->getIT("MinTimeLag")));
   print(txt.arg("ProviderPath", width).arg(mRcFile->getST("ProviderPath")));
   print(txt.arg("Verbose", width).arg(verboseLevel()));
   print("");
 }
 
-void AgentF::startClones()
+void AgentF::startClone()
 {
-  int maxClones = mRcFile->getIT("MaxClones");
+  static const int maxClones = mRcFile->getIT("MaxClones");
+  static const int minJobs   = mRcFile->getIT("MinJobsPerClone");
 
-  if((mCommands.size() - 1) < maxClones)
+  if(mClones.size() == maxClones or
+     mClones.size() * minJobs > mCommands.size())
   {
-    // Don't create more clones as useful
-    // One less since we have at least one MASTER_CMD
-    // FIXME: That could be differend sometimes, calc/check it smarter
-    maxClones = mCommands.size() - 1;
+    return;
   }
 
   QString logFile = mRcFile->getST("LogFile");
 
-  for(int i = 0; i < maxClones; ++i)
-  {
-    QProcess* clone = new QProcess;
-    clone->setReadChannel(QProcess::StandardOutput);
-    clone->setStandardErrorFile(logFile, QIODevice::Append);
-    //clone->setProcessChannelMode(QProcess::MergedChannels);
-    connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
-    connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
+  int i = mClones.size();
+  QProcess* clone = new QProcess;
+  clone->setReadChannel(QProcess::StandardOutput);
+  clone->setStandardErrorFile(logFile, QIODevice::Append);
+  //clone->setProcessChannelMode(QProcess::MergedChannels);
+  connect(clone, SIGNAL(readyRead()), this, SLOT(cloneIsReady()));
+  connect(clone, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(cloneHasFinished()));
+  connect(clone, SIGNAL(error(QProcess::ProcessError)), this, SLOT(cloneHasTrouble(QProcess::ProcessError)));
 
-    mCloneNames.append(QString::number(i + 1));
-    QString cmd = QString("%1 %2 %3")
-                    .arg(QCoreApplication::applicationFilePath(), "do --stdin")
-                    .arg(mCloneNames.at(i));
+  mCloneNames.append(QString::number(i + 1));
+  QString cmd = QString("%1 %2 %3")
+                  .arg(QCoreApplication::applicationFilePath(), "do --stdin")
+                  .arg(mCloneNames.at(i));
 
-    if(mCmd->hasOpt("verbose")) cmd.append(" --verbose " + mCmd->optStr("verbose"));
-    if(mConfigParms.size()) cmd.append(" --config " + mConfigParms.join(" "));
-    clone->start(cmd);
+  if(mCmd->hasOpt("verbose")) cmd.append(" --verbose " + mCmd->optStr("verbose"));
+  if(mConfigParms.size()) cmd.append(" --config " + mConfigParms.join(" "));
 
-    if(!clone->waitForStarted())
-    {
-      fatal(FUNC, QString("Clone not started."));
-      clone->kill();
-      delete clone;
-      QCoreApplication::exit(1);
-      return;
-    }
+  clone->start(cmd);
 
-    mClones.append(clone);
-    verbose(FUNC, tr("Clone %1 started.").arg(mCloneNames.at(i)), eInfo);
-    //qDebug() << QCoreApplication::hasPendingEvents (); always true, I give up :-(
-    //QCoreApplication::flush();// Do not take effect
-    //QCoreApplication::sendPostedEvents();// Do not take effect
-    //QCoreApplication::processEvents(); // Do not take effect
-    //cloneIsReady(); // Do not work
-  }
+  mClones.append(clone);
+  verbose(FUNC, tr("Clone %1 started.").arg(mCloneNames.at(i)), eInfo);
 }
 
 void AgentF::cloneIsReady() // Slot
 {
+  if(!mRolex)
+  {
+    mRolex = new QElapsedTimer;
+    mRolex->start();
+  }
+
   // Search the clone waiting for a job
   QProcess* clone = 0;
   QString   cloneName;
@@ -359,7 +359,6 @@ void AgentF::cloneIsReady() // Slot
   }
 
   QString text(clone->readAllStandardOutput());
-  //qDebug() << "AgentF::cloneIsReady: text :" << text;
 
   if(!text.contains("[READY]")) return;
 
@@ -368,6 +367,39 @@ void AgentF::cloneIsReady() // Slot
   // Feed the clone
   if(mCommands.size() > 0)
   {
+    bool tooSlow = false;
+
+    if(mCommands.at(0).at(0) == "this")
+    {
+      static const int minTimeLag = mRcFile->getIT("MinTimeLag");
+      static const int maxTimeLag = mRcFile->getIT("MaxTimeLag");
+      static QQueue<int> lagLst;
+
+      lagLst.enqueue(mRolex->elapsed());
+      if(lagLst.size() > 5) lagLst.dequeue();
+
+      if(mRolex->elapsed() < minTimeLag)
+      {
+        verbose(FUNC, tr("Don't ask the provider too rapidly. Will sleep %1ms")
+                         .arg(minTimeLag - mRolex->elapsed()), eAmple);
+        FTool::sleep(minTimeLag - mRolex->elapsed());
+      }
+      else
+      {
+        int avgLag = 0;
+        foreach(int lag, lagLst) avgLag += lag;
+        avgLag /= lagLst.size();
+
+        verbose(FUNC, tr("AvgTimeLag is %1ms").arg(avgLag), eAmple);
+        if(avgLag > maxTimeLag)
+        {
+          tooSlow = true;
+        }
+      }
+
+      mRolex->restart();
+    }
+
     QString cmd = mCommands.at(0).join(" ");
     verbose(FUNC, feedTxt + cmd.toUtf8(), eInfo);
 
@@ -375,11 +407,13 @@ void AgentF::cloneIsReady() // Slot
     clone->write(cmd.toUtf8());
 
     mCommands.removeAt(0);
+
+    if(tooSlow) startClone();
   }
   else
   {
     // Clean up and exit
-    verbose(FUNC, feedTxt + "quit");
+    verbose(FUNC, feedTxt + "quit", eInfo);
     clone->write("quit\n");
   }
 
@@ -413,7 +447,6 @@ void AgentF::cloneHasFinished() // Slot
   {
     if(mClones.at(i)->state() != QProcess::NotRunning) continue;
 
-    //qDebug() << "AgentF::cloneHasFinished: found" << i;
     delete mClones.at(i);
     mClones.removeAt(i);
     mCloneNames.removeAt(i);
@@ -424,4 +457,17 @@ void AgentF::cloneHasFinished() // Slot
   {
     quit();
   }
+}
+
+void AgentF::cloneHasTrouble(QProcess::ProcessError err) // Slot
+{
+  QStringList errType = QStringList() << "FailedToStart"
+                                      << "Crashed"
+                                      << "Timedout"
+                                      << "WriteError"
+                                      << "ReadError"
+                                      << "UnknownError";
+
+  fatal(FUNC, QString("Clone error: %1").arg(errType.at(err)));
+  QCoreApplication::exit(1);
 }
