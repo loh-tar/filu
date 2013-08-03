@@ -24,6 +24,7 @@
 
 #include "IndiWidgetSimple.h"
 
+#include "FTool.h"
 #include "IndicatorPainter.h"
 #include "PlotSheet.h"
 #include "RcFile.h"
@@ -193,10 +194,7 @@ void IndiWidgetSimple::contextMenuEvent(QContextMenuEvent* event)
 
 void IndiWidgetSimple::indiFileChanged()
 {
-  // http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
-  int ms = 100;
-  struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-  nanosleep(&ts, NULL);
+  FTool::sleep(100);
 
   mSheet->useIndicator(mUsedIndiFile);
   watchIndicator();

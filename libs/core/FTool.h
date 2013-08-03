@@ -91,6 +91,10 @@ makeValidWord(const QString& s);
 QString
 number(const QString& s);
 
+// Yes, a sleep function to sleep for a given time
+void
+sleep(int ms);
+
 /***********************************************************************
 *
 *   Ask User Functions

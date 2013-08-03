@@ -337,6 +337,14 @@ FTool::number(const QString& s)
   return n;
 }
 
+void
+FTool::sleep(int ms)
+{
+  // http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
+  struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+  nanosleep(&ts, NULL);
+}
+
 /***********************************************************************
 *   Ask User Function Stuff
 *
