@@ -39,7 +39,7 @@ The last (very poor) test was with Raring Ringtail.
 To compile the programs you need the .deb packages:
   build-essential
   cmake
-  libqt4-dev           Minimum required Qt version is 4.6.
+  libqt4-dev           Minimum required Qt version is 4.8.
   libqt4-sql
   libqt4-sql-psql
   libmuparser-dev      Recommended muParser version is 2.2.3,
