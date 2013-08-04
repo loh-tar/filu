@@ -1,3 +1,17 @@
+2013-08-04
+============
+Sundries
+----------
+- readme: Change required Qt version to 4.8
+- PerformerF: Allow the ZoomView to be placed central top/bottom too. In case of
+  an update you have to run PerformerF once with '--config  PerformerState=" "'
+- AgentF: Start clones on demand and be nice to the providers. In case of an
+  update check new config keys: MinJobsPerClone, MaxTimeLag, MinTimeLag
+- CmdThis: Add FIs to group 'NoData' in case of...
+- Script: Handle 'No data from script' more lazy
+- Script: Fix 'QProcess: Destroyed while process is still running'
+
+
 2013-07-30
 ============
 Hot Summer Snapshot
