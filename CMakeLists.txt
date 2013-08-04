@@ -44,6 +44,7 @@ install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-settings-file.conf
 set(SYSTEM_WIDE_SETTINGS_FILE Filu.conf)
 if(EXISTS /etc/xdg/Filu.conf)
     set(SYSTEM_WIDE_SETTINGS_FILE Filu.conf.new)
+    install(CODE "MESSAGE(\"\nNOTE: File /etc/xdg/Filu.conf installed as Filu.conf.new.\n\")")
 endif(EXISTS /etc/xdg/Filu.conf)
 
 install(FILES ${FiluRoot_SOURCE_DIR}/doc/systemwide-settings-file.conf
