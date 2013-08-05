@@ -20,41 +20,32 @@
 #ifndef RCFILE_HPP
 #define RCFILE_HPP
 
-#include <QSettings>
 #include <QPoint>
 #include <QSize>
 
+#include "SettingsFile.h"
 class Newswire;
 
-class RcFile : public QSettings
+/***********************************************************************
+ *
+ *   Besides of read/write the config file, watch he the Filu home
+ *   and create a new one if not exist
+ *
+ ************************************************************************/
+
+class RcFile : public SettingsFile
 {
   public:
                   RcFile(Newswire* parent);
     virtual      ~RcFile();
 
-    void set(const QString& key, const QVariant& val);
-
-    QString       getST(const QString& key);
-    QPoint        getPT(const QString& key);
-    QSize         getSZ(const QString& key);
-    QByteArray    getBA(const QString& key);
-    QDate         getDT(const QString& key);
-    int           getIT(const QString& key);
-    bool          getBL(const QString& key);
-    double        getDB(const QString& key);
-
     QString       getGlobalST(const QString& key);
-
     void          saveGroup();
     void          restoreGroup();
     QStringList   takeConfigParms(QStringList& cmdLine);
 
   protected:
-    QVariant      getValue(const QString& key)
-                  {
-                    if(mForced.contains(key)) return mForced.value(key);
-                    else return value(key, mDefault.value(key));
-                  };
+    QVariant      getValue(const QString& key, const QVariant&) const;
 
     void          checkFiluHome();
     void          setFullPath(const QString& path, const QString& key);

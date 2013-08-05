@@ -27,6 +27,7 @@
 #include "IndicatorPainter.h"
 #include "PlotSheet.h"
 #include "RcFile.h"
+#include "SettingsFile.h"
 
 IndicatorDataView::IndicatorDataView(PlotSheet* parent)
                  : QTabWidget(parent)
@@ -169,12 +170,12 @@ void IndicatorDataView::initView(const QString& indicator)
   QString filterPath;
   filterPath = mRcFile->getST("FiluHome");
   filterPath.append("IndicatorFilterSettings/");
-  QSettings settings(filterPath + mIndicator,  QSettings::IniFormat);
+  SettingsFile sfile(filterPath + mIndicator);
 
   foreach(name, var)
   {
     cb = new QCheckBox(name);
-    if(settings.value(name, true).toBool())
+    if(sfile.getBL(name))
     {
       cb->setCheckState(Qt::Checked);
     }
@@ -209,7 +210,7 @@ void IndicatorDataView::tabChanged(int index)
     QString filterPath;
     filterPath = mRcFile->getST("FiluHome");
     filterPath.append("IndicatorFilterSettings/");
-    QSettings settings(filterPath + mIndicator,  QSettings::IniFormat);
+    SettingsFile sfile(filterPath + mIndicator);
 
     // Delete old view
     mDataView.setRowCount(0);
@@ -224,12 +225,12 @@ void IndicatorDataView::tabChanged(int index)
 
       if(!static_cast<QCheckBox*>(mFilterView.cellWidget(row, 0))->isChecked())
       {
-        settings.setValue(varName, false);
+        sfile.set(varName, false);
         continue;
       }
       else
       {
-        settings.setValue(varName, true);
+        sfile.set(varName, true);
         mDataView.insertRow(mDataView.rowCount());
       }
 

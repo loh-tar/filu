@@ -28,6 +28,7 @@
 #include "IndicatorPainter.h"
 #include "PlotSheet.h"
 #include "RcFile.h"
+#include "SettingsFile.h"
 
 IndiWidgetSimple::IndiWidgetSimple(const QString& name, FClass* parent)
                 : FWidget(parent, FUNC)
@@ -111,9 +112,9 @@ void IndiWidgetSimple::useIndicator(const QString& file)
   mSheet->useIndicator(mUsedIndiFile);
   watchIndicator();
 
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  settings.beginGroup(mName);
-  settings.setValue("Indicator", mUsedIndiFile);
+  SettingsFile sfile(mFullIndiSetsPath + mSetName);
+  sfile.beginGroup(mName);
+  sfile.set("Indicator", mUsedIndiFile);
 }
 
 void IndiWidgetSimple::showBarData(BarTuple* bars)
@@ -147,33 +148,34 @@ void IndiWidgetSimple::readSettings()
   mSheet->setDateRange(QDate(1900,1,1), QDate::currentDate());
 
   // Individual settings
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  mSheet->setDensity(settings.value("Density", 10).toDouble());
-  mSheet->showYScale(settings.value("ShowYScale", true).toBool());
+  SettingsFile sfile(mFullIndiSetsPath + mSetName);
+  mSheet->setDensity(sfile.getDB("Density", 10));
+  mSheet->showYScale(sfile.getBL("ShowYScale"));
 
-  settings.beginGroup(mName);
-  mUsedIndiFile = settings.value("Indicator", "Default").toString();
+  sfile.beginGroup(mName);
+  mUsedIndiFile = sfile.getST("Indicator", "Default");
   mSheet->useIndicator(mUsedIndiFile);
-  mSheet->showGrid(settings.value("ShowGrid", true).toBool());
-  mSheet->showXScale(settings.value("ShowXScale", true).toBool());
-  mSheet->mPainter->mScaleToScreen = settings.value("ScaleToScreen", 10).toInt();
+  mSheet->showGrid(sfile.getBL("ShowGrid"));
+  mSheet->showGrid(sfile.getBL("ShowGrid"));
+  mSheet->showXScale(sfile.getBL("ShowXScale"));
+  mSheet->mPainter->mScaleToScreen = sfile.getIT("ScaleToScreen", 10);
 
   watchIndicator();
 }
 
 void IndiWidgetSimple::saveSettings()
 {
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
+  SettingsFile sfile(mFullIndiSetsPath + mSetName);
   if("1" == mName)
   {
-    settings.setValue("Density", mSheet->mPainter->mDensity);
-    settings.setValue("ShowYScale", mSheet->mPainter->mShowYScale);
+    sfile.set("Density", mSheet->mPainter->mDensity);
+    sfile.set("ShowYScale", mSheet->mPainter->mShowYScale);
   }
 
-  settings.beginGroup(mName);
-  settings.setValue("ShowGrid", mSheet->mPainter->mShowGrid);
-  settings.setValue("ShowXScale", mSheet->mPainter->mShowXScale);
-  settings.setValue("ScaleToScreen", mSheet->mPainter->mScaleToScreen);
+  sfile.beginGroup(mName);
+  sfile.set("ShowGrid", mSheet->mPainter->mShowGrid);
+  sfile.set("ShowXScale", mSheet->mPainter->mShowXScale);
+  sfile.set("ScaleToScreen", mSheet->mPainter->mScaleToScreen);
 }
 
 void IndiWidgetSimple::mouseSlot(MyMouseEvent* event)

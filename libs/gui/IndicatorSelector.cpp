@@ -41,7 +41,7 @@ IndicatorSelector::~IndicatorSelector()
 void IndicatorSelector::loadSettings()
 {
   mRcFile->beginGroup("IndicatorSelector");
-  mSplitter->restoreState(mRcFile->value("Splitter").toByteArray());
+  mSplitter->restoreState(mRcFile->getBA("Splitter"));
   mRcFile->endGroup();
 }
 

@@ -33,6 +33,7 @@
 
 #include "DialogButton.h"
 #include "RcFile.h"
+#include "SettingsFile.h"
 
 IndiSetPad::IndiSetPad(const QString& name, FClass* parent)
           : ButtonPad(name, parent, FUNC)
@@ -68,24 +69,24 @@ void IndiSetPad::loadSettings()
       continue;
     }
 
-    QSettings settings(mRcFile->getST("IndiSetsPath") + btn->text(),  QSettings::IniFormat);
-    btn->setToolTip(settings.value("Tip").toString());
+    SettingsFile sfile(mRcFile->getST("IndiSetsPath") + btn->text());
+    btn->setToolTip(sfile.getST("Tip"));
   }
 }
 
 void IndiSetPad::saveSettings()
 {
   // Don't call ButtonPad::saveSettings() to avoid saving of button tip
-  // We want to save this in the IndiSetPad config file
-  QSettings* settings = openSettings();
-  settings->remove("");  // Delete all settings
+  // We want to save this in the IndiSetPad settings file
+  SettingsFile* sfile = openSettings();
+  sfile->remove("");  // Delete all settings
 
   foreach(QAbstractButton* btn, mButtons.buttons())
   {
     int id = mButtons.id(btn);
-    settings->beginGroup(QString::number(id));
-    settings->setValue("Name",       btn->text());
-    settings->endGroup();
+    sfile->beginGroup(QString::number(id));
+    sfile->set("Name",       btn->text());
+    sfile->endGroup();
 
     saveTip(btn->text(), btn->toolTip());
   }
@@ -280,12 +281,12 @@ void IndiSetPad::saveTip(const QString& name, const QString& tip)
 {
   if("Default" == name or "ZoomWidget" == name) return; // Don't change
 
-  QSettings settings(mRcFile->getST("IndiSetsPath") + name,  QSettings::IniFormat);
-  settings.setValue("Tip", tip);
+  SettingsFile sfile(mRcFile->getST("IndiSetsPath") + name);
+  sfile.set("Tip", tip);
 }
 
 void IndiSetPad::getTip(const QString& name)
 {
-  QSettings settings(mRcFile->getST("IndiSetsPath") + name,  QSettings::IniFormat);
-  mIndiSetTip->setText(settings.value("Tip").toString());
+  SettingsFile sfile(mRcFile->getST("IndiSetsPath") + name);
+  mIndiSetTip->setText(sfile.getST("Tip"));
 }

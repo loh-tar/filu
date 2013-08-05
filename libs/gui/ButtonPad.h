@@ -22,10 +22,10 @@
 
 #include <QButtonGroup>
 class QBoxLayout;
-class QSettings;
 class QToolButton;
 
 #include "FWidget.h"
+class SettingsFile;
 
 /***********************************************************************
 *
@@ -54,7 +54,7 @@ class ButtonPad : public FWidget
 
   protected:
     virtual void    saveSettings();
-    QSettings*      openSettings();
+    SettingsFile*   openSettings();
     void            closeSettings();
     QToolButton*    newButton(const QString& name, int id = -1);
     void            deleteButton(QAbstractButton* btn);
@@ -69,7 +69,7 @@ class ButtonPad : public FWidget
     virtual void    buttonContextMenu(const QPoint& pos);
 
   private:
-    QSettings*      mSettings;
+    SettingsFile*   mSettings;
 };
 
 #endif

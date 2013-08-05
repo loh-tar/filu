@@ -22,9 +22,10 @@
 
 #include "IndicatorWidget.h"
 
-#include "PlotSheet.h"
-#include "IndicatorPicker.h"
 #include "IndicatorDataView.h"
+#include "IndicatorPicker.h"
+#include "PlotSheet.h"
+#include "SettingsFile.h"
 
 IndicatorWidget::IndicatorWidget(const QString& name, FWidget* parent)
                : IndiWidgetSimple(name, parent, FUNC)
@@ -109,20 +110,20 @@ void IndicatorWidget::readSettings(const QString& setName, int number)
 
 void IndicatorWidget::readSettings()
 {
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  mSplitter->restoreState(settings.value("IndicatorSplitter").toByteArray());
-  settings.beginGroup(mName);
-  mPicker->restoreState(settings);
+  SettingsFile sfile(mFullIndiSetsPath + mSetName);
+  mSplitter->restoreState(sfile.getBA("IndicatorSplitter"));
+  sfile.beginGroup(mName);
+  mPicker->restoreState(sfile);
 }
 
 void IndicatorWidget::saveSettings()
 {
   IndiWidgetSimple::saveSettings();
 
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  settings.setValue("IndicatorSplitter", mSplitter->saveState());
-  settings.beginGroup(mName);
-  mPicker->saveState(settings);
+  SettingsFile sfile(mFullIndiSetsPath + mSetName);
+  sfile.set("IndicatorSplitter", mSplitter->saveState());
+  sfile.beginGroup(mName);
+  mPicker->saveState(sfile);
 }
 
 void IndicatorWidget::mouseSlot(MyMouseEvent* event)

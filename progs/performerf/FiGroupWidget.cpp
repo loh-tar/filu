@@ -111,7 +111,7 @@ FiGroupWidget::~FiGroupWidget()
 
 void FiGroupWidget::loadSettings()
 {
-  mSplitter->restoreState(mRcFile->value("SplitterSizes").toByteArray());
+  mSplitter->restoreState(mRcFile->getBA("SplitterSizes"));
   mMotherName->setText(mRcFile->getST("MotherName"));
   mMotherId = mRcFile->getIT("MotherGroupId");
   mCurrendGroupId = mRcFile->getIT("CurrentGroupId");

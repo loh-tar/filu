@@ -39,7 +39,7 @@ IndicatorPage::~IndicatorPage()
 void IndicatorPage::loadSettings()
 {
   mRcFile->beginGroup("IndicatorPage");
-  mSplitter->restoreState(mRcFile->value("Splitter").toByteArray());
+  mSplitter->restoreState(mRcFile->getBA("Splitter"));
   mEditor->loadSettings();
   mIndiSelector->loadSettings();
   mRcFile->endGroup();

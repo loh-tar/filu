@@ -44,6 +44,7 @@ include_directories(database)
 
 set(FiluCore_SRC ${FiluCore_SRC}
     FTool.cpp
+    SettingsFile.cpp
     RcFile.cpp
     Newswire.cpp
     FClass.cpp
@@ -61,6 +62,7 @@ set(FiluCore_SRC ${FiluCore_SRC}
 )
 set(FiluCore_MOCH ${FiluCore_MOCH}
     #FTool.h
+    #SettingsFile.h
     #RcFile.h
     #Newswire.h
     #FClass.h

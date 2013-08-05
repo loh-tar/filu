@@ -27,6 +27,7 @@
 #include "IndicatorWidget.h"
 #include "PlotSheet.h"
 #include "RcFile.h"
+#include "SettingsFile.h"
 
 IndiWidgetGroup::IndiWidgetGroup(FClass* parent)
                : FWidget(parent, FUNC)
@@ -119,8 +120,8 @@ void IndiWidgetGroup::loadSetup(const QString& setup)
   mSetName = setup;
 
   int rowCount;
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  rowCount = settings.value("IndicatorCount", 1).toInt();
+  SettingsFile sfile(mFullIndiSetsPath + mSetName);
+  rowCount = sfile.getIT("IndicatorCount", 1);
 
   for(int i = 0; (i < mSplitter->count()) and (i < rowCount); ++i)
   {
@@ -130,7 +131,7 @@ void IndiWidgetGroup::loadSetup(const QString& setup)
   while(mSplitter->count() < rowCount) addWindow();
   while(mSplitter->count() > rowCount) removeWindow();
 
-  mSplitter->restoreState(settings.value("GroupSplitter").toByteArray());
+  mSplitter->restoreState(sfile.getBA("GroupSplitter"));
 }
 
 void IndiWidgetGroup::showBarData(BarTuple* bars)
@@ -150,9 +151,9 @@ void IndiWidgetGroup::saveSetup()
 {
   if(mSetName.isEmpty()) return;
 
-  QSettings settings(mFullIndiSetsPath + mSetName,  QSettings::IniFormat);
-  settings.setValue("GroupSplitter", mSplitter->saveState());
-  settings.setValue("IndicatorCount", mSplitter->count());
+  SettingsFile sfile(mFullIndiSetsPath + mSetName);
+  sfile.setValue("GroupSplitter", mSplitter->saveState());
+  sfile.setValue("IndicatorCount", mSplitter->count());
 }
 
 /***********************************************************************

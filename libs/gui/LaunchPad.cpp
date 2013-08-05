@@ -26,13 +26,13 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QProcess>
-#include <QSettings>
 #include <QToolButton>
 
 #include "LaunchPad.h"
 
 #include "DialogButton.h"
 #include "FiluU.h"
+#include "SettingsFile.h"
 #include "SymbolTuple.h"
 #include "SymbolTypeTuple.h"
 
@@ -47,19 +47,19 @@ LaunchPad::~LaunchPad()
 
 void LaunchPad::loadSettings()
 {
-  QSettings* settings = openSettings();
+  SettingsFile* sfile = openSettings();
 
   ButtonPad::loadSettings();
 
   for(int i = 0; i < mButtons.buttons().size(); ++i)
   {
-    settings->beginGroup(QString::number(i));
+    sfile->beginGroup(QString::number(i));
 
-    mCommands.append(settings->value("Command").toString());
-    mSymbolTypes.append(settings->value("SymbolType", "").toString());
-    mMultis.append(settings->value("AllMarkets", false).toBool());
+    mCommands.append(sfile->getST("Command"));
+    mSymbolTypes.append(sfile->getST("SymbolType"));
+    mMultis.append(sfile->getBL("AllMarkets", false));
 
-    settings->endGroup();
+    sfile->endGroup();
   }
 
   closeSettings();
@@ -69,7 +69,7 @@ void LaunchPad::loadSettings()
 
 void LaunchPad::saveSettings()
 {
-  QSettings* settings = openSettings();
+  SettingsFile* sfile = openSettings();
 
   ButtonPad::saveSettings();
 
@@ -78,20 +78,20 @@ void LaunchPad::saveSettings()
   // Don't save the 'I'll be back' info
   if(btnCount < 2 and mButtons.button(0)->text() == "Echo")
   {
-    settings->beginGroup(QString::number(0));
-    settings->setValue("Tip", cDummyTip);
-    settings->endGroup();
+    sfile->beginGroup(QString::number(0));
+    sfile->set("Tip", cDummyTip);
+    sfile->endGroup();
   }
 
   for(int i = 0; i < btnCount; ++i)
   {
-    settings->beginGroup(QString::number(i));
+    sfile->beginGroup(QString::number(i));
 
-    settings->setValue("Command",    mCommands.at(i));
-    settings->setValue("SymbolType", mSymbolTypes.at(i));
-    settings->setValue("AllMarkets", mMultis.at(i));
+    sfile->set("Command",    mCommands.at(i));
+    sfile->set("SymbolType", mSymbolTypes.at(i));
+    sfile->set("AllMarkets", mMultis.at(i));
 
-    settings->endGroup();
+    sfile->endGroup();
   }
 
   closeSettings();

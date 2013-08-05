@@ -23,13 +23,13 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QSettings>
 #include <QToolBar>
 #include <QToolButton>
 
 #include "ButtonPad.h"
 #include "DialogButton.h"
 #include "RcFile.h"
+#include "SettingsFile.h"
 
 ButtonPad::ButtonPad(const QString& name, FClass* parent)
          : FWidget(parent, FUNC)
@@ -73,12 +73,12 @@ void ButtonPad::addToToolBar(QToolBar* tb)
   setParent(tb);
 }
 
-QSettings* ButtonPad::openSettings()
+SettingsFile* ButtonPad::openSettings()
 {
   if(!mSettings)
   {
     QString filuHome = mRcFile->getST("FiluHome");
-    mSettings = new QSettings(filuHome + "ButtonPads/" + objectName() + ".ini",  QSettings::IniFormat);
+    mSettings = new SettingsFile(filuHome + "ButtonPads/" + objectName() + ".ini");
   }
 
   return mSettings;
@@ -118,10 +118,10 @@ void ButtonPad::loadSettings()
   {
     mSettings->beginGroup(QString::number(i));
 
-    QString txt = mSettings->value("Name").toString();
+    QString txt = mSettings->getST("Name");
     QToolButton* button = newButton(txt, i);
 
-    txt = mSettings->value("Tip").toString();
+    txt = mSettings->getST("Tip");
     if(txt.isEmpty()) button->setToolTip(button->text());
     else button->setToolTip(txt);
 
@@ -148,8 +148,8 @@ void ButtonPad::saveSettings()
     int id = mButtons.id(btn);
     mSettings->beginGroup(QString::number(id));
 
-    mSettings->setValue("Name",       btn->text());
-    mSettings->setValue("Tip",        btn->toolTip());
+    mSettings->set("Name", btn->text());
+    mSettings->set("Tip",  btn->toolTip());
     mSettings->endGroup();
   }
 

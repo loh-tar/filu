@@ -20,12 +20,13 @@
 #include <QDate>
 #include <QDir>
 
-#include "FTool.h"
-#include "Newswire.h"
 #include "RcFile.h"
 
+#include "FTool.h"
+#include "Newswire.h"
+
 RcFile::RcFile(Newswire* parent)
-      : QSettings("Filu")
+      : SettingsFile()
       , mNewswire(parent)
 {
   mDefault.reserve(6);
@@ -45,65 +46,17 @@ RcFile::~RcFile()
 {
 }
 
-void RcFile::set(const QString& key, const QVariant& val)
+QVariant RcFile::getValue(const QString& key, const QVariant& /*def*/) const
 {
-  switch(val.type())
-  {
-    case QVariant::Date:
-      setValue(key, val.toDate().toString(Qt::ISODate));
-      break;
-    default:
-      setValue(key, val);
-  }
-
-  mForced.remove(key);
-}
-
-QString RcFile::getST(const QString& key)
-{
-  return getValue(key).toString();
-}
-
-QPoint RcFile::getPT(const QString& key)
-{
-  return getValue(key).toPoint();
-}
-
-QSize RcFile::getSZ(const QString& key)
-{
-  return getValue(key).toSize();
-}
-
-QByteArray RcFile::getBA(const QString& key)
-{
-  return getValue(key).toByteArray();
-}
-
-QDate RcFile::getDT(const QString& key)
-{
-  return getValue(key).toDate();
-}
-
-int RcFile::getIT(const QString& key)
-{
-  return getValue(key).toInt();
-}
-
-bool RcFile::getBL(const QString& key)
-{
-  return getValue(key).toBool();
-}
-
-double RcFile::getDB(const QString& key)
-{
-  return getValue(key).toDouble();
-}
+  if(mForced.contains(key)) return mForced.value(key);
+  else return value(key, mDefault.value(key));
+};
 
 QString RcFile::getGlobalST(const QString& key)
 {
   saveGroup();
 
-  QString val = getValue(key).toString();
+  QString val = getST(key);
 
   restoreGroup();
 
