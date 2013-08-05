@@ -277,14 +277,20 @@ void AgentF::exec(const QStringList& parm)
 
 void AgentF::printSettings()
 {
-  mFilu->printSettings();
-
-  print(tr("AgentF Infos:"));
-
   QString txt = "  %1 = %2";
   int width = -20; // Negative value = left-aligned
-  print(txt.arg("Using muParser", width).arg(mu::Parser().GetVersion().data()));
+
+  print(tr("Infos:"));
+  print(txt.arg("Postgres version", width).arg(mFilu->serverVersion()));
+  print(txt.arg("Qt version", width).arg(qVersion()));
+  print(txt.arg("muParser version", width).arg(mu::Parser().GetVersion().data()));
+  print(txt.arg("Settings file", width).arg(mRcFile->fileName()));
+  print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf"));
+  print(txt.arg("FiluHome", width).arg(mRcFile->getPath("FiluHome")));
+  print(txt.arg("LogFile", width).arg(mRcFile->getUrl("LogFile")));
   print("");
+
+  mFilu->printConfigKeys();
 
   print(tr("AgentF Config Keys:"));
   print(txt.arg("MaxClones", width).arg(mRcFile->getIT("MaxClones")));

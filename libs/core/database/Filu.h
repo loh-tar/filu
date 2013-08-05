@@ -94,6 +94,8 @@ class Filu : public Newswire
     void setDaysToFetchIfNoData(int);      // Unused
 
     void printSettings();
+    void printInfos();
+    void printConfigKeys();
 
     // Get Tuple Functions
     BarTuple*    getBars(const QString& symbol, const QString& market

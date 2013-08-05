@@ -1879,16 +1879,29 @@ void Filu::readSettings()
 
 void Filu::printSettings()
 {
-  print("Filu Infos:");
+  printInfos();
+  printConfigKeys();
+}
 
+void Filu::printInfos()
+{
   QString txt = "  %1 = %2";
   int width = -20; // Negative value = left-aligned
 
+  print("Filu Infos:");
+  print(txt.arg("Postgres version", width).arg(serverVersion()));
+  print(txt.arg("Qt version", width).arg(qVersion()));
   print(txt.arg("Settings file", width).arg(mRcFile->fileName()));
   print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf"));
-  print(txt.arg("Using QtVersion", width).arg(qVersion()));
-  print(txt.arg("Postgres version", width).arg(serverVersion()));
+  print(txt.arg("FiluHome", width).arg(mRcFile->getPath("FiluHome")));
+  print(txt.arg("LogFile", width).arg(mRcFile->getUrl("LogFile")));
   print("");
+}
+
+void Filu::printConfigKeys()
+{
+  QString txt = "  %1 = %2";
+  int width = -20; // Negative value = left-aligned
 
   print(tr("Filu Config Keys:"));
   print(txt.arg("HostName", width).arg(mRcFile->getST("HostName")));
@@ -1899,9 +1912,8 @@ void Filu::printSettings()
 
   print(txt.arg("CommitBlockSize", width).arg(mCommitBlockSize));
   print(txt.arg("DaysToFetchIfNoData", width).arg(mDaysToFetchIfNoData));
-  print(txt.arg("LogFile", width).arg(mRcFile->getST("LogFile")));
-  print(txt.arg("SqlDebug", width).arg(verboseLevel()));
   print(txt.arg("SqlPath", width).arg(mSqlPath));
+  print(txt.arg("SqlDebug", width).arg(verboseLevel()));
   print("");
 }
 
