@@ -26,7 +26,7 @@
 
 Script::Script(FClass* parent)
       : FObject(parent, FUNC)
-      , mProviderPath(mRcFile->getST("ProviderPath"))
+      , mProviderPath(mRcFile->getPath("ProviderPath"))
       , mShowWaitWindow(false)
       , mProc(0)
 {}

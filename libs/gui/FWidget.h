@@ -47,8 +47,6 @@ class FMainApp : public QMainWindow, public FClass
     virtual  ~FMainApp();
 
   protected:
-    QStringList mCommandLine;
-    QStringList mConfigParms;
 };
 
 #endif

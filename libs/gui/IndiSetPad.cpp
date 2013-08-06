@@ -58,7 +58,7 @@ void IndiSetPad::loadSettings()
 
   ButtonPad::loadSettings();
 
-  QString isp = mRcFile->getST("IndiSetsPath");
+  QString isp = mRcFile->getPath("IndiSetsPath");
 
   foreach(QAbstractButton* btn, mButtons.buttons())
   {
@@ -69,7 +69,7 @@ void IndiSetPad::loadSettings()
       continue;
     }
 
-    SettingsFile sfile(mRcFile->getST("IndiSetsPath") + btn->text());
+    SettingsFile sfile(mRcFile->getPath("IndiSetsPath") + btn->text());
     btn->setToolTip(sfile.getST("Tip"));
   }
 }
@@ -100,8 +100,8 @@ void IndiSetPad::fillSetSelector()
 
   QString current = mSetSelector->currentText();
 
-  QString ip  = mRcFile->getST("InstallPath");
-  QString isp = mRcFile->getST("IndiSetsPath");
+  QString ip  = mRcFile->getPath("InstallPath");
+  QString isp = mRcFile->getPath("IndiSetsPath");
 
   // Check if default sets exist and copy back from install dir
   if(!QFile::exists(isp + "Default")) QFile::copy(ip + "userfiles/IndicatorSets/Default"
@@ -154,7 +154,7 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
   label = new QLabel(tr("Name"));
   label->setAlignment(Qt::AlignRight);
   layout.addWidget(label, row, 0);
-  QDir dir(mRcFile->getST("IndiSetsPath"));
+  QDir dir(mRcFile->getPath("IndiSetsPath"));
   QStringList files = dir.entryList(QDir::Files, QDir::Name);
   QComboBox name;
   name.setToolTip(tr("Select an existing set, or\nenter a new name to create a new indicator set"));
@@ -273,7 +273,7 @@ void IndiSetPad::deleteSet(const QString& name)
 {
   if("Default" == name or "ZoomWidget" == name) return; // Don't delete
 
-  QFile::remove(mRcFile->getST("IndiSetsPath") + name);
+  QFile::remove(mRcFile->getPath("IndiSetsPath") + name);
   fillSetSelector();
 }
 
@@ -281,12 +281,12 @@ void IndiSetPad::saveTip(const QString& name, const QString& tip)
 {
   if("Default" == name or "ZoomWidget" == name) return; // Don't change
 
-  SettingsFile sfile(mRcFile->getST("IndiSetsPath") + name);
+  SettingsFile sfile(mRcFile->getPath("IndiSetsPath") + name);
   sfile.set("Tip", tip);
 }
 
 void IndiSetPad::getTip(const QString& name)
 {
-  SettingsFile sfile(mRcFile->getST("IndiSetsPath") + name);
+  SettingsFile sfile(mRcFile->getPath("IndiSetsPath") + name);
   mIndiSetTip->setText(sfile.getST("Tip"));
 }

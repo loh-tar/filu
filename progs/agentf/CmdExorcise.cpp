@@ -83,8 +83,8 @@ bool CmdExorcise::exec(CmdHelper* ch)
     mRcFile->remove("Devil");
     mRcFile->remove("SqlPath");
     mRcFile->remove("ProviderPath");
-    verbose(FUNC, tr("SqlPath is now: %1").arg(mRcFile->getST("SqlPath")));
-    verbose(FUNC, tr("ProviderPath is now: %1").arg(mRcFile->getST("ProviderPath")));
+    verbose(FUNC, tr("SqlPath is now: %1").arg(mRcFile->getPath("SqlPath")));
+    verbose(FUNC, tr("ProviderPath is now: %1").arg(mRcFile->getPath("ProviderPath")));
     mFilu->closeDB();
     mFilu->openDB();
   }

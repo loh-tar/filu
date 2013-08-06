@@ -159,7 +159,7 @@ AgentF
 ========
 He is like the Swiss knife of Filu. He starts multiple instances to do a big job
 e.g. at 'full' to download quotes in parallel. The amount of instances is
-configurable in the settings file by MaxClones=X, see doc/config-file.txt.
+configurable in the config file by MaxClones=X, see doc/config-file.txt.
 
 In general AgentF takes always only options with double hyphens '--' with the
 one and only exception of '-h'. The call looks like:

@@ -77,7 +77,7 @@ SettingsFile* ButtonPad::openSettings()
 {
   if(!mSettings)
   {
-    QString filuHome = mRcFile->getST("FiluHome");
+    QString filuHome = mRcFile->getPath("FiluHome");
     mSettings = new SettingsFile(filuHome + "ButtonPads/" + objectName() + ".ini");
   }
 

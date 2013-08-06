@@ -46,7 +46,7 @@ Trader::Trader(FClass* parent)
       , mBarsNeeded(0)
       , mData(0)
 {
-  mTradingRulePath = mRcFile->getST("TradingRulePath");
+  mTradingRulePath = mRcFile->getPath("TradingRulePath");
 }
 
 Trader::~Trader()

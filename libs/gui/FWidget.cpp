@@ -40,12 +40,7 @@ FWidget::~FWidget()
 FMainApp::FMainApp(const QString& connectionName, QApplication& app)
         : QMainWindow()
         , FClass(connectionName)
-{
-  mCommandLine = app.arguments();
-  mConfigParms = mRcFile->takeConfigParms(mCommandLine);
-  mFilu->openDB();
-  addMessages(mFilu->messages());
-}
+{}
 
 FMainApp::~FMainApp()
 {}

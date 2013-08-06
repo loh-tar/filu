@@ -95,7 +95,7 @@ bool Scanner::exec(CmdHelper* ch)
                          "any existing <Path> will ignored. Without '--group' is nothing scanned"));
 
     mCmd->inOptBrief("this", "<Symbol> <Market>", tr("Scan only this FI"));
-    mCmd->inOptBrief("mark", tr("Save the scan date in the settings file ~/.config/Filu.conf"));
+    mCmd->inOptBrief("mark", tr("Save the scan date in the user config file ~/.config/Filu.conf"));
 
     mCmd->inOptGroup("FiSet", "FI sets", "group this");
     mCmd->inOptGroup("Scanner", "scanners", "auto indi");
@@ -253,7 +253,7 @@ void Scanner::autoSetup()
 {
   if(hasError()) return;
 
-  QString indicatorPath = mRcFile->getST("IndicatorPath");
+  QString indicatorPath = mRcFile->getPath("IndicatorPath");
 
   QDir dir(indicatorPath);
   QStringList files = dir.entryList(QDir::Files, QDir::Name);

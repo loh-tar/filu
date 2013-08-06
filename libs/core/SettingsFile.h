@@ -42,6 +42,8 @@ class SettingsFile : public QSettings
 
     void          set(const QString& key, const QVariant& val);
 
+    QString       getPath(const QString& key) const;
+    QString       getUrl(const QString& key) const;
     QString       getST(const QString& key, const QString& def = QString()) const;
     QPoint        getPT(const QString& key, const QPoint& def = QPoint()) const;
     QSize         getSZ(const QString& key, const QSize& def = QSize()) const;

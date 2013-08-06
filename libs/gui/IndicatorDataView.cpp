@@ -168,7 +168,7 @@ void IndicatorDataView::initView(const QString& indicator)
 
   // Restore saved settings, if some
   QString filterPath;
-  filterPath = mRcFile->getST("FiluHome");
+  filterPath = mRcFile->getPath("FiluHome");
   filterPath.append("IndicatorFilterSettings/");
   SettingsFile sfile(filterPath + mIndicator);
 
@@ -208,7 +208,7 @@ void IndicatorDataView::tabChanged(int index)
 
     // And save the settings
     QString filterPath;
-    filterPath = mRcFile->getST("FiluHome");
+    filterPath = mRcFile->getPath("FiluHome");
     filterPath.append("IndicatorFilterSettings/");
     SettingsFile sfile(filterPath + mIndicator);
 

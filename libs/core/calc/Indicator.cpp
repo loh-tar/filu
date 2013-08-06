@@ -682,5 +682,7 @@ bool Indicator::prepare(QStringList& indicator)
 
 void  Indicator::readSettings()
 {
-  mIndicatorPath = mRcFile->getGlobalST("IndicatorPath");
+  mRcFile->saveGroup();
+  mIndicatorPath = mRcFile->getPath("IndicatorPath");
+  mRcFile->restoreGroup();
 }

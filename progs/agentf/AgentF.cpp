@@ -297,7 +297,7 @@ void AgentF::printSettings()
   print(txt.arg("MinJobsPerClone", width).arg(mRcFile->getIT("MinJobsPerClone")));
   print(txt.arg("MaxTimeLag", width).arg(mRcFile->getIT("MaxTimeLag")));
   print(txt.arg("MinTimeLag", width).arg(mRcFile->getIT("MinTimeLag")));
-  print(txt.arg("ProviderPath", width).arg(mRcFile->getST("ProviderPath")));
+  print(txt.arg("ProviderPath", width).arg(mRcFile->getPath("ProviderPath")));
   print(txt.arg("Verbose", width).arg(verboseLevel()));
   print("");
 }
@@ -313,7 +313,7 @@ void AgentF::startClone()
     return;
   }
 
-  QString logFile = mRcFile->getST("LogFile");
+  QString logFile = mRcFile->getUrl("LogFile");
 
   int i = mClones.size();
   QProcess* clone = new QProcess;

@@ -18,6 +18,7 @@
 //
 
 #include <QDate>
+#include <QDir>
 
 #include "SettingsFile.h"
 
@@ -62,6 +63,60 @@ SettingsFile::getValue(const QString& key, const QVariant& def) const
   // These stupid looking function is needed to support RcFile
   return value(key, def);
 };
+
+QString
+SettingsFile::getPath(const QString& key) const
+{
+  static int i = 0;
+  if(++i > 10)
+  {
+    QString msg = "*** CONFIG FILE ERROR *** Endless recursion $" + key + " ";
+    // FIXME warning(FUNC, tr("Endless recursion while access of %1").arg(key))
+    i = 0;
+    return msg;
+  }
+
+  QString path = getValue(key, QVariant()).toString();
+
+  if(path.startsWith("~/"))
+  {
+    path.remove(0, 1);
+    path.prepend(QDir::homePath());
+  }
+
+  if(path.isEmpty())
+  {
+    i = 0;
+    return path;
+  }
+
+  QRegExp rx("\\$\\w+");
+
+  if(rx.indexIn(path, 0) > -1)
+  {
+    QString var = rx.cap(0);
+    QString ke2 = var.right(var.size() - 1);
+    QString sub = getPath(ke2);
+    sub.chop(1);
+    path.replace(var, sub);
+
+  }
+
+  if(!path.endsWith("/")) path.append("/");
+
+  i = 0;
+
+  return path;
+}
+
+QString
+SettingsFile::getUrl(const QString& key) const
+{
+  QString url = getPath(key);
+  url.chop(1); //Remove added slash /
+
+  return url;
+}
 
 QString
 SettingsFile::getST(const QString& key, const QString& def /*= QString()*/) const

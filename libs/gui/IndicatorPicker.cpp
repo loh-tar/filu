@@ -59,7 +59,7 @@ void IndicatorPicker::clicked(QTreeWidgetItem * item, int column)
 
 void IndicatorPicker::readSettings()
 {
-  mIndicatorPath = mRcFile->getST("IndicatorPath");
+  mIndicatorPath = mRcFile->getPath("IndicatorPath");
 }
 
 void IndicatorPicker::saveState(QSettings& setting)

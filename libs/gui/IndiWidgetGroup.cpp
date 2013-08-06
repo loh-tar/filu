@@ -81,7 +81,7 @@ void IndiWidgetGroup::init()
   addAction(act);
 
 
-  mFullIndiSetsPath = mRcFile->getST("IndiSetsPath");
+  mFullIndiSetsPath = mRcFile->getPath("IndiSetsPath");
   mSplitter = new QSplitter(Qt::Vertical);
 
   loadSetup(mSetName);

@@ -102,8 +102,8 @@ bool CmdSummon::exec(CmdHelper* ch)
   }
   else
   {
-    verbose(FUNC, tr("Let SqlPath untouched: %1").arg(mRcFile->getST("SqlPath")));
-    verbose(FUNC, tr("Let ProviderPath untouched: %1").arg(mRcFile->getST("ProviderPath")));
+    verbose(FUNC, tr("Let SqlPath untouched: %1").arg(mRcFile->getUrl("SqlPath")));
+    verbose(FUNC, tr("Let ProviderPath untouched: %1").arg(mRcFile->getUrl("ProviderPath")));
   }
 
   mFilu->closeDB();

@@ -54,6 +54,8 @@ class FClass : public Newswire
 
     RcFile*        mRcFile;
     FiluU*         mFilu;
+    QStringList    mCommandLine;
+    QStringList    mConfigParms;
 
   private:
     bool           mRoot;

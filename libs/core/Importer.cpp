@@ -301,8 +301,9 @@ void Importer::reset()
   {
     mNiceSearch.clear();
     mNiceReplace.clear();
-
-    QFile file(mRcFile->getGlobalST("FiluHome") + "MakeNameNice.conf");
+    mRcFile->saveGroup();
+    QFile file(mRcFile->getPath("FiluHome") + "MakeNameNice.conf");
+    mRcFile->restoreGroup();
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
       const QString errorMsg1 = tr("Wrong \"=\" in line %1 of file 'MakeNameNice.conf'.");

@@ -105,12 +105,12 @@ void LogBookPage::tabChanged(int index)
 
 void LogBookPage::readLogFile()
 {
-  QFile file(mRcFile->getST("LogFile"));
+  QFile file(mRcFile->getUrl("LogFile"));
 
   if(!file.open(QIODevice::ReadWrite | QIODevice::Text))
   {
     mLogFile.clear();
-    mLogFile.insertPlainText(tr("Can't open log file ") + mRcFile->getST("LogFile"));
+    mLogFile.insertPlainText(tr("Can't open log file ") + mRcFile->getUrl("LogFile"));
     return;
   }
 
@@ -158,7 +158,7 @@ void LogBookPage::showLogFileContextMenu(const QPoint &p)
 
 void LogBookPage::clearLogFile()
 {
-  if(QFile::remove(mRcFile->getST("LogFile")))
+  if(QFile::remove(mRcFile->getUrl("LogFile")))
   {
     readLogFile();
   }

@@ -79,7 +79,7 @@ IndicatorEditor::IndicatorEditor(FClass* parent)
   setLayout(mainLayout);
   setFocusProxy(mFileSelector);
 
-  mIndicatorPath = mRcFile->getST("IndicatorPath");
+  mIndicatorPath = mRcFile->getPath("IndicatorPath");
   readDir();
 }
 

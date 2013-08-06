@@ -1338,7 +1338,7 @@ void Filu::openDB()
   {
     fatal(FUNC, tr("The PSql Driver works not properly."));
     errInfo(FUNC, tr("Please take a look at doc/qt-postgres-driver-bug.txt"));
-    errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getST("PluginPath")));
+    errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getPath("PluginPath")));
     return;
   }
 
@@ -1850,12 +1850,12 @@ int Filu::result(const QString& func, QSqlQuery* query)
 
 void Filu::readSettings()
 {
-  QCoreApplication::addLibraryPath(mRcFile->getST("PluginPath"));
-  mSqlPath = mRcFile->getST("SqlPath");
+  QCoreApplication::addLibraryPath(mRcFile->getPath("PluginPath"));
+  mSqlPath = mRcFile->getPath("SqlPath");
   mCommitBlockSize = mRcFile->getIT("CommitBlockSize");
   mDaysToFetchIfNoData = mRcFile->getIT("DaysToFetchIfNoData");
 
-  setLogFile(/*FIXME:FUNC, */mRcFile->getST("LogFile"));
+  setLogFile(/*FIXME:FUNC, */mRcFile->getUrl("LogFile"));
   setVerboseLevel(FUNC, mRcFile->getST("SqlDebug"));
 
   QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));

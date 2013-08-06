@@ -27,6 +27,8 @@ H: Config key InstallPath in doc/systemwide-settings-file.conf must
 L: Replace all text what the user could read with tr(...) so that localised
    versions are possible
 L: Create and use fancy Icons at the user interfaces.
+L: Sadly is it not (?!) possible to force Qt to store the config file at the
+   Filu home path too. Then is no fallback available.
 
 
 Filu/Database

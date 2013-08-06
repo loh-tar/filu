@@ -69,7 +69,7 @@ IndiWidgetSimple::~IndiWidgetSimple()
 
 void IndiWidgetSimple::init()
 {
-  mFullIndiSetsPath = mRcFile->getST("IndiSetsPath");
+  mFullIndiSetsPath = mRcFile->getPath("IndiSetsPath");
 
   mSheet = new PlotSheet(this);
   connect(mSheet, SIGNAL(mouse(MyMouseEvent*)), this, SIGNAL(mouse(MyMouseEvent*)));
@@ -209,5 +209,5 @@ void IndiWidgetSimple::watchIndicator()
     mIndiWatcher->removePath(indi);
   }
 
-  mIndiWatcher->addPath(mRcFile->getST("IndicatorPath") + mUsedIndiFile);
+  mIndiWatcher->addPath(mRcFile->getPath("IndicatorPath") + mUsedIndiFile);
 }

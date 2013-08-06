@@ -26,11 +26,6 @@
 FCoreApp::FCoreApp(const QString& connectionName, QCoreApplication& app)
         : FObject(connectionName, app)
 {
-  mCommandLine = app.arguments();
-  mConfigParms = mRcFile->takeConfigParms(mCommandLine);
-  mFilu->openDB();
-  addMessages(mFilu->messages());
-
   // Must create after log file is set properly
   mCmd = new CmdHelper(this);
 }

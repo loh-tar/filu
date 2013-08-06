@@ -253,8 +253,8 @@ void InspectorF::init()
 
 void InspectorF::readSettings()
 {
-  mTradingRulePath = mRcFile->getST("TradingRulePath");
-  mIndicatorPath = mRcFile->getST("IndicatorPath");
+  mTradingRulePath = mRcFile->getPath("TradingRulePath");
+  mIndicatorPath = mRcFile->getPath("IndicatorPath");
   mRcFile->beginGroup("Inspector");
   QSize size;
   size = mRcFile->getSZ("InspectorSize");

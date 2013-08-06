@@ -39,20 +39,16 @@ class RcFile : public SettingsFile
                   RcFile(Newswire* parent);
     virtual      ~RcFile();
 
-    QString       getGlobalST(const QString& key);
     void          saveGroup();
     void          restoreGroup();
-    QStringList   takeConfigParms(QStringList& cmdLine);
+    void          takeConfigParms(const QHash<QString, QVariant>& forced);
+    void          checkFiluHome();
 
   protected:
     QVariant      getValue(const QString& key, const QVariant&) const;
 
-    void          checkFiluHome();
-    void          setFullPath(const QString& path, const QString& key);
-
     Newswire*     mNewswire;
-
-    QHash<QString, QVariant>  mDefault;
+    QString       mSavedGroup;
     QHash<QString, QVariant>  mForced;
 };
 

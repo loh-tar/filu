@@ -37,8 +37,6 @@ class FCoreApp : public FObject
 
   protected:
     CmdHelper*  mCmd;
-    QStringList mCommandLine;
-    QStringList mConfigParms;
 };
 
 #endif

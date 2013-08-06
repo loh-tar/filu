@@ -29,17 +29,6 @@ RcFile::RcFile(Newswire* parent)
       : SettingsFile()
       , mNewswire(parent)
 {
-  mDefault.reserve(6);
-
-  mDefault.insert("FiluHome",          "/Filu/");
-  mDefault.insert("IndicatorPath",     "Indicators/");
-  mDefault.insert("IndiSetsPath",      "IndicatorSets/");
-  mDefault.insert("TradingRulePath",   "TradingRules/");
-  mDefault.insert("IndiFilterSetPath", "IndicatorFilterSettings/");
-
-  mDefault.insert("LogFile",           "filu.log");
-
-  checkFiluHome();
 }
 
 RcFile::~RcFile()
@@ -49,66 +38,33 @@ RcFile::~RcFile()
 QVariant RcFile::getValue(const QString& key, const QVariant& /*def*/) const
 {
   if(mForced.contains(key)) return mForced.value(key);
-  else return value(key, mDefault.value(key));
+  else return value(key);
 };
-
-QString RcFile::getGlobalST(const QString& key)
-{
-  saveGroup();
-
-  QString val = getST(key);
-
-  restoreGroup();
-
-  return val;
-}
 
 void RcFile::saveGroup()
 {
-  mDefault.insert("_SavedGroup", group()); // Use of mDefault is only a makeshift
+  mSavedGroup = group();
   while(!group().isEmpty()) endGroup();
 }
 
 void RcFile::restoreGroup()
 {
-  beginGroup(mDefault.value("_SavedGroup").toString());
+  beginGroup(mSavedGroup);
 }
 
-QStringList RcFile::takeConfigParms(QStringList& cmdLine)
+void RcFile::takeConfigParms(const QHash<QString, QVariant>& forced)
 {
-  mNewswire->setVerboseLevel(FUNC, getST("Verbose"));
-
-  QStringList filuParms;
-
-  int pos = cmdLine.indexOf("--config");
-
-  if(-1 == pos)
+  if(forced.size() == 0)
   {
-    mNewswire->setLogFile(getST("LogFile"));
-    return filuParms;
+    checkFiluHome();
+    return;
   }
 
-  bool makePermanent = cmdLine.at(1) == "set" ? true : false;
+  mForced = forced;
 
-  cmdLine.takeAt(pos); // Remove --config
+  bool makePermanent = QCoreApplication::arguments().at(1) == "set" ? true : false;
 
-  QString parm;
-  while(pos < cmdLine.size())
-  {
-    if(cmdLine.at(pos).startsWith("--")) break;
-
-    parm.append(cmdLine.takeAt(pos));
-
-    QStringList keyVal = parm.split("=", QString::SkipEmptyParts);
-    if(keyVal.size() < 2) continue;
-
-    mForced.insert(keyVal.at(0), keyVal.at(1));
-    filuParms.append(parm);
-    parm.clear();
-  }
-
-  mNewswire->setVerboseLevel(FUNC, getST("Verbose"));
-  mNewswire->setLogFile(getST("LogFile"));
+  checkFiluHome();
 
   if(mForced.size())
   {
@@ -119,68 +75,43 @@ QStringList RcFile::takeConfigParms(QStringList& cmdLine)
       if(makePermanent)
       {
         mNewswire->verbose(FUNC, tr("Write to config file: %1 = %2")
-                                 .arg(key, width).arg(mForced.value(key).toString()), Newswire::eEver);
+                                   .arg(key, width)
+                                   .arg(mForced.value(key).toString())
+                                       , Newswire::eEver);
 
         set(key, mForced.value(key));
       }
       else
       {
         mNewswire->verbose(FUNC, tr("Use temporary config parm: %1 = %2")
-                                  .arg(key, width).arg(mForced.value(key).toString()), Newswire::eAmple);
+                                   .arg(key, width)
+                                   .arg(mForced.value(key).toString())
+                                       , Newswire::eAmple);
       }
     }
   }
 
-  return filuParms;
+  return;
 }
 
-/***********************************************************************
-*
-*                             Protected  Stuff
-*
-************************************************************************/
 void RcFile::checkFiluHome()
 {
-  QString filuHome = getST("FiluHome");
+  mNewswire->setVerboseLevel(FUNC, getST("Verbose"));
 
-  if(QFile::exists(filuHome)) return;
-
-  if(mDefault.value("FiluHome").toString() == filuHome)
-  {
-    filuHome = QDir::homePath() + filuHome;
-  }
-
-  mNewswire->verbose(FUNC, tr("Create new FiluHome: %1").arg(filuHome));
-
-  FTool::copyDir(getST("InstallPath") + "userfiles/", filuHome);
-
-  QString filuConf = QDir::homePath() + "/.config/Filu.conf";
+  QString filuConf = QSettings::fileName();
   if(!QFile::exists(filuConf))
   {
-    mNewswire->verbose(FUNC, tr("Create user settings file: %1").arg(filuConf));
-    QFile::copy(filuHome + "Filu.conf", filuConf);
+    mNewswire->verbose(FUNC, tr("Create user config file: %1").arg(filuConf));
+    QFile::copy(getPath("InstallPath") + "userfiles/Filu.conf", filuConf);
     sync();
   }
 
-  QFile::remove(filuHome + "Filu.conf");
-
-  // Write some relevant keys to the new config file
-  set("FiluHome", filuHome);
-  setFullPath("FiluHome", "IndicatorPath");
-  setFullPath("FiluHome", "IndiSetsPath");
-  setFullPath("FiluHome", "TradingRulePath");
-  setFullPath("FiluHome", "IndiFilterSetPath");
-  setFullPath("FiluHome", "LogFile");
-}
-
-void RcFile::setFullPath(const QString& path, const QString& key)
-{
-  QString fullPath = getST(key);
-
-  if(!fullPath.startsWith('/'))
+  QString filuHome = getUrl("FiluHome");
+  if(!QFile::exists(filuHome))
   {
-    fullPath.prepend(getST(path));
+    mNewswire->verbose(FUNC, tr("Create new FiluHome: %1").arg(filuHome));
+    FTool::copyDir(getPath("InstallPath") + "userfiles/", filuHome);
   }
 
-  set(key, fullPath);
+  mNewswire->setLogFile(getUrl("LogFile"));
 }

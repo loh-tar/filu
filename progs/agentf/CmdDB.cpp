@@ -210,7 +210,7 @@ void CmdDB::list()
   {
     if("func" == type) type = "functions";
     QString schema = mCmd->has("user") ? "user/" : "filu/";
-    QDir dir(mRcFile->getST("SqlPath") + schema + type, "*.sql");
+    QDir dir(mRcFile->getPath("SqlPath") + schema + type, "*.sql");
     resultLst = dir.entryList(QDir::Files, QDir::Name);
     resultLst.replaceInStrings(".sql", "");
   }

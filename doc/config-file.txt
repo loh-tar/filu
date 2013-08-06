@@ -12,41 +12,46 @@ progs at run time.
 The templates files used at install are doc/systemwide-settings-file.conf and
 doc/user-settings-file.conf. So you can modify these too if needed.
 
+Keys which represent a path or an URL/file can contain the tilde sign ~ or other
+path keys leaded by a dollar sign $. You will guess right now, the tilde is
+replaced by the user home path and the dollar marked key is substituted by the
+the value of the key.
+
 FiluHome=~/Filu
   The location where Filu stores your personal data and settings, but none of the
   DB data. It's usual to store such data in ~/.foo but I don't like that hidden
   files/directories with interesting data.
 
-IndicatorPath=FiluHome/Indicators/
+IndicatorPath=$FiluHome/Indicators
   Where your self written, or shipped by Filu, indicators are located. These
   indicators which are used to paint, scan or trade, but no FiluPowerIndicators.
 
-IndiSetsPath=FiluHome/IndicatorSets/
+IndiSetsPath=$FiluHome/IndicatorSets
   A indicator set is a combination of indicators shown at once by PerformerF.
 
-TradingRulePath=FiluHome/TradingRules/
-  Where your trading rules are located.
-
-IndiFilterSetPath=FiluHome/IndicatorFilterSettings/
+IndiFilterSetPath=$FiluHome/IndicatorFilterSettings
   A filter set stores which data are not shown in the indicator data view, at the
   right of an indicator chart window.
 
-InstallPath=/usr/local/lib/Filu/
-  Changing these affect only where Filu searches for some data at first time
-  start up.
+InstallPath=/usr/local/lib/Filu
+  Currently is all stuff stored below these path, except of course the DB data
+  and the system wide config file.
 
-PluginPath=InstallPath
+LogFile=$FiluHome/filu.log
+  Where error/info messages are logged.
+
+PluginPath=$InstallPath
   Where plugins will be searched. Currently only the fixed Postgres driver is
   used and must be copied to PluginPath/sqldrivers.
 
-LogFile=FiluHome/filu.log
-  Where error/info messages are logged.
-
-ProviderPath=InstallPath/provider/
+ProviderPath=$InstallPath/provider
   Where the provider scripts are located.
 
-SqlPath=/usr/local/lib/Filu/sqls/
+SqlPath=/usr/local/lib/Filu/sqls
   Where SQLs are stored to access the DB.
+
+TradingRulePath=$FiluHome/TradingRules
+  Where your trading rules are located.
 
 DatabaseName=filu
 Devil=
@@ -68,6 +73,7 @@ DaysToFetchIfNoData=730
 
 MakeNameNice=true
   When importing data will FiNames are stripped, or not.
+  See also doc/make-name-nice.conf.
 
 MaxClones=5
   How many AgentFs will be started to do a big job, e.g at 'full'.
