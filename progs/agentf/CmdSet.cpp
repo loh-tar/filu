@@ -61,19 +61,21 @@ bool CmdSet::exec(CmdHelper* ch)
   {
     mCmd->regOpts("config");
     mCmd->inOptBrief("config", "<Key>=<Value> [<Key>=<Value>].."
-                   , "Key is any config file key and value ...yes. There are no checks done if "
-                     "Key is known or value is valid");
+                   , "There are no checks done if key is known or value is valid");
 
     mCmd->groupOpts("Options", ""); // Don't show <Options>
     if(mCmd->printThisWay("~~config")) return true;
 
-    mCmd->printComment(tr("As you may know take the --config option each Filu program to use temporary "
-                          "different settings. With the set command will these settings written "
-                          "into the config file."));
-    mCmd->prin4Comment(tr("But because all this is not truly done by AgentF you may notice a differend "
-                          "behavior of the set command from other commands of AgentF. The point is: "
-                          "--help does not prevent from writing into the config file."));
-
+    mCmd->printComment(tr(
+      "As you may know take the --config option each Filu program to use temporary "
+      "different settings. With the set command will these settings written "
+      "into the config file."));
+    mCmd->prin4Note(tr(
+      "Because all this is not truly done by AgentF you may notice a different "
+      "behaviour of the set command from other commands of AgentF. The point is: "
+      "--help does not prevent from writing into the config file."));
+    mCmd->printNote(tr(
+      "To remove (unset) a key use '<Key>=---'"));
     mCmd->printForInst("--config SqlDebug=Ample Verbose=Ample");
     mCmd->aided();
     return true;

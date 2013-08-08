@@ -42,6 +42,7 @@ class RcFile : public SettingsFile
     void          saveGroup();
     void          restoreGroup();
     void          takeConfigParms(const QHash<QString, QVariant>& forced);
+    void          checkConfigFile();
     void          checkFiluHome();
 
   protected:

@@ -145,6 +145,7 @@ void Newswire::setVerboseLevel(const QString& func, const QString& level)
   else
   {
     error(func, tr("Verbose level '%1' unknown.").arg(level));
+    setVerboseLevel(eAmple);
   }
 }
 

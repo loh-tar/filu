@@ -56,6 +56,7 @@ void RcFile::takeConfigParms(const QHash<QString, QVariant>& forced)
 {
   if(forced.size() == 0)
   {
+    checkConfigFile();
     checkFiluHome();
     return;
   }
@@ -67,39 +68,63 @@ void RcFile::takeConfigParms(const QHash<QString, QVariant>& forced)
     mForced.remove("Devil");
   }
 
-  bool makePermanent = QCoreApplication::arguments().at(1) == "set" ? true : false;
-
-  checkFiluHome();
-
-  if(mForced.size())
+  if(QCoreApplication::arguments().at(1) == "set")
   {
+    // Special treatment for verbose because checkConfigFile() would cause error
+    if("---" == mForced.value("Verbose").toString())
+    {
+      mForced.insert("Verbose", QVariant("Info"));
+      checkConfigFile();
+      mForced.insert("Verbose", QVariant("---"));
+    }
+    else
+    {
+      checkConfigFile();
+    }
+
+    checkFiluHome();
+
+    QStringList keys = mForced.keys();
+    foreach(const QString& key, keys)
+    {
+      QString val = mForced.value(key).toString();
+      if("---" == val)
+      {
+        mNewswire->verbose(FUNC, tr("Remove from config file: %1")
+                                   .arg(key), Newswire::eEver);
+        remove(key);
+        mForced.remove(key);
+      }
+    }
+
+    keys = mForced.keys();
+    int width = - FTool::maxSizeOfStrings(keys);
+    foreach(const QString& key, keys)
+    {
+      QString val = mForced.value(key).toString();
+
+      mNewswire->verbose(FUNC, tr("Write to config file: %1 = %2")
+                                 .arg(key, width).arg(val), Newswire::eEver);
+      set(key, val);
+    }
+  }
+  else
+  {
+    checkConfigFile();
+    checkFiluHome();
     QStringList keys = mForced.keys();
     int width = - FTool::maxSizeOfStrings(keys);
-    foreach(QString key, keys)
+    foreach(const QString& key, keys)
     {
-      if(makePermanent)
-      {
-        mNewswire->verbose(FUNC, tr("Write to config file: %1 = %2")
-                                   .arg(key, width)
-                                   .arg(mForced.value(key).toString())
-                                       , Newswire::eEver);
-
-        set(key, mForced.value(key));
-      }
-      else
-      {
-        mNewswire->verbose(FUNC, tr("Use temporary config parm: %1 = %2")
-                                   .arg(key, width)
-                                   .arg(mForced.value(key).toString())
-                                       , Newswire::eAmple);
-      }
+      mNewswire->verbose(FUNC, tr("Use temporary config parm: %1 = %2")
+                                  .arg(key, width).arg(getST(key)), Newswire::eAmple);
     }
   }
 
   return;
 }
 
-void RcFile::checkFiluHome()
+void RcFile::checkConfigFile()
 {
   mNewswire->setVerboseLevel(FUNC, getST("Verbose"));
 
@@ -110,7 +135,10 @@ void RcFile::checkFiluHome()
     QFile::copy(getPath("InstallPath") + "userfiles/Filu.conf", filuConf);
     sync();
   }
+}
 
+void RcFile::checkFiluHome()
+{
   QString filuHome = getUrl("FiluHome");
   if(!QFile::exists(filuHome))
   {
