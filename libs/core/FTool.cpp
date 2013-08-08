@@ -165,6 +165,42 @@ FTool::copyDir(const QString& src, const QString& dest)
   }
 }
 
+bool
+FTool::removeDir(const QString &dirName)
+{
+  // Found at http://john.nachtimwald.com/2010/06/08/qt-remove-directory-and-its-contents/
+  // Thanks to John Nachtimwald
+
+  bool result = true;
+  QDir dir(dirName);
+
+  if(dir.exists(dirName))
+  {
+    foreach(const QFileInfo& info
+          , dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden
+                            | QDir::AllDirs        | QDir::Files, QDir::DirsFirst))
+    {
+      if(info.isDir())
+      {
+        result = removeDir(info.absoluteFilePath());
+      }
+      else
+      {
+        result = QFile::remove(info.absoluteFilePath());
+      }
+
+      if(!result)
+      {
+        return result;
+      }
+    }
+
+    result = dir.rmdir(dirName);
+  }
+
+  return result;
+}
+
 QStringList
 FTool::wrapText(const QString txt, int width)
 {

@@ -17,6 +17,8 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDirIterator>
+#include <QFile>
 #include <QSqlQuery>
 
 #include "CmdExorcise.h"
@@ -61,28 +63,63 @@ bool CmdExorcise::exec(CmdHelper* ch)
 {
   if(!init(ch)) return false;
 
+  mCmd->regStdOpts("del-omen save-omen");
+
   if(mCmd->isMissingParms())
   {
+    mCmd->inOptBrief("del-omen", "[<Devil>]", "Delete the config file and home directory of <Devil>");
+    mCmd->inOptBrief("save-omen", "Don't delete the config file and home directory of <Devil>");
+
     if(mCmd->printThisWay("[<Devil>]")) return true;
 
-    mCmd->printComment(tr("Switch in any case back to the productive version and delete "
-                          "(if given) the development schemata."));
-    mCmd->printNote(tr("The config keys 'SqlPath' and 'ProviderPath' will removed from "
-                       "the user settings file."));
-
-    mCmd->printForInst("mylastidea");
+    mCmd->printComment(tr(
+      "Switch in any case back to the productive version by restoring the "
+      "productive user config file and delete (if given) the development "
+      "schema <Devil>. At default is the devil config file and home directory saved."));
+    mCmd->printNote(tr(
+      "You could set in your productive config file 'DeleteDevilConfig=true' to auto "
+      "remove the devil config file and home directory. See doc/config-file.txt."));
+    mCmd->printForInst("mylastidea", tr(
+      "Remove the DB schema but keep the config file and home directory."));
+    mCmd->printForInst("--del-omen mygoodidea", tr(
+      "Only delete the config file and home directory, keep the DB untouched."));
+    mCmd->printForInst("mybadidea --del-omen", tr(
+      "Delete DB schema, config file and home directory."));
     mCmd->aided();
     return true;
   }
 
-  QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));
+  QString configFile  = mRcFile->fileName();
+  QString devil       = FTool::makeValidWord(mRcFile->getST("Devil"));
+  QString killDevil   = FTool::makeValidWord(mCmd->argStr(1, ""));
+  QString devilFile   = configFile + ".Devil." + devil;
+  QString proFile     = configFile + ".Productive";
+  bool    configSaved = false;
 
   if(!devil.isEmpty())
   {
     verbose(FUNC, tr("I renunciate the devil '%1'").arg(devil));
-    mRcFile->remove("Devil");
-    mRcFile->remove("SqlPath");
-    mRcFile->remove("ProviderPath");
+
+    QFile::remove(devilFile);
+    QFile::rename(configFile, devilFile);
+
+    configSaved = true;
+
+    if(QFile::exists(proFile))
+    {
+      QFile::rename(proFile, configFile);
+
+      mRcFile->sync();
+      mRcFile->remove("Devil"); // Be sure we are no longer devilish
+      mRcFile->checkFiluHome();
+      verbose(FUNC, tr("Productive config file restored."));
+    }
+    else
+    {
+      mRcFile->checkConfigFile();
+      mRcFile->checkFiluHome();
+    }
+
     verbose(FUNC, tr("SqlPath is now: %1").arg(mRcFile->getPath("SqlPath")));
     verbose(FUNC, tr("ProviderPath is now: %1").arg(mRcFile->getPath("ProviderPath")));
     mFilu->closeDB();
@@ -103,7 +140,29 @@ bool CmdExorcise::exec(CmdHelper* ch)
     devils.insert(devil);
   }
 
-  const QString killDevil = FTool::makeValidWord(mCmd->argStr(1, ""));
+  if(mCmd->has("del-omen") or mRcFile->getBL("DeleteDevilConfig") and !mCmd->has("save-omen"))
+  {
+    QString devil = killDevil.isEmpty() ? mCmd->optStr("del-omen") : killDevil;
+    devilFile = configFile + ".Devil." + devil;
+
+    if(!devil.isEmpty())
+    {
+      if(QFile::exists(devilFile))
+      {
+        FTool::removeDir(SettingsFile(devilFile).getPath("FiluHome"));
+        verbose(FUNC, tr("FiluHome of devil '%1' removed.").arg(devil));
+
+        QFile::remove(devilFile);
+        verbose(FUNC, tr("Config file for devil '%1' removed.").arg(devil));
+        configSaved = false;
+      }
+      else
+      {
+        error(FUNC, tr("No config file for devil '%1' found to remove.").arg(devil));
+      }
+    }
+  }
+
   const QString filuDevil = "%1_%2_%3";
   const QString userDevil = "user_%1_%2";
 
@@ -158,6 +217,10 @@ bool CmdExorcise::exec(CmdHelper* ch)
       error(FUNC, tr("No devil '%1' is amongst us.").arg(killDevil));
     }
   }
+  else if(configSaved)
+  {
+    verbose(FUNC, tr("Config file for devil '%1' saved.").arg(devil));
+  }
 
   if(verboseLevel(eInfo))
   {
@@ -167,13 +230,34 @@ bool CmdExorcise::exec(CmdHelper* ch)
     }
     else if(devils.size() == 1)
     {
-      verbose(FUNC, tr("The Devil is still amongst us:"));
+      verbose(FUNC, tr("The devil is still amongst us:"));
       verbose(FUNC, QString("  %1").arg(devils.toList().at(0)));
     }
     else
     {
-      verbose(FUNC, tr("These Devils are still amongst us:"));
+      verbose(FUNC, tr("These devils are still amongst us:"));
       foreach(QString d, devils) verbose(FUNC, QString("  %1").arg(d));
+    }
+
+    // FIXME: Looks ugly, find and print omen in a  more nicely way
+    QString path = mRcFile->fileName();
+    path.remove(QRegExp("[\\w\\.]+$"));
+    QDirIterator dirIterator(path);
+    bool infoTxt = false;
+    while(dirIterator.hasNext())
+    {
+      dirIterator.next();
+      QString omen = dirIterator.fileName();
+      if(!omen.startsWith("Filu.conf.Devil.")) continue;
+
+      omen.remove("Filu.conf.Devil.");
+      if(devils.contains(omen)) continue;
+      if(!infoTxt)
+      {
+        verbose(FUNC, tr("There are devil omen:"));
+        infoTxt = true;
+      }
+      verbose(FUNC, QString("  %1").arg(omen));
     }
   }
 

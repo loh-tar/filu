@@ -75,8 +75,6 @@ bool CmdSet::exec(CmdHelper* ch)
                           "--help does not prevent from writing into the config file."));
 
     mCmd->printForInst("--config SqlDebug=Ample Verbose=Ample");
-    mCmd->printForInst("--config Devil=-");
-    mCmd->printComment(tr("Use the hyphen to disable *temporary* an existing Devil=foo setting"));
     mCmd->aided();
     return true;
   }

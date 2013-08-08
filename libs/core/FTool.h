@@ -63,6 +63,10 @@ timeFrame(const QString& frame, bool trueDays = false);
 void
 copyDir(const QString& src, const QString& dest);
 
+// Yes, it remove the whole dir tree
+bool
+removeDir(const QString &dirName);
+
 // Wrap a text to given width
 QStringList
 wrapText(const QString txt, int width);

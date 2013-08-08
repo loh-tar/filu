@@ -61,6 +61,11 @@ void RcFile::takeConfigParms(const QHash<QString, QVariant>& forced)
   }
 
   mForced = forced;
+  if(mForced.contains("Devil"))
+  {
+    mNewswire->warning(FUNC, tr("To play with the devil is dangerous, I will ignore your wish."));
+    mForced.remove("Devil");
+  }
 
   bool makePermanent = QCoreApplication::arguments().at(1) == "set" ? true : false;
 

@@ -22,6 +22,10 @@ FiluHome=~/Filu
   DB data. It's usual to store such data in ~/.foo but I don't like that hidden
   files/directories with interesting data.
 
+Hell=~/FiluDevil
+  It's the devil home ;-) FiluHome is set to Hell/<devil> at 'sum' command when
+  called without --cpc.
+
 IndicatorPath=$FiluHome/Indicators
   Where your self written, or shipped by Filu, indicators are located. These
   indicators which are used to paint, scan or trade, but no FiluPowerIndicators.
@@ -70,6 +74,10 @@ CommitBlockSize=500
 
 DaysToFetchIfNoData=730
   How many bars, in days, should be downloaded the first time.
+
+DeleteDevilConfig=false
+  When true will AgentFs exo command delete the devil config file without the
+  need to give --del-omen.
 
 MakeNameNice=true
   When importing data will FiNames are stripped, or not.

@@ -26,7 +26,10 @@ Then go on reading, and have fun!
 Let me route you to three short tours *without* to explain each command. Well,
 one command should I anyway notice: With 'sum' you create a test "DB", more
 exactly a test schema inside the Filu database, where you can play. To remove
-these schema later use 'exo'.
+these schema later use 'exo <Tour> --del-omen'.
+
+It is supposed to run the tour inside your FiluSource path otherwise you have to
+adjust the path to doc/example-foo.
 
 
 Tour 1 - For The Very Impatient
