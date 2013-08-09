@@ -21,10 +21,9 @@ add_subdirectory(progs)
 add_subdirectory(database)
 
 # Install user default files
-set(USERFILES_FILES ${FiluRoot_SOURCE_DIR}/userfiles/)
 set(USERFILES_PATH ${CMAKE_INSTALL_PREFIX}/lib/Filu/userfiles)
 
-install(DIRECTORY ${USERFILES_FILES}
+install(DIRECTORY ${FiluRoot_SOURCE_DIR}/userfiles/
         DESTINATION ${USERFILES_PATH}
 )
 
@@ -54,19 +53,17 @@ install(DIRECTORY ${FiluRoot_SOURCE_DIR}/doc/
 #
 # Install provider scripts
 #
-set(PROVIDER_FILES ${FiluRoot_SOURCE_DIR}/scripts/provider/)
-set(PROVIDER_PATH ${CMAKE_INSTALL_PREFIX}/lib/Filu/provider)
-install(DIRECTORY ${PROVIDER_FILES}
+install(DIRECTORY ${FiluRoot_SOURCE_DIR}/scripts/provider/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu/provider
         USE_SOURCE_PERMISSIONS
-        DESTINATION ${PROVIDER_PATH}
 )
 
 #
 # Install perl modules
 #
 install(DIRECTORY ${FiluRoot_SOURCE_DIR}/scripts/perlmodules/
-        USE_SOURCE_PERMISSIONS
         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu/perlmodules
+        USE_SOURCE_PERMISSIONS
 )
 
 # Unistall target
