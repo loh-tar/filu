@@ -40,17 +40,11 @@ install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-settings-file.conf
         RENAME Filu.conf
 )
 
-# Install systemwide settings file
-set(SYSTEM_WIDE_SETTINGS_FILE Filu.conf)
-if(EXISTS /etc/xdg/Filu.conf)
-    set(SYSTEM_WIDE_SETTINGS_FILE Filu.conf.new)
-    install(CODE "MESSAGE(\"\nNOTE: File /etc/xdg/Filu.conf installed as Filu.conf.new.\n\")")
-endif(EXISTS /etc/xdg/Filu.conf)
-
-install(FILES ${FiluRoot_SOURCE_DIR}/doc/systemwide-settings-file.conf
-        DESTINATION /etc/xdg/
-        RENAME ${SYSTEM_WIDE_SETTINGS_FILE}
+# Install systemwide settings file (it's tricky to avoid override)
+configure_file(${FiluRoot_SOURCE_DIR}/cmake/install-systemwide-config-file.cmake
+               ${FiluRoot_BINARY_DIR}
 )
+install(SCRIPT ${FiluRoot_BINARY_DIR}/install-systemwide-config-file.cmake)
 
 #
 # Install provider scripts
