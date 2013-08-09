@@ -46,6 +46,11 @@ configure_file(${FiluRoot_SOURCE_DIR}/cmake/install-systemwide-config-file.cmake
 )
 install(SCRIPT ${FiluRoot_BINARY_DIR}/install-systemwide-config-file.cmake)
 
+# Install documentation
+install(DIRECTORY ${FiluRoot_SOURCE_DIR}/doc/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/Filu
+)
+
 #
 # Install provider scripts
 #
