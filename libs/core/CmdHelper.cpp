@@ -315,11 +315,11 @@ bool CmdHelper::isMissingParms(int n/* = 0*/)
 
   if(mMandatory.size())
   {
-    foreach(StrSet mo, mMandatory)
+    foreach(const StrSet& mo, mMandatory)
     {
       bool ok = false;
       QString opts;
-      foreach(QString o, mo)
+      foreach(const QString& o, mo)
       {
         if(has(o)) { ok = true; break; }
 
@@ -405,7 +405,7 @@ void CmdHelper::regCmds(const QString& cmds)
   // Register Commands
   StrSet cmdLst = stripOptions(cmds);
 
-  foreach(QString cmd, cmdLst)
+  foreach(const QString& cmd, cmdLst)
   {
     if(mCmds.contains(cmd))
       fatal(FUNC, QString("Command already registered: %1").arg(cmd));
@@ -419,7 +419,7 @@ void CmdHelper::regSubCmds(const QString& sub)
   // Register Sub Ccommands
   StrSet cmdLst = stripOptions(sub);
 
-  foreach(QString cmd, cmdLst)
+  foreach(const QString& cmd, cmdLst)
   {
     if(mSubCmds.contains(cmd))
       fatal(FUNC, QString("Subcommand already registered: %1").arg(cmd));
@@ -433,7 +433,7 @@ void CmdHelper::regOpts(const QString& opts)
   // Register Options
   StrSet optLst = stripOptions(opts);
 
-  foreach(QString opt, optLst)
+  foreach(const QString& opt, optLst)
   {
     if(mOpts.contains(opt))
       fatal(FUNC, QString("Option already registered: %1").arg(opt));
@@ -527,14 +527,14 @@ void CmdHelper::printBrief(const StrSet& cmds, const QString& header)
   {
     int indent = 2;
     QStringList table = FTool::formatToTable(cmdLst, mScreenWidth - indent);
-    foreach(QString l, table)
+    foreach(const QString& l, table)
     {
       print(QString("  %1").arg(l));
     }
   }
   else
   {
-    foreach(QString c, cmdLst)
+    foreach(const QString& c, cmdLst)
     {
       printDef(c, mOptions.brief(c));
     }
@@ -558,7 +558,7 @@ void CmdHelper::printCommands(const StrSet& cmds)
   {
     int indent = 2;
     QStringList table = FTool::formatToTable(cmdLst, mScreenWidth - indent);
-    foreach(QString l, table)
+    foreach(const QString& l, table)
     {
       print(QString("  %1").arg(l));
     }
@@ -701,7 +701,7 @@ bool CmdHelper::printThisWay(const QString& s)
 
     opts.sort();
     QString substitude;
-    foreach(QString o, opts)
+    foreach(const QString& o, opts)
     {
       substitude.append(QString("[--%1 %2] ").arg(o, mOptions.parms(o).remove(rxParmDef)));
     }
@@ -723,7 +723,7 @@ bool CmdHelper::printThisWay(const QString& s)
     QString mo;                                       // Mandatory Option
     if(found) mo.append(" \\ ");                      // Insert a hard wrap mark
     ++found;
-    foreach(QString o, mol)
+    foreach(const QString& o, mol)
     {
       extraOpts.insert(o);
       QString opt = QString("--%1 %2").arg(o, mOptions.parms(o).remove(rxParmDef));
@@ -843,7 +843,7 @@ bool CmdHelper::printThisWay(const QString& s)
   if(prtOptBrief)
   {
 
-    foreach(QString p, cmdParts)
+    foreach(const QString& p, cmdParts)
     {
       StrSet opts;
       if(mTempGroup.contains(p))  opts = mTempGroup.value(p);
@@ -939,7 +939,7 @@ void CmdHelper::printComment(const QString& s, int indent/* = 0*/)
   QString tmplate  = QString(" ").repeated(indent);
   tmplate.append("%1");
 
-  foreach(QString s, wrap)
+  foreach(const QString& s, wrap)
   {
     print(tmplate.arg(s));
   }
@@ -986,7 +986,7 @@ void CmdHelper::printNote(const QString& s)
   }
 
   // ...and the rest of the text as block
-  foreach(QString s, txt)
+  foreach(const QString& s, txt)
   {
     print(QString("%1%2").arg(" ", -(note.size() - 2)).arg(s));
   }
@@ -1018,7 +1018,7 @@ void CmdHelper::printDef(const QString& term, const QString& def
     }
 
     // ...and the rest of the definition as block below
-    foreach(QString s, wrapDef)
+    foreach(const QString& s, wrapDef)
     {
       print(QString("  %1 %2").arg(" ", -termWidth).arg(s));
     }

@@ -53,7 +53,7 @@ Trader::~Trader()
 {
   delete mFeeCalc;
   if(mIndicator) delete mIndicator;
-  foreach(Rule rule, mRules) delete rule.first; // Delete the parser
+  foreach(const Rule& rule, mRules) delete rule.first; // Delete the parser
   mRules.clear();
 }
 
@@ -411,7 +411,7 @@ bool Trader::check(BarTuple* bars, const QDate& lastCheck)
   if(!initVariables()) return false;
 
   // Overwrite some status variables
-  foreach(QString var, mRealVar.keys()) setTo(var, mRealVar.value(var));
+  foreach(const QString& var, mRealVar.keys()) setTo(var, mRealVar.value(var));
   setTo("Cash", inFiCurrency(mVariable.value("Cash")));
   setTo("TotalBalance", inFiCurrency(mVariable.value("TotalBalance")));
   setTo("MinPositionSize", inFiCurrency(mVariable.value("MinPositionSize")));
@@ -699,7 +699,7 @@ void Trader::readRules()
   mOkRules = true;
 
   // Clear rule if it's not the first run
-  foreach(Rule rule, mRules) delete rule.first; // Delete the parser
+  foreach(const Rule& rule, mRules) delete rule.first; // Delete the parser
   mRules.clear();
 
   while(nextLine())
@@ -1203,7 +1203,7 @@ int Trader::prepare(const QDate& fromDate, const QDate& toDate)
   mFi.clear();
 
   QSet<QString> onTheList;
-  foreach(QString group, groups)
+  foreach(const QString& group, groups)
   {
     int gid = mFilu->getGroupId(group);
 

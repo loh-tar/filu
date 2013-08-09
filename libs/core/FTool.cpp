@@ -71,11 +71,11 @@ FTool::strToAttributes(const QString& str, QHash<QString, QString>& attr)
 {
   QStringList keyValueList = str.split('\n');
 
-  foreach(QString keyValueStr, keyValueList)
+  foreach(const QString& keyValueStr, keyValueList)
   {
     int idx = keyValueStr.indexOf("=");
     QString name  = keyValueStr.left(idx);
-    QString value = keyValueStr.remove(0, ++idx);
+    QString value = keyValueStr.right(keyValueStr.size() - (++idx));
 
     value.replace("/n", QString('\n'));
     value.replace("/=", "=");
@@ -208,18 +208,17 @@ FTool::wrapText(const QString txt, int width)
 
   QString line;
   QStringList wraped;
-  foreach(QString s, words)
+  foreach(const QString& s, words)
   {
-    s.append(" ");
-    if(line.size() + s.size() > width)
+    if(line.size() + s.size() + 1 > width)
     {
-      line.chop(1); // Remove above added space
+      line.chop(1); // Remove added space
       wraped << line;
-      line = s;
+      line = s + " ";
     }
     else
     {
-      line.append(s);
+      line.append(s + " ");
     }
   }
 
@@ -239,7 +238,7 @@ FTool::breakUpText(const QString txt, bool ignoreQuotes/* = true*/)
   QStringList rawWords = txt.split(" ", QString::SkipEmptyParts);
   QStringList fractions;
   QStringList parts;
-  foreach(QString s,rawWords)
+  foreach(const QString& s,rawWords)
   {
     parts.append(s);
 
@@ -339,7 +338,7 @@ int
 FTool::maxSizeOfStrings(const QStringList& sl)
 {
   int max = 0;
-  foreach(QString s, sl) max = qMax(max, s.size());
+  foreach(const QString& s, sl) max = qMax(max, s.size());
   return max;
 }
 

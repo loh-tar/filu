@@ -69,7 +69,7 @@ FClass::FClass(const QString& connectionName)
   mCommandLine = QCoreApplication::arguments();
 
   QHash<QString, QVariant> parms = takeConfigParms();
-  foreach(QString key, parms.keys())
+  foreach(const QString& key, parms.keys())
   {
     QString parm = key + "=" + parms.value(key).toString();
     mConfigParms.append(parm);

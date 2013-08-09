@@ -342,7 +342,7 @@ void Depots::checkDepots(QSqlQuery* depots)
 
     traders.append(trader);
     groups.append(trader->workOnGroups());
-    foreach(QString group, trader->workOnGroups()) allGroups.insert(group);
+    foreach(const QString& group, trader->workOnGroups()) allGroups.insert(group);
 
     if(fromDate > trader->needBarsFrom()) fromDate = trader->needBarsFrom();
 
@@ -363,7 +363,7 @@ void Depots::checkDepots(QSqlQuery* depots)
   verbose(FUNC, tr("Check for day:  %1").arg(mToday.toString(Qt::ISODate)), eAmple);
 
   QSet<int> alreadyChecked;
-  foreach(QString group, allGroups)
+  foreach(const QString& group, allGroups)
   {
     int gid = mFilu->getGroupId(group);
     if(gid < 0)

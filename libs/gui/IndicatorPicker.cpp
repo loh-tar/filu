@@ -134,7 +134,7 @@ void IndicatorPicker::raiseTree()
       if(line.startsWith("*AddToGroup"))
       {
         line.remove(0, 12); // Remove "*AddToGroup" plus the seperator char e.g. ":"
-        foreach(QString group, line.split(","))
+        foreach(const QString& group, line.split(","))
         {
           if(!groups.contains(group))
           {

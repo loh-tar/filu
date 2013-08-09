@@ -217,7 +217,7 @@ void CmdDB::list()
 
   if(mCmd->has("oneCol"))
   {
-    foreach(QString result, resultLst) print(result);
+    foreach(const QString& result, resultLst) print(result);
   }
   else
   {
@@ -226,7 +226,7 @@ void CmdDB::list()
     int indent = 2;
     QString tmplate = QString(" ").repeated(indent);
     tmplate.append("%1");
-    foreach(QString row, FTool::formatToTable(resultLst, width - indent))
+    foreach(const QString& row, FTool::formatToTable(resultLst, width - indent))
     {
       print(tmplate.arg(row));
     }

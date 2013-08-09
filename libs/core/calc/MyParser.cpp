@@ -97,7 +97,7 @@ bool MyParser::setExp(const QString& expr)
   }
 
   // ...and set the real needed variables. Well, its a crook again :-/
-  foreach(QString name, usedVariables)
+  foreach(const QString& name, usedVariables)
   {
     // 0.0 is only a dummy, replaced later
     QHash<QString, double>::iterator it = mVariables->insert(name, 0.0);

@@ -429,7 +429,7 @@ bool Importer::import(const QString& line)
     QHashIterator<QString, QString> i(mData);
     while(i.hasNext()) { i.next(); sl << QString("%1=%2").arg(i.key(), i.value()); }
     sl.sort();
-    foreach(QString data, sl) verbose(FUNC, data);
+    foreach(const QString& data, sl) verbose(FUNC, data);
   }
   //return true; // debug only
 
@@ -880,7 +880,7 @@ void Importer::prepare()
     QHashIterator<QString, QString> i(mData);
     while(i.hasNext()) { i.next(); sl << QString("%1=%2").arg(i.key(), i.value()); }
     sl.sort();
-    foreach(QString data, sl) verbose(FUNC, data);
+    foreach(const QString& data, sl) verbose(FUNC, data);
   }
 }
 

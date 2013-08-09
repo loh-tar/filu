@@ -207,7 +207,7 @@ PerformerF::PerformerF(QApplication& app)
   act->setData(""); // Set to "no type"
   act->setCheckable(true);
   act->setChecked(true);
-  foreach(QString type, coTypes)
+  foreach(const QString& type, coTypes)
   {
     act = new QAction(actGrp);
     act->setIconText(type);

@@ -174,7 +174,7 @@ bool CmdExorcise::exec(CmdHelper* ch)
 //   replace the paramater by his own
 //   if("+++" == killDevil) // Exorcise all devils
 //   {
-//     foreach(QString d, devils)
+//     foreach(const QString& d, devils)
 //     {
 //       verbose(FUNC, tr("Devil '%1'.").arg(d));
 //       mFilu->setStaticSqlParm(":filuDevil", filuDevil.arg(mRcFile->getST("FiluSchema"), user, d));
@@ -236,7 +236,7 @@ bool CmdExorcise::exec(CmdHelper* ch)
     else
     {
       verbose(FUNC, tr("These devils are still amongst us:"));
-      foreach(QString d, devils) verbose(FUNC, QString("  %1").arg(d));
+      foreach(const QString& d, devils) verbose(FUNC, QString("  %1").arg(d));
     }
 
     // FIXME: Looks ugly, find and print omen in a  more nicely way

@@ -52,7 +52,7 @@ void FToolBar::loadSettings()
 
   clear();
 
-  foreach(QString actName, actNames)
+  foreach(const QString& actName, actNames)
   {
     QAction* act = 0;
     foreach(act, al)

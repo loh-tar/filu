@@ -158,7 +158,7 @@ void Scanner::loadIndicator(const QStringList& indiList)
   mRcFile->beginGroup("LastTimeScanned");
 
   Indicator* indicator = 0;
-  foreach(QString indi, indiList)
+  foreach(const QString& indi, indiList)
   {
     if(mLoadedIndicators.contains(indi)) continue;
 
@@ -304,7 +304,7 @@ void Scanner::scanGroup()
     return;
   }
 
-  foreach(QString group, arg)
+  foreach(const QString& group, arg)
   {
     int groupId = mFilu->getGroupId(group);
     if(groupId < 1)

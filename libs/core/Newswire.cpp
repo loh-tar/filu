@@ -163,7 +163,7 @@ QString Newswire::formatMessages(const QString& format/* = ""*/)
   if(useFormat.isEmpty()) useFormat = mFormat.value(eErrFunc);
 
   QString msgs;
-  foreach(Message msg, mMessages)
+  foreach(const Message& msg, mMessages)
   {
     msgs.append(formatMessage(msg, useFormat) + "\n");
   }
@@ -212,7 +212,7 @@ QString Newswire::messageTypeName(const MsgType type)
 
 void Newswire::addMessages(const MessageLst& msgl)
 {
-  foreach(Message msg, msgl) addMessage(msg);
+  foreach(const Message& msg, msgl) addMessage(msg);
 }
 
 void Newswire::errInfo(const QString& func, const QString& txt)

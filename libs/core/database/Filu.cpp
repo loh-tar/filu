@@ -704,7 +704,7 @@ QSqlQuery* Filu::searchRows(const QString& table, const QStringList& fieldValueL
   QString caption("lower(caption) LIKE '%'|| lower('%1') ||'%' and ");
 
   QRegExp splitter("[<>=]");
-  foreach(QString fv, fieldValueLst)
+  foreach(const QString& fv, fieldValueLst)
   {
     splitter.indexIn(fv, 0);
     QString oprator = splitter.cap(0);
@@ -1433,10 +1433,10 @@ bool Filu::executeSqls(const QString& path)
   execute("_Psst!", "SET client_min_messages TO WARNING");
   QStringList sqls = QDir(mSqlPath + path).entryList(QDir::Files, QDir::Name);
 
-  foreach(QString sql, sqls)
+  foreach(const QString& sql, sqls)
   {
-    sql.chop(4); // Remove .sql suffix which will again added by execSql()
-    execSql(path + sql);
+    // Remove .sql suffix which will again added by execSql()
+    execSql(path + sql.left(sql.size() - 4));
     if(hasError()) return false;
   }
 
@@ -1590,7 +1590,7 @@ QString Filu::parseSql(const QString& name, const QString& rawSql)
   QString sql = rawSql;
 
   // Fix the schema and client place holder
-  foreach(QString parm, mSqlStaticParms.keys())
+  foreach(const QString& parm, mSqlStaticParms.keys())
   {
     // Matches ':foo.' but not ':foobar.'
     QString pattern = QString("%1(?=[\\W_])").arg(parm);
