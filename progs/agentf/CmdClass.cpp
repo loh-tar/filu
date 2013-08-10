@@ -34,6 +34,7 @@
 #include "CmdThis.h"
 #include "CmdFetch.h"
 #include "CmdDo.h"
+#include "CmdDoc.h"
 
 static const QString cCmd1 = "CmdClass";
 static const QString cCmd1Brief = "You should never read this. "
@@ -50,7 +51,7 @@ CmdClass::~CmdClass()
 
 CmdClass* CmdClass::createNew(const QString& type, AgentF* agent)
 {
-  // Append these command list when you add a new sub classe
+  // Append these command list when you add a new sub class
   if(CmdAdd::isCmd(type))           return new CmdAdd(agent);
   if(CmdDB::isCmd(type))            return new CmdDB(agent);
   if(CmdImp::isCmd(type))           return new CmdImp(agent);
@@ -62,6 +63,7 @@ CmdClass* CmdClass::createNew(const QString& type, AgentF* agent)
   if(CmdThis::isCmd(type))          return new CmdThis(agent);
   if(CmdFetch::isCmd(type))         return new CmdFetch(agent);
   if(CmdDo::isCmd(type))            return new CmdDo(agent);
+  if(CmdDoc::isCmd(type))           return new CmdDoc(agent);
 
   // FIXME Not possible because this here is a static function
   //   fatal(FUNC, QString("Unknown CmdClass type: '%1'").arg(type));
@@ -85,6 +87,7 @@ QSet<QString> CmdClass::allRegCmds(CmdHelper* ch)
   cmds.insert(CmdThis::regCmd(ch));
   cmds.insert(CmdFetch::regCmd(ch));
   cmds.insert(CmdDo::regCmd(ch));
+  cmds.insert(CmdDoc::regCmd(ch));
 
   return cmds;
 }
@@ -103,6 +106,7 @@ void CmdClass::allBriefIn(CmdHelper* ch)
   CmdThis::briefIn(ch);
   CmdFetch::briefIn(ch);
   CmdDo::briefIn(ch);
+  CmdDoc::briefIn(ch);
 }
 
 void CmdClass::briefIn(CmdHelper* cmd)

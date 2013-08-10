@@ -22,6 +22,7 @@ set(agentf_SRC
     CmdThis.cpp
     CmdFetch.cpp
     CmdDo.cpp
+    CmdDoc.cpp
     AgentF.cpp
     main.cpp
 )
