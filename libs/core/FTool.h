@@ -76,10 +76,17 @@ wrapText(const QString txt, int width);
 QStringList
 breakUpText(const QString txt, bool ignoreQuotes = true);
 
+//
 // Format data into lines to build a table with max width
+enum TableOpt { eWidth, eColumns, eColWidth, eMinColWidth, eIndent, eLeftRight, eAddEmptyLines };
+typedef QHash<TableOpt, int> TableOptions;
+
 QStringList
-formatToTable(const QStringList& data, int width
-            , const QHash<QString, int>& options = QHash<QString, int>());
+formatToTable(const QStringList& data, const TableOptions& options);
+
+// For Convenience
+QStringList
+formatToTable(const QStringList& data, int width = 80, int indent = 2);
 
 // Retruns the size of the longest string in given stringlist
 int

@@ -262,14 +262,26 @@ FTool::breakUpText(const QString txt, bool ignoreQuotes/* = true*/)
 }
 
 QStringList
-FTool::formatToTable(const QStringList& data, int width
-                   , const QHash<QString, int>& options/* = QHash<QString, int>()*/)
+FTool::formatToTable(const QStringList& data, int width/* = 100*/, int indent/* = 2*/)
+{
+  TableOptions opts;
+  opts.insert(eWidth, width);
+  opts.insert(eIndent, indent);
+
+  return formatToTable(data, opts);
+}
+
+QStringList
+FTool::formatToTable(const QStringList& data, const TableOptions& opts)
 {
   if(!data.size()) return data;
 
   // Calc some facts, not all are currently used
   int minColWidth  = FTool::maxSizeOfStrings(data) + 1;
+      minColWidth  = qMax(minColWidth, opts.value(eMinColWidth));
   int optiColWidth = minColWidth * 1.5;
+  int width        = opts.value(eWidth, 80);
+      width       -= opts.value(eIndent, 2);
   int maxColCount  = static_cast<double>(width) / static_cast<double>(minColWidth) + 1.0;
   int minRowCount  = static_cast<double>(data.size()) / static_cast<double>(maxColCount) + 1.0;
   int maxRowCount  = data.size();
@@ -277,9 +289,9 @@ FTool::formatToTable(const QStringList& data, int width
 
   int columns;
   int rows;
-  if(options.contains("Columns"))
+  if(opts.contains(eColumns))
   {
-    columns = qBound(1, options.value("Columns"), maxColCount); // Not qMin() to catch given zero
+    columns = qBound(1, opts.value(eColumns), maxColCount); // Not qMin() to catch given zero
     rows    = static_cast<double>(data.size()) / static_cast<double>(columns) + 1.0;
   }
   else
@@ -296,11 +308,13 @@ FTool::formatToTable(const QStringList& data, int width
   }
 
   int maxColWidth  = width / columns;
-  int colWidth     = qBound(minColWidth, options.value("ColWidth", optiColWidth), maxColWidth);
+  int colWidth     = qBound(minColWidth, opts.value(eColWidth, optiColWidth), maxColWidth);
 
   QStringList table;
+  QString lineMask = "%1";
+  for(int i = 0; i < opts.value(eIndent, 2); ++i) lineMask.prepend(" ");
 
-  if(options.contains("LeftRight"))
+  if(opts.contains(eLeftRight))
   {
     // Sort data left->right and up->down
     for(int i = 0; i < data.size(); i += columns)
@@ -312,7 +326,7 @@ FTool::formatToTable(const QStringList& data, int width
         line.append(QString("%1").arg(data.at(i + j), -colWidth));
       }
 
-      table.append(line);
+      table.append(lineMask.arg(line));
     }
   }
   else
@@ -327,9 +341,11 @@ FTool::formatToTable(const QStringList& data, int width
         line.append(QString("%1").arg(data.at(i + j), -colWidth));
       }
 
-      table.append(line);
+      table.append(lineMask.arg(line));
     }
   }
+
+  for(int i = 0; i < opts.value(eAddEmptyLines); ++i) table.append("");
 
   return table;
 }
