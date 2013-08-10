@@ -410,14 +410,14 @@ const QString cYes  = QObject::tr("Yes");
 const QString cNo   = QObject::tr("No");
 
 QString
-askUser(const QString& question) // No FTool is private like
+FTool::askUser(const QString& question)
 {
   QTextStream out(stdout);
   out << question << flush;
 
   QTextStream in(stdin);
   QString answer;
-  answer = in.readLine(10);
+  answer = in.readLine(100);
 
   return answer;
 }
@@ -425,7 +425,7 @@ askUser(const QString& question) // No FTool is private like
 bool
 FTool::askUserNoYes(const QString& question)
 {
-  QString text = QString("%1 %2/[%3]").arg(question).arg(cNo, cYes);
+  QString text = QString("%1 %2/[%3] : ").arg(question).arg(cNo, cYes);
 
   QString answer = askUser(text);
 
@@ -438,7 +438,7 @@ FTool::askUserNoYes(const QString& question)
 bool
 FTool::askUserYesNo(const QString& question)
 {
-  QString text = QString("%1 %2/[%3]").arg(question).arg(cYes, cNo);
+  QString text = QString("%1 %2/[%3] : ").arg(question).arg(cYes, cNo);
 
   QString answer = askUser(text);
 
@@ -446,6 +446,58 @@ FTool::askUserYesNo(const QString& question)
   if(cYes.startsWith(answer, Qt::CaseInsensitive)) return false;
 
   return true;
+}
+
+int
+FTool::askUserInt(const QString& question)
+{
+  QString answer = askUser(question);
+
+  bool ok;
+  int num = answer.toInt(&ok);
+
+//   if(!ok) return def;
+
+  return num;
+}
+
+int
+FTool::askUserInt(const QString& question, int def)
+{
+  QString text = QString("%1 [%2] : ").arg(question).arg(def);
+
+  QString answer = askUser(text);
+  if(answer.isEmpty()) return def;
+
+  bool ok;
+  int num = answer.toInt(&ok);
+
+  if(!ok) return def;
+
+  return num;
+}
+
+double
+FTool::askUserDouble(const QString& question, double def)
+{
+  QString text = QString("%1 [%2] : ").arg(question).arg(def);
+
+  QString answer = askUser(text);
+
+  bool ok;
+  double num = answer.toDouble(&ok);
+
+  if(!ok) return def;
+
+  return num;
+}
+
+QString
+FTool::askUserStr(const QString& question, const QString& def)
+{
+  QString text = QString("%1 [%2] : ").arg(question, def);
+
+  return askUser(text);
 }
 /***********************************************************************
 *   End Of Ask User Function Stuff

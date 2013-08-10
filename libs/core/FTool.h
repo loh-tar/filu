@@ -111,6 +111,9 @@ sleep(int ms);
 *   Ask User Functions
 *
 ************************************************************************/
+QString
+askUser(const QString& question);
+
 // Retruns true if awnser is 'No' or ENTER
 bool
 askUserNoYes(const QString& question);
@@ -118,5 +121,19 @@ askUserNoYes(const QString& question);
 // Retruns true if awnser is 'Yes' or ENTER
 bool
 askUserYesNo(const QString& question);
+
+int
+askUserInt(const QString& question);
+
+// All the following return the answer or default if bad answer or ENTER
+int
+askUserInt(const QString& question, int def);
+
+double
+askUserDouble(const QString& question, double def);
+
+QString
+askUserStr(const QString& question, const QString& def);
+
 }
 #endif
