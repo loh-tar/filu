@@ -1443,7 +1443,6 @@ void Importer::addEODBar()
 void Importer::addSplit()
 {
   QString comment;
-  bool    ok = true;
   double  ratio;
 
   if(mData.contains("SplitRatio"))
@@ -1526,7 +1525,7 @@ void Importer::addCO()
   // before do the insert
   mFilu->setSqlParm(":parameters", FTool::lineToTxt(mData.value("ArgV")));
 
-  QSqlQuery* query = mFilu->execSql("PutCOs");
+  /*QSqlQuery* query = */mFilu->execSql("PutCOs");
   //mFilu->result(FUNC, query); FIXME We have no insert_co function, so no return value
   //if(notAdded(mData.value("Type"))) return;
   if(check4FiluError(FUNC)) return;

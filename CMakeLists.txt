@@ -2,6 +2,11 @@ project (FiluRoot)
 cmake_minimum_required (VERSION 2.8)
 find_package(Qt4 REQUIRED)
 
+# Disabled, it slows down the compilation
+# But use it from time to time like valgrind
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+#set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # This setting was used at times where we need an own Qt lib with the fixed driver

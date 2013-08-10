@@ -144,7 +144,6 @@ void IndiSetPad::buttonClicked(int id)
 void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
 {
   QAbstractButton* btn = static_cast<QAbstractButton*>(sender());
-  int id = mButtons.id(btn);
 
   QDialog      dialog;
   QGridLayout  layout(&dialog);

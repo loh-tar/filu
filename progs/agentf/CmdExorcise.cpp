@@ -140,7 +140,8 @@ bool CmdExorcise::exec(CmdHelper* ch)
     devils.insert(devil);
   }
 
-  if(mCmd->has("del-omen") or mRcFile->getBL("DeleteDevilConfig") and !mCmd->has("save-omen"))
+  if(     (mCmd->has("del-omen") or mRcFile->getBL("DeleteDevilConfig"))
+      and !mCmd->has("save-omen") )
   {
     QString devil = killDevil.isEmpty() ? mCmd->optStr("del-omen") : killDevil;
     devilFile = configFile + ".Devil." + devil;

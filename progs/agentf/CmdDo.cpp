@@ -151,7 +151,7 @@ bool CmdDo::fromStdIn()
 
   QTextStream console(stdout);
   QTextStream in(stdin);
-  while (!in.atEnd())
+  while(!in.atEnd())
   {
     console << "[READY] (Ctrl+D or \"quit\" for quit)" << endl;
     QString line = in.readLine();
@@ -162,6 +162,8 @@ bool CmdDo::fromStdIn()
     cmd.prepend("DAEMON"); // Add the "caller", normaly is here "agentf" placed
     mAgent->exec(cmd);
   }
+
+  return true;
 }
 
 bool CmdDo::fromDB()

@@ -92,7 +92,7 @@ void Grip::set(const QPointF& pos)
   moveCenter(pos);
 
   int  newMouseXPos;
-  int valid = mP->mScaler->pixelToValue(pos.toPoint(), newMouseXPos, mValue, mDate);
+  /*int valid = */mP->mScaler->pixelToValue(pos.toPoint(), newMouseXPos, mValue, mDate);
 //FIXME: use valid
   mIdxPos  = mP->mFirstBarToShow + newMouseXPos;
 //   qDebug() << "Grip::set()" << pos << mIdxPos << mValue << mDate << valid;

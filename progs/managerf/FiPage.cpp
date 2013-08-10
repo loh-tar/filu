@@ -48,11 +48,11 @@
 
 FiPage::FiPage(FClass* parent)
       : ManagerPage(parent, FUNC)
-      , mSymbols(0)
-      , mSymbolView(0)
       , mFi(0)
-      , mPlotSheet(0)
       , mBars(0)
+      , mSymbols(0)
+      , mPlotSheet(0)
+      , mSymbolView(0)
 {
   mIcon = QIcon(":/icons/fi-page.png");
   mIconText = tr("FI Details");

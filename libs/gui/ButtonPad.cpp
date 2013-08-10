@@ -179,7 +179,6 @@ void  ButtonPad::buttonContextMenu(const QPoint& /*pos*/)
 {
   //qDebug() << "ButtonPad::buttonContextMenu";
   QAbstractButton* btn = static_cast<QAbstractButton*>(sender());
-  int id = mButtons.id(btn);
 
   QDialog      dialog;
   QGridLayout  layout(&dialog);

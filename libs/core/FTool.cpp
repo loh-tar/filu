@@ -283,8 +283,8 @@ FTool::formatToTable(const QStringList& data, const TableOptions& opts)
   int width        = opts.value(eWidth, 80);
       width       -= opts.value(eIndent, 2);
   int maxColCount  = static_cast<double>(width) / static_cast<double>(minColWidth) + 1.0;
-  int minRowCount  = static_cast<double>(data.size()) / static_cast<double>(maxColCount) + 1.0;
-  int maxRowCount  = data.size();
+  //int minRowCount  = static_cast<double>(data.size()) / static_cast<double>(maxColCount) + 1.0;
+  //int maxRowCount  = data.size();
   int optiColCount = static_cast<double>(width) / static_cast<double>(optiColWidth) + 1.0;
 
   int columns;

@@ -82,7 +82,7 @@ QVariant SymbolTableModel::headerData(
 
   if (orientation == Qt::Horizontal)
     switch(section)
-      {
+    {
       case 0:
         return "Caption";
       case 1:
@@ -93,14 +93,11 @@ QVariant SymbolTableModel::headerData(
         return "FiId";
       case 4:
         return "MarketId";
-      case 5:
+      default: // case 5: // Don't gcc Warnung: Kontrollfluss erreicht Ende einer Nicht-void-Funktion
         return "SymbolId";
     }
   else
       return QString("%1").arg(section);
-
- // FIXME: gcc Warnung: Kontrollfluss erreicht Ende einer Nicht-void-Funktion
-
 }
 /******************************************************************
 *

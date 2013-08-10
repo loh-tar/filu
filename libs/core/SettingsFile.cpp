@@ -41,7 +41,7 @@ void
 SettingsFile::set(const QString& key, const QVariant& val)
 {
   //qDebug() << "SettingsFile::set" << key << val << val.type() << (int)val.type();
-  switch(val.type())
+  switch(static_cast<int>(val.type())) // Don't Warnung: case-Wert »135« nicht in Aufzählungstyp »QVariant::Type«
   {
     case QVariant::Date:
       setValue(key, val.toDate().toString(Qt::ISODate));
