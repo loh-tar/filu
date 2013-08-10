@@ -37,7 +37,9 @@ IndiFilterSetPath=$FiluHome/IndicatorFilterSettings
   A filter set stores which data are not shown in the indicator data view, at the
   right of an indicator chart window.
 
-InstallPath=/usr/local/lib/Filu
+InstallPrefix=@CMAKE_INSTALL_PREFIX@
+
+InstallPath=$InstallPrefix/lib/Filu
   Currently is all stuff stored below these path, except of course the DB data
   and the system wide config file.
 
@@ -51,8 +53,10 @@ PluginPath=$InstallPath
 ProviderPath=$InstallPath/provider
   Where the provider scripts are located.
 
-SqlPath=/usr/local/lib/Filu/sqls
+SqlPath=$InstallPrefix/lib/Filu/sqls
   Where SQLs are stored to access the DB.
+
+DocPath=$InstallPrefix/share/doc/Filu
 
 TradingRulePath=$FiluHome/TradingRules
   Where your trading rules are located.
