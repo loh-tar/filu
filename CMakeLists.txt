@@ -25,25 +25,31 @@ add_subdirectory(libs)
 add_subdirectory(progs)
 add_subdirectory(database)
 
+#
 # Install user default files
+#
 set(USERFILES_PATH ${CMAKE_INSTALL_PREFIX}/lib/Filu/userfiles)
 
 install(DIRECTORY ${FiluRoot_SOURCE_DIR}/userfiles/
         DESTINATION ${USERFILES_PATH}
 )
-
+# Install example import files
+install(DIRECTORY ${FiluRoot_SOURCE_DIR}/doc/
+        DESTINATION ${USERFILES_PATH}/ImpFiles
+        FILES_MATCHING PATTERN "*.imp"
+)
 # Install MakeNameNice.conf file
 install(FILES ${FiluRoot_SOURCE_DIR}/doc/make-name-nice.conf
         DESTINATION ${USERFILES_PATH}
         RENAME MakeNameNice.conf
 )
-
 # Install user settings file
 install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-settings-file.conf
         DESTINATION ${USERFILES_PATH}
         RENAME Filu.conf
 )
 
+#
 # Install systemwide settings file (it's tricky to avoid override)
 configure_file(${FiluRoot_SOURCE_DIR}/cmake/install-systemwide-config-file.cmake
                ${FiluRoot_BINARY_DIR}

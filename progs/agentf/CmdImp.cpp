@@ -17,6 +17,7 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QDir>
 #include <QFile>
 #include <QTextStream>
 
@@ -25,10 +26,13 @@
 #include "CmdHelper.h"
 #include "FiluU.h"
 #include "Importer.h"
+#include "RcFile.h"
+
+static const QString cCantFind = QObject::tr("Can't find file: %1");
+static const QString cLookFor  = QObject::tr("Look for: %1");
 
 static const QString cCmd1 = "imp";
-static const QString cCmd1Brief = QObject::tr("Imports an (surprise!) import file. "
-                                              "See doc/import-file-format.txt");
+static const QString cCmd1Brief = QObject::tr("Imports data in .imp format");
 
 CmdImp::CmdImp(AgentF* agent)
       : CmdClass(agent, FUNC)
@@ -65,11 +69,23 @@ bool CmdImp::exec(CmdHelper* ch)
 {
   if(!init(ch)) return false;
 
-  if(mCmd->isMissingParms())
-  {
-    if(mCmd->printThisWay("[<FileName>]")) return true;
+  mCmd->regOpts("stdin");
 
-    mCmd->printComment(tr("Without <FileName> will read from stdin (Ctrl-D to quit)."));
+  int needParm = mCmd->has("stdin") ? 0 : 1;
+
+  if(mCmd->isMissingParms(needParm))
+  {
+    mCmd->inOptBrief("stdin", "To read from stdin instead from file");
+
+    if(mCmd->printThisWay("<File>|~~stdin")) return true;
+
+    mCmd->printComment(tr(
+      "With --stdin will read from stdin until Ctrl-D is read. "
+      "The <File> may be absulute path or not. In the latter case is "
+      "searched in the current directory and in ImportPath."));
+    mCmd->printComment(tr(
+      "See also doc/import-file-format.txt and doc/config-file.txt"));
+
     mCmd->aided();
     return true;
   }
@@ -79,13 +95,28 @@ bool CmdImp::exec(CmdHelper* ch)
 
   if(!mCmd->argStr(1).isEmpty())
   {
-    file = new QFile(mCmd->argStr(1));
-    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    QString url = mCmd->argStr(1);
+    verbose(FUNC, cLookFor.arg(url), eAmple);
+    if(!QFile::exists(url))
     {
-      error(FUNC, tr("Can't open file: %1").arg(mCmd->argStr(1)));
+      url = mRcFile->getPath("ImportPath") + mCmd->argStr(1);
+      verbose(FUNC, cLookFor.arg(url), eAmple);
+      if(!QFile::exists(url))
+      {
+        error(FUNC, cCantFind.arg(mCmd->argStr(1)));
+        errInfo(FUNC, tr("ImportPath is: %1").arg(mRcFile->getPath("ImportPath")));
+        return false;
+      }
+    }
+
+    file = new QFile(url);
+    if(!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+      error(FUNC, tr("Can't open file: %1").arg(url));
       return false;
     }
 
+    verbose(FUNC, tr("Import file: %1").arg(QFileInfo(url).canonicalFilePath()));
     in = new QTextStream(file);
   }
   else

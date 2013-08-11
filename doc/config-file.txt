@@ -17,6 +17,9 @@ path keys leaded by a dollar sign $. You will guess right now, the tilde is
 replaced by the user home path and the dollar marked key is substituted by the
 the value of the key.
 
+DocPath=$InstallPrefix/share/doc/Filu
+  Where the documentation of Filu is located.
+
 FiluHome=~/Filu
   The location where Filu stores your personal data and settings, but none of the
   DB data. It's usual to store such data in ~/.foo but I don't like that hidden
@@ -25,6 +28,9 @@ FiluHome=~/Filu
 Hell=~/FiluDevil
   It's the devil home ;-) FiluHome is set to Hell/<devil> at 'sum' command when
   called without --cpc.
+
+ImportPath=$FiluHome/ImpFiles
+  Where AgentFs 'imp' command also search for import files.
 
 IndicatorPath=$FiluHome/Indicators
   Where your self written, or shipped by Filu, indicators are located. These
@@ -55,8 +61,6 @@ ProviderPath=$InstallPath/provider
 
 SqlPath=$InstallPrefix/lib/Filu/sqls
   Where SQLs are stored to access the DB.
-
-DocPath=$InstallPrefix/share/doc/Filu
 
 TradingRulePath=$FiluHome/TradingRules
   Where your trading rules are located.

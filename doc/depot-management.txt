@@ -81,7 +81,7 @@ Place an order:
 These example expect that you have Apple and USD installed, what is the case
 when you run the example at doc/first-steps.txt.
 
-  agentf imp doc/example-depot.imp
+  agentf imp example-depot.imp
 
 
 4- Trading simulation
@@ -110,7 +110,7 @@ correct.
 Try these commands to become an impression.
 
   agentf sum tour1
-  agentf imp doc/example-some-us-stocks.imp
+  agentf imp example-some-us-stocks.imp
   agentf full 2008-01-01
 
   agentf depots simtrade SimpleRule MyBank 2009-01-01 2011-01-01 \

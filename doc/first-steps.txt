@@ -28,15 +28,12 @@ one command should I anyway notice: With 'sum' you create a test "DB", more
 exactly a test schema inside the Filu database, where you can play. To remove
 these schema later use 'exo <Tour> --del-omen'.
 
-It is supposed to run the tour inside your FiluSource path otherwise you have to
-adjust the path to doc/example-foo.
-
 
 Tour 1 - For The Very Impatient
 ---------------------------------
 Execute these commands in your terminal...
   agentf sum tour1
-  agentf imp doc/example-some-us-stocks.imp
+  agentf imp example-some-us-stocks.imp
   agentf full
   performerf
 
@@ -81,17 +78,18 @@ Even though some already work with ManagerF, we like now import data with
 'agentf imp' command.
 Let us do some less commands to bring up the chart of Apple Inc.
   agentf sum tour3
-  agentf imp doc/example-apple.imp
+  agentf imp example-apple.imp
   agentf full
   performerf
 
 Go to the 'Search FI' at the left and click 'Apple Inc.'. Nice?
 
-What have we done? 'cat doc/example-apple.imp' shows the content of the import
-file. As you can see there are only two Header and two data lines included, the
-rest is comment which explain what kind of data we have imported. The second
-command 'agentf full' forces an update of all eodBars of all FIs stored in the
-database. We have four FIs in the database. "Four?" Yes! If you like run:
+What have we done? 'agentf doc apple' shows the content of the import file. As
+you can see there are only two header and two data lines included, the rest is
+comment which explain what kind of data we have imported. Hit 'Q' to quit the
+view now. The second command 'agentf full' forces an update of all eodBars of
+all FIs stored in the database. We have four FIs in the database. "Four?" Yes!
+If you like run:
   agentf db show fi
   agentf db show market
 
