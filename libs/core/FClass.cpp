@@ -26,16 +26,12 @@
 #include "RcFile.h"
 
 QHash<QString, QVariant>
-takeConfigParms()
+takeConfigParms(QStringList& cmdLine)
 {
-  QStringList cmdLine = QCoreApplication::arguments();
   QHash<QString, QVariant>  parms;
-  int pos = cmdLine.indexOf("--config");
+  int pos = cmdLine.lastIndexOf("--config");
 
-  if(-1 == pos)
-  {
-    return parms;
-  }
+  if(-1 == pos) return parms;
 
   cmdLine.takeAt(pos); // Remove --config
 
@@ -60,15 +56,17 @@ FClass::FClass(FClass* parent, const QString& className)
       : Newswire(parent, className)
       , mRcFile(parent->mRcFile)
       , mFilu(parent->mFilu)
+      , mConfigError(false)
 {}
 
 FClass::FClass(const QString& connectionName)
       : Newswire(connectionName)
       , mFilu(0)
+      , mConfigError(false)
 {
   mCommandLine = QCoreApplication::arguments();
 
-  QHash<QString, QVariant> parms = takeConfigParms();
+  QHash<QString, QVariant> parms = takeConfigParms(mCommandLine);
   foreach(const QString& key, parms.keys())
   {
     QString parm = key + "=" + parms.value(key).toString();
@@ -76,7 +74,12 @@ FClass::FClass(const QString& connectionName)
   }
 
   mRcFile = new RcFile(this);
-  mRcFile->takeConfigParms(parms);
+  mRcFile->forceConfigSetting(parms);
+  if(hasError())
+  {
+    mConfigError = true;
+    return; // Unknown --config Key=foo
+  }
 
   mFilu = new FiluU(connectionName, mRcFile);
   mFilu->openDB();

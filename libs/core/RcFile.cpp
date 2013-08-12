@@ -35,6 +35,37 @@ RcFile::~RcFile()
 {
 }
 
+bool RcFile::setConfigKeys(const QHash<QString, QVariant>& config)
+{
+  const QStringList keys = config.keys();
+  if(!checkConfigKeys(keys)) return false;
+
+  foreach(const QString& key, keys)
+  {
+    QString val = config.value(key).toString();
+    if("---" == val)
+    {
+      mNewswire->verbose(FUNC, tr("Remove from config file: %1").arg(key));
+      remove(key);
+    }
+  }
+
+  int width = - FTool::maxSizeOfStrings(keys);
+  foreach(const QString& key, keys)
+  {
+    QString val = config.value(key).toString();
+
+    if("---" == val) continue;
+
+    mNewswire->verbose(FUNC, tr("Write to config file: %1 = %2")
+                               .arg(key, width).arg(val));
+    set(key, val);
+  }
+
+  checkFiluHome();
+  return true;
+}
+
 QVariant RcFile::getValue(const QString& key, const QVariant& /*def*/) const
 {
   if(mForced.contains(key)) return mForced.value(key);
@@ -52,76 +83,33 @@ void RcFile::restoreGroup()
   beginGroup(mSavedGroup);
 }
 
-void RcFile::takeConfigParms(const QHash<QString, QVariant>& forced)
+bool RcFile::forceConfigSetting(const QHash<QString, QVariant>& forced)
 {
   if(forced.size() == 0)
   {
     checkConfigFile();
     checkFiluHome();
-    return;
+    return true;
   }
+
+  const QStringList keys = forced.keys();
+  if(!checkConfigKeys(keys)) return false;
 
   mForced = forced;
-  if(mForced.contains("Devil"))
+
+  checkConfigFile();
+  checkFiluHome();
+
+  if(!mNewswire->verboseLevel(Newswire::eAmple)) return true;
+
+  int width = - FTool::maxSizeOfStrings(keys);
+  foreach(const QString& key, keys)
   {
-    mNewswire->warning(FUNC, tr("To play with the devil is dangerous, I will ignore your wish."));
-    mForced.remove("Devil");
+    mNewswire->verbose(FUNC, tr("Use temporary config: %1 = %2")
+                                .arg(key, width).arg(getST(key)));
   }
 
-  if(QCoreApplication::arguments().at(1) == "set")
-  {
-    // Special treatment for verbose because checkConfigFile() would cause error
-    if("---" == mForced.value("Verbose").toString())
-    {
-      mForced.insert("Verbose", QVariant("Info"));
-      checkConfigFile();
-      mForced.insert("Verbose", QVariant("---"));
-    }
-    else
-    {
-      checkConfigFile();
-    }
-
-    checkFiluHome();
-
-    QStringList keys = mForced.keys();
-    foreach(const QString& key, keys)
-    {
-      QString val = mForced.value(key).toString();
-      if("---" == val)
-      {
-        mNewswire->verbose(FUNC, tr("Remove from config file: %1")
-                                   .arg(key), Newswire::eEver);
-        remove(key);
-        mForced.remove(key);
-      }
-    }
-
-    keys = mForced.keys();
-    int width = - FTool::maxSizeOfStrings(keys);
-    foreach(const QString& key, keys)
-    {
-      QString val = mForced.value(key).toString();
-
-      mNewswire->verbose(FUNC, tr("Write to config file: %1 = %2")
-                                 .arg(key, width).arg(val), Newswire::eEver);
-      set(key, val);
-    }
-  }
-  else
-  {
-    checkConfigFile();
-    checkFiluHome();
-    QStringList keys = mForced.keys();
-    int width = - FTool::maxSizeOfStrings(keys);
-    foreach(const QString& key, keys)
-    {
-      mNewswire->verbose(FUNC, tr("Use temporary config parm: %1 = %2")
-                                  .arg(key, width).arg(getST(key)), Newswire::eAmple);
-    }
-  }
-
-  return;
+  return true;
 }
 
 void RcFile::checkConfigFile()
@@ -147,4 +135,28 @@ void RcFile::checkFiluHome()
   }
 
   mNewswire->setLogFile(getUrl("LogFile"));
+}
+
+bool RcFile::checkConfigKeys(const QStringList& keys) const
+{
+  const QStringList known = QSettings::allKeys();
+
+  bool ok = true;
+
+  foreach(const QString& key, keys)
+  {
+    if(!known.contains(key))
+    {
+      ok = false;
+      mNewswire->error(FUNC, tr("Unknown config key: %1").arg(key));
+    }
+
+    if(key == "Devil")
+    {
+      ok = false;
+      mNewswire->error(FUNC, tr("For your own security is playing with the devil forbidden"));
+    }
+  }
+
+  return ok;
 }

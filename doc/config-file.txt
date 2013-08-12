@@ -17,6 +17,12 @@ path keys leaded by a dollar sign $. You will guess right now, the tilde is
 replaced by the user home path and the dollar marked key is substituted by the
 the value of the key.
 
+Devil=
+  The Devil key is for devil-opers ;-) It's used as appendix to the Filu schema
+  and user schema of the data base and as sub directory name below Hell.
+  The only recommended way to change the Devil value is to use 'sum' and 'exo'
+  commands.
+
 DocPath=$InstallPrefix/share/doc/Filu
   Where the documentation of Filu is located.
 
@@ -26,7 +32,7 @@ FiluHome=~/Filu
   files/directories with interesting data.
 
 Hell=~/FiluDevil
-  It's the devil home ;-) FiluHome is set to Hell/<devil> at 'sum' command when
+  It's the devil home ;-) FiluHome is set to Hell/Devil at 'sum' command when
   called without --cpc.
 
 ImportPath=$FiluHome/ImpFiles
@@ -37,13 +43,14 @@ IndicatorPath=$FiluHome/Indicators
   indicators which are used to paint, scan or trade, but no FiluPowerIndicators.
 
 IndiSetsPath=$FiluHome/IndicatorSets
-  A indicator set is a combination of indicators shown at once by PerformerF.
+  An indicator set is a combination of indicators shown at once by PerformerF.
 
 IndiFilterSetPath=$FiluHome/IndicatorFilterSettings
   A filter set stores which data are not shown in the indicator data view, at the
   right of an indicator chart window.
 
 InstallPrefix=@CMAKE_INSTALL_PREFIX@
+  It's set by CMake at install time. So you should never touch that key.
 
 InstallPath=$InstallPrefix/lib/Filu
   Currently is all stuff stored below these path, except of course the DB data
@@ -66,19 +73,16 @@ TradingRulePath=$FiluHome/TradingRules
   Where your trading rules are located.
 
 DatabaseName=filu
-Devil=
 HostName=localhost
 HostPort=5432
 Password=filu
 PgUserRole=filu
-  Which database is to use and how could it be accessed. Yes, Password in clear text
-  looks like that there could be things improved. The Devil key is used as appendix
-  to the Filu schema and user schema for testing purposes, for devil-opers ;-)
-  The easiest way to change the Devil value is to use 'sum' and 'exo' commands.
+  Which database is to use and how could it be accessed. Yes, Password in clear
+  text looks like that there could be things improved.
 
 CommitBlockSize=500
-  How many data rows will be send to the server before they will committed. Sadly
-  has these settings no effect because of broken Qt Driver.
+  How many data rows will be send to the server before they will committed.
+  Sadly has these settings no effect because of broken Qt Driver.
 
 DaysToFetchIfNoData=730
   How many bars, in days, should be downloaded the first time.

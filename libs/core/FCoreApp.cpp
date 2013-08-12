@@ -26,11 +26,20 @@
 FCoreApp::FCoreApp(const QString& connectionName, QCoreApplication& app)
         : FObject(connectionName, app)
 {
+  if(hasConfigError()) return;
+
   // Must create after log file is set properly
   mCmd = new CmdHelper(this);
 }
 
 FCoreApp::~FCoreApp()
 {
+  if(!hasMessage())   verbose(FUNC, QObject::tr("Done."));
+  else if(hasFatal()) verbose(FUNC, QObject::tr("Houston, we have a problem."));
+  else if(hasError()) verbose(FUNC, QObject::tr("Exit with error."));
+  else verbose(FUNC, QObject::tr("Not the best."));
+
+  if(hasConfigError()) return;
+
   delete mCmd;
 }

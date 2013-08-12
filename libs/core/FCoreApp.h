@@ -35,6 +35,8 @@ class FCoreApp : public FObject
               FCoreApp(const QString& connectionName, QCoreApplication& app);
     virtual  ~FCoreApp();
 
+    bool     hasConfigError() { return mConfigError; }
+
   protected:
     CmdHelper*  mCmd;
 };

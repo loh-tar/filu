@@ -27,5 +27,7 @@ int main(int argc, char* argv[])
 
   AgentF agentf(app);
 
+  if(agentf.hasConfigError()) return 1;
+
   return app.exec();
 }

@@ -56,6 +56,7 @@ class FClass : public Newswire
     FiluU*         mFilu;
     QStringList    mCommandLine;
     QStringList    mConfigParms;
+    bool           mConfigError;
 
   private:
     bool           mRoot;

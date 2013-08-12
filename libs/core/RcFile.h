@@ -39,14 +39,16 @@ class RcFile : public SettingsFile
                   RcFile(Newswire* parent);
     virtual      ~RcFile();
 
+    bool          setConfigKeys(const QHash<QString, QVariant>& config);
     void          saveGroup();
     void          restoreGroup();
-    void          takeConfigParms(const QHash<QString, QVariant>& forced);
+    bool          forceConfigSetting(const QHash<QString, QVariant>& forced);
     void          checkConfigFile();
     void          checkFiluHome();
 
   protected:
     QVariant      getValue(const QString& key, const QVariant&) const;
+    bool          checkConfigKeys(const QStringList& keys) const;
 
     Newswire*     mNewswire;
     QString       mSavedGroup;

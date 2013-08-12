@@ -38,6 +38,8 @@
 PerformerF::PerformerF(QApplication& app)
           : FMainApp("PerformerF", app)
 {
+  if(hasConfigError()) return;
+
   QString devil = mFilu->devilInfoText();
   if(!devil.isEmpty())
   {
@@ -260,6 +262,8 @@ PerformerF::PerformerF(QApplication& app)
 
 PerformerF::~PerformerF()
 {
+  if(hasConfigError()) return;
+
   mRcFile->beginGroup("Performer");
   mRcFile->set("PerformerSize", size());
   mRcFile->set("PerformerPosition", pos());

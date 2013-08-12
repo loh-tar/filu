@@ -40,6 +40,8 @@ const QString cTestStop     = QObject::tr("Test Will Stop...");
 InspectorF::InspectorF(QApplication& app)
           : FMainApp("InspectorF", app)
 {
+  if(hasConfigError()) return;
+
   QWidget* cw = new QWidget(this);
   setCentralWidget(cw);
 
@@ -176,6 +178,8 @@ InspectorF::InspectorF(QApplication& app)
 
 InspectorF::~InspectorF()
 {
+  if(hasConfigError()) return;
+
   // Is it a bug in QTabWidget? signal is emmitted when go die.
   // The result is in our case a segfault
   disconnect(mTabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));

@@ -37,6 +37,8 @@
 ManagerF::ManagerF(QApplication& app)
         : FMainApp("ManagerF", app)
 {
+  if(hasConfigError()) return;
+
   mPageIcons = new QListWidget;
   mPageIcons->setViewMode(QListView::IconMode);
   mPageIcons->setIconSize(QSize(96, 84));
@@ -111,6 +113,8 @@ ManagerF::ManagerF(QApplication& app)
 
 ManagerF::~ManagerF()
 {
+  if(hasConfigError()) return;
+
   mRcFile->beginGroup("Manager");
   mRcFile->set("ManagerSize", size());
   mRcFile->set("ManagerPosition", pos());

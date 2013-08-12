@@ -42,6 +42,8 @@ AgentF::AgentF(QCoreApplication& app)
       , mRolex(0)
       , mQuit(true)
 {
+  if(hasConfigError()) return;
+
   readSettings();
   setMsgTargetFormat(eVerbose, "%C: %x");
   setMsgTargetFormat(eConsLog, "%C: *** %t *** %x");
@@ -60,16 +62,13 @@ AgentF::AgentF(QCoreApplication& app)
 
 AgentF::~AgentF()
 {
+  if(hasConfigError()) return;
+
   foreach(CmdClass* cmd, mCmds) delete cmd;
 
   if(mExporter) delete mExporter;
   if(mScanner)  delete mScanner;
   if(mRolex)    delete mRolex;
-
-  if(!hasMessage())   verbose(FUNC, tr("Done."));
-  else if(hasFatal()) verbose(FUNC, tr("Houston, we have a problem."));
-  else if(hasError()) verbose(FUNC, tr("Exit with error."));
-  else verbose(FUNC, tr("Not the best."));
 }
 
 void AgentF::run()

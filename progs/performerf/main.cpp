@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
   QApplication app(argc, argv);
 
   PerformerF performer(app);
+
   performer.show();
 
   return app.exec();

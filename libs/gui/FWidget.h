@@ -46,6 +46,8 @@ class FMainApp : public QMainWindow, public FClass
               FMainApp(const QString& connectionName, QApplication& app);
     virtual  ~FMainApp();
 
+    bool      hasConfigError() { return mConfigError; }
+
   protected:
 };
 
