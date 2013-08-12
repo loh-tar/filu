@@ -22,8 +22,6 @@ M: Think about Key Statistics, like
    There are also devidend and split but sadly (almost only) for US stocks
 H: finish cmake build system. I think there need some modifications in use of
    variables
-H: Config key InstallPath in doc/systemwide-settings-file.conf must
-   configured by cmake. Sadly I didn't like the idea to have a .in file.
 L: Replace all text what the user could read with tr(...) so that localised
    versions are possible
 L: Create and use fancy Icons at the user interfaces.
@@ -97,9 +95,6 @@ AgentF
 M: Add cmd 'copyright'
 L: print more precise info when something goes wrong.
 L: Add a progressbar like Im/Exporter at 'full'
-L: Add cmd 'doc <Topic> [<Level>]' to show shipped docu files. Whereas 'Topic'
-   is used as fuzzy search for file name, head lines in files or words in
-   files depending on 'Level' which may 1-3
 L: Add cmd 'install-provider <PathToDir>'. Must run as root and installs a new written
    provider to the ProviderPath
 
@@ -186,7 +181,7 @@ L: add picker menu for available functions/commands like for TA-LIB. This means
    PLOTFOO, SETFOO, CROSS etc. and, more important, also FiluPower-Indicators
    usable with CalcFilu. But that needs concept work...
 L: add a help page to display all (or most) available docu, copyright and other
-   stuff. See also AgentF todo 'doc <Topic> [<Level>]'
+   stuff.
 
 
 Libf
@@ -300,7 +295,6 @@ M: Add to context menu 'Show Data View'
 IndiWidetGroup
 ================
 M: Handle on 'save' the 'Protect' key
-M: Save 'Density' as string not QVariant
 
 
 Trader
