@@ -16,7 +16,7 @@ set(agentf_SRC
     CmdImp.cpp
     CmdSummon.cpp
     CmdExorcise.cpp
-    CmdSet.cpp
+    CmdConfig.cpp
     CmdSplitBars.cpp
     CmdDeleteBars.cpp
     CmdThis.cpp

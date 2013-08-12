@@ -17,22 +17,22 @@
 //   along with Filu. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CMDSET_HPP
-#define CMDSET_HPP
+#ifndef CMDCONFIG_HPP
+#define CMDCONFIG_HPP
 
 #include "CmdClass.h"
 
 /***********************************************************************
 *
-*   Yes, represent the 'set' command of AgentF.
+*   Yes, represent the 'config' command of AgentF.
 *
 ************************************************************************/
 
-class CmdSet : public CmdClass
+class CmdConfig : public CmdClass
 {
   public:
-                      CmdSet(AgentF* agent);
-    virtual          ~CmdSet();
+                      CmdConfig(AgentF* agent);
+    virtual          ~CmdConfig();
 
     static bool       isCmd(const QString& cmd);
     static QString    regCmd(CmdHelper* ch);
@@ -40,6 +40,8 @@ class CmdSet : public CmdClass
     bool              exec(CmdHelper* ch);
 
   protected:
+    void              setConfig();
+    void              showConfig();
 
   private:
 

@@ -28,7 +28,7 @@
 #include "CmdImp.h"
 #include "CmdSummon.h"
 #include "CmdExorcise.h"
-#include "CmdSet.h"
+#include "CmdConfig.h"
 #include "CmdSplitBars.h"
 #include "CmdDeleteBars.h"
 #include "CmdThis.h"
@@ -57,7 +57,7 @@ CmdClass* CmdClass::createNew(const QString& type, AgentF* agent)
   if(CmdImp::isCmd(type))           return new CmdImp(agent);
   if(CmdSummon::isCmd(type))        return new CmdSummon(agent);
   if(CmdExorcise::isCmd(type))      return new CmdExorcise(agent);
-  if(CmdSet::isCmd(type))           return new CmdSet(agent);
+  if(CmdConfig::isCmd(type))        return new CmdConfig(agent);
   if(CmdSplitBars::isCmd(type))     return new CmdSplitBars(agent);
   if(CmdDeleteBars::isCmd(type))    return new CmdDeleteBars(agent);
   if(CmdThis::isCmd(type))          return new CmdThis(agent);
@@ -81,7 +81,7 @@ QSet<QString> CmdClass::allRegCmds(CmdHelper* ch)
   cmds.insert(CmdImp::regCmd(ch));
   cmds.insert(CmdSummon::regCmd(ch));
   cmds.insert(CmdExorcise::regCmd(ch));
-  cmds.insert(CmdSet::regCmd(ch));
+  cmds.insert(CmdConfig::regCmd(ch));
   cmds.insert(CmdSplitBars::regCmd(ch));
   cmds.insert(CmdDeleteBars::regCmd(ch));
   cmds.insert(CmdThis::regCmd(ch));
@@ -100,7 +100,7 @@ void CmdClass::allBriefIn(CmdHelper* ch)
   CmdImp::briefIn(ch);
   CmdSummon::briefIn(ch);
   CmdExorcise::briefIn(ch);
-  CmdSet::briefIn(ch);
+  CmdConfig::briefIn(ch);
   CmdSplitBars::briefIn(ch);
   CmdDeleteBars::briefIn(ch);
   CmdThis::briefIn(ch);

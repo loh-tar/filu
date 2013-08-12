@@ -148,10 +148,12 @@ self-explanatory. But some things may hidden or be known to be improved.
 3- The Filu Programs
 ======================
 All programs take on the command line the switch
-'--config key=value [key=value]..', where as 'key' a config file key is. That
-mean you could overwrite any config setting on the command line, see
-doc/config-file.txt. To be on the save side only append these as last parameter,
-e.g.
+
+  --config key=value [key=value]..
+
+where as 'key' a config file key is. That mean you could overwrite any config
+setting on the command line, see doc/config-file.txt and 'agentf config set -h'.
+To be on the save side only append these as last parameter, e.g.
 
   agentf full 2001-01-01 --config MaxClones=10 Verbose=Max
 
@@ -174,7 +176,7 @@ give 'help' as command, like:
     agentf help [<Command>]
     agentf -h [<Command>]
     agentf --help [<Command>]
-    agentf -h add broker
+    agentf add broker -h
     agentf add broker MyBank USD "5.95 + OV * 0.001"
     agentf --add --broker MyBank USD "5.95 + OV * 0.001"
 
