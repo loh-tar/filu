@@ -1,3 +1,25 @@
+2013-08-12
+============
+Sundries
+----------
+- Save settings as utf-8. In case of an update you may notice misbehaviour
+- The install path is no longer hard coded in the config file
+- Install documentation at $INSTALL_PREFIX/share/doc/Filu. In case of an update
+  diff your /etc/xdg/Filu.conf with the .new version
+- The program option '--config' reject now unknown config keys with an
+  immediately abort
+
+AgentF
+--------
+- Commands exo/sum use now own devil user config files and FiluHome directories.
+  In case of an update ensure to unset Devil= in your config file
+- Change command 'set' to 'config' and add more options
+- Command 'imp' search now for given file as well with new config key ImportPath
+- New command 'doc'
+- Finetune 'info' output
+- Add support to remove keys from config file with 'set'
+
+
 2013-08-04
 ============
 Sundries
