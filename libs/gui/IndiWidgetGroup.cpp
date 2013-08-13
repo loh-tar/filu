@@ -39,10 +39,11 @@ IndiWidgetGroup::IndiWidgetGroup(FClass* parent)
 
 IndiWidgetGroup::IndiWidgetGroup(const QString& name, FClass* parent)
                : FWidget(parent, FUNC)
-               , mSetName(name)
+               , mSetName("")
                , mBars(0)
 {
   init();
+  loadSetup(name);
 }
 
 IndiWidgetGroup::~IndiWidgetGroup()
@@ -80,11 +81,8 @@ void IndiWidgetGroup::init()
   act->setMenu(menu);
   addAction(act);
 
-
   mFullIndiSetsPath = mRcFile->getPath("IndiSetsPath");
   mSplitter = new QSplitter(Qt::Vertical);
-
-  loadSetup(mSetName);
 
   QVBoxLayout* lay = new QVBoxLayout;
   lay->addWidget(mSplitter);
@@ -114,9 +112,9 @@ void IndiWidgetGroup::removeWindow()
 
 void IndiWidgetGroup::loadSetup(const QString& setup)
 {
-  if(setup.isEmpty()) return;
-  if(setup != mSetName) saveSetup();
+  if(setup.isEmpty() or setup == mSetName) return;
 
+  saveSetup();
   mSetName = setup;
 
   int rowCount;

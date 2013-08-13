@@ -35,16 +35,16 @@
 #include "RcFile.h"
 #include "SettingsFile.h"
 
+static const QString cSetSelectorTip = QObject::tr("To create a new set edit one of the buttons");
+
 IndiSetPad::IndiSetPad(const QString& name, FClass* parent)
           : ButtonPad(name, parent, FUNC)
 {
   mSetSelector = new QComboBox;
   mSetSelector->setObjectName("SetSelector");
-  mSetSelector->setToolTip(tr("Select an existing indicator set\n"
-                              "To create a new set edit one of the buttons"));
   //mSetSelector->setMinimumContentsLength(9);
   mSetSelector->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-  connect(mSetSelector, SIGNAL(activated(int)), this, SLOT(setSelectorChanged()));
+  connect(mSetSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(setSelectorChanged()));
 
   mLayout->addWidget(mSetSelector);
 }
@@ -57,6 +57,10 @@ void IndiSetPad::loadSettings()
   fillSetSelector();
 
   ButtonPad::loadSettings();
+
+  SettingsFile* sf = openSettings();
+  setCurrentSetup(sf->getST("CurrentSet"));
+  closeSettings();
 
   QString isp = mRcFile->getPath("IndiSetsPath");
 
@@ -80,6 +84,7 @@ void IndiSetPad::saveSettings()
   // We want to save this in the IndiSetPad settings file
   SettingsFile* sfile = openSettings();
   sfile->remove("");  // Delete all settings
+  sfile->set("CurrentSet", mSetSelector->currentText());
 
   foreach(QAbstractButton* btn, mButtons.buttons())
   {
@@ -133,12 +138,12 @@ void IndiSetPad::addToToolBar(QToolBar* tb)
 void IndiSetPad::setCurrentSetup(const QString& setup)
 {
   mSetSelector->setCurrentIndex(mSetSelector->findText(setup));
+  setSelectorChanged();
 }
 
 void IndiSetPad::buttonClicked(int id)
 {
   setCurrentSetup(mButtons.button(id)->text());
-  emit setupChosen(mButtons.button(id)->text());
 }
 
 void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
@@ -253,6 +258,13 @@ void  IndiSetPad::buttonContextMenu(const QPoint& /*pos*/)
 void IndiSetPad::setSelectorChanged()
 {
   emit setupChosen(mSetSelector->currentText());
+
+  SettingsFile sfile(mRcFile->getPath("IndiSetsPath") + mSetSelector->currentText());
+  mSetSelector->setToolTip(sfile.getST("Tip") + "\n" + cSetSelectorTip);
+
+  SettingsFile* sf = openSettings();
+  sf->set("CurrentSet", mSetSelector->currentText());
+  closeSettings();
 }
 
 QToolButton* IndiSetPad::addDummyButton()
