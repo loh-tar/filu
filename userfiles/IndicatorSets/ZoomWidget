@@ -1,8 +1,9 @@
 [General]
-Tip           = ZoomWidget You can't delete
-Density       = "@Variant(\0\0\0\x87?\xfd=\xbd)"
+Tip           = ZoomWidget - The settings of the Zoom View\nYou can't edit or delete this button but remove
+Density       = 0.4
 ShowYScale    = false
 
 [1]
 ScaleToScreen = 10
-ShowXScale    = false
+ShowXScale    = true
+ShowGrid      = false

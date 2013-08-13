@@ -88,7 +88,7 @@ void IndiSetPad::saveSettings()
     sfile->set("Name",       btn->text());
     sfile->endGroup();
 
-    saveTip(btn->text(), btn->toolTip());
+    saveTip(btn);
   }
 
   closeSettings();
@@ -276,12 +276,20 @@ void IndiSetPad::deleteSet(const QString& name)
   fillSetSelector();
 }
 
-void IndiSetPad::saveTip(const QString& name, const QString& tip)
+void IndiSetPad::saveTip(QAbstractButton* btn)
 {
-  if("Default" == name or "ZoomWidget" == name) return; // Don't change
+  const QString name = btn->text();
 
   SettingsFile sfile(mRcFile->getPath("IndiSetsPath") + name);
-  sfile.set("Tip", tip);
+
+  if("Default" == name or "ZoomWidget" == name)
+  {
+    btn->setToolTip(sfile.getST("Tip"));
+  }
+  else
+  {
+    sfile.set("Tip", btn->toolTip());
+  }
 }
 
 void IndiSetPad::getTip(const QString& name)

@@ -51,7 +51,7 @@ class IndiSetPad : public ButtonPad
 
   protected:
     void          saveSettings();
-    void          saveTip(const QString& name, const QString& tip);
+    void          saveTip(QAbstractButton* btn);
     QToolButton*  addDummyButton();
     void          fillSetSelector();
     void          deleteSet(const QString& name);

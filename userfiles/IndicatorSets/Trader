@@ -1,7 +1,7 @@
 [General]
 Tip               = Using SimpleRule with XsmaTrader
 IndicatorCount    = 3
-Density           = @Variant(\0\0\0\x87@v\xbfh)
+Density           = 2.4
 ShowYScale        = true
 GroupSplitter     = @ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\x1\x2\0\0\0\xaa\0\0\0X\x1\0\0\0\x3\x1\0\0\0\x2)
 IndicatorSplitter = @ByteArray(\0\0\0\xff\0\0\0\0\0\0\0\x3\0\0\0\0\0\0\x3\x42\0\0\0\0\x1\0\0\0\x3\x1\0\0\0\x1)

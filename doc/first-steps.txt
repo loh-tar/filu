@@ -308,13 +308,12 @@ Available chart object types are currently only 'Line'.
 IndiSetPad
 ------------
 Let you quickly switch between sets of indicators. The buttons are stored in
-~/Filu/ButtonPads/PerformerIndiSetPad.ini. you can edit, add and remove buttons
+~/Filu/ButtonPads/PerformerIndiSetPad.ini. You can edit, add and remove buttons
 of the IndiSetPad by Right-Click with the mouse and move around the buttons by
 Ctrl-LeftMouseBtn. The settings of the IndicatorSets itself are stored in
-~/Filu/IndicatorSets. The name of the button is used for the IndicatorSet-Name.
-Deletion of a button will not delete the IndicatorSet but add a button with a
-new name will create such set. Each set stores also individual view settings.
-The ComboBox list all existing sets and shows which set is actual used.
+~/Filu/IndicatorSets. Each set stores also individual view settings. The name of
+the button is used for the IndicatorSet-Name. The ComboBox list all existing
+sets and shows which set is actual used.
 
 LaunchPad Configuration
 -------------------------
