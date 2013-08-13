@@ -43,14 +43,14 @@ install(FILES ${FiluRoot_SOURCE_DIR}/doc/make-name-nice.conf
         DESTINATION ${USERFILES_PATH}
         RENAME MakeNameNice.conf
 )
-# Install user settings file
-install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-settings-file.conf
-        DESTINATION ${USERFILES_PATH}
-        RENAME Filu.conf
-)
 
 #
-# Install systemwide settings file (it's tricky to avoid override)
+# Install user config files
+#
+install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-config-file.conf
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu
+)
+# Install systemwide config file (it's tricky to avoid override)
 configure_file(${FiluRoot_SOURCE_DIR}/cmake/install-systemwide-config-file.cmake
                ${FiluRoot_BINARY_DIR}
 )

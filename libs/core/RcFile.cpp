@@ -120,7 +120,7 @@ void RcFile::checkConfigFile()
   if(!QFile::exists(filuConf))
   {
     mNewswire->verbose(FUNC, tr("Create user config file: %1").arg(filuConf));
-    QFile::copy(getPath("InstallPath") + "userfiles/Filu.conf", filuConf);
+    QFile::copy(getPath("InstallPath") + "user-config-file.conf", filuConf);
     sync();
   }
 }

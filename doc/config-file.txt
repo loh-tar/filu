@@ -9,8 +9,8 @@ file ~/.config/Filu.conf with contents like these in the [General] section. The
 other sections are not as interesting to change because they are updated by the
 progs at run time.
 
-The templates files used at install are doc/systemwide-settings-file.conf and
-doc/user-settings-file.conf. So you can modify these too if needed.
+The templates files used at install are doc/systemwide-config-file.conf and
+doc/user-config-file.conf. So you can modify these too if needed.
 
 Keys which represent a path or an URL/file can contain the tilde sign ~ or other
 path keys leaded by a dollar sign $. You will guess right now, the tilde is
