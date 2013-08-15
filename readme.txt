@@ -24,7 +24,9 @@ that's all. And *don't* touch your database except the changelog says
 something else.
 
 The following infos apply to Ubuntu and Arch Linux. If you use a different OS
-you may need to do something deviating.
+you may need to do something deviating. The described way will install the Filu
+programs and the PostgreSQL server on the same local machine. For details about
+the PostgreSQL configuration see 3- Customizing.
 
 *Please* report in any case if you come in trouble while the installation or
 later by using Filu. Without feedback I can't fix it!
@@ -32,6 +34,14 @@ later by using Filu. Without feedback I can't fix it!
 
 1-1- Needed Dependencies
 ==========================
+
+Qt              At least version 4.8, Qt 5 is not tested
+muParser        Recommended version is 2.2.3, older versions like 1.34 works
+                but needs special attention
+TA-Lib          Last tested version is 0.4.0
+PostgreSQL      At least version 8.4
+
+
 Ubuntu
 --------
 The last (very poor) test was with Raring Ringtail.
@@ -39,11 +49,10 @@ The last (very poor) test was with Raring Ringtail.
 To compile the programs you need the .deb packages:
   build-essential
   cmake
-  libqt4-dev           Minimum required Qt version is 4.8.
+  libqt4-dev
   libqt4-sql
   libqt4-sql-psql
-  libmuparser-dev      Recommended muParser version is 2.2.3,
-                       older versions like 1.34 works only partial.
+  libmuparser-dev
 
 The perl scripts needs the .dep packages:
   libcache-cache-perl
@@ -53,7 +62,7 @@ The perl scripts needs the .dep packages:
   libwww-perl
   libxml-libxml-simple-perl
 
-Install TALib from: http://ta-lib.org/. Last tested version is 0.4.0.
+Install TA-Lib from: http://ta-lib.org
 Sadly take compile from source some time, so you could also try to use the .deb
 package by Marco van Zwetselaar, but I haven't it tested.
   download ta-lib-0.4.0-src.tar.gz
@@ -64,32 +73,9 @@ package by Marco van Zwetselaar, but I haven't it tested.
   sudo make install
 
 The database package is:
-  postgresql       At least version 8.4
-  pgadmin3         Not required but useful if you like to edit some data where
-                   is not yet a tool at Filu to do the job. Use it with care.
-
-After the install of postgres view your /etc/postgresql/.../pg_hba.conf file
-and search for:
-  # Database administrative login by Unix domain socket
-  #local   all             postgres                                peer
-
-Comment out these line (if present) by adding a hash # at the beginning
-
-  # "local" is for Unix domain socket connections only
-  local   all             all                                     trust
-  # IPv4 local connections:
-  host    all             all             127.0.0.1/32            trust
-  # IPv6 local connections:
-  host    all             all             ::1/128                 trust
-
-Make sure there is "trust" and not "md5 ident sameuser" or something else.
-
-Edit the file to be right and reload postgres:
-  sudo /etc/init.d/postgresql reload
-
-NOTE: These changes looks not very nice but they are currently sadly needed
-      until someone send me a patch to do it right. So long you use Filu only
-on your local box should there not truly a security risk.
+  postgresql
+  pgadmin3        Not required but useful if you like to edit some data where is
+                  not yet a tool at Filu to do the job. Use it with care.
 
 NOTE: If you are a champ you write a patch to build a .deb package.
 
@@ -101,6 +87,7 @@ To compile the programs you need:
   cmake
   qt4
   muparser
+  ta-lib          Available in AUR
 
 The perl scripts needs the packages:
   perl-io-html
@@ -112,15 +99,8 @@ Some more packages available in AUR:
   perl-date-simple
   perl-xml-libxml-simple
 
-To install TALib you could follow the Ubuntu instructions or use the
-package from AUR:
-  ta-lib
-
 The database:
   postgresql
-
-After install of the server edit your /var/lib/postgres/data/pg_hba.conf file as
-Ubuntu. Restart the server and ensure that the server is running in the future.
 
 NOTE: If you are a champ you write patch for a PKGBUILD.
 
@@ -131,14 +111,14 @@ After install of all dependencies above you have to do:
   cd into the FiluSource directory
   mkdir build
   cd build
-  cmake ..         Yes, there are two dots!
+  cmake ..        Yes, there are two dots!
   make
   sudo make install
   sudo ldconfig
 
-The only thing what now is missing is the database and a database user.
+The only thing what missing now, is the database and a database user.
 The default for both is 'filu'. To create them simple run:
-  make init-filu
+  sudo filu-cfg-postgresql
 
 After successful install you can check the working with:
   agentf
@@ -155,21 +135,13 @@ Which you should find at your application menu below 'Office'.
 2- Further Readings
 =====================
 More information you will find at doc directory. It may a good idea to start
-with first-steps.txt.
+with first-steps.txt, e.g. just by running 'agentf doc first'
 
 
 3- Customizing
 ================
-If you prefer different names for the database and/or database user you can at
-the cmake config step above the switch -D use and run:
-  cmake -D DBUSER=anyUserName -D DBNAME=anyDBName .. // Still two dots!
-  make init-filu
-
-There are only the two commands 'createuser' and 'createdb' invoked with some
-options. So you can these also run direct.
-
-  createuser -e -D -R -S -U postgres anyUserName
-  createdb -e -T template1 -U postgres -O anyUserName anyDBName "Info Text"
+If you prefer different names for the database and/or database user you can run
+filu-cfg-postgresql with some options. Try -h and you will enlightened.
 
 For more tunings see:
   doc/config-file.txt
@@ -183,3 +155,4 @@ To remove the Filu program collection cd into FiluSource/build and do:
 
 cd into each other of the above visited directories and do:
   sudo make uninstall
+

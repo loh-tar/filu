@@ -1,0 +1,457 @@
+#!/usr/bin/env bash
+
+#
+#   This file is part of Filu.
+#
+#   Copyright (C) 2007, 2010, 2011, 2012, 2013 loh.tar@googlemail.com
+#
+#   Filu is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   Filu is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with Filu. If not, see <http:#www.gnu.org/licenses/>.
+#
+
+#####
+#
+#   Nice Functions To Make Things Easier
+#
+
+setDefaults()
+{
+  DefaultRole="filu"
+  UserRole=$DefaultRole
+  Password=$DefaultRole
+  DataBase="filu"
+  optInteractive=0
+  optAlwaysYes=0
+  optSavePassword=0
+  optPassword=""
+  optDelDB=0
+  optDelUser=0
+  optQuiet=0
+}
+
+exitError()
+{
+  if [ ${#@} -lt 2 ]; then errText "*** Error *** $1"
+  else
+    errText "*** Error *** $1"
+    errText "*** Info  *** $2"
+
+    local args=("$@")
+
+    for (( i=2; i < ${#@}; i++))
+    do
+      errText "*** Info  *** ${args[$i]}"
+    done
+  fi
+
+  exit 1
+}
+
+beginText()
+{
+  #
+  # Print text with a colon at the end adjusted to a fixed position
+  #
+  local txt=$1
+
+  while [ ${#txt} -lt 30 ];  do txt="$txt ";  done
+
+  writeText -n "$txt : "
+}
+
+writeText()
+{
+  if [ $optQuiet != 1 ]; then echo "$@"; fi
+}
+
+errText()
+{
+  echo -e "$@" >&2
+}
+
+execSQL()
+{
+  su - postgres -c "psql postgres -qtAc \"$*\" ";
+}
+
+yesOrDie()
+{
+
+  local coice=""
+
+  echo ""
+  echo -n "$1? (Y for yes): "
+
+  # Ignore optAlwaysYes if run in terminal  [ ! -t 1 ] 
+  # http://stackoverflow.com/a/911213
+  if [ $optAlwaysYes == 1 ] &&  [ ! -t 1 ]
+  then
+    echo "Y"
+    return
+  fi
+
+  read -r coice;
+
+  if [ -z $coice ] || [ $coice != "Y" ]
+  then
+    errText "*** Aborted *** You choose not Yes."
+    exit 2
+  fi
+}
+
+createRole()
+{
+  beginText "Check PgUserRole '$UserRole'"
+
+  if [ $(execSQL "SELECT 1 FROM pg_roles WHERE rolname='$UserRole'") ]
+  then
+    if [ $optSavePassword == 1 ]
+    then
+      if [ $optInteractive == 1 ]
+      then
+        writeText "Change password"
+        sudo su - postgres -c "psql -Ec\"\password filu\" "
+
+      else
+        writeText "Change password to '$Password'"
+        # FIXME: This way is the password in clear text send to the server
+        #        I did't find a solution to use "psql -c \password", or to crypt
+        #        the password by my own
+        execSQL "ALTER USER $UserRole ENCRYPTED PASSWORD '$Password' "
+      fi
+
+    else
+      writeText "Role exist, kept password untouched"
+    fi
+
+  else
+    if [ $optInteractive == 1 ]
+    then
+      writeText "Don't exist"
+      writeText "Add Filu user role : $UserRole"
+      sudo su - postgres -c "createuser -e -D -R -S -E -P ${UserRole}"
+
+    else
+      writeText "Create new role"
+      # FIXME: This way is the password in clear text send to the server
+      #        I did't find a solution to use createuser, or to crypt the
+      #        password by my own
+      # PostgreSQL docu says the defaults used here are:
+      #   NOSUPERUSER NOCREATEROLE NOCREATEDB NOCREATEUSER INHERIT LOGIN NOREPLICATION
+      execSQL "CREATE USER $UserRole WITH ENCRYPTED PASSWORD '$Password'"
+    fi
+  fi
+}
+
+deleteRole()
+{
+  beginText "Check PgUserRole '$UserRole'"
+
+  if [ $(execSQL "SELECT 1 FROM pg_roles WHERE rolname='$UserRole'") ]
+  then
+    writeText "To be deleted"
+    yesOrDie "Are you sure to delete PgUserRole '$UserRole'"
+
+    beginText "Delete PgUserRole '$UserRole'"
+    if execSQL "DROP ROLE $UserRole;"
+    then
+      writeText "Done"
+    else
+      exitError
+    fi
+
+  else
+    exitError "Role '$UserRole' don't exist."
+  fi
+}
+
+createDataBase()
+{
+  beginText "Check database '$DataBase'"
+
+  if [ $(execSQL "SELECT 1 FROM pg_database WHERE datname='$DataBase'") ]
+  then
+    writeText "Exist"
+
+  else
+    writeText -n "Don't exist..."
+#     beginText "Create Filu database '$DataBase'"
+    if execSQL "CREATE DATABASE $DataBase OWNER $UserRole TEMPLATE template1"
+    then
+      execSQL "COMMENT ON DATABASE $DataBase IS 'Filu - Supports your stock trading'"
+      writeText "Created"
+    else
+      exitError
+    fi
+  fi
+}
+
+deleteDataBase()
+{
+  beginText "Check database '$DataBase'"
+
+  if [ $(execSQL "SELECT 1 FROM pg_database WHERE datname='$DataBase'") ]
+  then
+    writeText "To be deleted"
+    yesOrDie "Are you sure to delete database '$DataBase'"
+
+    beginText "Delete database '$DataBase'"
+    if execSQL "DROP DATABASE $DataBase;"
+    then
+      writeText "Done"
+    else
+      exitError
+    fi
+
+  else
+    exitError "Database '$DataBase' don't exist."
+  fi
+}
+
+printHelp()
+{
+  setDefaults
+  local me=$(basename $0)
+  writeText "I'm part of Filu. Visit http://filu.sourceforge.net"
+  writeText ""
+  writeText "Call me this way:"
+  writeText "  sudo $me [-d <DataBase>] [-u <PgUserRole>] [-p <Password>]"
+  me=$(sed "s/./\ /g" <<< $me) # Overwrite with space to align well
+  writeText "       $me [-i] [-P] [-D] [-U] [-q] [-h]"
+  writeText ""
+  writeText "Options -d -u -p supersede there defaults:"
+  writeText "  <DataBase>     = $DataBase"
+  writeText "  <PgUserRole>   = $UserRole"
+  writeText "  <Password>     = $Password"
+  writeText ""
+  writeText "Options:"
+  writeText "  -D Delete database"
+  writeText "  -h Print this help text"
+  writeText "  -i Ask interactive for password, ignores -p"
+  writeText "  -P Save new password to existing PgUserRole"
+  writeText "  -q Quiet mode"
+  writeText "  -U Delete user"
+  writeText "  -Y Don't ask, assume always Yes. Works only if run as script"
+  writeText ""
+  writeText "Without -p is the password set to <PgUserRole>"
+  writeText ""
+  writeText "The purpose of this tool is as follows:"
+  writeText "  - Create and delete PostgreSQL user roles"
+  writeText "  - Change passwords of PostgreSQL user roles"
+  writeText "  - Create and delete PostgreSQL databases"
+  writeText "  - Edit PostgreSQL's pg_hba.conf file to set the needed access rights"
+  writeText "  - Trigger PostgreSQL to reload the new configuration"
+  writeText ""
+  writeText "The conf-file point is done by creating an entry per user/database combination like this:"
+  writeText ""
+  writeText "  # TYPE  DATABASE     USER            CIDR-ADDRESS            METHOD"
+  writeText "  local   filu         filu                                    md5"
+  writeText "  host    filu         filu            127.0.0.1/32            md5"
+  writeText "  host    filu         filu            ::1/128                 md5"
+  writeText ""
+  writeText "It is save to rerun again without to fill pg_hba.conf with doubled entries. Deleting a"
+  writeText "PgUserRole delete also there entries."
+  writeText ""
+  writeText "The PgUserRole became the owner of the DataBase if they not already exist."
+  writeText ""
+}
+
+#####
+#
+#   The Main Part
+#
+
+setDefaults
+
+while getopts :d:Dhip:Pqu:UY opt
+do
+   case $opt in
+       d) DataBase=$OPTARG
+          ;;
+       D) optDelDB=1
+          ;;
+       h) printHelp
+          exit 0
+          ;;
+       i) optInteractive=1
+          ;;
+       p) optPassword=$OPTARG
+          ;;
+       P) optSavePassword=1
+          ;;
+       q) optQuiet=1
+          ;;
+       u) UserRole=$OPTARG
+          ;;
+       U) optDelUser=1
+          ;;
+       Y) optAlwaysYes=1
+          ;;
+       ?) exitError "Unknown option -$OPTARG"
+          ;;
+       :) exitError "Option -$OPTARG requires an argument."
+          ;;
+   esac
+done
+
+if [ ! $(id -u) == 0 ]; then
+  printHelp
+  exitError "Must run as root"
+fi
+
+if [ ! -z $optPassword ]
+then Password=$optPassword
+else Password=$UserRole
+fi
+
+# FIXME: I didn't find a solution to crypt the password by my own.
+#        See also http://stackoverflow.com/a/14941263
+#
+# Does not work, it is not possible to login with password 'filu'
+#   Password="md5$(md5sum <<< "$UserRole$UserRole" | cut -f1 -d' ')" # Cut of the trailing hyphen
+#
+# The result $Password for filu/filu is
+#   md568e29415f2cac9d21659c35e0873c9db
+#
+# Here we have the correct hash reported by "psql -Ec\password" for filu/filu
+#   md5a0a2141c1fd24fc9322115147d4bcd13
+
+cfgHeader="\n\n\
+### Inserted by Filu configure-postgresql script. All inside here may\n\
+# changed automatically. So your are warned now to edit this manually\n"
+cfgLocal="\
+local   $DataBase         $UserRole                                    md5"
+cfgHost1="\
+host    $DataBase         $UserRole            127.0.0.1\/32            md5"
+cfgHost2="\
+host    $DataBase         $UserRole            ::1\/128                 md5"
+cfgFooter="\n\
+### End of Filu configure-postgresql script settings"
+# TYPE  DATABASE        USER            CIDR-ADDRESS            METHOD
+
+#
+# Obtain the pg_hba.conf file
+#
+beginText "Check PostgreSQL hba file"
+hbaConf=$(execSQL "SHOW hba_file" 2>/dev/null)
+
+if [ -z $hbaConf ]
+then
+  exitError "The PostgreSQL server is not running"
+
+else
+  writeText "$hbaConf"
+fi
+
+#
+# Here is the beef
+#
+if [ $optDelDB == 1 ]
+   then deleteDataBase
+fi
+
+if [ $optDelUser == 1 ]
+   then deleteRole
+   else createRole
+fi
+
+if [ $optDelDB == 0 ] && [ $optDelUser == 0 ]
+   then createDataBase
+fi
+
+#
+# Configure pg_hba.conf file
+#
+beginText "Check PostgreSQL configuration"
+
+reloadConfig=1
+
+if grep -q "### Inserted by Filu " $hbaConf;
+then
+  if grep -q "$cfgHost1" $hbaConf;
+  then
+    writeText "User/Database entry exist."
+    reloadConfig=0
+    if [ $optDelUser == 1 ] || [ $optDelDB == 1 ]
+    then
+      beginText "Remove User/Database entry"
+      sed -i "/$cfgLocal/d" $hbaConf
+      sed -i "/$cfgHost1/d" $hbaConf
+      sed -ie "/$cfgHost2/,+1d" $hbaConf # Remove next line too (empty one)
+      echo "Done"
+      reloadConfig=1
+    fi
+
+  else
+    if [ $optDelUser == 1 ] || [ $optDelDB == 1 ]
+    then
+      writeText "Nothing to remove."
+    else
+      writeText "Insert new User/Database entry."
+      text="$cfgLocal\n$cfgHost1\n$cfgHost2"
+      sed -i "s/\(### End of Filu .*\)/$text\n\n\1/g" $hbaConf
+    fi
+  fi
+
+else
+  writeText "No Filu entry found."
+  if [ $optDelUser == 0 ] && [ $optDelDB == 0 ]
+  then
+    beginText "Insert Filu settings"
+    text="$cfgHeader\n$cfgLocal\n$cfgHost1\n$cfgHost2\n$cfgFooter"
+
+    # Check if it is a default file with known line
+    if grep -q "# TYPE  DATABASE" $hbaConf;
+    then
+      # Insert at desired position
+      sed -i "s/\(# TYPE  DATABASE.*\)/\1$text/g" $hbaConf
+
+    else
+      # Prepend the file with our entry
+      sed -i "1 i $text\n" $hbaConf
+    fi
+
+    writeText "Done."
+  fi
+fi
+
+beginText "Check PostgreSQL status"
+
+if [ $reloadConfig == 1 ]; then
+  #
+  # Trigger server to reload new configuration
+  #
+  writeText "Need reload of new configuration"
+  beginText "Trigger server by running"
+  if [ -e /etc/init.d ]
+  then
+    writeText "/etc/init.d/postgresql reload"
+    /etc/init.d/postgresql reload
+
+  elif [ -e /etc/systemd ]
+  then
+    writeText "systemctl reload postgresql"
+    systemctl reload postgresql
+
+  else
+    exitError "Can't recognise init system" \
+              "I have tested for:"          \
+              "\t/etc/init.d"               \
+              "\t/etc/systemd"
+  fi
+
+else
+  writeText "No need to reload configuration"
+fi
+
+writeText "Done without trouble."
