@@ -52,6 +52,7 @@ To compile the programs you need the .deb packages:
   libqt4-dev
   libqt4-sql
   libqt4-sql-psql
+  libpq-dev
   libmuparser-dev
 
 The perl scripts needs the .dep packages:

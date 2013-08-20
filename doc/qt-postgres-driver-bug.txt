@@ -23,7 +23,7 @@ Pest Control
 --------------
 As dirty workaround we have to do these steps:
 
-Download and unzip qt-everywhere-opensource-src-4.8.4.tar.gz from
+Download and unzip qt-everywhere-opensource-src-4.8.5.tar.gz from
   http://qt-project.org/downloads
 
 NOTE: If your distribution uses a newer or older version of Qt, it might be wise
@@ -32,9 +32,9 @@ different, so you have to look for the appropriate files. In case of a newer
 version it is of cause possible that the bug is fixed and here is nothing to do.
 
 Edit the file
-  qt-everywhere-opensource-src-4.8.4/src/sql/drivers/psql/qsql_psql.cpp
+  qt-everywhere-opensource-src-4.8.5/src/sql/drivers/psql/qsql_psql.cpp
 
-Search for this code block and comment out line 758 with "case PreparedQueries"
+Search for this code block and comment out the with "case PreparedQueries"
 that it looks as below:
   bool QPSQLDriver::hasFeature(DriverFeature f) const
   {
