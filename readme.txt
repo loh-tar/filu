@@ -23,10 +23,10 @@ After that you have only to compile the new progs as described in chapter 1-2,
 that's all. And *don't* touch your database except the changelog says
 something else.
 
-The following infos apply to Ubuntu and Arch Linux. If you use a different OS
-you may need to do something deviating. The described way will install the Filu
-programs and the PostgreSQL server on the same local machine. For details about
-the PostgreSQL configuration see 3- Customizing.
+The following infos apply to Debian based Linux and Arch Linux. If you use a
+different OS you may need to do something deviating. The described way will
+install the Filu programs and the PostgreSQL server on the same local machine.
+For details about the PostgreSQL configuration see 3- Customizing.
 
 *Please* report in any case if you come in trouble while the installation or
 later by using Filu. Without feedback I can't fix it!
@@ -42,9 +42,14 @@ TA-Lib          Last tested version is 0.4.0
 PostgreSQL      At least version 8.4
 
 
-Ubuntu
+Debian
 --------
-The last (very poor) test was with Raring Ringtail.
+The last (short) test was with Debian 7.1 Wheezy and Ubuntu 13.4 Raring Ringtail
+
+NOTE: There is an install script available which will perform all the following
+      steps for you, just call it this way:
+        cd /path-to/FiluSource-YYYY-MM-DD
+        ./install-debian
 
 To compile the programs you need the .deb packages:
   build-essential
@@ -62,12 +67,17 @@ The perl scripts needs the .dep packages:
   libtimedate-perl
   libwww-perl
   libxml-libxml-simple-perl
+  libhtml-tableextract-perl
 
-Install TA-Lib from: http://ta-lib.org
-Sadly take compile from source some time, so you could also try to use the .deb
-package by Marco van Zwetselaar, but I haven't it tested.
-  download ta-lib-0.4.0-src.tar.gz
-  unzip the file
+Install TA-Lib from http://ta-lib.org. Use the packages by Marco van Zwetselaar:
+  Download from http://www.zwets.com/debs/unstable the files
+    ta-lib0-dev_0.4.0-2_i386.deb and libta-lib0_0.4.0-2_i386.deb
+  sudo dpkg -i \
+    /path-to/libta-lib0_0.4.0-2_i386.deb \
+    /path-to/ta-lib0-dev_0.4.0-2_i386.deb
+
+Or compile from source which will take some time:
+  Download and unzip the file ta-lib-0.4.0-src.tar.gz
   cd into the extracted source directory
   ./configure
   make
@@ -99,6 +109,7 @@ Some more packages available in AUR:
   perl-cache-cache
   perl-date-simple
   perl-xml-libxml-simple
+  perl-html-tableextract
 
 The database:
   postgresql
@@ -108,6 +119,9 @@ NOTE: If you are a champ you write patch for a PKGBUILD.
 
 1-2- Compilation
 ====================
+NOTE: If CMake reports not to find PostgreSQL look at this:
+        http://stackoverflow.com/a/13934972
+
 After install of all dependencies above you have to do:
   cd into the FiluSource directory
   mkdir build
