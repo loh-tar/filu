@@ -1,3 +1,13 @@
+2013-08-21
+============
+Sundries
+----------
+- Add install-debian script
+- Add from original Qt source tree the psql driver plugin
+- Add filu-cfg-postgresql to progs and update install procedure
+- Fix IndiSetPad: Restore tool tip of Default+ZoomWidget on save
+
+
 2013-08-12
 ============
 Sundries
