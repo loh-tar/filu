@@ -24,7 +24,6 @@ set(ICON_INSTALL_DIR /usr/share/icons/hicolor/48x48/apps/ CACHE FILEPATH "Global
 add_subdirectory(libs)
 add_subdirectory(progs)
 add_subdirectory(database)
-add_subdirectory(qt-psqldriver)
 
 #
 # Install user default files
