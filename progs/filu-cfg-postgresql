@@ -433,12 +433,12 @@ if [ $reloadConfig == 1 ]; then
   #
   writeText "Need reload of new configuration"
   beginText "Trigger server by running"
-  if [ -e /etc/init.d ]
+  if command -v service >/dev/null 2>&1
   then
-    writeText "/etc/init.d/postgresql reload"
-    /etc/init.d/postgresql reload
+    writeText "service postgresql reload"
+    service postgresql reload
 
-  elif [ -e /etc/systemd ]
+  elif command -v systemctl >/dev/null 2>&1
   then
     writeText "systemctl reload postgresql"
     systemctl reload postgresql
@@ -446,8 +446,8 @@ if [ $reloadConfig == 1 ]; then
   else
     exitError "Can't recognise init system" \
               "I have tested for:"          \
-              "\t/etc/init.d"               \
-              "\t/etc/systemd"
+              "\tcommand -v service"        \
+              "\tcommand -v systemctl"
   fi
 
 else
