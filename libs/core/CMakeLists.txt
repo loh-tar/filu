@@ -1,18 +1,12 @@
 project(FiluCore)
-#set(VERSION 0.1.0)
-set(QT_USE_QTSQL TRUE)
-include(${QT_USE_FILE})
-
-# CONFIG += thread warn_on debug
-#CONFIG += create_prl
 
 # TA-Lib stuff
-find_package(ta_lib REQUIRED)
+find_package(ta_lib ${ReqTaLibVersion} REQUIRED)
 include_directories(${TA_LIB_INCLUDE_DIR})
 set(LIBS ${LIBS} ${TA_LIB_LIBRARIES})
 
 # muParser stuff
-find_package(muparser REQUIRED)
+find_package(muparser ${ReqMuParserVersion} REQUIRED)
 include_directories(${MUPARSER_INCLUDE_DIR})
 set(LIBS ${LIBS} ${MUPARSER_LIBRARIES})
 

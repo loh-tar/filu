@@ -186,6 +186,7 @@ L: add a help page to display all (or most) available docu, copyright and other
 
 Libf
 ======
+H: Remove dependency of QtGui (QColor) from DataTuple
 L: Fill FooTuple with FooId and Quality. Well, tuples are not likely used except of
    bars. But I don't like to drop entierly the idea of a universal lib where such
    tuples may usefull, or not?

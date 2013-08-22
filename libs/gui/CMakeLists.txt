@@ -1,10 +1,4 @@
 project(FiluGui)
-#set(VERSION 0.1.0)
-set(QT_USE_QTSQL TRUE)
-include(${QT_USE_FILE})
-
-# CONFIG += thread warn_on debug
-#CONFIG += create_prl
 
 include_directories(${FiluCore_SOURCE_DIR})
 include_directories(${FiluCore_SOURCE_DIR}/calc)

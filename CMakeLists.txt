@@ -1,6 +1,13 @@
 project (FiluRoot)
+
+set(ReqQtVersion "4.8.0")
+set(ReqTaLibVersion "0.4.0")
+set(ReqMuParserVersion "2.0.0")
+set(ReqPostgreSqlVersion "8.4.0")
 cmake_minimum_required (VERSION 2.8)
-find_package(Qt4 REQUIRED)
+
+find_package(Qt4 ${ReqQtVersion} REQUIRED QtCore QtGui QtSql)
+include(${QT_USE_FILE})
 
 # Disabled, it slows down the compilation
 # But use it from time to time like valgrind
@@ -8,13 +15,6 @@ find_package(Qt4 REQUIRED)
 #set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
-# This setting was used at times where we need an own Qt lib with the fixed driver
-# There was as option the entry..
-#     /usr/local/Trolltech/Qt-4.3.5/lib
-# ..in our /etc/ld.conf file
-# nowday are both not needed, I hope
-# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 set(XDG_APPS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/applications CACHE FILEPATH "Install path for .desktop files")
 # FIXME Here hard code the icon pfad because its also hard coded in the .desktop files

@@ -1,8 +1,4 @@
 project(managerf)
-#CONFIG += thread warn_on debug
-#QMAKE_CXXFLAGS += -rdynamic
-set(QT_USE_QTSQL TRUE)
-include(${QT_USE_FILE})
 
 include_directories(${CMAKE_SOURCE_DIR} ${managerf_SOURCE_DIR} ${managerf_BINARY_DIR})
 

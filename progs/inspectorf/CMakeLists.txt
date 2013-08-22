@@ -1,8 +1,4 @@
 project(inspectorf)
-#CONFIG += thread warn_on debug
-#QMAKE_CXXFLAGS += -rdynamic
-set(QT_USE_QTSQL TRUE)
-include(${QT_USE_FILE})
 
 include_directories(${CMAKE_SOURCE_DIR} ${inspectorf_SOURCE_DIR} ${inspectorf_BINARY_DIR})
 
