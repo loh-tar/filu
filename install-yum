@@ -1,99 +1,91 @@
 #!/bin/bash
 
-# http://stackoverflow.com/a/4785518
-if ! command -v yum >/dev/null 2>&1
+#
+#   This file is part of Filu.
+#
+#   Copyright (C) 2007, 2010, 2011, 2012, 2013 loh.tar@googlemail.com
+#
+#   Filu is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   Filu is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with Filu. If not, see <http:#www.gnu.org/licenses/>.
+#
+
+source install-include-functions.sh
+
+checkSystem "yum" ".rpm"
+checkIfRoot
+startRolex "Run yum"
+
+yum -y install              \
+  gcc-c++                   \
+  cmake                     \
+  qt-devel                  \
+  qt-postgresql             \
+  postgresql-devel          \
+  muParser-devel            \
+  postgresql                \
+  postgresql-server         \
+  perl-libwww-perl          \
+  perl-Cache-Cache          \
+  perl-Date-Simple          \
+  perl-IO-HTML              \
+  perl-TimeDate             \
+  perl-HTML-TableExtract
+#  perl-XML-LibXML-Simple
+
+checkPoint "(Most) Dependencies installed" "Test if perl-XML-LibXML-Simple is available"
+
+if ! yum list perl-XML-LibXML-Simple > /dev/null 2> /dev/null
 then
-  echo "This looks not like a .rpm system (found no yum)"
-  exit 1
+  true
+  checkPoint "No! It's not" "Will install via App-cpanminus"
+  yum -y install perl-App-cpanminus libxml2-devel
+  checkPoint "App-cpanminus installed" "Run cpanm XML::LibXML::Simple"
+  cpanm XML::LibXML::Simple --notest
+
+else
+  checkPoint "Nice! Yes it is" "Run yum"
+  yum -y install perl-XML-LibXML-Simple
 fi
 
-red="\e[1;31m"
-cyan="\e[0;36m"
-noColor="\e[0m"
-colorStar="${cyan}*${noColor}"
-talibRepo="\
-[rpm-sphere]
-name=RPM Sphere
-baseurl=http://download.opensuse.org/repositories/home:/zhonghuaren/Fedora_19/
-gpgkey=http://download.opensuse.org/repositories/home:/zhonghuaren/Fedora_19/repodata/repomd.xml.key
-enabled=1
-gpgcheck=1"
+checkPoint "perl-XML-LibXML-Simple installed" "Test if TA-Lib is available"
 
-checkPoint()
-{
-  if [ $? -ne 0 ]; then
-    echo -e "${red}*** Error ***${noColor} Something went wrong :-("
-    exit 1
-  else
-    echo -e "${colorStar}"
-    echo -e "${cyan}*  OK:${noColor}   $1"
-    echo -e "${cyan}*  Next:${noColor} $2"
-    echo -e "${colorStar}"
-    sleep 1s
-  fi
-}
-
-checkPoint "Let's go!" "Test if TA-Lib is available"
-# Time measuring taken from Arch Wiki, thanks guys
-# https://wiki.archlinux.org/index.php/Full_System_Backup_with_rsync
-START=$(date +%s)
-
-#checkPoint "" "Run apt-get"
-# Test for TA-Lib
-if ! yum list  ta-lib > /dev/null 2> /dev/null
+if ! yum list ta-lib > /dev/null 2> /dev/null
 then
-	checkPoint "No! It's not" "Add repository 'rpm-sphere'"
-	su -c "echo '$talibRepo' > /etc/yum.repos.d/rpm-sphere.repo"
-	checkPoint "Repository added" "Run yum"
+  checkPoint "No! It's not" "Test machine type"
+  machineType=`uname -m`
+  if [ ${machineType} == 'x86_64' ]; then
+    checkPoint "It's x86_64" "Run yum to install package from 'rpm-sphere'"
+    yum -y install \
+      http://download.opensuse.org/repositories/home:/zhonghuaren/Fedora_19/x86_64/ta-lib-0.4.0-2.1.x86_64.rpm \
+      http://download.opensuse.org/repositories/home:/zhonghuaren/Fedora_19/x86_64/ta-lib-devel-0.4.0-2.1.x86_64.rpm
+
+  elif [ ${machineType} == 'i686' ]; then
+    checkPoint "It's i686" "Run yum to install package from 'rpm-sphere'"
+    yum -y install \
+      http://download.opensuse.org/repositories/home:/zhonghuaren/Fedora_19/i686/ta-lib-0.4.0-2.1.i686.rpm \
+      http://download.opensuse.org/repositories/home:/zhonghuaren/Fedora_19/i686/ta-lib-devel-0.4.0-2.1.i686.rpm
+
+  else
+    exitError "Cool! You are using ${machineType} but sadly I can't go on now." \
+              "Install TA-Lib from some other repo or source"
+  fi
+
 else
   true
   checkPoint "Nice! Yes it is" "Run yum"
+  yum -y install ta-lib
 fi
 
-checkPoint "Run yum"
-su -c "yum install  \
-gcc-c++ \
-cmake  \
-qt-devel  \
-ta-lib-devel \
-muParser-devel  \
-perl-Cache-Cache \
-perl-Date-Simple \
-perl-IO-HTML \
-perl-TimeDate \
-perl-XML-Simple \
-perl-HTML-TableExtract \
-qt-postgresql \
-postgresql \
-postgresql-server \
-postgresql-devel
-"
+checkPoint "TA-Lib installed" "Run cmake .."
 
-#- libpqxx
-# - libqt4-sql \
-# - libqt4-sql-psql \
-# - libpq-dev \
-# - libwww-perl \
-
-
-if [ ! -d build ]; then mkdir build; fi
-cd build
-cmake ..
-checkPoint "CMake configured" "Compile programs"
-make
-checkPoint "Filu programs compiled" "Install programs"
-sudo make install
-checkPoint "Filu programs installed" "Configure PostgreSQL"
-sudo ldconfig
-cd ..
-sudo filu-cfg-postgresql
-checkPoint "PostgreSQL configured" "Stop my Rolex"
-
-FINISH=$(date +%s)
-echo -e "${colorStar}"
-echo -e "${colorStar}  Total install time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds"
-echo -e "${colorStar}"
-echo -e "${colorStar}  Filu is ready to use :-)"
-echo -e "${colorStar}  Take a look at your application menu below 'Office' for PerformerF, ManagerF and InspectorF"
-echo -e "${colorStar}  I suggest now to run 'agentf doc first'"
-echo -e "${colorStar}"
+finishInstall

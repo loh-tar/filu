@@ -1,55 +1,51 @@
 #!/bin/bash
 
-# http://stackoverflow.com/a/4785518
-if ! command -v apt-get >/dev/null 2>&1
-then
-  echo "This looks not like a Debian system (found no apt-get)"
-  exit 1
-fi
+#
+#   This file is part of Filu.
+#
+#   Copyright (C) 2007, 2010, 2011, 2012, 2013 loh.tar@googlemail.com
+#
+#   Filu is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   Filu is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with Filu. If not, see <http:#www.gnu.org/licenses/>.
+#
 
-red="\e[1;31m"
-cyan="\e[0;36m"
-noColor="\e[0m"
-colorStar="${cyan}*${noColor}"
+source install-include-functions.sh
 
-checkPoint()
-{
-  if [ $? -ne 0 ]; then
-    echo -e "${red}*** Error ***${noColor} Something went wrong :-("
-    exit 1
-  else
-    echo -e "${colorStar}"
-    echo -e "${cyan}*  OK:${noColor}   $1"
-    echo -e "${cyan}*  Next:${noColor} $2"
-    echo -e "${colorStar}"
-    sleep 1s
-  fi
-}
+checkSystem "apt-get" "Debian"
+checkIfRoot
+startRolex "Run apt-get"
 
-checkPoint "Let's go!" "Run apt-get"
-# Time measuring taken from Arch Wiki, thanks guys
-# https://wiki.archlinux.org/index.php/Full_System_Backup_with_rsync
-START=$(date +%s)
-
-sudo apt-get --yes install \
-  build-essential \
-  cmake \
-  libqt4-dev \
-  libqt4-sql \
-  libqt4-sql-psql \
-  libpq-dev \
-  libmuparser-dev \
-  libcache-cache-perl \
-  libdate-simple-perl \
-  libio-html-perl \
-  libtimedate-perl \
-  libwww-perl \
+apt-get --yes install       \
+  build-essential           \
+  cmake                     \
+  libqt4-dev                \
+  libqt4-sql                \
+  libqt4-sql-psql           \
+  libpq-dev                 \
+  libmuparser-dev           \
+  libcache-cache-perl       \
+  libdate-simple-perl       \
+  libio-html-perl           \
+  libtimedate-perl          \
+  libwww-perl               \
   libxml-libxml-simple-perl \
   libhtml-tableextract-perl \
   postgresql
 
 checkPoint "(Most) Dependencies installed by apt-get" "Fetch TA-Lib"
-
+#
+# Install TA-Lib must be done this way after other dependencies or it will fail
+#
 # Don't download if already installed
 # http://stackoverflow.com/a/18341822
 if [ $(dpkg-query -l | grep ta-lib0-dev | wc -l) -eq 0 ]
@@ -60,7 +56,7 @@ then
 
   checkPoint "TA-Lib downloaded" "Install TA-Lib"
 
-  sudo dpkg -i \
+  dpkg -i \
     /tmp/ta-lib0-dev_0.4.0-2_i386.deb \
     /tmp/libta-lib0_0.4.0-2_i386.deb
 
@@ -71,24 +67,4 @@ else
   checkPoint "Nice. TA-Lib already installed" "Run cmake .."
 fi 
 
-if [ ! -d build ]; then mkdir build; fi
-cd build
-cmake ..
-checkPoint "CMake configured" "Compile programs"
-make
-checkPoint "Filu programs compiled" "Install programs"
-sudo make install
-checkPoint "Filu programs installed" "Configure PostgreSQL"
-sudo ldconfig
-cd ..
-sudo filu-cfg-postgresql
-checkPoint "PostgreSQL configured" "Stop my Rolex"
-
-FINISH=$(date +%s)
-echo -e "${colorStar}"
-echo -e "${colorStar}  Total install time: $(( ($FINISH-$START) / 60 )) minutes, $(( ($FINISH-$START) % 60 )) seconds"
-echo -e "${colorStar}"
-echo -e "${colorStar}  Filu is ready to use :-)"
-echo -e "${colorStar}  Take a look at your application menu below 'Office' for PerformerF, ManagerF and InspectorF"
-echo -e "${colorStar}  I suggest now to run 'agentf doc first'"
-echo -e "${colorStar}"
+finishInstall

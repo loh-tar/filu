@@ -7,6 +7,7 @@ Index
 2- Further Readings
 3- Customizing
 4- Uninstall
+5- Troubleshooting
 
 
 1- Installation
@@ -36,9 +37,8 @@ later by using Filu. Without feedback I can't fix it!
 ==========================
 
 Qt              At least version 4.8, Qt 5 is not tested
-muParser        Recommended version is 2.2.3, older versions like 1.34 works
-                but needs special attention
-TA-Lib          Last tested version is 0.4.0
+muParser        At least version 2.0.0, recommended is 2.2.3
+TA-Lib          At least version 0.4.0
 PostgreSQL      At least version 8.4
 
 
@@ -49,7 +49,7 @@ The last (short) test was with Debian 7.1 Wheezy and Ubuntu 13.4 Raring Ringtail
 NOTE: There is an install script available which will perform all the following
       steps for you, just call it this way:
         cd /path-to/FiluSource-YYYY-MM-DD
-        ./install-debian
+        ./install-aptget
 
 To compile the programs you need the .deb packages:
   build-essential
@@ -119,9 +119,6 @@ NOTE: If you are a champ you write patch for a PKGBUILD.
 
 1-2- Compilation
 ====================
-NOTE: If CMake reports not to find PostgreSQL look at this:
-        http://stackoverflow.com/a/13934972
-
 After install of all dependencies above you have to do:
   cd into the FiluSource directory
   mkdir build
@@ -131,20 +128,39 @@ After install of all dependencies above you have to do:
   sudo make install
   sudo ldconfig
 
-The only thing what missing now, is the database and a database user.
-The default for both is 'filu'. To create them simple run:
-  sudo filu-cfg-postgresql
-
-After successful install you can check the working with:
-  agentf
-
-There should not print any error message but some other stuff. Furthermore
-you have the programs:
+You should now find at your application menu below 'Office' the programs:
   performerf
   managerf
   inspectorf
 
-Which you should find at your application menu below 'Office'.
+Furthermore you have:
+  agentf
+  filu-cfg-postgresql
+
+
+1-3- Setup PostgreSQL
+=======================
+The only thing what missing now, is the database and a database user.
+The default for both is 'filu'. To create them simple run:
+  sudo filu-cfg-postgresql
+
+If there is reported that the PostgreSQL server not is running, start them. On
+some distributions, like Arch or Fedora, you have to create a cluster after
+install of PostgreSQL and have to start the server manually. To do so run on
+Fedora:
+  sudo postgresql-setup initdb
+  sudo systemctl start postgresql
+
+To ensure the server is available in the future run:
+  sudo systemctl enable postgresql.service
+
+
+1-4- As A Last Point
+======================
+Now its time to check the working with:
+  agentf
+
+There should not print any error message but some other stuff.
 
 
 2- Further Readings
@@ -171,3 +187,10 @@ To remove the Filu program collection cd into FiluSource/build and do:
 cd into each other of the above visited directories and do:
   sudo make uninstall
 
+
+5- Troubleshooting
+====================
+Here some note which hopefuly may help if something went wrong.
+
+- If CMake reports not to find PostgreSQL look at
+    http://stackoverflow.com/a/13934972
