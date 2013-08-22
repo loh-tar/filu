@@ -19,6 +19,7 @@
 
 #include <QDate>
 #include <QDir>
+#include <QLibraryInfo>
 
 #include "SettingsFile.h"
 
@@ -164,4 +165,19 @@ double
 SettingsFile::getDB(const QString& key, double def /*= 0.0*/) const
 {
   return getValue(key, def).toDouble();
+}
+
+QString
+SettingsFile::fallbackFile() const
+{
+  QString file = QLibraryInfo::location(QLibraryInfo::SettingsPath);
+  file.append("/" + organizationName());
+
+  if(applicationName().size()) file.append("/" + applicationName());
+
+  QString suffix = fileName();
+  suffix.remove(0, suffix.lastIndexOf('.'));
+  file.append(suffix);
+
+  return file;
 }

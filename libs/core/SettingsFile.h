@@ -53,6 +53,8 @@ class SettingsFile : public QSettings
     bool          getBL(const QString& key, bool def = true) const;
     double        getDB(const QString& key, double def = 0.0) const;
 
+    QString       fallbackFile() const;
+
   protected:
     virtual QVariant  getValue(const QString& key, const QVariant& def) const;
 };

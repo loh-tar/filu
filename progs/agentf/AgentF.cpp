@@ -284,7 +284,7 @@ void AgentF::printSettings()
   print(txt.arg("Qt version", width).arg(qVersion()));
   print(txt.arg("muParser version", width).arg(mu::Parser().GetVersion().data()));
   print(txt.arg("Settings file", width).arg(mRcFile->fileName()));
-  print(txt.arg("Fallback file", width).arg("/etc/xdg/Filu.conf"));
+  print(txt.arg("Fallback file", width).arg(mRcFile->fallbackFile()));
   print(txt.arg("FiluHome", width).arg(mRcFile->getPath("FiluHome")));
   print(txt.arg("LogFile", width).arg(mRcFile->getUrl("LogFile")));
   print("");

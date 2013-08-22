@@ -45,18 +45,6 @@ install(FILES ${FiluRoot_SOURCE_DIR}/doc/make-name-nice.conf
 )
 
 #
-# Install user config files
-#
-install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-config-file.conf
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu
-)
-# Install systemwide config file (it's tricky to avoid override)
-configure_file(${FiluRoot_SOURCE_DIR}/cmake/install-systemwide-config-file.cmake
-               ${FiluRoot_BINARY_DIR}
-)
-install(SCRIPT ${FiluRoot_BINARY_DIR}/install-systemwide-config-file.cmake)
-
-#
 # Install documentation
 #
 install(DIRECTORY ${FiluRoot_SOURCE_DIR}/doc/

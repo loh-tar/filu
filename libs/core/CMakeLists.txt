@@ -124,3 +124,24 @@ target_link_libraries(FiluCore ${LIBS} ${QT_LIBRARIES})
 install(TARGETS FiluCore
         LIBRARY DESTINATION lib/Filu
 )
+
+#
+# Install user config file
+#
+install(FILES ${FiluRoot_SOURCE_DIR}/doc/user-config-file.conf
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Filu
+)
+
+#
+# Install systemwide config file (it's tricky using SCRIPT to avoid override)
+#
+# Set QSettings fallback path, some distributions (like Fedora) use not
+# the default path /etc/xdg. Filched at Razor-qt project. Thanks pvanek :-)
+execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_CONFIGURATION
+                OUTPUT_VARIABLE Filu_XDG_DIRECTORY
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+configure_file(${FiluRoot_SOURCE_DIR}/cmake/install-systemwide-config-file.cmake
+               ${FiluRoot_BINARY_DIR}
+)
+install(SCRIPT ${FiluRoot_BINARY_DIR}/install-systemwide-config-file.cmake)
