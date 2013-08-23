@@ -81,7 +81,7 @@ errText()
 
 execSQL()
 {
-  su - postgres -c "psql postgres -qtAc \"$*\" ";
+  su --login postgres -c "psql postgres -qtAc \"$*\" ";
 }
 
 yesOrDie()
@@ -120,7 +120,7 @@ createRole()
       if [ $optInteractive == 1 ]
       then
         writeText "Change password"
-        sudo su - postgres -c "psql -Ec\"\password filu\" "
+        su --login postgres -c "psql -Ec\"\password filu\" "
 
       else
         writeText "Change password to '$Password'"
@@ -139,7 +139,7 @@ createRole()
     then
       writeText "Don't exist"
       writeText "Add Filu user role : $UserRole"
-      sudo su - postgres -c "createuser -e -D -R -S -E -P ${UserRole}"
+      su --login postgres -c "createuser -e -D -R -S -E -P ${UserRole}"
 
     else
       writeText "Create new role"
