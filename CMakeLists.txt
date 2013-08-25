@@ -50,8 +50,14 @@ install(FILES ${FiluRoot_SOURCE_DIR}/doc/make-name-nice.conf
 install(DIRECTORY ${FiluRoot_SOURCE_DIR}/doc/
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/Filu
 )
-# Install readme file to documentation
-install(FILES ${FiluRoot_SOURCE_DIR}/readme.txt
+# Install readme files to documentation
+set(ReadmeFiles
+    readme-arch.txt
+    readme-debian.txt
+    readme-fedora.txt
+    readme.txt
+)
+install(FILES ${ReadmeFiles}
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/Filu
 )
 

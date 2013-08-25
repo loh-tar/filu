@@ -5,9 +5,10 @@ Qt Bug in PSql Driver
 =======================
 Preamble
 ----------
-The shipped driver in the lib directory was created by the here described
-procedure. It is included to the Filu source tree for your convenience. If it
-not work try to download and install yourself. Good luck!
+The source in lib/qt-psqldriver directory was extracted from the original Qt
+source and modified by the here described procedure. It is included to the Filu
+source tree for your convenience. The following steps should be nowadays
+obsolete and only noted for documentation purposes.
 
 
 The Pest
@@ -64,10 +65,6 @@ Arch
 
 Ubuntu
 --------
-Thanks to Thomas for reporting, tested with Kubuntu 10.04.
-You need an additional .deb package:
-  libpq-dev
-
   qmake -o Makefile "INCLUDEPATH+=/usr/include/postgresql" "LIBS+=-L/usr/lib -lpq" psql.pro
   make
 

@@ -24,10 +24,18 @@ After that you have only to compile the new progs as described in chapter 1-2,
 that's all. And *don't* touch your database except the changelog says
 something else.
 
-The following infos apply to Debian based Linux and Arch Linux. If you use a
-different OS you may need to do something deviating. The described way will
-install the Filu programs and the PostgreSQL server on the same local machine.
-For details about the PostgreSQL configuration see 3- Customizing.
+The following infos apply to Debian based Linux, Fedora and Arch Linux. If you
+use a different OS you may need to do something deviating. The described way
+will install the Filu programs and the PostgreSQL server on the same local
+machine. For details about the PostgreSQL configuration see 3- Customizing.
+
+There are install scripts available (tested only on 32 bit systems) for apt-get
+and yum based Linux. Running on a slow Netbook take around 10min to install
+on Ubuntu. Run just simple:
+  ./install-by-aptget
+
+Take a look at the fitting readme-foo.txt for details of the used packages and
+repositories.
 
 *Please* report in any case if you come in trouble while the installation or
 later by using Filu. Without feedback I can't fix it!
@@ -35,91 +43,33 @@ later by using Filu. Without feedback I can't fix it!
 
 1-1- Needed Dependencies
 ==========================
+The main programs need to complile:
+  Compiler        Only tested with gcc
+  Qt              At least version 4.8, Qt 5 is not tested
+  muParser        At least version 2.0.0, recommended is 2.2.3
+  TA-Lib          At least version 0.4.0
 
-Qt              At least version 4.8, Qt 5 is not tested
-muParser        At least version 2.0.0, recommended is 2.2.3
-TA-Lib          At least version 0.4.0
-PostgreSQL      At least version 8.4
+The European Central Bank scripts needs Perl modules:
+  Cache::FileCache
+  Date::Parse
+  Date::Simple
+  HTML::TableExtract
+  LWP::Simple
+  XML::LibXML::Simple
 
-
-Debian
---------
-The last (short) test was with Debian 7.1 Wheezy and Ubuntu 13.4 Raring Ringtail
-
-NOTE: There is an install script available which will perform all the following
-      steps for you, just call it this way:
-        cd /path-to/FiluSource-YYYY-MM-DD
-        ./install-aptget
-
-To compile the programs you need the .deb packages:
-  build-essential
-  cmake
-  libqt4-dev
-  libqt4-sql
-  libqt4-sql-psql
-  libpq-dev
-  libmuparser-dev
-
-The perl scripts needs the .dep packages:
-  libcache-cache-perl
-  libdate-simple-perl
-  libio-html-perl
-  libtimedate-perl
-  libwww-perl
-  libxml-libxml-simple-perl
-  libhtml-tableextract-perl
-
-Install TA-Lib from http://ta-lib.org. Use the packages by Marco van Zwetselaar:
-  Download from http://www.zwets.com/debs/unstable the files
-    ta-lib0-dev_0.4.0-2_i386.deb and libta-lib0_0.4.0-2_i386.deb
-  sudo dpkg -i \
-    /path-to/libta-lib0_0.4.0-2_i386.deb \
-    /path-to/ta-lib0-dev_0.4.0-2_i386.deb
-
-Or compile from source which will take some time:
-  Download and unzip the file ta-lib-0.4.0-src.tar.gz
-  cd into the extracted source directory
-  ./configure
-  make
-  sudo make install
-
-The database package is:
-  postgresql
-  pgadmin3        Not required but useful if you like to edit some data where is
-                  not yet a tool at Filu to do the job. Use it with care.
-
-NOTE: If you are a champ you write a patch to build a .deb package.
-
-
-Arch
-------
-To compile the programs you need:
-  base-devel
-  cmake
-  qt4
-  muparser
-  ta-lib          Available in AUR
-
-The perl scripts needs the packages:
-  perl-io-html
-  perl-libwww
-  perl-timedate
-
-Some more packages available in AUR:
-  perl-cache-cache
-  perl-date-simple
-  perl-xml-libxml-simple
-  perl-html-tableextract
+The Yahoo scripts needs Perl modules:
+  Date::Parse
+  Date::Simple
+  HTML::TableExtract
+  LWP::Simple
 
 The database:
-  postgresql
-
-NOTE: If you are a champ you write patch for a PKGBUILD.
+  PostgreSQL      At least version 8.4
 
 
 1-2- Compilation
 ====================
-After install of all dependencies above you have to do:
+After install of all dependencies you have to do:
   cd into the FiluSource directory
   mkdir build
   cd build
@@ -144,15 +94,13 @@ The only thing what missing now, is the database and a database user.
 The default for both is 'filu'. To create them simple run:
   sudo filu-cfg-postgresql
 
-If there is reported that the PostgreSQL server not is running, start them. On
-some distributions, like Arch or Fedora, you have to create a cluster after
-install of PostgreSQL and have to start the server manually. To do so run on
-Fedora:
-  sudo postgresql-setup initdb
-  sudo systemctl start postgresql
+If there is reported that the PostgreSQL server couldn't be started, start them.
+On some distributions, like Arch or Fedora, you have to create a cluster after
+install of PostgreSQL and have to start the server manually. The script try to
+do it for you but may fail.
 
-To ensure the server is available in the future run:
-  sudo systemctl enable postgresql.service
+Ensure the server is available in the future. On systemd systems run:
+  sudo systemctl enable postgresql
 
 
 1-4- As A Last Point
@@ -184,13 +132,42 @@ For more tunings see:
 To remove the Filu program collection cd into FiluSource/build and do:
   make uninstall
 
-cd into each other of the above visited directories and do:
-  sudo make uninstall
+Removing of all installed dependencies is up to you, sorry.
 
 
 5- Troubleshooting
 ====================
-Here some note which hopefuly may help if something went wrong.
+Here some notes which hopefully may help if something went wrong or is missing.
 
-- If CMake reports not to find PostgreSQL look at
-    http://stackoverflow.com/a/13934972
+Install TA-Lib From Source
+----------------------------
+Download and unzip the source from http://ta-lib.org
+  cd into the extracted source directory
+  ./configure
+  make
+  sudo make install
+
+Install muParser From Source
+------------------------------
+Download and unzip the source from http://sourceforge.net/projects/muparser/
+  cd into the extracted source directory
+  ./configure --enable-samples=no
+  make
+  sudo make install
+
+Install Missing Perl Packages
+-------------------------------
+If so, like xml-libxml-simple on Fedora, you can install them direct from cpan
+easily with App-cpanminus. In our example is one more dependency needed:
+  yum -y install perl-App-cpanminus libxml2-devel
+  cpanm XML::LibXML::Simple
+
+CMake Reports Not To Find PostgreSQL
+--------------------------------------
+Look at http://stackoverflow.com/a/13934972, Good Luck!
+
+The Compilation Abort With Not To Find Something
+--------------------------------------------------
+Read attentively what is missing and search the web, or your package manager,
+where the missing file is included and (re)install the package.
+
