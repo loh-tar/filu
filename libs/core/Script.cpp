@@ -211,6 +211,7 @@ QString Script::locateProviderScript(const QString& provider, const QString& fun
 
   // Build the fullpath to the provider script
   QString fullPath(mProviderPath + provider + "/");
+  mWorkingDir = fullPath;
 
   QDir dir(fullPath);
   dir.setNameFilters(QStringList(function + "*"));
@@ -218,9 +219,8 @@ QString Script::locateProviderScript(const QString& provider, const QString& fun
   QStringList files = dir.entryList();
   if(files.isEmpty()) return QString();
 
-  mWorkingDir = fullPath;
-
-  fullPath.append(files.at(0));
+  mScriptName = files.at(0);
+  fullPath.append(mScriptName);
 
   oldProvider = provider;
   oldFunction = function;
@@ -237,6 +237,25 @@ void Script::showWaitWindow(bool yes/* = true*/)
 void Script::readStdOut()
 {
   if(mShowWaitWindow) mResult = new QStringList;
+
+  if(mProc->exitCode())
+  {
+    error(FUNC, tr("Script '%1' exited with error.").arg(mScriptName));
+    mProc->setReadChannel(QProcess::StandardError);
+    QString errTxt = mProc->readAll();
+    if(mScriptName.endsWith(".pl"))
+    {
+      if(errTxt.contains("@INC"))
+      {
+        // Perl reports in case of a missing module the complete INC path
+        // but that is to much info for us
+        errTxt.remove(errTxt.lastIndexOf("@INC") - 2, errTxt.size());
+      }
+    }
+
+    errInfo(FUNC, tr("Script says: %1").arg(errTxt));
+    mProc->setReadChannel(QProcess::StandardOutput);
+  }
 
   while(mProc->canReadLine())
   {

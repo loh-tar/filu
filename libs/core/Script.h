@@ -58,6 +58,7 @@ class Script : public FObject
 
     QString       mProviderPath;
     QString       mWorkingDir;
+    QString       mScriptName;
     bool          mShowWaitWindow;
     QProcess*     mProc;
     bool          mRunning;

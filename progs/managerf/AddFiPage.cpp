@@ -652,7 +652,7 @@ void AddFiPage::scriptFinished()
   {
     // For 'historical reasons', and because it looks so cool,
     // we fill the result table with the error message...
-    QString errorMsg = mScripter->formatMessages();
+    QString errorMsg = mScripter->formatMessages("%x");
     QStringList* result = new QStringList;
     result->append("[Header]Error");
     result->append(errorMsg);
