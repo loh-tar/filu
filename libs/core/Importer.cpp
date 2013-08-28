@@ -1064,7 +1064,8 @@ bool Importer::setDepotId(const QString faultTxt/* = ""*/)
 
 bool Importer::setQualityId()
 {
-  QString quality = mData.value("Quality", "Gold"); // If no quality set, use Gold
+  QString quality = mData.value("Quality", "Gold"); // If no quality present, use Gold
+  if(quality.isEmpty()) quality = "Gold";           // If no quality set, use Gold
 
   if(quality == mData.value("_LastQuality")) return true;  // We are up to date
 
