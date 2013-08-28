@@ -733,7 +733,7 @@ void IndicatorPainter::paintCrosshair()
 *
 ************************************************************************/
 
-bool IndicatorPainter::parse(const QStringList& indiFile)
+bool IndicatorPainter::parse(const QStringList& /*indiFile*/)
 {
   // Unused (!?)
 //   qDebug() << indiFile;

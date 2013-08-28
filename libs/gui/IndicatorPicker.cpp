@@ -86,7 +86,7 @@ void IndicatorPicker::restoreState(QSettings& setting)
   climbOnTree(group, indi);
 }
 
-void IndicatorPicker::indicatorsChanged(const QString& path)
+void IndicatorPicker::indicatorsChanged(const QString& /*path*/)
 {
   FTool::sleep(100);
 

@@ -29,14 +29,14 @@
 *
 *******************************************************************/
 
-int SymbolTableModel::rowCount(const QModelIndex& parent) const
+int SymbolTableModel::rowCount(const QModelIndex& /*parent*/) const
 {
   if(!mSymbols) return 0;
 
   return mSymbols->count();
 }
 
-int SymbolTableModel::columnCount(const QModelIndex& parent) const
+int SymbolTableModel::columnCount(const QModelIndex& /*parent*/) const
 {
   return 6;
 }

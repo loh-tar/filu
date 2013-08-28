@@ -29,7 +29,7 @@ FObject::FObject(FObject* parent, const QString& className)
 
 {}
 
-FObject::FObject(const QString& connectionName, QCoreApplication& app)
+FObject::FObject(const QString& connectionName, QCoreApplication& /*app*/)
        : FClass(connectionName)
 
 {}

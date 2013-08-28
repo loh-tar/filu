@@ -170,7 +170,7 @@ void ButtonPad::orientationChanged(Qt::Orientation o) // Slot
   parentWidget()->adjustSize();
 }
 
-void ButtonPad::buttonClicked(int id)
+void ButtonPad::buttonClicked(int /*id*/)
 {
   //qDebug() << "ButtonPad::buttonClicked:" << id;
 }

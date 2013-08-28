@@ -35,8 +35,8 @@ version it is of cause possible that the bug is fixed and here is nothing to do.
 Edit the file
   qt-everywhere-opensource-src-4.8.5/src/sql/drivers/psql/qsql_psql.cpp
 
-Search for this code block and comment out the with "case PreparedQueries"
-that it looks as below:
+Search for this code block and insert "return false;" after the line with
+"case PreparedQueries" that it looks as below:
   bool QPSQLDriver::hasFeature(DriverFeature f) const
   {
       switch (f) {
@@ -46,13 +46,13 @@ that it looks as below:
       case LowPrecisionNumbers:
       case EventNotifications:
           return true;
-  //    case PreparedQueries:
+      case PreparedQueries:
+          return false;             // Inserted as ugly fix
       case PositionalPlaceholders:
           return d->pro >= QPSQLDriver::Version82;
       case BatchOperations:
 
-That will cause a warning when compiling in the next step which is OK. Now open
-a terminal and cd into the extracted qt source tree.
+Now open a terminal and cd into the extracted qt source tree.
 
   cd qt-everywhere-opensource-src-4.8.4/src/plugins/sqldrivers/psql
 

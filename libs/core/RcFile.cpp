@@ -70,7 +70,7 @@ QVariant RcFile::getValue(const QString& key, const QVariant& /*def*/) const
 {
   if(mForced.contains(key)) return mForced.value(key);
   else return value(key);
-};
+}
 
 void RcFile::saveGroup()
 {

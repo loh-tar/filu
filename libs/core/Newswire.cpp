@@ -193,9 +193,9 @@ QString Newswire::formatMessage(const Message& msg, const QString& format/* = ""
 
 Newswire::Message Newswire::makeMessage(const QString& func, const QString& txt, const MsgType type)
 {
-  Message msg = { mClass, func, txt, type };
+  Message msg = { mClass, func, txt, type, false, false };
   return msg;
-};
+}
 
 QString Newswire::messageTypeName(const MsgType type)
 {
@@ -278,7 +278,7 @@ void Newswire::clearMessages()
   mHasFatal = false;
 }
 
-void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLevel type/* = eInfo*/)
+void Newswire::verboseP(const QString& func, const QString& txt, const VerboseLevel /*type = eInfo*/)
 {
   *mErrConsole << formatMessage(makeMessage(func, txt, eInfoMsg), mFormat.value(eVerbose)) << endl;
 }

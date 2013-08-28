@@ -63,7 +63,7 @@ SettingsFile::getValue(const QString& key, const QVariant& def) const
 {
   // These stupid looking function is needed to support RcFile
   return value(key, def);
-};
+}
 
 QString
 SettingsFile::getPath(const QString& key) const

@@ -228,7 +228,7 @@ FTool::wrapText(const QString txt, int width)
 }
 
 QStringList
-FTool::breakUpText(const QString txt, bool ignoreQuotes/* = true*/)
+FTool::breakUpText(const QString txt, bool /*ignoreQuotes = true*/)
 {
   QRegExp openBrace("[\\(\\[\\{]");
   QRegExp closeBrace("[\\}\\]\\)]");

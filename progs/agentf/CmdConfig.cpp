@@ -117,7 +117,6 @@ void CmdConfig::setConfig()
   }
 
   QHash<QString, QVariant> config;
-  int i = 1;
   foreach(const QString&parm, mCmd->parmList())
   {
     QStringList keyval = parm.split("=");

@@ -802,7 +802,8 @@ bool QPSQLDriver::hasFeature(DriverFeature f) const
     case LowPrecisionNumbers:
     case EventNotifications:
         return true;
- //   case PreparedQueries:
+    case PreparedQueries:
+        return false;
     case PositionalPlaceholders:
         return d->pro >= QPSQLDriver::Version82;
     case BatchOperations:

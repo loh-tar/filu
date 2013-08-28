@@ -42,7 +42,7 @@ FWidget::FWidget(FWidget* parent, const QString& className)
 FWidget::~FWidget()
 {}
 
-FMainApp::FMainApp(const QString& connectionName, QApplication& app)
+FMainApp::FMainApp(const QString& connectionName, QApplication& /*app*/)
         : QMainWindow()
         , FClass(connectionName)
 {

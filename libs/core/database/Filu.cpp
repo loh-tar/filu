@@ -740,7 +740,7 @@ QSqlQuery* Filu::searchRows(const QString& table, const QStringList& fieldValueL
   return mLastQuery;
 }
 
-int Filu::searchCaption(const QString& table, const QString& caption, const Schema type/* = eFilu*/)
+int Filu::searchCaption(const QString& table, const QString& caption, const Schema /*type = eFilu*/)
 {
   const QString sql("SELECT * FROM :filu.id_from_caption(:table, :caption)");
 

@@ -32,14 +32,14 @@ FiTableModel::FiTableModel(FiTuple* fi, QObject* parent)
             , mFi(fi)
 {}
 
-int FiTableModel::rowCount(const QModelIndex& parent) const
+int FiTableModel::rowCount(const QModelIndex& /*parent*/) const
 {
   if(!mFi) return 0;
 
   return mFi->count();
 }
 
-int FiTableModel::columnCount(const QModelIndex& parent) const
+int FiTableModel::columnCount(const QModelIndex& /*parent*/) const
 {
   return 4;
 }
