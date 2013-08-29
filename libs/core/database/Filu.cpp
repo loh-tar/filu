@@ -884,26 +884,26 @@ int Filu::addEODBarData(int fiId, int marketId, const QStringList* data)
     QStringList values = data->at(j).split(";");
     query->bindValue(":date", values[iD]);
 
-    QString v = (iO == -1) ? "" : values.at(iO);
-    query->bindValue(":open", v.isEmpty() ? NULL : FTool::number(v));
+    QString v = (iO == -1) ? "0.0" : values.at(iO);
+    query->bindValue(":open", FTool::number(v));
 
-    v = (iH == -1) ? "" : values.at(iH);
-    query->bindValue(":high", v.isEmpty() ?  NULL : FTool::number(v));
+    v = (iH == -1) ? "0.0" : values.at(iH);
+    query->bindValue(":high", FTool::number(v));
 
-    v = (iL == -1) ? "" : values.at(iL);
-    query->bindValue(":low", v.isEmpty() ?  NULL : FTool::number(v));
+    v = (iL == -1) ? "0.0" : values.at(iL);
+    query->bindValue(":low", FTool::number(v));
 
-    v = (iC == -1) ? "" : values.at(iC);
-    query->bindValue(":close", v.isEmpty() ?  NULL : FTool::number(v));
+    v = (iC == -1) ? "0.0" : values.at(iC);
+    query->bindValue(":close", FTool::number(v));
 
-    v = (iV == -1) ? "" : values.at(iV);
-    query->bindValue(":vol", v.isEmpty() ?  NULL : FTool::number(v));
+    v = (iV == -1) ? "0.0" : values.at(iV);
+    query->bindValue(":vol", FTool::number(v));
 
-    v = (iOI == -1) ? "" : values.at(iOI);
-    query->bindValue(":oi", v.isEmpty() ?  NULL : FTool::number(v));
+    v = (iOI == -1) ? "0" : values.at(iOI);
+    query->bindValue(":oi", FTool::number(v));
 
     v = (iQ == -1) ? "Gold" : values.at(iQ); // If not exist we assume the data are final
-    query->bindValue(":status", v.isEmpty() ? NULL : quality(v));
+    query->bindValue(":status", quality(v));
 
     ++sqlExecCounter;
 
