@@ -1,3 +1,28 @@
+2013-08-30
+============
+Less Painfully Snapshot
+-------------------------
+With small improvements which make some things more user and provider friendly.
+There are also some new scripts available which make the installation less
+painfully, especially on Debian and Fedora systems where you have only run one
+script.
+
+Go on reading the changelog to notice in more detail what's new, maybe fixed and
+may have to considered in case of an update.
+
+Enjoy!
+
+
+2013-08-29
+============
+Sundries
+----------
+- Fix: Respect distributions QSettings fallback path. Fedora for example
+  uses /etc and not /etc/xdg
+- Add install-by-yum script
+- Rename install-debian script to install-by-aptget
+
+
 2013-08-21
 ============
 Sundries
