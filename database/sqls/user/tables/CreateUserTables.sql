@@ -18,11 +18,6 @@
 --
 --
 --
-CREATE SCHEMA :user AUTHORIZATION :dbuser;
--- GRANT ALL ON SCHEMA :user TO :dbuser;
---
---
---
 CREATE TABLE :user.co(
   co_id      serial4         PRIMARY KEY,
   fi_id      int4            NOT NULL,

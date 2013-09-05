@@ -53,6 +53,9 @@ void FiluU::openDB()
 
   if(mLastResult == eNoData)
   {
+    // Keep the blank after :dbuser or parseSql() will fail
+    execute("_CreateUser", "CREATE SCHEMA :user AUTHORIZATION :dbuser ");
+
     createUserTables();
 
     if(hasError()) return;

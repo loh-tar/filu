@@ -1380,6 +1380,9 @@ void Filu::createSchema()
     verbose(FUNC, tr("Language plpgsql successful created."));
   }
 
+  // Keep the blank after :dbuser or parseSql() will fail
+  execute("_CreateFilu", "CREATE SCHEMA :filu AUTHORIZATION :dbuser ");
+
   createTables();
   if(hasError()) return;
 
