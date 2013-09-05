@@ -33,6 +33,7 @@ Newswire::Newswire(const QString& connectionName)
         , mVerboseLevel(eInfo)
         , mHasError(false)
         , mHasFatal(false)
+        , mConsole(new QTextStream(stdout))
         , mErrConsole(new QTextStream(stderr))
         , mLogFileFile(0)
         , mLogFile(0)
@@ -50,6 +51,7 @@ Newswire::Newswire(Newswire* parent, const QString& className)
         , mVerboseLevel(parent->mVerboseLevel)
         , mHasError(false)
         , mHasFatal(false)
+        , mConsole(parent->mConsole)
         , mErrConsole(parent->mErrConsole)
         , mLogFileFile(parent->mLogFileFile)
         , mLogFile(parent->mLogFile)
@@ -63,6 +65,7 @@ Newswire::~Newswire()
 {
   if(isRoot())
   {
+    delete mConsole;
     delete mErrConsole;
     if(mLogFileFile) delete mLogFileFile;
     if(mLogFile) delete mLogFile;
@@ -327,7 +330,26 @@ void Newswire::print(const QString& txt)
   {
     if(lastWasEmpty) return;
 
-    lastWasEmpty = true;;
+    lastWasEmpty = true;
+  }
+  else
+  {
+    lastWasEmpty = false;
+  }
+
+  *mConsole << txt << endl;
+}
+
+void Newswire::verbose(const QString& txt)
+{
+  // Don't print two sequenced empty lines
+  static bool lastWasEmpty = false;
+
+  if(txt.isEmpty())
+  {
+    if(lastWasEmpty) return;
+
+    lastWasEmpty = true;
   }
   else
   {

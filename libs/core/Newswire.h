@@ -108,9 +108,10 @@ class Newswire
 
   protected:
     void            print(const QString& txt);
-    void            record(const QString& func, const QString& txt);
+    void            verbose(const QString& txt);
     void            verbose(const QString& func, const QString& txt, const VerboseLevel type = eInfo)
                            { if(mVerboseLevel >= type) verboseP(func, txt, type); }
+    void            record(const QString& func, const QString& txt);
 
     void            addMessages(const MessageLst& msgl);
     void            addErrors(const MessageLst& errors) { addMessages(errors); }
@@ -143,6 +144,7 @@ class Newswire
     MessageLst      mMessages;
     bool            mHasError;
     bool            mHasFatal;
+    QTextStream*    mConsole;
     QTextStream*    mErrConsole;
     QFile*          mLogFileFile;
     QTextStream*    mLogFile;
