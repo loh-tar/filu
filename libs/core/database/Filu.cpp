@@ -1297,7 +1297,6 @@ void Filu::openDB()
     QSqlError err = mFiluDB.lastError();
     error(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
-    if(verboseLevel() < eMax) printSettings(); // readSettings() has printed if eMax
     return;
   }
 
@@ -1874,8 +1873,6 @@ void Filu::readSettings()
   }
 
   mSqlStaticParms.insert(":dbuser", mRcFile->getST("PgUserRole"));
-
-  if(verboseLevel(eMax)) printSettings();
 }
 
 void Filu::printSettings()

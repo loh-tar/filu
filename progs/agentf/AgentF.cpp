@@ -91,7 +91,7 @@ void AgentF::quit()
 
 void AgentF::readSettings()
 {
-  if(verboseLevel(eMax)) printSettings();
+
 }
 
 void AgentF::updateAllBars()
@@ -263,11 +263,7 @@ void AgentF::exec(const QStringList& parm)
   else if(mCmd->hasCmd("exp"))           exxport();
   else if(mCmd->hasCmd("scan"))          scan();
   else if(mCmd->hasCmd("depots"))        depots();
-  else if(mCmd->hasCmd("info"))
-  {
-    if(verboseLevel(eMax)) return; // Already printed, don't print twice
-    else printSettings();
-  }
+  else if(mCmd->hasCmd("info"))          printSettings();
   else
   {
     fatal(FUNC, QString("Unsupported command: %1").arg(mCmd->cmd()));
