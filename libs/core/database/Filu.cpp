@@ -35,6 +35,14 @@
 #include "SymbolTuple.h"
 #include "SymbolTypeTuple.h"
 
+QString makeSqlPath(const Filu::Schema s, const QString& type)
+{
+  QString schema = "filu";
+  if(Filu::eUser == s) schema = "user";
+
+  return QString("%1/%2/").arg(schema, type);
+}
+
 Filu::Filu(const QString& cn, RcFile* rcFile)
     : Newswire(FUNC)
     , mRcFile(rcFile)
@@ -1281,7 +1289,7 @@ int Filu::getNextId(const QString& table, const Schema type/* = eFilu*/)
   return result(FUNC, mLastQuery);
 }
 
-void Filu::openDB()
+bool Filu::openDB()
 {
   readSettings();
 
@@ -1297,7 +1305,7 @@ void Filu::openDB()
     QSqlError err = mFiluDB.lastError();
     error(FUNC, tr("Can't open DB."));
     errInfo(FUNC, err.databaseText());
-    return;
+    return false;
   }
 
   // Test for PostgreSQL version
@@ -1326,9 +1334,8 @@ void Filu::openDB()
   {
     fatal(FUNC, "Can't determine Postgres version.");
     errInfo(FUNC, tr("Running server is: %1").arg(dbVersion));
-    return;
+    return false;
   }
-
 
   // Test if the driver works properly
   setSqlParm(":foo", 123);
@@ -1339,7 +1346,7 @@ void Filu::openDB()
     fatal(FUNC, tr("The PSql Driver works not properly."));
     errInfo(FUNC, tr("Please take a look at doc/qt-postgres-driver-bug.txt"));
     errInfo(FUNC, tr("PluginPath is set to: %1").arg(mRcFile->getPath("PluginPath")));
-    return;
+    return false;
   }
 
   execute("_FiluExist", "SELECT nspname FROM pg_namespace WHERE nspname = ':filu'");
@@ -1350,8 +1357,17 @@ void Filu::openDB()
   }
   else
   {
-    createSchema();
+    if(!createSchema()) return false;
+    if(!createTables()) return false;
+
+    if(!createMisc("data_types")) return false;
+
+    if(!createFunctions()) return false;
+
+    if(!createMisc("table_entries")) return false;
   }
+
+  return true;
 }
 
 void Filu::closeDB()
@@ -1364,7 +1380,7 @@ void Filu::closeDB()
   QSqlDatabase::removeDatabase(mConnectionName);
 }
 
-void Filu::createSchema()
+bool Filu::createSchema(const Schema type/* = eFilu*/)
 {
   execute("_Psst!", "SET client_min_messages TO WARNING");
 
@@ -1376,57 +1392,71 @@ void Filu::createSchema()
   else
   {
     execute("_CreateLanguage", "CREATE LANGUAGE plpgsql");
-    if(hasError()) return;
+    if(hasError()) return false;
     verbose(FUNC, tr("Language plpgsql successful created."));
   }
 
+  if(eFilu == type) mSqlStaticParms.insert(":schema", mSqlStaticParms.value(":filu"));
+  else mSqlStaticParms.insert(":schema", mSqlStaticParms.value(":user"));
+
   // Keep the blank after :dbuser or parseSql() will fail
-  execute("_CreateFilu", "CREATE SCHEMA :filu AUTHORIZATION :dbuser ");
+  execute("_CreateSchema", "CREATE SCHEMA :schema AUTHORIZATION :dbuser ");
 
-  createTables();
-  if(hasError()) return;
-
-  execSql("filu/misc/data_types");
-  if(hasError()) return;
-  verbose(FUNC, tr("Data types successful created."));
-
-  createFunctions();
-  createViews();
-
-  if(hasError()) return;
-
-  execSql("filu/misc/table_entries");
-  if(hasError()) return;
-  verbose(FUNC, tr("Default table entries successful insert."));
+  verbose(FUNC, tr("Schema '%1' successful created.").arg(schema(type)));
+  return true;
 }
 
-void Filu::createTables()
+bool Filu::createTables(const Schema type/* = eFilu*/)
 {
-  if(!executeSqls("filu/tables/")) return;
+  if(!executeSqls(makeSqlPath(type, "tables"))) return false;
 
-  verbose(FUNC, tr("Filu schema and tables successful created."));
+  verbose(FUNC, tr("Tables in schema '%1' successful created.").arg(schema(type)));
+  return true;
 }
 
-void Filu::createFunctions()
+bool Filu::createFunctions(const Schema type/* = eFilu*/)
 {
-  if(!executeSqls("filu/functions/")) return;
+  if(!executeSqls(makeSqlPath(type, "functions"))) return false;
 
-  verbose(FUNC, tr("Filu functions successful created."));
+  verbose(FUNC, tr("Functions in schema '%1' successful created.").arg(schema(type)));
+  return true;
 }
 
-void Filu::createViews()
+bool Filu::createViews(const Schema type/* = eFilu*/)
 {
-  if(!executeSqls("filu/views/")) return;
+  if(!executeSqls(makeSqlPath(type, "views"))) return false;
 
-  verbose(FUNC, tr("Filu views successful created."));
+  verbose(FUNC, tr("Views in schema '%1' successful created.").arg(schema(type)));
+  return true;
 }
 
-void Filu::executeSql(const QString& path, const QString& sql)
+bool Filu::createFunc(const QString& sql, const Schema type/* = eFilu*/)
+{
+  return executeSql(makeSqlPath(type, "functions"), sql);
+}
+
+bool Filu::createView(const QString& sql, const Schema type/* = eFilu*/)
+{
+  return executeSql(makeSqlPath(type, "views"), sql);
+}
+
+bool Filu::createMisc(const QString& sql, const Schema type/* = eFilu*/)
+{
+  return executeSql(makeSqlPath(type, "misc"), sql);
+}
+
+bool Filu::executeSql(const QString& path, const QString& sql)
 {
   execute("_Psst!", "SET client_min_messages TO WARNING");
   execSql(path + sql);
-  if(hasError()) verbose(FUNC, tr("Create/Update: %1...FAULT!").arg(sql, -30, '.'));
-  else verbose(FUNC, tr("Create/Update: %1...OK").arg(sql, -30, '.'));
+  if(hasError())
+  {
+    verbose(FUNC, tr("Create/Update: %1...FAULT!").arg(sql, -30, '.'), eAmple);
+    return false;
+  }
+
+  verbose(FUNC, tr("Create/Update: %1...OK").arg(sql, -30, '.'), eAmple);
+  return true;
 }
 
 bool Filu::executeSqls(const QString& path)
@@ -1436,11 +1466,20 @@ bool Filu::executeSqls(const QString& path)
   execute("_Psst!", "SET client_min_messages TO WARNING");
   QStringList sqls = QDir(mSqlPath + path).entryList(QDir::Files, QDir::Name);
 
-  foreach(const QString& sql, sqls)
+  foreach(QString sql, sqls)
   {
     // Remove .sql suffix which will again added by execSql()
-    execSql(path + sql.left(sql.size() - 4));
-    if(hasError()) return false;
+    sql.chop(4);
+    execSql(path + sql);
+    // Remove leading 0123_ from file name for nicer verbose info
+    sql.remove(QRegExp("^\\d+_"));
+    if(hasError())
+    {
+      verbose(FUNC, tr("Create/Update: %1...FAULT!").arg(sql, -30, '.'), eAmple);
+      return false;
+    }
+
+    verbose(FUNC, tr("Create/Update: %1...OK").arg(sql, -30, '.'), eAmple);
   }
 
   return true;

@@ -33,11 +33,9 @@ FiluU::FiluU(const QString& connectionName, RcFile* rcFile)
 FiluU::~FiluU()
 {}
 
-void FiluU::openDB()
+bool FiluU::openDB()
 {
-  Filu::openDB();
-
-  if(hasError()) return;
+  if(!Filu::openDB()) return false;
 
   QString devil = FTool::makeValidWord(mRcFile->getST("Devil"));
   if(!devil.isEmpty() and "_" != devil)
@@ -53,12 +51,9 @@ void FiluU::openDB()
 
   if(mLastResult == eNoData)
   {
-    // Keep the blank after :dbuser or parseSql() will fail
-    execute("_CreateUser", "CREATE SCHEMA :user AUTHORIZATION :dbuser ");
-
-    createUserTables();
-
-    if(hasError()) return;
+    if(!createSchema(eUser)) return false;
+    if(!createTables(eUser)) return false;
+    if(!createFunctions(eUser)) return false;
 
     print("***");
     print("*");
@@ -68,6 +63,8 @@ void FiluU::openDB()
     print("*");
     print("***");
   }
+
+  return true;
 }
 
 QSqlQuery* FiluU::getGroups(int motherId /*= -1*/)
@@ -632,20 +629,4 @@ QString FiluU::accPostingType(int type)
   error(FUNC, tr("Posting type number '%1' is unknown.").arg(type));
 
   return "Unknown"; // No tr()
-}
-
-void FiluU::createUserTables()
-{
-  if(!executeSqls("user/tables/")) return;
-
-  verbose(FUNC, tr("User tables successful created."));
-
-  createUserFunctions();
-}
-
-void FiluU::createUserFunctions()
-{
-  if(!executeSqls("user/functions/")) return;
-
-  verbose(FUNC, tr("User functions successful created."));
 }

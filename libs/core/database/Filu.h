@@ -41,9 +41,6 @@ typedef QHash<QString, QString>   KeyVal;
 class Filu : public Newswire
 {
   public:
-                Filu(const QString&, RcFile*);
-               ~Filu();
-
     static const bool  eHideNoMarket = true;
     static const bool  eWithNoMarket = false;
 
@@ -81,8 +78,10 @@ class Filu : public Newswire
       eOnlyProvider    = 2,
       eOnlyNonProvider = 3
     };
+                 Filu(const QString&, RcFile*);
+    virtual     ~Filu();
 
-    virtual void openDB();
+    virtual bool openDB();
     void         closeDB();
 
     bool transaction() { return mFiluDB.transaction(); };
@@ -230,17 +229,18 @@ class Filu : public Newswire
     QString     serverVersion();
     QString     devilInfoText();
 
-    void        createFunctions();
-    void        createViews();
-    void        createFunc(const QString& sql) { executeSql("filu/functions/", sql); }
-    void        createView(const QString& sql) { executeSql("filu/views/", sql); }
-    void        createMisc(const QString& sql) { executeSql("filu/misc/", sql); }
+    bool        createSchema(const Schema type = eFilu);
+    bool        createTables(const Schema type = eFilu);
+    bool        createFunctions(const Schema type = eFilu);
+    bool        createViews(const Schema type = eFilu);
+
+    bool        createFunc(const QString& sql, const Schema type = eFilu);
+    bool        createView(const QString& sql, const Schema type = eFilu);
+    bool        createMisc(const QString& sql, const Schema type = eFilu);
 
   protected:
-    void        executeSql(const QString& path, const QString& sql);
+    bool        executeSql(const QString& path, const QString& sql);
     bool        executeSqls(const QString& path);
-    void        createSchema();
-    void        createTables();
 
     int         getNextId(const QString& table, const Schema type = eFilu);
     bool        initQuery(const QString& name);

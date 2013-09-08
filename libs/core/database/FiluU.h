@@ -27,9 +27,6 @@ class RcFile;
 class FiluU : public Filu
 {
   public:
-                FiluU(const QString& connectionName, RcFile* rcFile);
-    virtual    ~FiluU();
-
     enum OrderType
     {
       // Has to fit with order table logic and orderType(...)
@@ -59,6 +56,10 @@ class FiluU : public Filu
       ePostFiSell  = 4,
       ePostFee     = 5
     };
+                FiluU(const QString& connectionName, RcFile* rcFile);
+    virtual    ~FiluU();
+
+    bool        openDB();
 
     QSqlQuery*  getGroups(int motherId = -1); // -1 returns all groups
     QSqlQuery*  getGMembers(int groupId);
@@ -120,12 +121,7 @@ class FiluU : public Filu
     int         accPostingType(const QString& type);
     QString     accPostingType(int type);
 
-    void        openDB();
-    void        createUserFunctions();
-    void        createUserFunc(const QString& sql) { executeSql("user/functions/", sql); }
-
   private:
-    void        createUserTables();
 };
 
 #endif
