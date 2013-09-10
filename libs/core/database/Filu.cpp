@@ -1359,12 +1359,9 @@ bool Filu::openDB()
   {
     if(!createSchema()) return false;
     if(!createTables()) return false;
-
-    if(!createMisc("data_types")) return false;
-
     if(!createFunctions()) return false;
-
-    if(!createMisc("table_entries")) return false;
+    if(!createViews()) return false;
+    if(!createDatas()) return false;
   }
 
   return true;
@@ -1430,6 +1427,19 @@ bool Filu::createViews(const Schema type/* = eFilu*/)
   return true;
 }
 
+bool Filu::createDatas(const Schema type/* = eFilu*/)
+{
+  if(!executeSqls(makeSqlPath(type, "data"))) return false;
+
+  verbose(FUNC, tr("Default data in schema '%1' successful created.").arg(schema(type)));
+  return true;
+}
+
+bool Filu::createTabl(const QString& sql, const Schema type/* = eFilu*/)
+{
+  return executeSql(makeSqlPath(type, "tables"), sql);
+}
+
 bool Filu::createFunc(const QString& sql, const Schema type/* = eFilu*/)
 {
   return executeSql(makeSqlPath(type, "functions"), sql);
@@ -1440,9 +1450,9 @@ bool Filu::createView(const QString& sql, const Schema type/* = eFilu*/)
   return executeSql(makeSqlPath(type, "views"), sql);
 }
 
-bool Filu::createMisc(const QString& sql, const Schema type/* = eFilu*/)
+bool Filu::createData(const QString& sql, const Schema type/* = eFilu*/)
 {
-  return executeSql(makeSqlPath(type, "misc"), sql);
+  return executeSql(makeSqlPath(type, "data"), sql);
 }
 
 bool Filu::executeSql(const QString& path, const QString& sql)

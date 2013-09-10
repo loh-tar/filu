@@ -124,7 +124,7 @@ filu-cfg-postgresql with some options. Try -h and you will enlightened.
 
 For more tunings see:
   doc/config-file.txt
-  database/sqls/filu/misc/table_entries.sql
+  database/sqls/filu/data/*.sql
 
 
 4- Uninstall

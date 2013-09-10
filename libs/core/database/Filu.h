@@ -233,10 +233,12 @@ class Filu : public Newswire
     bool        createTables(const Schema type = eFilu);
     bool        createFunctions(const Schema type = eFilu);
     bool        createViews(const Schema type = eFilu);
+    bool        createDatas(const Schema type = eFilu);
 
+    bool        createTabl(const QString& sql, const Schema type = eFilu);
     bool        createFunc(const QString& sql, const Schema type = eFilu);
     bool        createView(const QString& sql, const Schema type = eFilu);
-    bool        createMisc(const QString& sql, const Schema type = eFilu);
+    bool        createData(const QString& sql, const Schema type = eFilu);
 
   protected:
     bool        executeSql(const QString& path, const QString& sql);
