@@ -240,6 +240,8 @@ class Filu : public Newswire
     bool        createView(const QString& sql, const Schema type = eFilu);
     bool        createData(const QString& sql, const Schema type = eFilu);
 
+    bool        applyPatch(const QString& sql, const Schema type = eFilu);
+
   protected:
     bool        executeSql(const QString& path, const QString& sql);
     bool        executeSqls(const QString& path);

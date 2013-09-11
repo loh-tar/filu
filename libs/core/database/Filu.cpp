@@ -1455,6 +1455,11 @@ bool Filu::createData(const QString& sql, const Schema type/* = eFilu*/)
   return executeSql(makeSqlPath(type, "data"), sql);
 }
 
+bool Filu::applyPatch(const QString& sql, const Schema type/* = eFilu*/)
+{
+  return executeSql(makeSqlPath(type, "patch"), sql);
+}
+
 bool Filu::executeSql(const QString& path, const QString& sql)
 {
   execute("_Psst!", "SET client_min_messages TO WARNING");

@@ -226,17 +226,14 @@ void CmdDB::patch()
 {
   if(mCmd->isMissingParms(1))
   {
-//       mCmd->inOptBrief("", "", "");
-
     if(mCmd->printThisWay("<PatchSql>")) return;
-
+    mCmd->printComment("To list available patches run 'db ls patch'.");
     mCmd->aided();
     return;
   }
 
-  verbose(FUNC, "Not yet implemented.");
-//     if(mCmd->has("user")) mFilu->applyPatch(mCmd->strParm(1), eUser);
-//     else mFilu->applyPatch(mCmd->strParm(1), eFilu);
+  if(mCmd->has("user")) mFilu->applyPatch(mCmd->strParm(1), Filu::eUser);
+  else                  mFilu->applyPatch(mCmd->strParm(1), Filu::eFilu);
 }
 
 void CmdDB::tinker()
