@@ -1,3 +1,14 @@
+2013-09-12
+============
+Sundries
+----------
+- Add support for custom database add-ons with new script filu-install-addon
+  and AgentF sub-command 'db addon'
+- CmdDB: Review 'remake' and 'ls'
+- DB: Remove from directory tree misc/ and add data/
+- Filu/FiluU: Review DB creation
+
+
 2013-08-30
 ============
 Less Painfully Snapshot
