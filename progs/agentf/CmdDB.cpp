@@ -63,7 +63,7 @@ bool CmdDB::exec(CmdHelper* ch)
 {
   if(!init(ch)) return false;
 
-  mTypes << "func" << "misc" << "views";
+  mTypes << "tables" << "func" << "views" << "data";
 
   mCmd->regSubCmds("remake ls patch tinker show");
   mCmd->regStdOpts("user");
@@ -108,15 +108,14 @@ bool CmdDB::exec(CmdHelper* ch)
 
 void CmdDB::remake()
 {
-  mCmd->regStdOpts("all both");
+  mCmd->regStdOpts("all +user");
 
   int parmsNeeded = mCmd->has("all") ? 0 : 2;
 
   if(mCmd->isMissingParms(parmsNeeded))
   {
-    mCmd->inOptBrief("all", "Recreate all functions and views of the schema but no(t yet) misc stuff");
-    mCmd->inOptBrief("both", "Recreate all functions and views of user and Filu schema. "
-                             "Take only effect with --all");
+    mCmd->inOptBrief("all", "Recreate all functions and views of the schema but no tables or default data");
+    mCmd->inOptBrief("+user", "Work on user schema too, take only effect with --all");
 
     if(mCmd->printThisWay("[<SqlType> <SqlName>]|[--all]")) return;
 
@@ -130,25 +129,17 @@ void CmdDB::remake()
   // FIXME Incomment after Filu has setDebugLevel()
   //if(mCmd->has("verbose")) mFilu->setVerboseLevel(verboseLevel());
 
+  Filu::Schema schema = mCmd->has("user") ? Filu::eUser : Filu::eFilu;
+
   if(mCmd->has("all"))
   {
-    if(mCmd->has("both") and mCmd->has("user"))
-    {
-      error(FUNC, tr("Option '--both' is not allowed with '--user'"));
-      return;
-    }
+    mFilu->createFunctions(schema);
+    mFilu->createViews(schema);
 
-    if(mCmd->has("both") or !mCmd->has("user"))
+    if(mCmd->has("+user") and !mCmd->has("user"))
     {
-      mFilu->createFunctions();
-      mFilu->createViews();
-      //mFilu->();
-    }
-
-    if(mCmd->has("both") or mCmd->has("user"))
-    {
-      mFilu->createUserFunctions();
-      //mFilu->();
+      mFilu->createFunctions(Filu::eUser);
+      mFilu->createViews(Filu::eUser);
     }
 
     return;
@@ -161,53 +152,51 @@ void CmdDB::remake()
     return;
   }
 
-  if(mCmd->has("user"))
-  {
-    mFilu->createUserFunc(mCmd->strParm(2));
-  }
-  else
-  {
-    if("func" == type) mFilu->createFunc(mCmd->strParm(2));
-    else if("view" == type) mFilu->createView(mCmd->strParm(2));
-    else mFilu->createMisc(mCmd->strParm(2));
-  }
+  if("tables" == type)      mFilu->createTabl(mCmd->strParm(2), schema);
+  else if("func" == type)   mFilu->createFunc(mCmd->strParm(2), schema);
+  else if("views" == type)  mFilu->createView(mCmd->strParm(2), schema);
+  else                      mFilu->createData(mCmd->strParm(2), schema);
 }
 
 void CmdDB::list()
 {
-  mTypes  << "patch" << "tables";
+  mTypes  << "patch";
 
   mCmd->regStdOpts("oneCol");
+  mCmd->regStdOpts("tables");
 
-  if(mCmd->isMissingParms(1))
+  int parmsNeeded = mCmd->has("tables") ? 0 : 1;
+
+  if(mCmd->isMissingParms(parmsNeeded))
   {
     mCmd->inOptBrief("oneCol", "Print a single column instead of a table");
+    mCmd->inOptBrief("tables", "Print existing tables instead of creation sqls");
 
     if(mCmd->printThisWay("<Type>")) return;
 
     mCmd->printNote(tr("<Type> must be one of: %1").arg(mTypes.join(" ")));
     mCmd->printForInst("func --user");
+    mCmd->printForInst("--tables");
     mCmd->aided();
     return;
   }
 
-  QString type   = mCmd->strParm(1);
-  if(!mTypes.contains(type))
-  {
-    error(FUNC, tr("Type must be one of: %1").arg(mTypes.join(" ")));
-    return;
-  }
-
-
   QStringList resultLst;
 
-  if("tables" == type)
+  if(mCmd->has("tables"))
   {
     Filu::Schema schema = mCmd->has("user") ? Filu::eUser : Filu::eFilu;
     resultLst = mFilu->getTables(schema);
   }
   else
   {
+    QString type = mCmd->strParm(1);
+    if(!mTypes.contains(type))
+    {
+      error(FUNC, tr("Type must be one of: %1").arg(mTypes.join(" ")));
+      return;
+    }
+
     if("func" == type) type = "functions";
     QString schema = mCmd->has("user") ? "user/" : "filu/";
     QDir dir(mRcFile->getPath("SqlPath") + schema + type, "*.sql");
