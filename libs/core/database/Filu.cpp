@@ -35,14 +35,6 @@
 #include "SymbolTuple.h"
 #include "SymbolTypeTuple.h"
 
-QString makeSqlPath(const Filu::Schema s, const QString& type)
-{
-  QString schema = "filu";
-  if(Filu::eUser == s) schema = "user";
-
-  return QString("%1/%2/").arg(schema, type);
-}
-
 Filu::Filu(const QString& cn, RcFile* rcFile)
     : Newswire(FUNC)
     , mRcFile(rcFile)
@@ -1403,33 +1395,33 @@ bool Filu::createSchema(const Schema type/* = eFilu*/)
   return true;
 }
 
-bool Filu::createTables(const Schema type/* = eFilu*/)
+bool Filu::createTables(const Schema type/* = eFilu*/, const QString& addon/* = ""*/)
 {
-  if(!executeSqls(makeSqlPath(type, "tables"))) return false;
+  if(!executeSqls(makeSqlPath(type, "tables", addon))) return false;
 
   verbose(FUNC, tr("Tables in schema '%1' successful created.").arg(schema(type)));
   return true;
 }
 
-bool Filu::createFunctions(const Schema type/* = eFilu*/)
+bool Filu::createFunctions(const Schema type/* = eFilu*/, const QString& addon/* = ""*/)
 {
-  if(!executeSqls(makeSqlPath(type, "functions"))) return false;
+  if(!executeSqls(makeSqlPath(type, "functions", addon))) return false;
 
   verbose(FUNC, tr("Functions in schema '%1' successful created.").arg(schema(type)));
   return true;
 }
 
-bool Filu::createViews(const Schema type/* = eFilu*/)
+bool Filu::createViews(const Schema type/* = eFilu*/, const QString& addon/* = ""*/)
 {
-  if(!executeSqls(makeSqlPath(type, "views"))) return false;
+  if(!executeSqls(makeSqlPath(type, "views", addon))) return false;
 
   verbose(FUNC, tr("Views in schema '%1' successful created.").arg(schema(type)));
   return true;
 }
 
-bool Filu::createDatas(const Schema type/* = eFilu*/)
+bool Filu::createDatas(const Schema type/* = eFilu*/, const QString& addon/* = ""*/)
 {
-  if(!executeSqls(makeSqlPath(type, "data"))) return false;
+  if(!executeSqls(makeSqlPath(type, "data", addon))) return false;
 
   verbose(FUNC, tr("Default data in schema '%1' successful created.").arg(schema(type)));
   return true;
@@ -2039,4 +2031,25 @@ Filu::Schema Filu::schema(const QString& type)
   fatal(FUNC, QString("Schema type '%1'not valid. Must be 'filu' or 'user'").arg(type));
 
   return eNotValid;
+}
+
+QString Filu::makeSqlPath(const Filu::Schema s, const QString& type, const QString& addon/* = ""*/)
+{
+  QString schema = Filu::eUser == s ? "user" : "filu";
+
+  QString path;
+  if(addon.isEmpty())
+  {
+    path = QString("%1/%2/").arg(schema, type);
+  }
+  else
+  {
+    path = QString("add-ons/%1/%2/%3/").arg(addon, schema, type);
+    if(!QDir(mRcFile->getPath("SqlPath") + "add-ons/" + addon).exists())
+    {
+      error(FUNC, tr("Can't find add-on '%1'").arg(addon));
+    }
+  }
+
+  return path;
 }

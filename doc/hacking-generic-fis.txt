@@ -1,20 +1,16 @@
 This file is part of Filu (C) 2007, 2010-2013 loh.tar@googlemail.com
 
 
-If you are *not* intended to create new generic FIs than can you skip this
+If you are *not* intended to create new generic FIs then can you skip this
 chapter. But if you have an idea for a new Generic FI and you want implement
 that, then find you here the needed information how you can do this.
 
-Generic FIs are Postgres SQL functions located in database/functions and begin
-with 'gfi_'. Once you have create such a file you could run in your database
-directory:
 
-  ./configure -UDST
-  sudo make install
-
-This replaced some stuff but does not delete any of your data, or shouldn't be.
-If you use other than the default database settingss then you have to be care of
-that by setting one of (or all) -d foo1 -u foo2 -s foo3.
+Abstract
+==========
+Generic FIs are Postgres SQL functions and begin with 'gfi_'. Once you have
+create such a file put them into a directory YourAddOn/filu/functions and follow
+the notes in doc/hacking-add-ons.txt to install them.
 
 
 Naming Conventions And Restrictions
@@ -25,7 +21,7 @@ followed by an uppercase letter and should not contain underscores.
 Use $BODY$ to quote the entire function.
 
 Prefix the function name, each table reference and each non standard data type
-with <schema>. That will later replaced by the ./configure script.
+with :filu. That will later replaced at function creation time.
 
 
 Function Name
@@ -41,13 +37,13 @@ Are fixed and depend on the data type delivered by the funtion.
 
 EodBar
 --------
-Input:  aFiId        <schema>.fi.fi_id%TYPE
-        aMarketId    <schema>.market.market_id%TYPE
-        aFDate       <schema>.eodbar.qdate%TYPE       DEFAULT '1000-01-01'
-        aTDate       <schema>.eodbar.qdate%TYPE       DEFAULT '3000-01-01'
-        aLimit       int4                             DEFAULT 0
+Input:  aFiId        :filu.fi.fi_id%TYPE
+        aMarketId    :filu.market.market_id%TYPE
+        aFDate       :filu.eodbar.qdate%TYPE       DEFAULT '1000-01-01'
+        aTDate       :filu.eodbar.qdate%TYPE       DEFAULT '3000-01-01'
+        aLimit       int4                          DEFAULT 0
 
-Output: SETOF <schema>.fbar
+Output: SETOF :filu.fbar
 
 
 Register The New Type
@@ -56,7 +52,7 @@ Include in the SQL file an INSERT command to the ftype table with the name of
 the new type so that it will be useable. The name can contain uppercase letters,
 e.g.
 
-  INSERT INTO <schema>.ftype(caption) VALUES('XCurrency');
+  INSERT INTO :filu.ftype(caption) VALUES('XCurrency');
 
 
 How It Works

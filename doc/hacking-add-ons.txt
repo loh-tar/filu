@@ -1,0 +1,44 @@
+This file is part of Filu (C) 2007, 2010-2013 loh.tar@googlemail.com
+
+
+If you are *not* intended to extend the Filu database then can you skip this
+chapter. But if you have an idea to improve Filu with new indicators or generic
+FIs or with any other stuff to fit some needs then find you here some note how
+to add easily your new written extensions to Filu.
+
+
+In Short
+==========
+The new written database sqls has to be placed into a directory structure like
+the install/source structure with schema and type sub-directories.
+Your new add-on tree has therefore to look:
+
+  YourNewAddon
+    +--filu
+    |    +--table
+    |    +--functions
+    |    +--views
+    |    +--data
+    +--user
+    |    +--table
+    |    +--functions
+    |    +--views
+    |    +--data
+    +--Place access functions direct here
+
+There is no need for the presend of not used sub-directories.
+
+To install and test your new written add-on I suggest to run below your
+FiluSource:
+  agentf sum testaddon
+  filu-install-addon -i <PathTo>/YourNewAddon
+  agentf db addon YourNewAddon
+
+For details about the commands run they with -h.
+
+
+Further Readings
+==================
+doc/hacking-filu-power-indicators.txt
+doc/hacking-generic-fis-txt
+

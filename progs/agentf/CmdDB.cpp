@@ -65,7 +65,7 @@ bool CmdDB::exec(CmdHelper* ch)
 
   mTypes << "tables" << "func" << "views" << "data";
 
-  mCmd->regSubCmds("remake ls patch tinker show");
+  mCmd->regSubCmds("remake ls patch tinker show addon");
   mCmd->regStdOpts("user");
 
   if(mCmd->subCmdLooksBad()) return false;
@@ -77,6 +77,7 @@ bool CmdDB::exec(CmdHelper* ch)
     mCmd->inSubBrief("ls", tr("List database tables and creation SQLs"));
     mCmd->inSubBrief("tinker", tr("Change one value of any table"));
     mCmd->inSubBrief("show", tr("Show table entries"));
+    mCmd->inSubBrief("addon", tr("Aktivate new installed add-on"));
 //     mCmd->inSubBrief("vacuum", tr("Perform some janitor tasks on the database by running vacuumdb"));
 
     mCmd->inOptBrief("user", "Work on user schema instead of Filu schema");
@@ -96,9 +97,10 @@ bool CmdDB::exec(CmdHelper* ch)
   else if(mCmd->hasSubCmd("patch"))     patch();
   else if(mCmd->hasSubCmd("tinker"))    tinker();
   else if(mCmd->hasSubCmd("show"))      show();
+  else if(mCmd->hasSubCmd("addon"))     addon();
   else
   {
-    fatal(FUNC, QString("Unsupported command: %1").arg(mCmd->cmd()));
+    fatal(FUNC, QString("Unsupported subcommand: %1").arg(mCmd->subCmd())); // FIXME:Does not work
   }
 
   check4FiluError(FUNC);
@@ -443,4 +445,39 @@ void CmdDB::showPrintTicket(QSqlQuery* query)
       printed = 0;
     }
   }
+}
+
+void CmdDB::addon()
+{
+  if(mCmd->isMissingParms(1))
+  {
+    mCmd->inOptBrief("user", "Work only on user schema");
+
+    if(mCmd->printThisWay("<AddOn>")) return;
+
+    mCmd->printComment(tr(
+      "This is a convenience function that works similar to 'remake' but affect "
+      "only table, functions, views and data of the given <AddOn>. The add-on "
+      "itself has to be installed previously e.g. by filu-install-addon script. "
+      "For details how to write your own add-on see 'doc add-ons'."));
+    mCmd->printNote(tr("Works on user and Filu schema at default"));
+    mCmd->printForInst("MyNewAddon --user");
+    mCmd->aided();
+    return;
+  }
+
+  QString addon = mCmd->strParm(1);
+
+  if(!mCmd->has("user"))
+  {
+    if(!mFilu->createTables(Filu::eFilu, addon)) return;
+    if(!mFilu->createFunctions(Filu::eFilu, addon)) return;
+    if(!mFilu->createViews(Filu::eFilu, addon)) return;
+    if(!mFilu->createDatas(Filu::eFilu, addon)) return;
+  }
+
+  if(!mFilu->createTables(Filu::eUser, addon)) return;
+  if(!mFilu->createFunctions(Filu::eUser, addon)) return;
+  if(!mFilu->createViews(Filu::eUser, addon)) return;
+  if(!mFilu->createDatas(Filu::eUser, addon)) return;
 }

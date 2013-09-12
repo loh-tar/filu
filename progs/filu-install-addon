@@ -1,0 +1,209 @@
+#!/usr/bin/env bash
+
+#
+#   This file is part of Filu.
+#
+#   Copyright (C) 2007, 2010, 2011, 2012, 2013 loh.tar@googlemail.com
+#
+#   Filu is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   Filu is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with Filu. If not, see <http:#www.gnu.org/licenses/>.
+#
+
+exitError()
+{
+  if [ ${#@} -lt 2 ]; then errText "*** Error *** $1"
+  else
+    errText "*** Error *** $1"
+    errText "*** Info  *** $2"
+
+    local args=("$@")
+
+    for (( i=2; i < ${#@}; i++))
+    do
+      errText "*** Info  *** ${args[$i]}"
+    done
+  fi
+
+  exit 1
+}
+
+beginText()
+{
+  #
+  # Print text with a colon at the end adjusted to a fixed position
+  #
+  local txt=$1
+
+  while [ ${#txt} -lt 30 ];  do txt="$txt ";  done
+
+  writeText -n "$txt : "
+}
+
+writeText()
+{
+  if [ $optQuiet != 1 ]; then echo "$@"; fi
+}
+
+errText()
+{
+  echo -e "$@" >&2
+}
+
+printHelp()
+{
+  local me=$(basename $0)
+  writeText "I'm part of Filu. Visit http://filu.sourceforge.net"
+  writeText ""
+  writeText "Call me this way:"
+  writeText "  $me [-i <Path-To/Add-On>] [-r <Add-On>]"
+  me=$(sed "s/./\ /g" <<< $me) # Overwrite with space to align well
+  writeText "  $me [-h] [-l] [-q]"
+  writeText ""
+  writeText "Options:"
+  writeText "  -h Print this help text"
+  writeText "  -i Install add-on"
+  writeText "  -l List installed add-ons"
+  writeText "  -q Quiet mode"
+  writeText "  -r Remove add-on"
+  writeText ""
+  writeText "This tool allows you easy to install (your own written) Filu extensions (add-ons)."
+  writeText "The install location depend on the current SqlPath reported by agentf config command."
+  writeText "If that is the normal install path you have to run this script as root."
+  writeText ""
+  writeText "For more details about add-ons run 'agentf doc add-ons'"
+  writeText ""
+
+  exit
+}
+
+removeAddon()
+{
+  writeText "Remove $sqlPath/add-ons/$addon"
+  rm -rf "$sqlPath/add-ons/$addon" #2>/dev/null
+  rmdir "$sqlPath/add-ons/$addon" 2>/dev/null
+  rmdir "$sqlPath/add-ons" 2>/dev/null
+
+  # Delete all broken symlinks
+  # http://stackoverflow.com/a/8049249
+  find $sqlPath/ -xtype l ! -exec test -e {} \; -exec rm {} \;
+}
+
+symlink()
+{
+  cp -s $2/$1/*.sql $3/$1 2>/dev/null
+}
+
+installAddon()
+{
+  removeAddon
+
+  writeText "Install add-on '$addon'"
+  mkdir -p $sqlPath/add-ons
+  cp -r $addonPath $sqlPath/add-ons
+
+  # Link the normal access sqls
+  cp -s $sqlPath/add-ons/$addon/*.sql $sqlPath 2>/dev/null
+
+  # FIXME Do you know a smarter way to symlink all files?
+  # Link each type sql
+  local srcPath="$sqlPath/add-ons/$addon/filu"
+  local destPath="$sqlPath/filu"
+  symlink tables $srcPath $destPath
+  symlink functions $srcPath $destPath
+  symlink views $srcPath $destPath
+  symlink data $srcPath $destPath
+
+  srcPath="$sqlPath/add-ons/$addon/user"
+  destPath="$sqlPath/user"
+  symlink tables $srcPath $destPath
+  symlink functions $srcPath $destPath
+  symlink views $srcPath $destPath
+  symlink data $srcPath $destPath
+}
+
+optQuiet=0
+optInstall=0
+optList=0
+optRemove=0
+
+while getopts :hi:lqr: opt
+do
+   case $opt in
+       h) printHelp
+          ;;
+       i) optInstall=1
+          addonPath=$OPTARG
+          ;;
+       l) optList=1
+          ;;
+       q) optQuiet=1
+          ;;
+       r) optRemove=1
+          addon=$OPTARG
+          ;;
+       :) exitError "Option -$OPTARG requires an argument."
+          ;;
+       ?) exitError "Unknown option -$OPTARG"
+          ;;
+   esac
+done
+
+if [ ${#@} -lt 1 ]; then printHelp; fi
+
+sqlPath=$(./build/progs/agentf/agentf config show SqlPath --path --noKeys 2>/dev/null)
+# Remove trailing / to be more handy in this use-case
+# http://www.ibm.com/developerworks/linux/library/l-bash/index.html
+sqlPath=${sqlPath%%/}
+
+if (( $optInstall || $optRemove )) && [[ ! -w $sqlPath ]]; then
+  if [ ! $(id -u) == 0 ]; then
+    exitError "Must run as root" "SqlPath is: $sqlPath"
+  fi
+fi
+
+if (( $optList )); then
+
+  if [ ! -d "$sqlPath/add-ons" ]; then
+    writeText "No add-ons installed"
+    exit
+  fi
+
+  ls -1 $sqlPath/add-ons
+  exit
+fi
+
+if (( $optRemove )); then
+
+  if [ ! -d "$sqlPath/add-ons/$addon" ]; then
+    exitError "No add-on '$addon' installed"
+    exit
+  fi
+
+  removeAddon
+
+  exit
+fi
+
+if (( $optInstall )); then
+
+  if [ ! -d "$addonPath" ]; then
+    exitError "No add-on '$addonPath' found"
+    exit
+  fi
+
+  addon=$(basename $addonPath)
+
+  installAddon
+
+  exit
+fi

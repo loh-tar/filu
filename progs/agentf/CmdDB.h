@@ -45,6 +45,7 @@ class CmdDB : public CmdClass
     void          patch();
     void          tinker();
     void          show();
+    void          addon();
 
     void          showPrintTable(QSqlQuery* query);
     void          showPrintTicket(QSqlQuery* query);

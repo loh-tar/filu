@@ -4,5 +4,6 @@ add_subdirectory(performerf)
 add_subdirectory(inspectorf)
 
 install(PROGRAMS filu-cfg-postgresql
+                 filu-install-addon
         DESTINATION bin
 )

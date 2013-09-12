@@ -1,19 +1,17 @@
 This file is part of Filu (C) 2007, 2010-2013 loh.tar@googlemail.com
 
 
-If you are *not* intended to write new indicators powered by Filu than can you
+If you are *not* intended to write new indicators powered by Filu then can you
 skip this chapter. But if you have an idea for a new Filu Power Indicator and
 you want implement that, then find you here the needed information how you can
 do this.
 
-Filu Power Indicators are Postgres SQL functions located in
-database/sqls/filu/functions and begin with 'fpi_'. Once you have create such a
-file you could run in your FiluSorce directory:
 
-  agentf sum testmyfpi
-
-This create a new test schema where you can play around after you have
-fill in data.
+Abstract
+==========
+Filu Power Indicators are Postgres SQL functions and begin with 'fpi_'. Once you
+have create such a file put them into a directory YourAddOn/filu/functions and
+follow the notes in doc/hacking-add-ons.txt to install them.
 
 The concept how FPI are be implemented is orientated on TA-Lib but is not as
 well thought out. So if you think something should done differed, let me know.

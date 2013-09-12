@@ -230,10 +230,10 @@ class Filu : public Newswire
     QString     devilInfoText();
 
     bool        createSchema(const Schema type = eFilu);
-    bool        createTables(const Schema type = eFilu);
-    bool        createFunctions(const Schema type = eFilu);
-    bool        createViews(const Schema type = eFilu);
-    bool        createDatas(const Schema type = eFilu);
+    bool        createTables(const Schema type = eFilu, const QString& addon = "");
+    bool        createFunctions(const Schema type = eFilu, const QString& addon = "");
+    bool        createViews(const Schema type = eFilu, const QString& addon = "");
+    bool        createDatas(const Schema type = eFilu, const QString& addon = "");
 
     bool        createTabl(const QString& sql, const Schema type = eFilu);
     bool        createFunc(const QString& sql, const Schema type = eFilu);
@@ -245,6 +245,7 @@ class Filu : public Newswire
   protected:
     bool        executeSql(const QString& path, const QString& sql);
     bool        executeSqls(const QString& path);
+    QString     makeSqlPath(const Filu::Schema s, const QString& type, const QString& addon = "");
 
     int         getNextId(const QString& table, const Schema type = eFilu);
     bool        initQuery(const QString& name);
