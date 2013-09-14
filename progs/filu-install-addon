@@ -160,7 +160,7 @@ done
 
 if [ ${#@} -lt 1 ]; then printHelp; fi
 
-sqlPath=$(./build/progs/agentf/agentf config show SqlPath --path --noKeys 2>/dev/null)
+sqlPath=$(agentf config show SqlPath --path --noKeys 2>/dev/null)
 # Remove trailing / to be more handy in this use-case
 # http://www.ibm.com/developerworks/linux/library/l-bash/index.html
 sqlPath=${sqlPath%%/}
