@@ -47,6 +47,9 @@ bool FiluU::openDB()
     mSqlStaticParms.insert(":user", "user_" + qgetenv("USER"));
   }
 
+  // Save schema in RcFile to access for 'agentf config show' command
+  mRcFile->set("UserSchema", mSqlStaticParms.value(":user"));
+
   execute("_UserExist", "SELECT nspname FROM pg_namespace WHERE nspname = ':user'");
 
   if(mLastResult == eNoData)

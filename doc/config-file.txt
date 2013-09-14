@@ -17,6 +17,25 @@ path keys leaded by a dollar sign $. You will guess right now, the tilde is
 replaced by the user home path and the dollar marked key is substituted by the
 the value of the key.
 
+CommitBlockSize=500
+  How many data rows will be send to the server before they will committed.
+  Sadly has these settings no effect because of broken Qt Driver.
+
+DatabaseName=filu
+HostName=localhost
+HostPort=5432
+Password=filu
+PgUserRole=filu
+  Which database is to use and how could it be accessed. Yes, Password in clear
+  text looks like that there could be things improved.
+
+DaysToFetchIfNoData=730
+  How many bars, in days, should be downloaded the first time.
+
+DeleteDevilConfig=false
+  When true will AgentFs exo command delete the devil config file without the
+  need to give --del-omen.
+
 Devil=
   The Devil key is for devil-opers ;-) It's used as appendix to the Filu schema
   and user schema of the data base and as sub directory name below Hell.
@@ -30,6 +49,10 @@ FiluHome=~/Filu
   The location where Filu stores your personal data and settings, but none of the
   DB data. It's usual to store such data in ~/.foo but I don't like that hidden
   files/directories with interesting data.
+
+FiluSchema=
+  Is read-only from the point of user. It's set by Filu each time the data base
+  is opened and depend on Devil key.
 
 Hell=~/FiluDevil
   It's the devil home ;-) FiluHome is set to Hell/Devil at 'sum' command when
@@ -59,38 +82,6 @@ InstallPath=$InstallPrefix/lib/Filu
 LogFile=$FiluHome/filu.log
   Where error/info messages are logged.
 
-PluginPath=$InstallPath
-  Where plugins will be searched. Currently only the fixed Postgres driver is
-  used and must be copied to PluginPath/sqldrivers.
-
-ProviderPath=$InstallPath/provider
-  Where the provider scripts are located.
-
-SqlPath=$InstallPrefix/lib/Filu/sqls
-  Where SQLs are stored to access the DB.
-
-TradingRulePath=$FiluHome/TradingRules
-  Where your trading rules are located.
-
-DatabaseName=filu
-HostName=localhost
-HostPort=5432
-Password=filu
-PgUserRole=filu
-  Which database is to use and how could it be accessed. Yes, Password in clear
-  text looks like that there could be things improved.
-
-CommitBlockSize=500
-  How many data rows will be send to the server before they will committed.
-  Sadly has these settings no effect because of broken Qt Driver.
-
-DaysToFetchIfNoData=730
-  How many bars, in days, should be downloaded the first time.
-
-DeleteDevilConfig=false
-  When true will AgentFs exo command delete the devil config file without the
-  need to give --del-omen.
-
 MakeNameNice=true
   When importing data will FiNames are stripped, or not.
   See also doc/make-name-nice.conf.
@@ -102,16 +93,33 @@ MaxTimeLag=600
   The time where we become impatient and start one more clone,
   delay in milliseconds.
 
-MinTimeLag=200
-  Don't ask the provider too rapidly, delay in milliseconds.
-
 MinJobsPerClone=3
   The minimum count of jobs left per clone to start a new clone.
 
-Verbose=Info
-  How many info while running an application will be printed. Possible values
-  are Quiet, Info, Ample and Max or 0/1/2/3. The names are not case sensitive.
+MinTimeLag=200
+  Don't ask the provider too rapidly, delay in milliseconds.
+
+PluginPath=$InstallPath
+  Where plugins will be searched. Currently only the fixed Postgres driver is
+  used and must be copied to PluginPath/sqldrivers.
+
+ProviderPath=$InstallPath/provider
+  Where the provider scripts are located.
 
 SqlDebug=Info
   How many infos by the DB access will be printed while running. Same possible
   values as Verbose has.
+
+SqlPath=$InstallPrefix/lib/Filu/sqls
+  Where SQLs are stored to access the DB.
+
+TradingRulePath=$FiluHome/TradingRules
+  Where your trading rules are located.
+
+UserSchema=
+  Is read-only from the point of user. It's set by Filu each time the data base
+  is opened and depend on Devil key.
+
+Verbose=Info
+  How many info while running an application will be printed. Possible values
+  are Quiet, Info, Ample and Max or 0/1/2/3. The names are not case sensitive.

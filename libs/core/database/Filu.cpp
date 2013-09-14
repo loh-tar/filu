@@ -1921,6 +1921,9 @@ void Filu::readSettings()
     mSqlStaticParms.insert(":filu", "filu");
   }
 
+  // Save schema in RcFile to access for 'agentf config show' command
+  mRcFile->set("FiluSchema", mSqlStaticParms.value(":filu"));
+
   mSqlStaticParms.insert(":dbuser", mRcFile->getST("PgUserRole"));
 }
 
