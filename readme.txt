@@ -86,6 +86,7 @@ You should now find at your application menu below 'Office' the programs:
 Furthermore you have:
   agentf
   filu-cfg-postgresql
+  filu-install-addon
 
 
 1-3- Setup PostgreSQL
