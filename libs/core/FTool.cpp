@@ -371,6 +371,8 @@ FTool::makeValidWord(const QString& s)
 QString
 FTool::number(const QString& s)
 {
+  if(s.isEmpty()) return "0";
+
   QString n = s;
   QRegExp rx("\\d+,\\d+$");
   if(rx.indexIn(n) != -1)
